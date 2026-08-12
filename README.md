@@ -1,47 +1,42 @@
-# ETF资金雷达
+# 资金ETF流动每日跟踪
 
-面向证券研究与机构投资者的 A 股 ETF 资金行为研究系统。首版聚焦 ETF 份额监控、国家队代理资金、资金轮动与历史分位四个问题。站点中的示例数据均清晰标注为 `DEMO DATA`，不得用于投资决策。
+面向 A 股 ETF 研究的真实数据日频看板。系统按“指数 → ETF”聚合交易所日终份额变化，并使用同一交易日单位净值估算资金流。网页支持桌面端、手机端、指数下钻和 3 倍像素高清 JPG 导出。
 
-## Architecture
+## 数据与口径
 
-当前 Sites 版本采用 vinext、React 19 与 TypeScript 构建可交互研究终端。产品层按“指数 → ETF”组织，首页默认展示指数聚合视图，详情抽屉下钻到基金贡献。数据接入层预留给后续 FastAPI / AKShare 服务；生产环境应通过 API 替换示例数据，页面组件不负责金融计算。
+- 主采集适配器：固定版本 `AKShare 1.18.84`，无 Tushare Token 依赖；
+- 份额主源：上海证券交易所、深圳证券交易所日终 ETF 总份额；
+- 参考价格：同交易日单位净值，缺失时才允许使用同日收盘价；
+- 指标：`Estimated Flow = (Shares_t - Shares_t-1) × ReferencePrice_t`；
+- 历史不足时，5 日、20 日、250 日位置保持空值，不生成替代值；
+- Critical 质量检查失败时不覆盖上一份已验证快照。
 
-推荐的完整生产结构：
+详细字段、来源和门禁见 [`data_pipeline/README.md`](data_pipeline/README.md)。
 
-```text
-app/                 Sites 前端与交互
-components/          通用研究组件
-features/            资金监控业务模块
-services/            API 客户端
-backend/             FastAPI 服务（后续）
-data_pipeline/       采集、清洗、映射与指标计算（后续）
-database/            ETF Master 与历史数据（后续）
-tests/               计算与渲染测试
-```
+## 自动更新
 
-核心口径：`Estimated Flow_t = (Shares_t - Shares_{t-1}) × ReferencePrice_t`。参考价格优先采用当日净值，不可得时采用收盘价。ETF 份额与 ETF 规模严格区分，同一指数下主要 ETF 需完整映射后聚合。
+GitHub Actions 在工作日北京时间 09:15 运行：
 
-## Local development
+1. 安装固定版本依赖并运行确定性测试；
+2. 自动识别最近有完整官方观测的交易日；
+3. 拉取 SSE/SZSE 份额、同日净值与可用的同日交叉核验；
+4. 通过质量门禁后原子更新 `public/data/latest.json` 并保留日历史；
+5. 网站运行时读取 GitHub 最新已验证快照，更新数据无需重新发布网站。
 
-需要 Node.js 22.13 或更高版本。
+## 本地运行
 
-```bash
-npm install
-npm run dev
-npm run build
-```
-
-Windows PowerShell 可直接运行：
+需要 Node.js 22.13+ 与 Python 3.12+。
 
 ```powershell
-$env:WRANGLER_LOG_PATH='.wrangler/wrangler.log'; npx vinext dev
-$env:WRANGLER_LOG_PATH='.wrangler/wrangler.log'; npx vinext build
+npm install
+python -m venv .venv
+.\.venv\Scripts\pip.exe install -r data_pipeline\requirements.txt
+.\.venv\Scripts\python.exe data_pipeline\update_daily.py
+npm run lint
+npm test
+npm run dev
 ```
 
-## Data source and update plan
+## 免责声明
 
-生产版计划采用 AKShare 等公开接口，并对基金公告或交易所来源交叉核验。每日收盘后拉取 ETF 份额、净值/行情，执行清洗、指数映射、份额变化、估算资金流、历史分位、Z-Score、国家队代理指标与轮动计算，质量校验通过后写入数据库。接口不可用时不得生成伪造值，前端必须展示来源、日期与质量状态。
-
-## Disclaimer
-
-本平台数据及指标仅用于市场研究与信息展示，不构成任何投资建议。ETF资金流为根据基金份额变化及相关市场数据计算的估算结果。国家队代理资金指标仅用于观察特定宽基ETF的资金行为，不代表对实际投资主体身份的确认。
+本平台数据及指标仅用于市场研究与信息展示，不构成投资建议。ETF 资金流是基于份额变化与同日参考价格计算的估算值；“国家队代理”只表示预定义宽基 ETF 观察池，不确认真实投资主体。

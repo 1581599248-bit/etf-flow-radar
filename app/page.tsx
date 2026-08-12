@@ -1,120 +1,132 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type IndexRow = {
-  code: string; name: string; flow1d: number; flow5d: number; flow20d: number;
-  share: number; percentile: number; status: string; spark: number[];
+  code: string; name: string; group: string; flow1d: number; shareChangePct: number;
+  flow5d: number | null; flow20d: number | null; etfCount: number; percentile: number | null;
+  status: string; spark: number[]; nationalTeamProxy: boolean;
+};
+type EtfRow = {
+  code: string; name: string; exchange: string; indexCode: string; indexName: string;
+  group: string; shares: number; previousShares: number; shareChangePct: number;
+  referencePrice: number; referencePriceType: "NAV" | "CLOSE"; estimatedFlow: number; source: string;
+};
+type Snapshot = {
+  status: "verified" | "warning" | "failed"; tradeDate: string; previousTradeDate: string; generatedAt: string; sourceMode: "REAL";
+  quality: { marketEtfCount: number; priceCoverage: number; shareReconciliationRate: number | null; mappedEtfCount: number; issues: {severity:string;check:string;message:string}[] };
+  sources: { name:string; field:string; role:string }[]; indices: IndexRow[]; etfs: EtfRow[]; methodology: string;
 };
 
-const INDEX_DATA: IndexRow[] = [
-  { code: "000300", name: "沪深300", flow1d: 32.8, flow5d: 78.4, flow20d: 126.5, share: 0.42, percentile: 86.4, status: "流入偏强", spark: [22,28,24,35,31,42,38,47,52,49,58,64] },
-  { code: "000016", name: "上证50", flow1d: 18.6, flow5d: 43.7, flow20d: 65.9, share: 0.31, percentile: 78.2, status: "流入增强", spark: [20,18,24,21,28,31,35,33,41,44,48,53] },
-  { code: "000905", name: "中证500", flow1d: -8.4, flow5d: -21.5, flow20d: 13.6, share: -0.18, percentile: 27.6, status: "温和流出", spark: [48,45,50,43,38,35,41,33,29,27,25,22] },
-  { code: "000852", name: "中证1000", flow1d: -13.2, flow5d: -32.8, flow20d: -45.6, share: -0.26, percentile: 14.8, status: "流出偏强", spark: [55,52,48,50,43,39,35,29,31,24,20,17] },
-  { code: "932000", name: "中证2000", flow1d: -6.7, flow5d: -18.9, flow20d: -27.4, share: -0.22, percentile: 19.3, status: "持续流出", spark: [46,49,45,40,43,36,31,33,27,24,20,18] },
-  { code: "399006", name: "创业板指", flow1d: 5.9, flow5d: 14.2, flow20d: 38.7, share: 0.15, percentile: 62.1, status: "温和流入", spark: [26,30,28,35,32,39,42,38,45,48,46,52] },
-  { code: "000688", name: "科创50", flow1d: 9.7, flow5d: 22.6, flow20d: 51.2, share: 0.28, percentile: 71.5, status: "流入增强", spark: [18,23,21,28,25,35,39,43,40,51,55,58] },
-  { code: "000698", name: "科创100", flow1d: 3.2, flow5d: 8.6, flow20d: 17.8, share: 0.09, percentile: 54.7, status: "中性", spark: [31,29,34,32,37,35,40,38,42,41,45,44] },
-  { code: "000510", name: "中证A500", flow1d: 21.4, flow5d: 56.3, flow20d: 94.8, share: 0.37, percentile: 82.9, status: "流入偏强", spark: [19,25,23,31,35,33,41,46,49,53,59,62] },
-];
+const fmt = new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 });
+const money = (n: number | null) => n === null ? "—" : `${n >= 0 ? "+" : "−"}${Math.abs(n).toFixed(2)} 亿`;
+const tone = (n: number) => n > 0 ? "up" : n < 0 ? "down" : "flat";
+const fullDate = (iso: string) => new Intl.DateTimeFormat("zh-CN", { year:"numeric", month:"long", day:"numeric", weekday:"short" }).format(new Date(`${iso}T12:00:00+08:00`));
 
-const ETF_DETAIL = [
-  ["510300", "沪深300ETF", "华泰柏瑞", 563.8, 14.6, 26.1],
-  ["510310", "沪深300ETF易方达", "易方达", 311.4, 7.8, 13.9],
-  ["510330", "华夏沪深300ETF", "华夏", 286.9, 5.4, 9.6],
-  ["159919", "沪深300ETF嘉实", "嘉实", 171.2, 3.7, 6.6],
-] as const;
-
-const NAV = ["资金总览", "指数资金", "国家队代理", "资金轮动", "历史分位", "数据与方法"];
-
-function money(n: number) { return `${n >= 0 ? "+" : "−"}${Math.abs(n).toFixed(1)} 亿`; }
-function tone(n: number) { return n > 0 ? "up" : n < 0 ? "down" : "flat"; }
-
-function Sparkline({ values, positive = true }: { values: number[]; positive?: boolean }) {
-  const min = Math.min(...values), max = Math.max(...values);
-  const pts = values.map((v, i) => `${(i / (values.length - 1)) * 100},${29 - ((v - min) / Math.max(1, max - min)) * 24}`).join(" ");
-  return <svg className={`spark ${positive ? "spark-up" : "spark-down"}`} viewBox="0 0 100 32" preserveAspectRatio="none" aria-label="近12日趋势"><polyline points={pts} fill="none" stroke="currentColor" strokeWidth="2" vectorEffect="non-scaling-stroke" /></svg>;
+function Stat({ label, value, note, valueTone="flat" }: {label:string;value:string;note:string;valueTone?:string}) {
+  return <article className="stat"><span>{label}</span><strong className={valueTone}>{value}</strong><small>{note}</small></article>;
 }
 
-function Metric({ label, value, sub, valueTone = "neutral" }: { label: string; value: string; sub: string; valueTone?: "up" | "down" | "neutral" }) {
-  return <article className="metric-card"><div className="metric-label">{label}<span>↗</span></div><div className={`metric-value ${valueTone}`}>{value}</div><div className="metric-sub">{sub}</div></article>;
+function FlowBar({ value, max }: {value:number;max:number}) {
+  const width = Math.max(2, Math.abs(value) / Math.max(max, 0.01) * 48);
+  return <div className="flowbar"><span className={tone(value)} style={value>=0?{left:"50%",width:`${width}%`}:{right:"50%",width:`${width}%`}} /><i /></div>;
 }
 
 export default function Home() {
-  const [active, setActive] = useState("资金总览");
+  const [data, setData] = useState<Snapshot | null>(null);
+  const [error, setError] = useState("");
   const [query, setQuery] = useState("");
-  const [sortKey, setSortKey] = useState<"flow1d" | "flow5d" | "percentile">("flow1d");
+  const [sort, setSort] = useState<"flow1d"|"name"|"shareChangePct">("flow1d");
   const [selected, setSelected] = useState<IndexRow | null>(null);
-  const [period, setPeriod] = useState("20日");
-  const rows = useMemo(() => INDEX_DATA.filter(x => x.name.includes(query) || x.code.includes(query)).sort((a,b) => b[sortKey] - a[sortKey]), [query, sortKey]);
+  const [exporting, setExporting] = useState(false);
+  const reportRef = useRef<HTMLDivElement>(null);
 
-  return <div className="app-shell">
-    <aside className="sidebar">
-      <div className="brand"><div className="brand-mark">E</div><div><strong>ETF资金雷达</strong><small>ETF FLOW RADAR</small></div></div>
-      <nav>{NAV.map((item, i) => <button key={item} className={active === item ? "active" : ""} onClick={() => { setActive(item); document.getElementById(`section-${i}`)?.scrollIntoView({behavior:"smooth"}); }}><span>{["⌂","▤","◎","⇄","◫","i"][i]}</span>{item}</button>)}</nav>
-      <div className="side-foot"><span className="status-dot" /> 数据服务正常<small>研究系统 · v1.0</small></div>
-    </aside>
+  useEffect(() => {
+    (async () => {
+      let lastError: unknown;
+      for (const url of ["/api/snapshot", "/data/latest.json"]) {
+        try {
+          const response = await fetch(url, { cache: "no-store" });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const snapshot = await response.json() as Snapshot;
+          if (snapshot.sourceMode !== "REAL" || snapshot.status === "failed") throw new Error("没有可发布的真实已验证快照");
+          setData(snapshot); return;
+        } catch (error) { lastError = error; }
+      }
+      setError(String(lastError instanceof Error ? lastError.message : lastError));
+    })();
+  }, []);
 
-    <main>
-      <header className="topbar">
-        <div className="crumb">ETF Flow Research <span>/</span> 市场总览</div>
-        <div className="top-actions"><span className="demo">DEMO DATA</span><span className="date">数据日期 2026-08-11 · 18:32</span><button title="数据质量日志">✓ 数据正常</button></div>
+  const indices = useMemo(() => {
+    if (!data) return [];
+    return [...data.indices].filter(x=>x.name.includes(query)||x.code.includes(query)).sort((a,b)=>sort==="name"?a.name.localeCompare(b.name,"zh-CN"):b[sort]-a[sort]);
+  }, [data, query, sort]);
+  const maxFlow = Math.max(...indices.map(x=>Math.abs(x.flow1d)), 1);
+  const totalFlow = data?.indices.reduce((s,x)=>s+x.flow1d,0) ?? 0;
+  const inflow = data?.indices.filter(x=>x.flow1d>0).length ?? 0;
+  const outflow = data?.indices.filter(x=>x.flow1d<0).length ?? 0;
+  const proxyFlow = data?.indices.filter(x=>x.nationalTeamProxy).reduce((s,x)=>s+x.flow1d,0) ?? 0;
+  const large = data?.indices.filter(x=>x.group==="大盘").reduce((s,x)=>s+x.flow1d,0) ?? 0;
+  const small = data?.indices.filter(x=>x.group==="小盘").reduce((s,x)=>s+x.flow1d,0) ?? 0;
+
+  const exportJpg = async () => {
+    const node = reportRef.current; if (!node || !data) return;
+    setExporting(true); node.classList.add("exporting");
+    try {
+      await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+      const { toJpeg } = await import("html-to-image");
+      const url = await toJpeg(node, { quality:.98, pixelRatio:3, backgroundColor:"#f4f5f7", cacheBust:true,
+        filter: el => !(el instanceof HTMLElement && el.dataset.exportHide === "true") });
+      const a=document.createElement("a"); a.href=url; a.download=`资金ETF流动每日跟踪_${data.tradeDate}.jpg`; a.click();
+    } catch (e) { alert(`导出失败：${String(e)}`); }
+    finally { node.classList.remove("exporting"); setExporting(false); }
+  };
+
+  if (error) return <main className="blocked"><b>数据未发布</b><h1>没有通过质量门禁的真实数据</h1><p>{error}</p><small>系统不会回退到 DEMO 或伪造数据。请检查每日采集任务后重试。</small></main>;
+  if (!data) return <main className="blocked"><b>REAL DATA</b><h1>正在读取已验证快照…</h1></main>;
+
+  const leaders = [...data.indices].sort((a,b)=>b.flow1d-a.flow1d);
+  const summary = totalFlow >= 0
+    ? `核心宽基合计估算净流入 ${money(totalFlow)}，${leaders[0]?.name ?? "—"}流入居前；${leaders.at(-1)?.name ?? "—"}资金相对承压。`
+    : `核心宽基合计估算净流出 ${money(totalFlow)}，${leaders.at(-1)?.name ?? "—"}流出居前；${leaders[0]?.name ?? "—"}表现相对较强。`;
+
+  return <div className="site">
+    <nav className="nav"><div className="mark">E</div><div className="nav-title"><strong>资金ETF流动每日跟踪</strong><span>ETF FLOW DAILY TRACKER</span></div><div className="nav-links"><a href="#overview">总览</a><a href="#indices">指数资金</a><a href="#rotation">轮动</a><a href="#quality">数据质量</a></div><button onClick={exportJpg} disabled={exporting} data-export-hide="true">{exporting?"正在生成…":"导出高清 JPG"}</button></nav>
+    <div className="report" ref={reportRef}>
+      <header className="report-head" id="overview">
+        <div><p>A-SHARE ETF CAPITAL FLOW · VERIFIED DAILY SNAPSHOT</p><h1>资金ETF流动每日跟踪</h1></div>
+        <div className="analysis-date"><span>每日分析日期</span><strong>{fullDate(data.tradeDate)}</strong><small>数据生成 {new Date(data.generatedAt).toLocaleString("zh-CN",{hour12:false})}</small></div>
       </header>
 
-      <div className="content">
-        <section id="section-0" className="hero">
-          <div><p className="eyebrow">A-SHARE ETF CAPITAL FLOW RESEARCH</p><h1>资金方向，一目了然。</h1><p className="lead">聚合指数级 ETF 份额变化，识别资金流向、异常强度与历史位置。</p></div>
-          <div className="asof"><span>最近交易日</span><strong>2026.08.11</strong><small>收盘后更新</small></div>
-        </section>
+      <section className="trust-strip"><b><i />真实数据已验证</b><span>全市场 {fmt.format(data.quality.marketEtfCount)} 只 ETF</span><span>同日价格覆盖 {(data.quality.priceCoverage*100).toFixed(2)}%</span><span>同日份额对账 {data.quality.shareReconciliationRate===null?"待行情端同日数据":`${(data.quality.shareReconciliationRate*100).toFixed(2)}%`}</span><span>核心映射 {data.quality.mappedEtfCount} 只</span></section>
 
-        <section className="conclusion">
-          <div className="section-kicker">今日 ETF 资金特征</div>
-          <p>宽基 ETF 整体呈净申购状态，资金主要集中于<span>沪深300</span>、<span>中证A500</span>和<span>上证50</span>方向；大盘相对小盘的资金偏好进一步增强。</p>
-          <div className="conclusion-rule"><b>规则生成</b> 基于指数聚合净流、轮动得分与历史分位，不使用生成式判断</div>
-        </section>
+      <section className="summary"><div><span>规则化市场摘要</span><p>{summary}</p></div><aside><b>{inflow}</b><span>个指数净流入</span><i /> <b>{outflow}</b><span>个指数净流出</span></aside></section>
 
-        <section className="metrics-grid">
-          <Metric label="今日宽基估算净流入" value="+63.3 亿" sub="9个核心指数合计" valueTone="up" />
-          <Metric label="国家队代理活跃度" value="76.8" sub="较20日均值 +18.4%" valueTone="up" />
-          <Metric label="大小盘资金偏好" value="大盘" sub="Rotation Score  +1.42" />
-          <Metric label="ETF资金热度" value="84.6%" sub="近250日历史分位" valueTone="up" />
-        </section>
+      <section className="stats-grid">
+        <Stat label="核心宽基合计净流" value={money(totalFlow)} note={`${data.indices.length} 个核心指数聚合`} valueTone={tone(totalFlow)} />
+        <Stat label="国家队代理 ETF 净流" value={money(proxyFlow)} note="仅为特定宽基代理观察" valueTone={tone(proxyFlow)} />
+        <Stat label="大盘方向净流" value={money(large)} note="上证50 / 沪深300 / A500" valueTone={tone(large)} />
+        <Stat label="小盘方向净流" value={money(small)} note="中证1000 / 中证2000" valueTone={tone(small)} />
+        <Stat label="相对资金偏好" value={large-small>=0?"偏向大盘":"偏向小盘"} note={`大盘−小盘 ${money(large-small)}`} />
+        <Stat label="数据状态" value={data.status==="verified"?"全部通过":"带提示通过"} note={`${data.quality.issues.length} 项质量提示`} />
+      </section>
 
-        <section id="section-1" className="panel flow-panel">
-          <div className="panel-head"><div><p className="section-kicker">CORE INDEX MONITOR</p><h2>核心宽基资金监控</h2></div><div className="controls"><label><span>⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="搜索指数 / 代码" /></label><select value={sortKey} onChange={e=>setSortKey(e.target.value as typeof sortKey)} aria-label="排序方式"><option value="flow1d">今日流入</option><option value="flow5d">5日流入</option><option value="percentile">历史分位</option></select></div></div>
-          <div className="table-wrap"><table><thead><tr><th>指数</th><th>今日 Flow</th><th>5日 Flow</th><th>20日 Flow</th><th>份额变化</th><th>历史分位</th><th>近12日趋势</th><th>资金状态</th></tr></thead><tbody>{rows.map(row => <tr key={row.code} onClick={()=>setSelected(row)}><td><strong>{row.name}</strong><small>{row.code}</small></td><td className={tone(row.flow1d)}>{money(row.flow1d)}</td><td className={tone(row.flow5d)}>{money(row.flow5d)}</td><td className={tone(row.flow20d)}>{money(row.flow20d)}</td><td className={tone(row.share)}>{row.share > 0 ? "+" : ""}{row.share.toFixed(2)}%</td><td><div className="percent"><span style={{width:`${row.percentile}%`}} /><b>{row.percentile.toFixed(1)}%</b></div></td><td><Sparkline values={row.spark} positive={row.flow1d >= 0}/></td><td><span className={`pill ${tone(row.flow1d)}`}>{row.status}</span><button className="row-open" aria-label={`查看${row.name}详情`}>›</button></td></tr>)}</tbody></table></div>
-          <div className="table-note">共 9 个核心指数 · 点击任意指数查看 ETF 构成与贡献度</div>
-        </section>
+      <section className="panel" id="indices">
+        <div className="panel-head"><div><span>CORE INDEX FLOW MONITOR</span><h2>核心指数资金监控</h2></div><div className="filters" data-export-hide="true"><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="搜索指数 / 代码"/><select value={sort} onChange={e=>setSort(e.target.value as typeof sort)}><option value="flow1d">按净流排序</option><option value="shareChangePct">按份额变化</option><option value="name">按指数名称</option></select></div></div>
+        <div className="flow-table"><div className="flow-tr flow-th"><span>指数 / 代码</span><span>方向</span><span>1日净流</span><span>5日累计</span><span>20日累计</span><span>份额变化</span><span>ETF数</span><span>250日位置</span><span>状态</span></div>{indices.map(row=><button className="flow-tr" key={row.code} onClick={()=>setSelected(row)}><span><b>{row.name}</b><small>{row.code} · {row.group}</small></span><FlowBar value={row.flow1d} max={maxFlow}/><strong className={tone(row.flow1d)}>{money(row.flow1d)}</strong><span className={row.flow5d===null?"flat":tone(row.flow5d)}>{money(row.flow5d)}</span><span className={row.flow20d===null?"flat":tone(row.flow20d)}>{money(row.flow20d)}</span><span className={tone(row.shareChangePct)}>{row.shareChangePct>=0?"+":""}{row.shareChangePct.toFixed(3)}%</span><span>{row.etfCount} 只</span><span>{row.percentile===null?"样本积累中":`${row.percentile.toFixed(1)}%`}</span><em>{row.status}</em></button>)}</div>
+        <p className="method-note">估算资金流 =（T日总份额 − 前一交易日总份额）× T日单位净值（缺失时仅使用同日收盘价）。历史样本不足时 5日、20日和250日位置明确留空。</p>
+      </section>
 
-        <section className="two-col">
-          <article id="section-2" className="panel national">
-            <div className="panel-head"><div><p className="section-kicker">NATIONAL TEAM PROXY</p><h2>国家队代理资金</h2></div><span className="info">代理指标 ⓘ</span></div>
-            <div className="activity"><div className="gauge"><div><strong>76.8</strong><span>ACTIVITY</span></div></div><div className="activity-copy"><b>资金活跃度偏强</b><p>核心代理 ETF 连续 4 个交易日出现估算净申购，当前强度处于近一年较高区间。</p><div><span>1D <b className="up">+28.4亿</b></span><span>5D <b className="up">+71.6亿</b></span><span>分位 <b>81.3%</b></span></div></div></div>
-            <div className="mini-bars">{[["沪深300",82],["上证50",68],["中证A500",74],["其他宽基",35]].map(([n,v])=><div key={n as string}><span>{n}</span><i><em style={{width:`${v}%`}}/></i><b>{v}</b></div>)}</div>
-          </article>
+      <section className="split" id="rotation">
+        <article className="panel compact"><div className="panel-head"><div><span>CAPITAL ROTATION</span><h2>资金轮动观察</h2></div></div><div className="rotation-list">{[["大盘",large],["小盘",small],["成长",data.indices.filter(x=>x.group==="成长").reduce((s,x)=>s+x.flow1d,0)],["科技",data.indices.filter(x=>x.group==="科技").reduce((s,x)=>s+x.flow1d,0)]].map(([name,value])=><div key={name as string}><b>{name}</b><FlowBar value={value as number} max={Math.max(Math.abs(large),Math.abs(small),1)}/><strong className={tone(value as number)}>{money(value as number)}</strong></div>)}</div><div className="signal"><span>规则结论</span><b>{large-small>=0?"资金相对偏向大盘":"资金相对偏向小盘"}</b><small>比较同一交易日两组指数的聚合估算净流，不代表未来收益判断。</small></div></article>
+        <article className="panel compact"><div className="panel-head"><div><span>NATIONAL TEAM PROXY</span><h2>国家队代理资金</h2></div></div><div className="proxy-number"><span>代理池当日估算净流</span><strong className={tone(proxyFlow)}>{money(proxyFlow)}</strong><small>{data.indices.filter(x=>x.nationalTeamProxy).map(x=>x.name).join(" · ")}</small></div><p className="proxy-copy">本指标只观察预先定义的核心宽基 ETF 资金行为，不识别、推断或确认真实投资主体身份。</p></article>
+      </section>
 
-          <article id="section-3" className="panel rotation">
-            <div className="panel-head"><div><p className="section-kicker">CAPITAL ROTATION</p><h2>资金轮动</h2></div><select aria-label="轮动周期"><option>近20日</option><option>近60日</option></select></div>
-            <div className="quadrant"><span className="axis-y">资金动量</span><span className="axis-x">资金强度</span><i className="q1">流入增强</i><i className="q2">流入减弱</i><i className="q3">流出增强</i><i className="q4">流出收敛</i><button className="bubble b1">大盘</button><button className="bubble b2">科技</button><button className="bubble b3">成长</button><button className="bubble b4">小盘</button><button className="bubble b5">红利</button></div>
-            <div className="rotation-legend"><span><i className="red"/>大盘相对占优</span><span><i className="green"/>小盘资金承压</span><b>大小盘得分 +1.42</b></div>
-          </article>
-        </section>
+      <section className="panel" id="quality"><div className="panel-head"><div><span>DATA QUALITY & LINEAGE</span><h2>数据源与质量状态</h2></div><b className="verified">✓ {data.status.toUpperCase()}</b></div><div className="source-grid">{data.sources.map(x=><article key={x.name}><b>{x.name}</b><span>{x.role}</span><p>{x.field}</p></article>)}</div><div className="quality-grid"><span><b>日期锁定</b> 份额与价格必须属于 {data.tradeDate}</span><span><b>完整性</b> 同日参考价格覆盖≥95%</span><span><b>交易日</b> T−1 为 {data.previousTradeDate}</span><span><b>失败策略</b> 不覆盖上一已验证快照</span></div>{data.quality.issues.length>0&&<div className="quality-issues">{data.quality.issues.map(x=><span key={x.check}>{x.message}</span>)}</div>}</section>
 
-        <section id="section-4" className="panel history">
-          <div className="panel-head"><div><p className="section-kicker">HISTORICAL POSITION</p><h2>历史资金位置</h2></div><div className="segmented">{["5日","20日","60日"].map(x=><button key={x} className={period===x?"active":""} onClick={()=>setPeriod(x)}>{x}</button>)}</div></div>
-          <div className="heat-head"><span>指数</span><span>流出极值</span><span>中性区间</span><span>流入极值</span><span>{period}分位</span><span>Z-Score</span></div>
-          {INDEX_DATA.slice(0,7).map(r=><div className="heat-row" key={r.code}><b>{r.name}</b><div className="heat-track"><i style={{left:`${r.percentile}%`}}/><span style={{width:`${r.percentile}%`}}/></div><strong>{r.percentile.toFixed(1)}%</strong><em className={tone(r.flow20d)}>{(r.flow20d/38).toFixed(2)}</em></div>)}
-        </section>
+      <footer><b>资金ETF流动每日跟踪</b><p>数据来源：上海证券交易所、深圳证券交易所、东方财富公开数据，由 AKShare 1.18.84 统一采集。本报告仅用于市场研究与信息展示，不构成投资建议。ETF资金流为份额变化乘以同日参考价格的估算值。</p><span>分析日期 {data.tradeDate}</span></footer>
+    </div>
 
-        <section id="section-5" className="method">
-          <div><p className="section-kicker">METHODOLOGY</p><h2>数据与方法</h2><p>本系统观察 ETF 份额变化而非单纯规模变化。同一指数下的主要 ETF 按指数映射聚合，提供指数级与基金级两种研究层级。</p></div>
-          <div className="formula"><span>估算资金流<sub>t</sub></span><b>=</b><strong>( 份额<sub>t</sub> − 份额<sub>t−1</sub> ) × 参考价格<sub>t</sub></strong><small>参考价格优先采用当日净值；不可得时使用当日收盘价。</small></div>
-        </section>
-      </div>
-      <footer><div><strong>ETF资金雷达</strong><span>ETF FLOW RESEARCH SYSTEM</span></div><p>本平台数据及指标仅用于市场研究与信息展示，不构成任何投资建议。ETF资金流为根据基金份额变化及相关市场数据计算的估算结果。国家队代理资金指标仅用于观察特定宽基ETF的资金行为，不代表对实际投资主体身份的确认。</p></footer>
-    </main>
-
-    {selected && <div className="drawer-backdrop"><button className="backdrop-close" aria-label="关闭指数详情" onClick={()=>setSelected(null)} /><aside className="drawer"><button className="close" onClick={()=>setSelected(null)}>×</button><p className="section-kicker">INDEX DETAIL · {selected.code}</p><h2>{selected.name} ETF 资金监测</h2><div className="drawer-metrics"><Metric label="今日估算净流" value={money(selected.flow1d)} sub="指数级聚合" valueTone={selected.flow1d>0?"up":"down"}/><Metric label="20日估算净流" value={money(selected.flow20d)} sub="滚动累计" valueTone={selected.flow20d>0?"up":"down"}/></div><h3>ETF 构成与贡献</h3><table><thead><tr><th>基金</th><th>公司</th><th>份额(亿)</th><th>Flow</th><th>贡献</th></tr></thead><tbody>{ETF_DETAIL.map(x=><tr key={x[0]}><td><b>{x[1]}</b><small>{x[0]}</small></td><td>{x[2]}</td><td>{x[3]}</td><td className="up">+{x[4]}亿</td><td>{x[5]}%</td></tr>)}</tbody></table><div className="drawer-chart"><span>近60日指数聚合资金趋势</span><Sparkline values={[18,20,17,25,29,27,35,32,40,46,43,51,57,54,62,68]} /></div><div className="demo-note">DEMO DATA · 当前页面用于验证产品结构与交互，未接入生产数据源。</div></aside></div>}
+    {selected && <div className="drawer-bg"><button aria-label="关闭详情" onClick={()=>setSelected(null)}/><aside className="drawer"><button className="drawer-x" onClick={()=>setSelected(null)}>×</button><span>INDEX DETAIL · {selected.code}</span><h2>{selected.name}</h2><div className="drawer-stats"><Stat label="当日估算净流" value={money(selected.flow1d)} note={`${selected.etfCount} 只ETF聚合`} valueTone={tone(selected.flow1d)}/><Stat label="份额变化中位数" value={`${selected.shareChangePct>=0?"+":""}${selected.shareChangePct.toFixed(3)}%`} note="指数内ETF中位数" valueTone={tone(selected.shareChangePct)}/></div><h3>ETF 贡献明细</h3><div className="etf-list">{data.etfs.filter(x=>x.indexCode===selected.code).sort((a,b)=>Math.abs(b.estimatedFlow)-Math.abs(a.estimatedFlow)).map(x=><div key={x.code}><span><b>{x.name}</b><small>{x.code} · {x.exchange} · {x.referencePriceType}</small></span><span>份额 {fmt.format(x.shares/1e8)}亿</span><span>{x.shareChangePct>=0?"+":""}{x.shareChangePct.toFixed(3)}%</span><strong className={tone(x.estimatedFlow)}>{money(x.estimatedFlow/1e8)}</strong></div>)}</div><p>价格口径：同日单位净值优先、同日收盘价回退；份额口径：交易所日终总份额。</p></aside></div>}
   </div>;
 }

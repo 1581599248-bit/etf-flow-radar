@@ -1,0 +1,48 @@
+name: Daily ETF data
+
+on:
+  schedule:
+    - cron: "15 1 * * 1-5" # 09:15 Asia/Shanghai; exchanges publish T-1 data around 08:30
+  workflow_dispatch:
+    inputs:
+      trade_date:
+        description: "Optional trade date (YYYY-MM-DD)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-etf-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: data_pipeline/requirements.txt
+      - run: pip install -r data_pipeline/requirements.txt
+      - name: Run deterministic pipeline tests
+        run: python -m unittest discover -s data_pipeline -p "test_*.py"
+      - name: Build verified snapshot
+        run: |
+          if [ -n "${{ inputs.trade_date }}" ]; then
+            python data_pipeline/update_daily.py --date "${{ inputs.trade_date }}"
+          else
+            python data_pipeline/update_daily.py
+          fi
+      - name: Commit only a verified change
+        run: |
+          git config user.name "etf-flow-radar-bot"
+          git config user.email "etf-flow-radar-bot@users.noreply.github.com"
+          git add public/data
+          git diff --cached --quiet && exit 0
+          git commit -m "data: update verified ETF snapshot"
+          git push
