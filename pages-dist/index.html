@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="基于交易所真实ETF份额与同日单位净值的每日资金流动跟踪。">
+  <title>资金ETF流动每日跟踪｜真实数据日报</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app" class="site"><main class="blocked"><b>REAL DATA</b><h1>正在读取已验证快照…</h1></main></div>
+  <script src="html-to-image.js"></script>
+  <script>
+  const fmt = new Intl.NumberFormat("zh-CN",{maximumFractionDigits:2});
+  const money=n=>n==null?"—":`${n>=0?"+":"−"}${Math.abs(n).toFixed(2)} 亿`;
+  const tone=n=>n>0?"up":n<0?"down":"flat";
+  const fullDate=iso=>new Intl.DateTimeFormat("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"short"}).format(new Date(`${iso}T12:00:00+08:00`));
+  const bar=(value,max)=>`<div class="flowbar"><span class="${tone(value)}" style="${value>=0?"left":"right"}:50%;width:${Math.max(2,Math.abs(value)/Math.max(max,.01)*48)}%"></span><i></i></div>`;
+  const stat=(label,value,note,valueTone="flat")=>`<article class="stat"><span>${label}</span><strong class="${valueTone}">${value}</strong><small>${note}</small></article>`;
+  const escapeHtml=value=>String(value).replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
+
+  async function load(){
+    try{
+      const response=await fetch(`data/latest.json?t=${Date.now()}`,{cache:"no-store"});
+      if(!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data=await response.json();
+      if(data.sourceMode!=="REAL"||data.status==="failed") throw new Error("没有可发布的真实已验证快照");
+      render(data);
+    }catch(error){document.getElementById("app").innerHTML=`<main class="blocked"><b>数据未发布</b><h1>没有通过质量门禁的真实数据</h1><p>${escapeHtml(error.message||error)}</p><small>系统不会回退到模拟数据。</small></main>`}
+  }
+
+  function render(data){
+    const indices=[...data.indices].sort((a,b)=>b.flow1d-a.flow1d);
+    const maxFlow=Math.max(...indices.map(x=>Math.abs(x.flow1d)),1);
+    const total=indices.reduce((s,x)=>s+x.flow1d,0);
+    const proxy=indices.filter(x=>x.nationalTeamProxy).reduce((s,x)=>s+x.flow1d,0);
+    const large=indices.filter(x=>x.group==="大盘").reduce((s,x)=>s+x.flow1d,0);
+    const small=indices.filter(x=>x.group==="小盘").reduce((s,x)=>s+x.flow1d,0);
+    const growth=indices.filter(x=>x.group==="成长").reduce((s,x)=>s+x.flow1d,0);
+    const tech=indices.filter(x=>x.group==="科技").reduce((s,x)=>s+x.flow1d,0);
+    const inflow=indices.filter(x=>x.flow1d>0).length;
+    const outflow=indices.filter(x=>x.flow1d<0).length;
+    const summary=total>=0?`核心宽基合计估算净流入 ${money(total)}，${indices[0]?.name||"—"}流入居前；${indices.at(-1)?.name||"—"}资金相对承压。`:`核心宽基合计估算净流出 ${money(total)}，${indices.at(-1)?.name||"—"}流出居前；${indices[0]?.name||"—"}表现相对较强。`;
+    document.getElementById("app").innerHTML=`
+      <nav class="nav"><div class="mark">E</div><div class="nav-title"><strong>资金ETF流动每日跟踪</strong><span>ETF FLOW DAILY TRACKER</span></div><div class="nav-links"><a href="#overview">总览</a><a href="#indices">指数资金</a><a href="#rotation">轮动</a><a href="#quality">数据质量</a></div><button id="export" data-export-hide="true">导出高清 JPG</button></nav>
+      <div class="report" id="report"><header class="report-head" id="overview"><div><p>A-SHARE ETF CAPITAL FLOW · VERIFIED DAILY SNAPSHOT</p><h1>资金ETF流动每日跟踪</h1></div><div class="analysis-date"><span>每日分析日期</span><strong>${fullDate(data.tradeDate)}</strong><small>数据生成 ${new Date(data.generatedAt).toLocaleString("zh-CN",{hour12:false})}</small></div></header>
+      <section class="trust-strip"><b><i></i>真实数据已验证</b><span>全市场 ${fmt.format(data.quality.marketEtfCount)} 只 ETF</span><span>同日价格覆盖 ${(data.quality.priceCoverage*100).toFixed(2)}%</span><span>同日份额对账 ${data.quality.shareReconciliationRate==null?"待行情端同日数据":`${(data.quality.shareReconciliationRate*100).toFixed(2)}%`}</span><span>核心映射 ${data.quality.mappedEtfCount} 只</span></section>
+      <section class="summary"><div><span>规则化市场摘要</span><p>${summary}</p></div><aside><b>${inflow}</b><span>个指数净流入</span><i></i><b>${outflow}</b><span>个指数净流出</span></aside></section>
+      <section class="stats-grid">${stat("核心宽基合计净流",money(total),`${indices.length} 个核心指数聚合`,tone(total))}${stat("国家队代理 ETF 净流",money(proxy),"仅为特定宽基代理观察",tone(proxy))}${stat("大盘方向净流",money(large),"上证50 / 沪深300 / A500",tone(large))}${stat("小盘方向净流",money(small),"中证1000 / 中证2000",tone(small))}${stat("相对资金偏好",large-small>=0?"偏向大盘":"偏向小盘",`大盘−小盘 ${money(large-small)}`)}${stat("数据状态",data.status==="verified"?"全部通过":"带提示通过",`${data.quality.issues.length} 项质量提示`)}</section>
+      <section class="panel" id="indices"><div class="panel-head"><div><span>CORE INDEX FLOW MONITOR</span><h2>核心指数资金监控</h2></div></div><div class="flow-table"><div class="flow-tr flow-th"><span>指数 / 代码</span><span>方向</span><span>1日净流</span><span>5日累计</span><span>20日累计</span><span>份额变化</span><span>ETF数</span><span>250日位置</span><span>状态</span></div>${indices.map(r=>`<div class="flow-tr"><span><b>${r.name}</b><small>${r.code} · ${r.group}</small></span>${bar(r.flow1d,maxFlow)}<strong class="${tone(r.flow1d)}">${money(r.flow1d)}</strong><span class="${r.flow5d==null?"flat":tone(r.flow5d)}">${money(r.flow5d)}</span><span class="${r.flow20d==null?"flat":tone(r.flow20d)}">${money(r.flow20d)}</span><span class="${tone(r.shareChangePct)}">${r.shareChangePct>=0?"+":""}${r.shareChangePct.toFixed(3)}%</span><span>${r.etfCount} 只</span><span>${r.percentile==null?"样本积累中":`${r.percentile.toFixed(1)}%`}</span><em>${r.status}</em></div>`).join("")}</div><p class="method-note">估算资金流 =（T日总份额 − 前一交易日总份额）× T日单位净值（缺失时仅使用同日收盘价）。历史样本不足时明确留空。</p></section>
+      <section class="split" id="rotation"><article class="panel compact"><div class="panel-head"><div><span>CAPITAL ROTATION</span><h2>资金轮动观察</h2></div></div><div class="rotation-list">${[["大盘",large],["小盘",small],["成长",growth],["科技",tech]].map(([n,v])=>`<div><b>${n}</b>${bar(v,Math.max(Math.abs(large),Math.abs(small),1))}<strong class="${tone(v)}">${money(v)}</strong></div>`).join("")}</div><div class="signal"><span>规则结论</span><b>${large-small>=0?"资金相对偏向大盘":"资金相对偏向小盘"}</b><small>比较同一交易日两组指数的聚合估算净流，不代表未来收益判断。</small></div></article><article class="panel compact"><div class="panel-head"><div><span>NATIONAL TEAM PROXY</span><h2>国家队代理资金</h2></div></div><div class="proxy-number"><span>代理池当日估算净流</span><strong class="${tone(proxy)}">${money(proxy)}</strong><small>${indices.filter(x=>x.nationalTeamProxy).map(x=>x.name).join(" · ")}</small></div><p class="proxy-copy">本指标只观察预先定义的核心宽基 ETF，不识别、推断或确认真实投资主体身份。</p></article></section>
+      <section class="panel" id="quality"><div class="panel-head"><div><span>DATA QUALITY & LINEAGE</span><h2>数据源与质量状态</h2></div><b class="verified">✓ ${data.status.toUpperCase()}</b></div><div class="source-grid">${data.sources.map(x=>`<article><b>${x.name}</b><span>${x.role}</span><p>${x.field}</p></article>`).join("")}</div><div class="quality-grid"><span><b>日期锁定</b> 份额与价格必须属于 ${data.tradeDate}</span><span><b>完整性</b> 同日参考价格覆盖≥95%</span><span><b>交易日</b> T−1 为 ${data.previousTradeDate}</span><span><b>失败策略</b> 不覆盖上一快照</span></div>${data.quality.issues.length?`<div class="quality-issues">${data.quality.issues.map(x=>`<span>${x.message}</span>`).join("")}</div>`:""}</section>
+      <footer><b>资金ETF流动每日跟踪</b><p>数据来源：上海证券交易所、深圳证券交易所、东方财富公开数据，由 AKShare 1.18.84 统一采集。本报告仅用于市场研究与信息展示，不构成投资建议。</p><span>分析日期 ${data.tradeDate}</span></footer></div>`;
+    document.getElementById("export").onclick=()=>exportJpg(data.tradeDate);
+  }
+
+  async function exportJpg(day){
+    const report=document.getElementById("report"),button=document.getElementById("export");
+    button.textContent="正在生成…";button.disabled=true;report.classList.add("exporting");
+    try{await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));const url=await htmlToImage.toJpeg(report,{quality:.98,pixelRatio:3,backgroundColor:"#f4f5f7",cacheBust:true,filter:el=>!(el instanceof HTMLElement&&el.dataset.exportHide==="true")});const a=document.createElement("a");a.href=url;a.download=`资金ETF流动每日跟踪_${day}.jpg`;a.click()}catch(error){alert(`导出失败：${error}`)}finally{report.classList.remove("exporting");button.textContent="导出高清 JPG";button.disabled=false}
+  }
+  load();
+  </script>
+</body>
+</html>
