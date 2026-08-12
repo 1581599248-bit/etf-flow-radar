@@ -20,7 +20,7 @@ import akshare as ak
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-PUBLIC = ROOT / "public" / "data"
+PUBLIC = ROOT / "site" / "data"
 MAPPING = json.loads((Path(__file__).parent / "index_mapping.json").read_text("utf-8"))
 STYLE_VARIANT_PATTERN = re.compile(r"增强|指增|价值|成长|红利|红低|等权", re.IGNORECASE)
 
