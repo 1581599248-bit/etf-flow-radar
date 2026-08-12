@@ -42,7 +42,7 @@ jobs:
         run: |
           git config user.name "etf-flow-radar-bot"
           git config user.email "etf-flow-radar-bot@users.noreply.github.com"
-          git add public/data
+          git add site/data
           git diff --cached --quiet && exit 0
           git commit -m "data: update verified ETF snapshot"
           git push

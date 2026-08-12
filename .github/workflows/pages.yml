@@ -31,12 +31,12 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Build the exact static dashboard used by GitHub Pages and Render
-        run: npm run pages:build
+      - name: Build the static dashboard used by GitHub Pages and Render
+        run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: pages-dist
+          path: dist
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
