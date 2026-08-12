@@ -1,16 +1,16 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "status": "verified",
   "tradeDate": "2026-08-11",
   "previousTradeDate": "2026-08-10",
-  "generatedAt": "2026-08-12T23:41:11+08:00",
+  "generatedAt": "2026-08-13T01:01:41+08:00",
   "sourceMode": "REAL",
   "quality": {
     "marketEtfCount": 1602,
     "previousShareCoverage": 0.9994,
     "priceCoverage": 0.9975,
     "shareReconciliationRate": null,
-    "mappedEtfCount": 121,
+    "mappedEtfCount": 98,
     "issues": [
       {
         "severity": "info",
@@ -46,28 +46,50 @@
       "flow20d": null,
       "shareChangePct": 0.0,
       "etfCount": 3,
+      "aum": 220.58,
+      "flowIntensityBps": 506.9,
+      "breadthScore": 33.3,
+      "inflowEtfCount": 1,
+      "outflowEtfCount": 0,
+      "unchangedEtfCount": 2,
+      "dominantEtf": {
+        "code": "510050",
+        "name": "50ETF",
+        "flow1d": 11.18,
+        "grossContributionPct": 100.0
+      },
       "percentile": null,
       "status": "样本积累中",
       "spark": [
         11.18
-      ],
-      "nationalTeamProxy": true
+      ]
     },
     {
       "code": "000510",
       "name": "中证A500",
       "group": "大盘",
-      "flow1d": 10.04,
+      "flow1d": 10.08,
       "flow5d": null,
       "flow20d": null,
       "shareChangePct": 0.0,
-      "etfCount": 43,
+      "etfCount": 35,
+      "aum": 2248.75,
+      "flowIntensityBps": 44.8,
+      "breadthScore": -20.0,
+      "inflowEtfCount": 10,
+      "outflowEtfCount": 17,
+      "unchangedEtfCount": 8,
+      "dominantEtf": {
+        "code": "159352",
+        "name": "A500ETF南方",
+        "flow1d": 3.4,
+        "grossContributionPct": 26.0
+      },
       "percentile": null,
       "status": "样本积累中",
       "spark": [
-        10.04
-      ],
-      "nationalTeamProxy": true
+        10.08
+      ]
     },
     {
       "code": "000698",
@@ -78,28 +100,50 @@
       "flow20d": null,
       "shareChangePct": 0.0,
       "etfCount": 7,
+      "aum": 123.47,
+      "flowIntensityBps": 30.0,
+      "breadthScore": -28.6,
+      "inflowEtfCount": 1,
+      "outflowEtfCount": 3,
+      "unchangedEtfCount": 3,
+      "dominantEtf": {
+        "code": "588220",
+        "name": "科创100F",
+        "flow1d": 0.88,
+        "grossContributionPct": 63.3
+      },
       "percentile": null,
       "status": "样本积累中",
       "spark": [
         0.37
-      ],
-      "nationalTeamProxy": false
+      ]
     },
     {
       "code": "000300",
       "name": "沪深300",
       "group": "大盘",
-      "flow1d": -2.8,
+      "flow1d": -2.78,
       "flow5d": null,
       "flow20d": null,
-      "shareChangePct": -0.115,
-      "etfCount": 14,
+      "shareChangePct": -0.298,
+      "etfCount": 10,
+      "aum": 2027.37,
+      "flowIntensityBps": -13.7,
+      "breadthScore": -50.0,
+      "inflowEtfCount": 2,
+      "outflowEtfCount": 7,
+      "unchangedEtfCount": 1,
+      "dominantEtf": {
+        "code": "510300",
+        "name": "300ETF",
+        "flow1d": -1.74,
+        "grossContributionPct": 50.0
+      },
       "percentile": null,
       "status": "样本积累中",
       "spark": [
-        -2.8
-      ],
-      "nationalTeamProxy": true
+        -2.78
+      ]
     },
     {
       "code": "000688",
@@ -110,60 +154,104 @@
       "flow20d": null,
       "shareChangePct": 0.0,
       "etfCount": 7,
+      "aum": 1365.99,
+      "flowIntensityBps": -25.6,
+      "breadthScore": 0.0,
+      "inflowEtfCount": 3,
+      "outflowEtfCount": 3,
+      "unchangedEtfCount": 1,
+      "dominantEtf": {
+        "code": "588000",
+        "name": "科创50",
+        "flow1d": -3.79,
+        "grossContributionPct": 87.4
+      },
       "percentile": null,
       "status": "样本积累中",
       "spark": [
         -3.5
-      ],
-      "nationalTeamProxy": false
+      ]
     },
     {
       "code": "932000",
       "name": "中证2000",
       "group": "小盘",
-      "flow1d": -5.05,
+      "flow1d": -5.35,
       "flow5d": null,
       "flow20d": null,
       "shareChangePct": 0.0,
-      "etfCount": 11,
+      "etfCount": 7,
+      "aum": 96.3,
+      "flowIntensityBps": -555.6,
+      "breadthScore": -42.9,
+      "inflowEtfCount": 0,
+      "outflowEtfCount": 3,
+      "unchangedEtfCount": 4,
+      "dominantEtf": {
+        "code": "563300",
+        "name": "中证2000",
+        "flow1d": -4.91,
+        "grossContributionPct": 91.9
+      },
       "percentile": null,
       "status": "样本积累中",
       "spark": [
-        -5.05
-      ],
-      "nationalTeamProxy": false
+        -5.35
+      ]
     },
     {
       "code": "000905",
       "name": "中证500",
       "group": "中盘",
-      "flow1d": -5.63,
+      "flow1d": -5.56,
       "flow5d": null,
       "flow20d": null,
       "shareChangePct": -0.106,
-      "etfCount": 14,
+      "etfCount": 10,
+      "aum": 638.32,
+      "flowIntensityBps": -87.1,
+      "breadthScore": -50.0,
+      "inflowEtfCount": 0,
+      "outflowEtfCount": 5,
+      "unchangedEtfCount": 5,
+      "dominantEtf": {
+        "code": "510500",
+        "name": "500ETF",
+        "flow1d": -3.74,
+        "grossContributionPct": 67.2
+      },
       "percentile": null,
       "status": "样本积累中",
       "spark": [
-        -5.63
-      ],
-      "nationalTeamProxy": false
+        -5.56
+      ]
     },
     {
       "code": "000852",
       "name": "中证1000",
       "group": "小盘",
-      "flow1d": -14.71,
+      "flow1d": -14.53,
       "flow5d": null,
       "flow20d": null,
-      "shareChangePct": -1.821,
-      "etfCount": 8,
+      "shareChangePct": -2.865,
+      "etfCount": 5,
+      "aum": 412.31,
+      "flowIntensityBps": -352.4,
+      "breadthScore": -40.0,
+      "inflowEtfCount": 1,
+      "outflowEtfCount": 3,
+      "unchangedEtfCount": 1,
+      "dominantEtf": {
+        "code": "512100",
+        "name": "1000ETF",
+        "flow1d": -7.18,
+        "grossContributionPct": 49.0
+      },
       "percentile": null,
       "status": "样本积累中",
       "spark": [
-        -14.71
-      ],
-      "nationalTeamProxy": false
+        -14.53
+      ]
     },
     {
       "code": "399006",
@@ -174,12 +262,23 @@
       "flow20d": null,
       "shareChangePct": -0.174,
       "etfCount": 14,
+      "aum": 957.56,
+      "flowIntensityBps": -174.9,
+      "breadthScore": -42.9,
+      "inflowEtfCount": 2,
+      "outflowEtfCount": 8,
+      "unchangedEtfCount": 4,
+      "dominantEtf": {
+        "code": "159915",
+        "name": "创业板ETF易方达",
+        "flow1d": -14.52,
+        "grossContributionPct": 84.4
+      },
       "percentile": null,
       "status": "样本积累中",
       "spark": [
         -16.75
-      ],
-      "nationalTeamProxy": false
+      ]
     }
   ],
   "etfs": [
@@ -589,21 +688,6 @@
       "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
     },
     {
-      "code": "159552",
-      "name": "中证2000增强ETF招商",
-      "exchange": "SZSE",
-      "indexCode": "932000",
-      "indexName": "中证2000",
-      "group": "小盘",
-      "shares": 669290319.0,
-      "previousShares": 655790319.0,
-      "shareChangePct": 2.0586,
-      "referencePrice": 2.2255,
-      "referencePriceType": "NAV",
-      "estimatedFlow": 30044250.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
       "code": "563880",
       "name": "A500添富",
       "exchange": "SSE",
@@ -751,21 +835,6 @@
       "referencePrice": 1.3338,
       "referencePriceType": "NAV",
       "estimatedFlow": -16005600.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
-      "code": "159680",
-      "name": "中证1000增强ETF招商",
-      "exchange": "SZSE",
-      "indexCode": "000852",
-      "indexName": "中证1000",
-      "group": "小盘",
-      "shares": 1149438087.0,
-      "previousShares": 1158438087.0,
-      "shareChangePct": -0.7769,
-      "referencePrice": 1.6635,
-      "referencePriceType": "NAV",
-      "estimatedFlow": -14971500.0,
       "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
     },
     {
@@ -1039,21 +1108,6 @@
       "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
     },
     {
-      "code": "159606",
-      "name": "中证500成长ETF易方达",
-      "exchange": "SZSE",
-      "indexCode": "000905",
-      "indexName": "中证500",
-      "group": "中盘",
-      "shares": 389222838.0,
-      "previousShares": 392222838.0,
-      "shareChangePct": -0.7649,
-      "referencePrice": 1.3706,
-      "referencePriceType": "NAV",
-      "estimatedFlow": -4111800.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
       "code": "560570",
       "name": "A500低波",
       "exchange": "SSE",
@@ -1144,21 +1198,6 @@
       "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
     },
     {
-      "code": "159226",
-      "name": "中证A500增强ETF国泰",
-      "exchange": "SZSE",
-      "indexCode": "000510",
-      "indexName": "中证A500",
-      "group": "大盘",
-      "shares": 108094840.0,
-      "previousShares": 111094840.0,
-      "shareChangePct": -2.7004,
-      "referencePrice": 1.2937,
-      "referencePriceType": "NAV",
-      "estimatedFlow": -3881100.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
       "code": "561090",
       "name": "A500增",
       "exchange": "SSE",
@@ -1219,21 +1258,6 @@
       "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
     },
     {
-      "code": "159679",
-      "name": "中证1000增强ETF国泰",
-      "exchange": "SZSE",
-      "indexCode": "000852",
-      "indexName": "中证1000",
-      "group": "小盘",
-      "shares": 55289156.0,
-      "previousShares": 58089156.0,
-      "shareChangePct": -4.8202,
-      "referencePrice": 1.279,
-      "referencePriceType": "NAV",
-      "estimatedFlow": -3581200.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
       "code": "159908",
       "name": "创业板ETF博时",
       "exchange": "SZSE",
@@ -1279,21 +1303,6 @@
       "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
     },
     {
-      "code": "159610",
-      "name": "中证500增强ETF景顺",
-      "exchange": "SZSE",
-      "indexCode": "000905",
-      "indexName": "中证500",
-      "group": "中盘",
-      "shares": 165568207.0,
-      "previousShares": 167568207.0,
-      "shareChangePct": -1.1935,
-      "referencePrice": 1.2793,
-      "referencePriceType": "NAV",
-      "estimatedFlow": -2558600.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
       "code": "159971",
       "name": "创业板ETF富国",
       "exchange": "SZSE",
@@ -1306,51 +1315,6 @@
       "referencePrice": 1.2407,
       "referencePriceType": "NAV",
       "estimatedFlow": -2481400.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
-      "code": "159296",
-      "name": "A500红利低波ETF华宝",
-      "exchange": "SZSE",
-      "indexCode": "000510",
-      "indexName": "中证A500",
-      "group": "大盘",
-      "shares": 46042941.0,
-      "previousShares": 48042941.0,
-      "shareChangePct": -4.1629,
-      "referencePrice": 1.0079,
-      "referencePriceType": "NAV",
-      "estimatedFlow": -2015800.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
-      "code": "563510",
-      "name": "A500红利",
-      "exchange": "SSE",
-      "indexCode": "000510",
-      "indexName": "中证A500",
-      "group": "大盘",
-      "shares": 317537000.0,
-      "previousShares": 315537000.0,
-      "shareChangePct": 0.6338,
-      "referencePrice": 1.0029,
-      "referencePriceType": "NAV",
-      "estimatedFlow": 2005800.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
-      "code": "159523",
-      "name": "沪深300成长ETF华夏",
-      "exchange": "SZSE",
-      "indexCode": "000300",
-      "indexName": "沪深300",
-      "group": "大盘",
-      "shares": 74517348.0,
-      "previousShares": 75517348.0,
-      "shareChangePct": -1.3242,
-      "referencePrice": 1.2944,
-      "referencePriceType": "NAV",
-      "estimatedFlow": -1294400.0,
       "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
     },
     {
@@ -1474,51 +1438,6 @@
       "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
     },
     {
-      "code": "561680",
-      "name": "A500红低",
-      "exchange": "SSE",
-      "indexCode": "000510",
-      "indexName": "中证A500",
-      "group": "大盘",
-      "shares": 61169000.0,
-      "previousShares": 61169000.0,
-      "shareChangePct": 0.0,
-      "referencePrice": 0.9962,
-      "referencePriceType": "NAV",
-      "estimatedFlow": 0.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
-      "code": "563600",
-      "name": "A500增强",
-      "exchange": "SSE",
-      "indexCode": "000510",
-      "indexName": "中证A500",
-      "group": "大盘",
-      "shares": 72483000.0,
-      "previousShares": 72483000.0,
-      "shareChangePct": 0.0,
-      "referencePrice": 1.0572,
-      "referencePriceType": "NAV",
-      "estimatedFlow": 0.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
-      "code": "563630",
-      "name": "A500指增",
-      "exchange": "SSE",
-      "indexCode": "000510",
-      "indexName": "中证A500",
-      "group": "大盘",
-      "shares": 43947100.0,
-      "previousShares": 43947100.0,
-      "shareChangePct": 0.0,
-      "referencePrice": 1.2945,
-      "referencePriceType": "NAV",
-      "estimatedFlow": 0.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
       "code": "563660",
       "name": "A500银河",
       "exchange": "SSE",
@@ -1589,51 +1508,6 @@
       "previousShares": 27516600.0,
       "shareChangePct": 0.0,
       "referencePrice": 1.1326,
-      "referencePriceType": "NAV",
-      "estimatedFlow": 0.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
-      "code": "159238",
-      "name": "沪深300增强ETF景顺",
-      "exchange": "SZSE",
-      "indexCode": "000300",
-      "indexName": "沪深300",
-      "group": "大盘",
-      "shares": 61016186.0,
-      "previousShares": 61016186.0,
-      "shareChangePct": 0.0,
-      "referencePrice": 1.319,
-      "referencePriceType": "NAV",
-      "estimatedFlow": 0.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
-      "code": "159240",
-      "name": "A500增强ETF天弘",
-      "exchange": "SZSE",
-      "indexCode": "000510",
-      "indexName": "中证A500",
-      "group": "大盘",
-      "shares": 20619776.0,
-      "previousShares": 20619776.0,
-      "shareChangePct": 0.0,
-      "referencePrice": 1.3175,
-      "referencePriceType": "NAV",
-      "estimatedFlow": 0.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
-      "code": "159249",
-      "name": "A500增强ETF工银",
-      "exchange": "SZSE",
-      "indexCode": "000510",
-      "indexName": "中证A500",
-      "group": "大盘",
-      "shares": 105191923.0,
-      "previousShares": 105191923.0,
-      "shareChangePct": 0.0,
-      "referencePrice": 1.3876,
       "referencePriceType": "NAV",
       "estimatedFlow": 0.0,
       "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
@@ -1729,21 +1603,6 @@
       "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
     },
     {
-      "code": "159510",
-      "name": "沪深300价值ETF华夏",
-      "exchange": "SZSE",
-      "indexCode": "000300",
-      "indexName": "沪深300",
-      "group": "大盘",
-      "shares": 69128342.0,
-      "previousShares": 69128342.0,
-      "shareChangePct": 0.0,
-      "referencePrice": 1.265,
-      "referencePriceType": "NAV",
-      "estimatedFlow": 0.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
       "code": "159532",
       "name": "中证2000ETF易方达",
       "exchange": "SZSE",
@@ -1784,111 +1643,6 @@
       "previousShares": 57261589.0,
       "shareChangePct": 0.0,
       "referencePrice": 1.3786,
-      "referencePriceType": "NAV",
-      "estimatedFlow": 0.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
-      "code": "159553",
-      "name": "中证2000增强ETF海富通",
-      "exchange": "SZSE",
-      "indexCode": "932000",
-      "indexName": "中证2000",
-      "group": "小盘",
-      "shares": 16326751.0,
-      "previousShares": 16326751.0,
-      "shareChangePct": 0.0,
-      "referencePrice": 1.8155,
-      "referencePriceType": "NAV",
-      "estimatedFlow": 0.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
-      "code": "159555",
-      "name": "中证2000增强ETF银华",
-      "exchange": "SZSE",
-      "indexCode": "932000",
-      "indexName": "中证2000",
-      "group": "小盘",
-      "shares": 37462705.0,
-      "previousShares": 37462705.0,
-      "shareChangePct": 0.0,
-      "referencePrice": 1.7408,
-      "referencePriceType": "NAV",
-      "estimatedFlow": 0.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
-      "code": "159556",
-      "name": "中证2000增强ETF平安",
-      "exchange": "SZSE",
-      "indexCode": "932000",
-      "indexName": "中证2000",
-      "group": "小盘",
-      "shares": 15556089.0,
-      "previousShares": 15556089.0,
-      "shareChangePct": 0.0,
-      "referencePrice": 1.2123,
-      "referencePriceType": "NAV",
-      "estimatedFlow": 0.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
-      "code": "159617",
-      "name": "中证500价值ETF华夏",
-      "exchange": "SZSE",
-      "indexCode": "000905",
-      "indexName": "中证500",
-      "group": "中盘",
-      "shares": 30418382.0,
-      "previousShares": 30418382.0,
-      "shareChangePct": 0.0,
-      "referencePrice": 1.3837,
-      "referencePriceType": "NAV",
-      "estimatedFlow": 0.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
-      "code": "159620",
-      "name": "中证500成长ETF华夏",
-      "exchange": "SZSE",
-      "indexCode": "000905",
-      "indexName": "中证500",
-      "group": "中盘",
-      "shares": 31140934.0,
-      "previousShares": 31140934.0,
-      "shareChangePct": 0.0,
-      "referencePrice": 1.3019,
-      "referencePriceType": "NAV",
-      "estimatedFlow": 0.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
-      "code": "159656",
-      "name": "沪深300成长ETF万家",
-      "exchange": "SZSE",
-      "indexCode": "000300",
-      "indexName": "沪深300",
-      "group": "大盘",
-      "shares": 234238451.0,
-      "previousShares": 234238451.0,
-      "shareChangePct": 0.0,
-      "referencePrice": 1.2346,
-      "referencePriceType": "NAV",
-      "estimatedFlow": 0.0,
-      "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"
-    },
-    {
-      "code": "159677",
-      "name": "中证1000增强ETF银华",
-      "exchange": "SZSE",
-      "indexCode": "000852",
-      "indexName": "中证1000",
-      "group": "小盘",
-      "shares": 32904091.0,
-      "previousShares": 32904091.0,
-      "shareChangePct": 0.0,
-      "referencePrice": 1.4541,
       "referencePriceType": "NAV",
       "estimatedFlow": 0.0,
       "source": "SSE/SZSE day-end shares + same-day NAV via AKShare"

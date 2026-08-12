@@ -26,10 +26,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Refresh the published real-data snapshot
-        run: |
-          rm -rf pages-dist/data
-          cp -R public/data pages-dist/data
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build the exact static dashboard used by GitHub Pages and Render
+        run: npm run pages:build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

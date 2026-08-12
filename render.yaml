@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: etf-flow-radar-cn
+    runtime: static
+    repo: https://github.com/1581599248-bit/etf-flow-radar
+    branch: main
+    buildCommand: npm ci && npm run pages:build
+    staticPublishPath: ./pages-dist
+    autoDeployTrigger: commit
+    headers:
+      - path: /data/*
+        name: Cache-Control
+        value: no-store, max-age=0
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
