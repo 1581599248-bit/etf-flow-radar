@@ -17,6 +17,11 @@ class PipelineTests(unittest.TestCase):
         self.assertIsNone(update_daily.percentile([1.0] * 59, 1.0))
         self.assertEqual(update_daily.percentile([1.0] * 60, 1.0), 100.0)
 
+    def test_style_variants_do_not_enter_headline_benchmark_pool(self):
+        self.assertTrue(update_daily.is_plain_benchmark("沪深300ETF"))
+        self.assertFalse(update_daily.is_plain_benchmark("沪深300增强ETF"))
+        self.assertFalse(update_daily.is_plain_benchmark("A500红利低波ETF"))
+
     def test_failed_snapshot_never_replaces_latest(self):
         with tempfile.TemporaryDirectory() as temp:
             public = Path(temp)

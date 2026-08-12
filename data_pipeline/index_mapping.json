@@ -1,11 +1,11 @@
 {
-  "000016": {"name": "上证50", "patterns": ["^50ETF(?:$|易方达|博时|华夏|嘉实|基金|指数)", "上证50"], "group": "大盘", "national_team_proxy": true},
-  "000300": {"name": "沪深300", "patterns": ["沪深300", "^300ETF", "^华夏300$"], "group": "大盘", "national_team_proxy": true},
-  "000510": {"name": "中证A500", "patterns": ["中证A500", "^A500ETF", "^A500"], "group": "大盘", "national_team_proxy": true},
-  "000905": {"name": "中证500", "patterns": ["中证500", "^500ETF"], "group": "中盘", "national_team_proxy": false},
-  "000852": {"name": "中证1000", "patterns": ["中证1000", "^1000ETF"], "group": "小盘", "national_team_proxy": false},
-  "932000": {"name": "中证2000", "patterns": ["中证2000", "^2000ETF"], "group": "小盘", "national_team_proxy": false},
-  "399006": {"name": "创业板指", "patterns": ["^创业板ETF", "创业板指ETF"], "group": "成长", "national_team_proxy": false},
-  "000688": {"name": "科创50", "patterns": ["科创50", "科创板50"], "group": "科技", "national_team_proxy": false},
-  "000698": {"name": "科创100", "patterns": ["科创100", "科创板100"], "group": "科技", "national_team_proxy": false}
+  "000016": {"name": "上证50", "patterns": ["^50ETF(?:$|易方达|博时|华夏|嘉实|基金|指数)", "上证50"], "group": "大盘"},
+  "000300": {"name": "沪深300", "patterns": ["沪深300", "^300ETF", "^华夏300$"], "group": "大盘"},
+  "000510": {"name": "中证A500", "patterns": ["中证A500", "^A500ETF", "^A500"], "group": "大盘"},
+  "000905": {"name": "中证500", "patterns": ["中证500", "^500ETF"], "group": "中盘"},
+  "000852": {"name": "中证1000", "patterns": ["中证1000", "^1000ETF"], "group": "小盘"},
+  "932000": {"name": "中证2000", "patterns": ["中证2000", "^2000ETF"], "group": "小盘"},
+  "399006": {"name": "创业板指", "patterns": ["^创业板ETF", "创业板指ETF"], "group": "成长"},
+  "000688": {"name": "科创50", "patterns": ["科创50", "科创板50"], "group": "科技"},
+  "000698": {"name": "科创100", "patterns": ["科创100", "科创板100"], "group": "科技"}
 }

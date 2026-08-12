@@ -22,6 +22,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "public" / "data"
 MAPPING = json.loads((Path(__file__).parent / "index_mapping.json").read_text("utf-8"))
+STYLE_VARIANT_PATTERN = re.compile(r"增强|指增|价值|成长|红利|红低|等权", re.IGNORECASE)
 
 
 def retry(label: str, operation: Callable[[], pd.DataFrame], attempts: int = 3) -> pd.DataFrame:
@@ -107,7 +108,12 @@ def fetch_reference_prices(day: date) -> pd.DataFrame:
     nav["code"] = nav["code"].astype(str).str.zfill(6)
     nav = nav.drop_duplicates("code", keep="last")
 
-    spot = retry("Eastmoney ETF spot cross-check", ak.fund_etf_spot_em)
+    try:
+        spot = retry("Eastmoney ETF spot cross-check", ak.fund_etf_spot_em)
+    except RuntimeError:
+        # The live quote endpoint is only a cross-check. A transient outage must
+        # not invalidate official exchange shares plus same-day NAV.
+        spot = pd.DataFrame(columns=["代码", "最新价", "最新份额", "数据日期", "更新时间"])
     required = ["代码", "最新价", "最新份额", "数据日期", "更新时间"]
     if any(column not in spot.columns for column in required):
         raise ValueError("ETF spot response schema changed")
@@ -134,6 +140,11 @@ def identify_index(name: str) -> tuple[str, dict[str, Any]] | None:
     return None
 
 
+def is_plain_benchmark(name: str) -> bool:
+    """Keep only ETFs whose stated exposure is the mapped headline benchmark."""
+    return STYLE_VARIANT_PATTERN.search(name) is None
+
+
 def percentile(values: list[float], current: float) -> float | None:
     valid = [x for x in values if math.isfinite(x)]
     if len(valid) < 60:
@@ -146,7 +157,11 @@ def historical_flows(exclude_date: str) -> dict[str, list[float]]:
     for path in sorted((PUBLIC / "history").glob("*.json")):
         try:
             snapshot = json.loads(path.read_text("utf-8"))
-            if snapshot.get("tradeDate") == exclude_date or snapshot.get("status") == "failed":
+            if (
+                snapshot.get("tradeDate") == exclude_date
+                or snapshot.get("status") == "failed"
+                or int(snapshot.get("schemaVersion", 0)) < 3
+            ):
                 continue
             for item in snapshot.get("indices", []):
                 value = item.get("flow1d")
@@ -211,7 +226,12 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
     etfs: list[dict[str, Any]] = []
     for row in merged.itertuples(index=False):
         match = identify_index(str(row.name))
-        if not match or pd.isna(row.previous_shares) or pd.isna(row.reference_price):
+        if (
+            not match
+            or not is_plain_benchmark(str(row.name))
+            or pd.isna(row.previous_shares)
+            or pd.isna(row.reference_price)
+        ):
             continue
         index_code, meta = match
         etfs.append({
@@ -236,6 +256,13 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         for index_code, group in etf_df.groupby("indexCode"):
             meta = MAPPING[index_code]
             flow = round(float(group["estimatedFlow"].sum()) / 1e8, 2)
+            aum = float((group["shares"] * group["referencePrice"]).sum()) / 1e8
+            positive = int((group["estimatedFlow"] > 0).sum())
+            negative = int((group["estimatedFlow"] < 0).sum())
+            unchanged = int(len(group) - positive - negative)
+            breadth = (positive - negative) / len(group) * 100
+            gross_flow = float(group["estimatedFlow"].abs().sum())
+            dominant = group.loc[group["estimatedFlow"].abs().idxmax()]
             prior = history.get(index_code, [])
             observations = prior + [flow]
             position = percentile(prior[-250:], flow)
@@ -248,15 +275,26 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
                 "flow20d": round(sum(observations[-20:]), 2) if len(observations) >= 20 else None,
                 "shareChangePct": round(float(group["shareChangePct"].median()), 3),
                 "etfCount": int(len(group)),
+                "aum": round(aum, 2),
+                "flowIntensityBps": round(flow / aum * 10000, 1) if aum else 0,
+                "breadthScore": round(breadth, 1),
+                "inflowEtfCount": positive,
+                "outflowEtfCount": negative,
+                "unchangedEtfCount": unchanged,
+                "dominantEtf": {
+                    "code": str(dominant["code"]),
+                    "name": str(dominant["name"]),
+                    "flow1d": round(float(dominant["estimatedFlow"]) / 1e8, 2),
+                    "grossContributionPct": round(abs(float(dominant["estimatedFlow"])) / gross_flow * 100, 1) if gross_flow else 0,
+                },
                 "percentile": round(position, 1) if position is not None else None,
                 "status": status_from_percentile(position),
                 "spark": [round(value, 2) for value in observations[-12:]],
-                "nationalTeamProxy": bool(meta["national_team_proxy"]),
             })
 
     critical = any(issue["severity"] == "critical" for issue in issues)
     return {
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "status": "failed" if critical else ("warning" if any(issue["severity"] != "info" for issue in issues) else "verified"),
         "tradeDate": day.isoformat(),
         "previousTradeDate": previous_day.isoformat(),
