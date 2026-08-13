@@ -31,7 +31,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "site" / "data"
 CONFIG = json.loads((Path(__file__).parent / "classification.json").read_text("utf-8"))
 EXCLUDE = re.compile("|".join(CONFIG["globalExcludePatterns"]), re.IGNORECASE)
-RULES = {kind: CONFIG[kind] for kind in ("broad", "style", "sector")}
+RULES = {kind: CONFIG[kind] for kind in ("broad", "style", "industry", "theme")}
 MIN_MARKET_ETFS = 500
 MIN_CLASSIFIED_ETFS = 300
 WINDOW_SESSIONS = 21
@@ -185,8 +185,8 @@ def fetch_reference_prices(day: date) -> pd.DataFrame:
 def classify_etf(name: str, price_name: str | None = None) -> dict[str, Any] | None:
     """Assign one mutually exclusive primary observation group.
 
-    Sector wins over style and style wins over broad so, for example, a medical
-    A500 ETF is not double-counted as headline A500 exposure.
+    Classification priority is style, explicit SW2021 industry, broad index,
+    then cross-industry theme. Each ETF enters exactly one primary group.
     """
     combined = " ".join(value for value in (name, price_name) if value)
     if EXCLUDE.search(combined):
@@ -195,7 +195,7 @@ def classify_etf(name: str, price_name: str | None = None) -> dict[str, Any] | N
     if price_name:
         aliases.append((price_name, len(name) + 1))
     matches: dict[str, tuple[int, dict[str, Any]]] = {}
-    for kind in ("style", "broad", "sector"):
+    for kind in ("style", "industry", "broad", "theme"):
         for rule in RULES[kind]:
             positions = [
                 offset + match.start()
@@ -206,10 +206,15 @@ def classify_etf(name: str, price_name: str | None = None) -> dict[str, Any] | N
                 matches[kind] = (min(positions), rule)
     if "style" in matches:
         return {"kind": "style", **matches["style"][1]}
-    if "broad" in matches and "sector" in matches:
-        kind = "broad" if matches["broad"][0] <= matches["sector"][0] else "sector"
+    if "industry" in matches and "broad" in matches:
+        kind = "broad" if matches["broad"][0] <= matches["industry"][0] else "industry"
         return {"kind": kind, **matches[kind][1]}
-    for kind in ("broad", "sector"):
+    if "industry" in matches:
+        return {"kind": "industry", **matches["industry"][1]}
+    if "broad" in matches and "theme" in matches:
+        kind = "broad" if matches["broad"][0] <= matches["theme"][0] else "theme"
+        return {"kind": kind, **matches[kind][1]}
+    for kind in ("broad", "theme"):
         if kind in matches:
             return {"kind": kind, **matches[kind][1]}
     return None
@@ -369,7 +374,7 @@ def _direction(value: float) -> str:
 def generate_conclusion(groups: list[dict[str, Any]], market: dict[str, Any], history_ok: bool) -> dict[str, Any]:
     broad = [g for g in groups if g["kind"] == "broad"]
     styles = [g for g in groups if g["kind"] == "style"]
-    sectors = [g for g in groups if g["kind"] == "sector"]
+    sectors = [g for g in groups if g["kind"] == "industry"]
     broad_out = sorted(broad, key=lambda g: g["flow1d"])
     sec_in = sorted(sectors, key=lambda g: g["flow1d"], reverse=True)
     sec_out = sorted(sectors, key=lambda g: g["flow1d"])
@@ -384,9 +389,9 @@ def generate_conclusion(groups: list[dict[str, Any]], market: dict[str, Any], hi
     style_in = max(styles, key=lambda g: g["flow1d"])
     style_out = min(styles, key=lambda g: g["flow1d"])
     sector_headline = (
-        f"行业主题资金流入居前的是{sec_in[0]['name']}，流出最多的是{sec_out[0]['name']}。"
+        f"申万一级行业资金流入居前的是{sec_in[0]['name']}，流出最多的是{sec_out[0]['name']}。"
         if sec_in[0]["flow1d"] > 0
-        else f"行业主题组当日均未录得净流入，流出最多的是{sec_out[0]['name']}。"
+        else f"申万一级行业组当日均未录得净流入，流出最多的是{sec_out[0]['name']}。"
     )
     headline = (
         f"本期统计的{market['etfCount']}只A股股票ETF当日合计{market_word}{abs(market['flow1d']):.1f}亿元；"
@@ -399,11 +404,11 @@ def generate_conclusion(groups: list[dict[str, Any]], market: dict[str, Any], hi
         f"5日流出最大仍是{min(broad,key=lambda g:g['flow5d'])['name']}。"
     )
     if positive_sectors:
-        sector_line = "行业主题净流入居前为" + "、".join(
+        sector_line = "申万一级行业净流入居前为" + "、".join(
             f"{g['name']}{g['flow1d']:+.1f}亿" for g in positive_sectors[:2]
         ) + f"；净流出最多为{sec_out[0]['name']}{sec_out[0]['flow1d']:+.1f}亿。"
     else:
-        sector_line = f"行业主题组当日均未录得净流入；流出最多为{sec_out[0]['name']}{sec_out[0]['flow1d']:+.1f}亿。"
+        sector_line = f"申万一级行业组当日均未录得净流入；流出最多为{sec_out[0]['name']}{sec_out[0]['flow1d']:+.1f}亿。"
     sustained_text = (
         f"{sustained_in[0]['name']}同时录得1日和5日净流入，可继续观察资金延续性。"
         if sustained_in else "目前没有观察组同时录得1日和5日净流入，尚未形成连续流入方向。"
@@ -574,10 +579,16 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
     critical = any(i["severity"] == "critical" for i in issues)
     history_ok = len(window) == WINDOW_SESSIONS and price_coverage >= .8
     groups = sorted(groups, key=lambda x: (x["kind"], -x["flow1d"]))
-    sector_theme_groups = [g for g in groups if g["kind"] == "sector"]
-    sector_theme_etf_count = sum(g["etfCount"] for g in sector_theme_groups)
-    sector_theme_universe_count = sum(
-        record.get("classificationStatus") == "classified" and record.get("kind") == "sector"
+    industry_groups = [g for g in groups if g["kind"] == "industry"]
+    theme_groups = [g for g in groups if g["kind"] == "theme"]
+    industry_etf_count = sum(g["etfCount"] for g in industry_groups)
+    industry_group_ids = {g["id"] for g in industry_groups}
+    industry_missing_groups = [
+        {"id": rule["id"], "code": rule["code"], "name": rule["name"]}
+        for rule in RULES["industry"] if rule["id"] not in industry_group_ids
+    ]
+    industry_universe_count = sum(
+        record.get("classificationStatus") == "classified" and record.get("kind") == "industry"
         for record in universe_records
     )
     conclusion = generate_conclusion(groups, market, history_ok)
@@ -603,10 +614,14 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         "quality": {"marketEtfCount": int(len(current)), "classifiedEtfCount": int(len(valid)),
                     "completeUniverseCount": len(universe_records), "unclassifiedEtfCount": len(unclassified),
                     "officialSessions": len(window), "groupCount": len(groups),
-                    "sectorThemeGroupCount": len(sector_theme_groups),
-                    "sectorThemeEtfCount": sector_theme_etf_count,
-                    "sectorThemeUniverseCount": sector_theme_universe_count,
-                    "sectorThemePendingCount": sector_theme_universe_count - sector_theme_etf_count,
+                    "industryDefinitionCount": len(RULES["industry"]),
+                    "industryGroupCount": len(industry_groups),
+                    "industryMissingGroups": industry_missing_groups,
+                    "industryEtfCount": industry_etf_count,
+                    "industryUniverseCount": industry_universe_count,
+                    "industryPendingCount": industry_universe_count - industry_etf_count,
+                    "themeGroupCount": len(theme_groups),
+                    "themeEtfCount": sum(g["etfCount"] for g in theme_groups),
                     "returnProxyCoverage": round(price_coverage, 4),
                     "reconciliation": {"directionCountTotal": count_total, "groupEtfCountTotal": group_etf_total,
                                        "uniqueAnalyzedEtfCount": unique_etf_total, "groupFlow1d": group_flow_1d,
@@ -623,7 +638,7 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
             "counts": "ETF只数按交易所日终总份额较前一交易日增加、减少或完全相同划分。总份额不变表示当日没有净份额增减，不代表没有二级市场成交、价格波动，亦不代表申购和赎回均为零。",
             "return": "组别收益使用组内当前规模最大的ETF作为价格代理；相对收益以沪深300代理为基准。",
             "coordinates": "横轴 = 20日相对沪深300收益率；纵轴 = 5日净申赎 ÷ 5日前参考规模（%）；气泡面积 = 当前ETF规模。",
-            "classification": f"CUSTOM_THEME_V1：按交易所简称与净值产品全称的关键词规则，将ETF互斥归入{len(sector_theme_groups)}个行业主题观察组，当前覆盖{sector_theme_etf_count}只ETF，每只ETF只进入一个主要组。该口径不是申万一级行业，也不代表申万31个一级行业全覆盖；未命中规则的产品进入每日待归类清单。",
+            "classification": f"SW2021_L1_ETF_V1：行业名称与代码采用申万行业分类标准2021版31个一级行业；ETF按交易所简称与基金全称映射到主要暴露行业，每只ETF只进入一个主要组。当前有{len(industry_groups)}个行业实际存在可分析ETF；AI、央国企等跨行业产品单列主题，不冒充申万行业。",
             "identity": "份额数据不包含投资者身份，禁止据此推断国家队、机构、个人或做市商。",
             "scope": "完整名册保留交易所全部ETF；资金分析只使用已明确归类且具备完整历史与净值的A股股票ETF，每只ETF只进入一个主要分析组，避免重复计数。",
         },
