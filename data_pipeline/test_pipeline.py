@@ -63,6 +63,20 @@ class PipelineTests(unittest.TestCase):
                     update_daily.atomic_publish({"status": "failed", "tradeDate": "2026-08-11"})
             self.assertEqual(json.loads((public / "latest.json").read_text("utf-8")), {"safe": True})
 
+    def test_default_refresh_checks_current_calendar_day_first(self):
+        available = pd.DataFrame({"code": [str(i).zfill(6) for i in range(update_daily.MIN_MARKET_ETFS)]})
+        calls = []
+        def exchange(day):
+            calls.append(day)
+            if day == date(2026, 8, 13):
+                raise ValueError("not published")
+            return available
+        with patch.object(update_daily, "fetch_exchange_shares", side_effect=exchange):
+            day, frame = update_daily.fetch_available_shares(date(2026, 8, 13))
+        self.assertEqual(calls, [date(2026, 8, 13), date(2026, 8, 12)])
+        self.assertEqual(day, date(2026, 8, 12))
+        self.assertEqual(len(frame), update_daily.MIN_MARKET_ETFS)
+
 
 if __name__ == "__main__":
     unittest.main()
