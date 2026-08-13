@@ -1,10 +1,12 @@
 import json
 import tempfile
 import unittest
+from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
 import update_daily
+import pandas as pd
 
 
 class PipelineTests(unittest.TestCase):
@@ -34,6 +36,14 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(update_daily._flow_state(-1, 1), "逆势承接")
         self.assertEqual(update_daily._flow_state(1, -1), "上涨减配")
         self.assertEqual(update_daily._flow_state(-1, -1), "下跌流出")
+
+    def test_sse_adapter_rejects_schema_drift(self):
+        response = unittest.mock.Mock()
+        response.raise_for_status.return_value = None
+        response.json.return_value = {"result": [{"SEC_CODE": "510300"}]}
+        with patch.object(update_daily.requests, "get", return_value=response):
+            with self.assertRaises(ValueError):
+                update_daily.fetch_sse_shares(date(2026, 8, 12))
 
     def test_failed_snapshot_never_replaces_latest(self):
         with tempfile.TemporaryDirectory() as temp:
