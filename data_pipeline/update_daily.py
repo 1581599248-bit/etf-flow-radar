@@ -350,12 +350,12 @@ def _flow_state(ret: float | None, intensity: float | None) -> str:
     if ret is None or intensity is None:
         return "待补充"
     if ret >= 0 and intensity >= 0:
-        return "上涨且流入"
+        return "跑赢且流入"
     if ret < 0 <= intensity:
-        return "下跌但流入"
+        return "跑输但流入"
     if ret >= 0 > intensity:
-        return "上涨但流出"
-    return "下跌且流出"
+        return "跑赢但流出"
+    return "跑输且流出"
 
 
 def _direction(value: float) -> str:
@@ -384,9 +384,9 @@ def generate_conclusion(groups: list[dict[str, Any]], market: dict[str, Any], hi
     style_in = max(styles, key=lambda g: g["flow1d"])
     style_out = min(styles, key=lambda g: g["flow1d"])
     sector_headline = (
-        f"行业资金流入居前的是{sec_in[0]['name']}，流出最多的是{sec_out[0]['name']}。"
+        f"行业主题资金流入居前的是{sec_in[0]['name']}，流出最多的是{sec_out[0]['name']}。"
         if sec_in[0]["flow1d"] > 0
-        else f"行业组当日均未录得净流入，流出最多的是{sec_out[0]['name']}。"
+        else f"行业主题组当日均未录得净流入，流出最多的是{sec_out[0]['name']}。"
     )
     headline = (
         f"本期统计的{market['etfCount']}只A股股票ETF当日合计{market_word}{abs(market['flow1d']):.1f}亿元；"
@@ -399,11 +399,11 @@ def generate_conclusion(groups: list[dict[str, Any]], market: dict[str, Any], hi
         f"5日流出最大仍是{min(broad,key=lambda g:g['flow5d'])['name']}。"
     )
     if positive_sectors:
-        sector_line = "行业净流入居前为" + "、".join(
+        sector_line = "行业主题净流入居前为" + "、".join(
             f"{g['name']}{g['flow1d']:+.1f}亿" for g in positive_sectors[:2]
         ) + f"；净流出最多为{sec_out[0]['name']}{sec_out[0]['flow1d']:+.1f}亿。"
     else:
-        sector_line = f"行业组当日均未录得净流入；流出最多为{sec_out[0]['name']}{sec_out[0]['flow1d']:+.1f}亿。"
+        sector_line = f"行业主题组当日均未录得净流入；流出最多为{sec_out[0]['name']}{sec_out[0]['flow1d']:+.1f}亿。"
     sustained_text = (
         f"{sustained_in[0]['name']}同时录得1日和5日净流入，可继续观察资金延续性。"
         if sustained_in else "目前没有观察组同时录得1日和5日净流入，尚未形成连续流入方向。"
@@ -497,6 +497,7 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         intensity1 = flow1 / max(aum - flow1, .01) * 100
         intensity5 = flow5 / max(prior5, .01) * 100
         intensity20 = flow20 / max(prior20, .01) * 100
+        relative20 = round(ret20 - benchmark_20d, 2) if ret20 is not None and benchmark_20d is not None else None
         groups.append({
             "id": group_id, "code": rule.get("code"), "name": rule["name"], "kind": kind,
             "flow1d": round(flow1, 2), "flow5d": round(flow5, 2), "flow20d": round(flow20, 2),
@@ -507,8 +508,8 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
             "flowIntensity5dBps": round(intensity5 * 100, 1),
             "flowIntensity20dBps": round(intensity20 * 100, 1),
             "return1d": ret1, "return5d": ret5, "return20d": ret20,
-            "relativeReturn20d": round(ret20 - benchmark_20d, 2) if ret20 is not None and benchmark_20d is not None else None,
-            "priceFlowState": _flow_state(ret5, intensity5),
+            "relativeReturn20d": relative20,
+            "priceFlowState": _flow_state(relative20, intensity5),
             "breadth1d": round(breadth("delta_1d"), 1), "breadth5d": round(breadth("delta_5d"), 1),
             "increaseEtfCount1d": count1["increase"], "decreaseEtfCount1d": count1["decrease"],
             "unchangedEtfCount1d": count1["unchanged"], "increaseEtfCount5d": count5["increase"],
@@ -612,6 +613,7 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
             "counts": "ETF只数按交易所日终总份额较前一交易日增加、减少或完全相同划分。总份额不变表示当日没有净份额增减，不代表没有二级市场成交、价格波动，亦不代表申购和赎回均为零。",
             "return": "组别收益使用组内当前规模最大的ETF作为价格代理；相对收益以沪深300代理为基准。",
             "coordinates": "横轴 = 20日相对沪深300收益率；纵轴 = 5日净申赎 ÷ 5日前参考规模（%）；气泡面积 = 当前ETF规模。",
+            "classification": "行业主题观察组按交易所简称与净值产品全称的关键词规则互斥归类，每只ETF只进入一个主要组。当前不是申万或中证一级行业全覆盖；未命中规则的产品进入每日待归类清单。",
             "identity": "份额数据不包含投资者身份，禁止据此推断国家队、机构、个人或做市商。",
             "scope": "完整名册保留交易所全部ETF；资金分析只使用已明确归类且具备完整历史与净值的A股股票ETF，每只ETF只进入一个主要分析组，避免重复计数。",
         },

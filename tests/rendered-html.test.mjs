@@ -8,7 +8,8 @@ test("dashboard contains the answer-first modules and two coordinate maps", asyn
   assert.match(page, /资金ETF流动每日跟踪/);
   assert.match(page, /主要宽基数据摘要/);
   assert.match(page, /宽基与风格资金坐标/);
-  assert.match(page, /行业板块资金坐标/);
+  assert.match(page, /行业主题资金坐标/);
+  assert.match(page, /不等同一级行业全覆盖/);
   assert.match(page, /20日相对沪深300收益/);
   assert.match(page, /5日资金变化率（占5日前规模）/);
   assert.match(page, /当日ETF流入流出分布/);
@@ -20,13 +21,15 @@ test("dashboard contains the answer-first modules and two coordinate maps", asyn
   assert.match(page, /导出高清 JPG/);
   assert.match(page, /全量ETF每日变更检查/);
   assert.match(page, /交易所完整ETF/);
-  assert.match(page, /组内ETF规模（总份额 × 单位净值）/);
+  assert.match(page, /气泡面积按组内ETF规模线性编码/);
+  assert.match(page, /组内ETF规模/);
+  assert.match(page, /layoutBubbleLabels/);
   assert.match(page, /当日流入领跑 \/ 流出领跑/);
   assert.match(page, /近5日.*流入领跑 \/ 流出领跑/);
   assert.doesNotMatch(page, /气泡面积 = 当前估算规模|当日流入 \/ 流出领跑/);
   assert.doesNotMatch(page, /国家队代理ETF净流入|代理池当日估算净流入/);
   assert.doesNotMatch(page, /总份额不变|只不变|不变\$\{|当日估算|估算净流入|估算净流出/);
-  assert.doesNotMatch(page, /上涨增配|上涨减配|逆势承接|下跌流出|已完成分析的A股股票ETF/);
+  assert.doesNotMatch(page, /上涨增配|上涨减配|逆势承接|下跌流出|下跌但流入|已完成分析的A股股票ETF/);
   assert.match(css, /\.e-row\[hidden\]\{display:none!important\}/);
 });
 
@@ -60,8 +63,15 @@ test("verified snapshot is internally coherent and carries the complete ETF univ
   assert.ok(Math.abs(snapshot.quality.reconciliation.flowDifference) <= 0.5);
   assert.equal(new Set(snapshot.etfs.map((row) => row.code)).size, snapshot.market.etfCount);
   assert.match(snapshot.methodology.counts, /不代表没有二级市场成交/);
-  const allowedStates = new Set(["上涨且流入", "下跌但流入", "上涨但流出", "下跌且流出"]);
+  const allowedStates = new Set(["跑赢且流入", "跑输但流入", "跑赢但流出", "跑输且流出"]);
   assert.ok(snapshot.groups.every((row) => allowedStates.has(row.priceFlowState)));
+  for (const row of snapshot.groups) {
+    const expected = row.relativeReturn20d >= 0
+      ? (row.flowIntensity5dPct >= 0 ? "跑赢且流入" : "跑赢但流出")
+      : (row.flowIntensity5dPct >= 0 ? "跑输但流入" : "跑输且流出");
+    assert.equal(row.priceFlowState, expected);
+  }
+  assert.match(snapshot.methodology.classification, /不是申万或中证一级行业全覆盖/);
 });
 
 test("generated output and Render blueprint share one reproducible directory", async () => {
@@ -69,6 +79,7 @@ test("generated output and Render blueprint share one reproducible directory", a
   const snapshot = JSON.parse(await readFile("dist/data/latest.json", "utf8"));
   const blueprint = await readFile("render.yaml", "utf8");
   assert.match(page, /宽基与风格资金坐标/);
+  assert.match(page, /行业主题资金坐标/);
   assert.ok(snapshot.schemaVersion >= 4);
   assert.match(blueprint, /buildCommand: npm ci && npm run build/);
   assert.match(blueprint, /staticPublishPath: \.\/dist/);
