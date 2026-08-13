@@ -21,6 +21,7 @@ import time
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Callable
+from zoneinfo import ZoneInfo
 
 import akshare as ak
 import pandas as pd
@@ -473,10 +474,12 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         "referencePrice": round(float(r.reference_price), 4), "referencePriceType": str(r.reference_price_type),
     } for r in valid.itertuples(index=False)]
 
+    generated_at = datetime.now(ZoneInfo("Asia/Shanghai"))
     return {
         "schemaVersion": 4, "status": "failed" if critical else ("warning" if issues else "verified"),
         "tradeDate": day.isoformat(), "previousTradeDate": dates[-2].isoformat(),
-        "windowStartDate": dates[0].isoformat(), "generatedAt": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "windowStartDate": dates[0].isoformat(), "generatedAt": generated_at.isoformat(timespec="seconds"),
+        "publicationDate": generated_at.date().isoformat(),
         "sourceMode": "REAL", "market": market, "conclusion": conclusion, "groups": groups,
         "etfs": sorted(records, key=lambda x: abs(x["flow1d"]), reverse=True),
         "quality": {"marketEtfCount": int(len(current)), "classifiedEtfCount": int(len(valid)),

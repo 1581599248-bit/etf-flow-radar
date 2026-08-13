@@ -12,6 +12,8 @@ test("dashboard contains the answer-first modules and two coordinate maps", asyn
   assert.match(page, /5日资金变化率（占5日前规模）/);
   assert.match(page, /当日ETF增减分布/);
   assert.match(page, /数据解读/);
+  assert.match(page, /ETF跟踪观点/);
+  assert.match(page, /下一交易日盘前发送/);
   assert.doesNotMatch(page, /我们怎么看|识别边界| bp/);
   assert.match(page, /导出高清 JPG/);
   assert.doesNotMatch(page, /国家队代理ETF净流入|代理池当日估算净流入/);
