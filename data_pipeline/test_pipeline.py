@@ -27,6 +27,8 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(update_daily.classify_etf("机床ETF")["id"], "sw_machinery")
         self.assertEqual(update_daily.classify_etf("药ETF")["id"], "sw_pharma_bio")
         self.assertEqual(update_daily.classify_etf("绿电ETF")["id"], "sw_utilities")
+        self.assertEqual(update_daily.classify_etf("电力设备ETF")["id"], "sw_power_equipment")
+        self.assertEqual(update_daily.classify_etf("建筑材料ETF")["id"], "sw_building_materials")
         self.assertEqual(update_daily.classify_etf("石化ETF")["id"], "sw_petrochemical")
         self.assertIsNone(update_daily.classify_etf("机器人ETF"))
         self.assertIsNone(update_daily.classify_etf("消费ETF"))
@@ -60,6 +62,13 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(update_daily.focus_family("消费ETF")["id"], "consumption")
         self.assertEqual(update_daily.focus_family("酒ETF")["id"], "alcohol")
         self.assertIsNone(update_daily.focus_family("纳斯达克ETF"))
+
+    def test_a_share_equity_scope_uses_explicit_fund_type_and_keeps_domestic_sp500_name(self):
+        self.assertTrue(update_daily.is_a_share_equity_etf("机器人ETF", "机器人ETF华夏", "指数型-股票"))
+        self.assertTrue(update_daily.is_a_share_equity_etf("标普红利", "标普A股红利ETF华宝", "指数型-股票"))
+        self.assertFalse(update_daily.is_a_share_equity_etf("恒生科技", "恒生科技ETF华夏", "指数型-股票"))
+        self.assertFalse(update_daily.is_a_share_equity_etf("黄金ETF", "黄金ETF华安", "指数型-其他"))
+        self.assertFalse(update_daily.is_a_share_equity_etf("300ETF", "沪深300ETF", "指数型-海外股票"))
 
     def test_universe_audit_detects_added_missing_and_renamed(self):
         previous = pd.DataFrame([

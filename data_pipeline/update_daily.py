@@ -31,9 +31,12 @@ ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "site" / "data"
 CONFIG = json.loads((Path(__file__).parent / "classification.json").read_text("utf-8"))
 EXCLUDE = re.compile("|".join(CONFIG["globalExcludePatterns"]), re.IGNORECASE)
+EQUITY_EXCLUDE = re.compile("|".join(CONFIG.get("equityExcludePatterns", CONFIG["globalExcludePatterns"])), re.IGNORECASE)
 RULES = {kind: CONFIG[kind] for kind in ("broad", "style", "industry")}
 FOCUS_RULES = CONFIG.get("focusEtfFamilies", [])
 MIN_MARKET_ETFS = 500
+MIN_EQUITY_ETFS = 800
+MIN_EQUITY_ANALYSIS_COVERAGE = 0.95
 MIN_CLASSIFIED_ETFS = 300
 WINDOW_SESSIONS = 21
 MAX_UNIVERSE_DROP_RATIO = 0.02
@@ -167,20 +170,45 @@ def fetch_share_window(end_day: date, end_frame: pd.DataFrame, sessions: int = W
 
 
 def fetch_reference_prices(day: date) -> pd.DataFrame:
-    """Use exact target-day NAV; never silently substitute another date."""
+    """Return same-day NAV plus fund type; never silently substitute another date.
+
+    ``fund_exchange_rank_em`` provides an explicit fund-type field.  That is
+    materially safer than inferring the equity universe from product names.
+    The older daily NAV table remains a same-day fallback for rare new funds
+    absent from the rank table, but such rows are never admitted to the equity
+    population without an explicit ``指数型-股票`` type.
+    """
+    ranked = retry("Eastmoney exchange fund type/NAV", ak.fund_exchange_rank_em)
+    required = {"基金代码", "基金简称", "类型", "日期", "单位净值"}
+    if not required.issubset(ranked.columns):
+        raise ValueError("exchange fund metadata schema changed")
+    out = ranked[["基金代码", "基金简称", "类型", "日期", "单位净值"]].copy()
+    out.columns = ["code", "price_name", "fund_type", "price_date", "reference_price"]
+    out["code"] = out["code"].astype(str).str.zfill(6)
+    out["price_date"] = pd.to_datetime(out["price_date"], errors="coerce").dt.strftime("%Y-%m-%d")
+    out["reference_price"] = pd.to_numeric(out["reference_price"], errors="coerce")
+    out["reference_price_type"] = "NAV"
+    out.loc[out["price_date"] != day.isoformat(), "reference_price"] = math.nan
+
     daily = retry("Eastmoney ETF NAV", ak.fund_etf_fund_daily_em)
-    nav_column = next(
-        (c for c in daily.columns if str(c).startswith(day.isoformat()) and "单位净值" in str(c)),
-        None,
-    )
+    nav_column = next((c for c in daily.columns if str(c).startswith(day.isoformat()) and "单位净值" in str(c)), None)
     if nav_column is None:
         raise ValueError(f"no ETF NAV column for {day.isoformat()}")
-    out = daily.iloc[:, [0, 1]].copy()
-    out.columns = ["code", "price_name"]
-    out["reference_price"] = pd.to_numeric(daily[nav_column], errors="coerce")
-    out["reference_price_type"] = "NAV"
-    out["code"] = out["code"].astype(str).str.zfill(6)
-    return out.drop_duplicates("code", keep="last")
+    fallback = daily.iloc[:, [0, 1]].copy()
+    fallback.columns = ["code", "fallback_name"]
+    fallback["code"] = fallback["code"].astype(str).str.zfill(6)
+    fallback["fallback_price"] = pd.to_numeric(daily[nav_column], errors="coerce")
+    out = out.merge(fallback[["code", "fallback_name", "fallback_price"]], on="code", how="outer")
+    out["price_name"] = out["price_name"].fillna(out["fallback_name"])
+    out["reference_price"] = out["reference_price"].fillna(out["fallback_price"])
+    out["reference_price_type"] = out["reference_price_type"].fillna("NAV")
+    return out[["code", "price_name", "fund_type", "price_date", "reference_price", "reference_price_type"]].drop_duplicates("code", keep="last")
+
+
+def is_a_share_equity_etf(name: str, price_name: str | None, fund_type: str | None) -> bool:
+    """Select domestic equity ETFs using explicit fund type plus scope rules."""
+    combined = " ".join(value for value in (name, price_name) if value)
+    return fund_type == "指数型-股票" and not EQUITY_EXCLUDE.search(combined)
 
 
 def classify_etf(name: str, price_name: str | None = None) -> dict[str, Any] | None:
@@ -196,16 +224,20 @@ def classify_etf(name: str, price_name: str | None = None) -> dict[str, Any] | N
     aliases = [(name, 0)]
     if price_name:
         aliases.append((price_name, len(name) + 1))
-    matches: dict[str, tuple[int, dict[str, Any]]] = {}
+    matches: dict[str, tuple[tuple[int, int], dict[str, Any]]] = {}
     for kind in ("style", "industry", "broad"):
         for rule in RULES[kind]:
-            positions = [
-                offset + match.start()
+            hits = [
+                (offset + match.start(), -(match.end() - match.start()))
                 for alias, offset in aliases for pattern in rule["patterns"]
                 if (match := re.search(pattern, alias, re.IGNORECASE))
             ]
-            if positions and (kind not in matches or min(positions) < matches[kind][0]):
-                matches[kind] = (min(positions), rule)
+            # Earliest explicit word wins; if two rules start at the same
+            # position, prefer the longer/more specific match. This prevents
+            # "电力设备" from being swallowed by the generic "电力" rule.
+            score = min(hits) if hits else None
+            if score is not None and (kind not in matches or score < matches[kind][0]):
+                matches[kind] = (score, rule)
     if "style" in matches:
         return {"kind": "style", **matches["style"][1]}
     if "industry" in matches and "broad" in matches:
@@ -275,7 +307,9 @@ def complete_universe_records(
     unclassified: list[dict[str, str]] = []
     for row in rows.itertuples(index=False):
         group = classify_etf(str(row.name), str(row.price_name) if pd.notna(row.price_name) else None)
-        scope = "excluded" if EXCLUDE.search(" ".join(filter(None, [str(row.name), str(row.price_name) if pd.notna(row.price_name) else ""]))) else ("classified" if group else "unclassified")
+        full_name = str(row.price_name) if pd.notna(row.price_name) else None
+        in_equity_scope = is_a_share_equity_etf(str(row.name), full_name, str(row.fund_type) if pd.notna(row.fund_type) else None)
+        scope = ("classified" if group else "unclassified") if in_equity_scope else "excluded"
         if scope == "unclassified":
             unclassified.append({"code": str(row.code), "name": str(row.name), "exchange": str(row.exchange)})
         record = {
@@ -283,9 +317,11 @@ def complete_universe_records(
             "shares": round(float(row.shares), 2), "classificationStatus": scope,
             "analysisStatus": "ready" if str(row.code) in valid_codes else "history_or_nav_pending",
         }
+        if pd.notna(row.fund_type):
+            record["fundType"] = str(row.fund_type)
         if pd.notna(row.price_name):
             record["fullName"] = str(row.price_name)
-        if group:
+        if group and in_equity_scope:
             record.update({"groupId": str(group["id"]), "groupName": str(group["name"]), "kind": str(group["kind"])})
         if pd.notna(row.reference_price):
             record.update({"referencePrice": round(float(row.reference_price), 4), "referencePriceType": str(row.reference_price_type)})
@@ -410,7 +446,7 @@ def generate_conclusion(groups: list[dict[str, Any]], market: dict[str, Any], hi
         else f"申万一级行业组当日均未录得净流入，流出最多的是{sec_out[0]['name']}。"
     )
     headline = (
-        f"本期可纳入互斥分组的{market['etfCount']}只A股股票ETF当日合计{market_word}{abs(market['flow1d']):.1f}亿元；"
+        f"本期全量统计{market['etfCount']}只A股股票ETF，当日合计{market_word}{abs(market['flow1d']):.1f}亿元；"
         f"净流入{market['increaseEtfCount1d']}只、净流出{market['decreaseEtfCount1d']}只。"
         f"宽基中{broad_out_count}个流出、{broad_in_count}个流入；{sector_headline}"
     )
@@ -453,6 +489,7 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
     prices = fetch_reference_prices(day)
 
     base = current.merge(prices, on="code", how="left", validate="one_to_one")
+    market_candidates: list[dict[str, Any]] = []
     classified: list[dict[str, Any]] = []
     focus_candidates: list[dict[str, Any]] = []
     for row in base.itertuples(index=False):
@@ -464,21 +501,30 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
             "exchange": str(row.exchange), "shares": float(row.shares),
             "reference_price": float(row.reference_price) if pd.notna(row.reference_price) else math.nan,
             "reference_price_type": str(row.reference_price_type) if pd.notna(row.reference_price_type) else "",
+            "fund_type": str(row.fund_type) if pd.notna(row.fund_type) else None,
         }
-        if group and pd.notna(row.reference_price):
+        in_equity_scope = is_a_share_equity_etf(str(row.name), full_name, common["fund_type"])
+        if in_equity_scope and pd.notna(row.reference_price):
+            market_candidates.append(common)
+        if in_equity_scope and group and pd.notna(row.reference_price):
             classified.append({**common, "group_id": str(group["id"]),
                 "group_name": str(group["name"]), "kind": str(group["kind"]),
             })
-        if family and pd.notna(row.reference_price):
+        # Every ungrouped domestic equity ETF is listed so no large or newly
+        # issued product can disappear behind a keyword taxonomy. Curated
+        # families remain useful filters, not an inclusion gate.
+        if in_equity_scope and pd.notna(row.reference_price) and (family or not group):
+            family = family or {"id": "ungrouped", "name": "其他未归组股票ETF"}
             focus_candidates.append({
                 **common, "family_id": family["id"], "family_name": family["name"],
                 "primary_group_id": str(group["id"]) if group else None,
                 "primary_group_name": str(group["name"]) if group else None,
                 "primary_kind": str(group["kind"]) if group else None,
             })
+    market_etf = pd.DataFrame(market_candidates)
     etf = pd.DataFrame(classified)
-    if etf.empty:
-        raise RuntimeError("classification produced no A-share equity ETFs")
+    if market_etf.empty or etf.empty:
+        raise RuntimeError("A-share equity universe or classification produced no ETFs")
 
     dates = [d for d, _ in window]
     shares_by_date = {d: f.set_index("code")["shares"] for d, f in window}
@@ -493,13 +539,15 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         frame["prior_aum_20d"] = frame["shares_20d"] * frame["reference_price"] / 1e8
         return frame
 
+    market_etf = attach_flow_columns(market_etf)
     etf = attach_flow_columns(etf)
     focus_etf = attach_flow_columns(pd.DataFrame(focus_candidates)) if focus_candidates else pd.DataFrame()
+    market_valid = market_etf.dropna(subset=["shares_1d", "shares_5d", "shares_20d"])
     valid = etf.dropna(subset=["shares_1d", "shares_5d", "shares_20d"])
     focus_valid = focus_etf.dropna(subset=["shares_1d", "shares_5d", "shares_20d"]) if not focus_etf.empty else focus_etf
     previous = window[-2][1]
     universe_audit = audit_universe(current, previous)
-    ready_codes = set(valid["code"].astype(str)) | set(focus_valid["code"].astype(str))
+    ready_codes = set(market_valid["code"].astype(str))
     universe_records, unclassified = complete_universe_records(current, prices, ready_codes)
 
     reps: list[dict[str, str]] = []
@@ -564,23 +612,23 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         })
 
     market_count1 = {
-        "increase": int((valid["delta_1d"] > 0).sum()),
-        "decrease": int((valid["delta_1d"] < 0).sum()),
-        "unchanged": int((valid["delta_1d"] == 0).sum()),
+        "increase": int((market_valid["delta_1d"] > 0).sum()),
+        "decrease": int((market_valid["delta_1d"] < 0).sum()),
+        "unchanged": int((market_valid["delta_1d"] == 0).sum()),
     }
-    top_inflow_etf = valid.loc[valid["flow_1d"].idxmax()]
-    top_outflow_etf = valid.loc[valid["flow_1d"].idxmin()]
+    top_inflow_etf = market_valid.loc[market_valid["flow_1d"].idxmax()]
+    top_outflow_etf = market_valid.loc[market_valid["flow_1d"].idxmin()]
     market = {
-        "name": "A股股票ETF统计范围", "etfCount": int(len(valid)),
-        "flow1d": round(float(valid["flow_1d"].sum()), 2),
-        "flow5d": round(float(valid["flow_5d"].sum()), 2),
-        "flow20d": round(float(valid["flow_20d"].sum()), 2),
-        "aum": round(float(valid["aum"].sum()), 2),
-        "breadth1d": round(float(((valid["delta_1d"] > 0).sum() - (valid["delta_1d"] < 0).sum()) / len(valid) * 100), 1),
+        "name": "A股股票ETF全量统计", "etfCount": int(len(market_valid)),
+        "flow1d": round(float(market_valid["flow_1d"].sum()), 2),
+        "flow5d": round(float(market_valid["flow_5d"].sum()), 2),
+        "flow20d": round(float(market_valid["flow_20d"].sum()), 2),
+        "aum": round(float(market_valid["aum"].sum()), 2),
+        "breadth1d": round(float(((market_valid["delta_1d"] > 0).sum() - (market_valid["delta_1d"] < 0).sum()) / len(market_valid) * 100), 1),
         "increaseEtfCount1d": market_count1["increase"],
         "decreaseEtfCount1d": market_count1["decrease"],
         "unchangedEtfCount1d": market_count1["unchanged"],
-        "unchangedEtfPct1d": round(market_count1["unchanged"] / len(valid) * 100, 2),
+        "unchangedEtfPct1d": round(market_count1["unchanged"] / len(market_valid) * 100, 2),
         "topInflowEtf": {"code": str(top_inflow_etf["code"]), "name": str(top_inflow_etf["name"]), "flow1d": round(float(top_inflow_etf["flow_1d"]), 2)},
         "topOutflowEtf": {"code": str(top_outflow_etf["code"]), "name": str(top_outflow_etf["name"]), "flow1d": round(float(top_outflow_etf["flow_1d"]), 2)},
     }
@@ -589,6 +637,11 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
     issues: list[dict[str, str]] = []
     if len(current) < MIN_MARKET_ETFS:
         issues.append({"severity": "critical", "check": "market_coverage", "message": f"全市场ETF仅{len(current)}只"})
+    equity_analysis_coverage = len(market_valid) / max(len(market_etf), 1)
+    if len(market_etf) < MIN_EQUITY_ETFS:
+        issues.append({"severity": "critical", "check": "equity_universe_coverage", "message": f"A股股票ETF候选全集仅{len(market_etf)}只"})
+    if equity_analysis_coverage < MIN_EQUITY_ANALYSIS_COVERAGE:
+        issues.append({"severity": "critical", "check": "equity_analysis_coverage", "message": f"A股股票ETF可分析覆盖率仅{equity_analysis_coverage:.1%}"})
     if len(current) < len(previous) * (1 - MAX_UNIVERSE_DROP_RATIO):
         issues.append({"severity": "critical", "check": "universe_drop", "message": f"交易所ETF总数较前一交易日下降超过{MAX_UNIVERSE_DROP_RATIO:.0%}"})
     for exchange in ("SSE", "SZSE"):
@@ -602,15 +655,21 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         issues.append({"severity": "warning", "check": "return_proxy_coverage", "message": f"组别收益代理覆盖率{price_coverage:.1%}"})
     count_total = sum(market_count1.values())
     group_etf_total = sum(g["etfCount"] for g in groups)
-    unique_etf_total = int(valid["code"].nunique())
+    unique_etf_total = int(market_valid["code"].nunique())
     group_flow_1d = round(sum(g["flow1d"] for g in groups), 2)
-    flow_reconciliation_diff = round(group_flow_1d - market["flow1d"], 2)
-    if count_total != len(valid):
-        issues.append({"severity": "critical", "check": "direction_count_reconciliation", "message": "流入、流出与总份额不变只数无法与统计ETF总数对账"})
-    if group_etf_total != len(valid) or unique_etf_total != len(valid):
-        issues.append({"severity": "critical", "check": "group_count_reconciliation", "message": "观察组ETF数量存在遗漏或重复"})
-    if abs(flow_reconciliation_diff) > 0.5:
-        issues.append({"severity": "critical", "check": "flow_reconciliation", "message": "观察组资金变化合计与全体ETF合计偏差超过舍入容差"})
+    ungrouped_valid = market_valid[~market_valid["code"].isin(set(valid["code"]))]
+    classified_flow_1d = round(float(valid["flow_1d"].sum()), 2)
+    ungrouped_flow_1d = round(float(ungrouped_valid["flow_1d"].sum()), 2)
+    group_flow_diff = round(group_flow_1d - classified_flow_1d, 2)
+    market_flow_diff = round(classified_flow_1d + ungrouped_flow_1d - market["flow1d"], 2)
+    if count_total != len(market_valid) or unique_etf_total != len(market_valid):
+        issues.append({"severity": "critical", "check": "market_count_reconciliation", "message": "全量A股股票ETF流入、流出与唯一代码数无法对账"})
+    if len(market_etf) + sum(record.get("classificationStatus") == "excluded" for record in universe_records) != len(current):
+        issues.append({"severity": "critical", "check": "equity_scope_reconciliation", "message": "A股股票ETF候选全集与排除范围无法还原交易所ETF全集"})
+    if group_etf_total != len(valid) or valid["code"].nunique() != len(valid):
+        issues.append({"severity": "critical", "check": "group_count_reconciliation", "message": "互斥分组ETF数量存在遗漏或重复"})
+    if abs(group_flow_diff) > 0.5 or abs(market_flow_diff) > 0.5:
+        issues.append({"severity": "critical", "check": "flow_reconciliation", "message": "分类子集或全量A股股票ETF资金变化无法对账"})
     critical = any(i["severity"] == "critical" for i in issues)
     history_ok = len(window) == WINDOW_SESSIONS and price_coverage >= .8
     groups = sorted(groups, key=lambda x: (x["kind"], -x["flow1d"]))
@@ -627,14 +686,15 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
     )
     conclusion = generate_conclusion(groups, market, history_ok)
 
+    grouped_by_code = {str(r.code): r for r in valid.itertuples(index=False)}
     records = [{
         "code": str(r.code), "name": str(r.name), "exchange": str(r.exchange),
         **({"fullName": str(r.full_name)} if r.full_name else {}),
-        "groupId": str(r.group_id), "groupName": str(r.group_name), "kind": str(r.kind),
+        **({"groupId": str(grouped_by_code[str(r.code)].group_id), "groupName": str(grouped_by_code[str(r.code)].group_name), "kind": str(grouped_by_code[str(r.code)].kind)} if str(r.code) in grouped_by_code else {"classificationStatus": "unclassified"}),
         "aum": round(float(r.aum), 2), "flow1d": round(float(r.flow_1d), 2),
         "flow5d": round(float(r.flow_5d), 2), "flow20d": round(float(r.flow_20d), 2),
         "referencePrice": round(float(r.reference_price), 4), "referencePriceType": str(r.reference_price_type),
-    } for r in valid.itertuples(index=False)]
+    } for r in market_valid.itertuples(index=False)]
     focus_records = [{
         "code": str(r.code), "name": str(r.name), "exchange": str(r.exchange),
         **({"fullName": str(r.full_name)} if r.full_name else {}),
@@ -650,7 +710,7 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
 
     generated_at = datetime.now(ZoneInfo("Asia/Shanghai"))
     return {
-        "schemaVersion": 6, "status": "failed" if critical else ("warning" if issues else "verified"),
+        "schemaVersion": 7, "status": "failed" if critical else ("warning" if issues else "verified"),
         "tradeDate": day.isoformat(), "previousTradeDate": dates[-2].isoformat(),
         "windowStartDate": dates[0].isoformat(), "generatedAt": generated_at.isoformat(timespec="seconds"),
         "publicationDate": generated_at.date().isoformat(),
@@ -659,7 +719,10 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         "focusEtfs": sorted(focus_records, key=lambda x: abs(x["flow1d"]), reverse=True),
         "universe": universe_records,
         "universeAudit": {**universe_audit, "unclassifiedCount": len(unclassified), "unclassified": unclassified},
-        "quality": {"marketEtfCount": int(len(current)), "classifiedEtfCount": int(len(valid)),
+        "quality": {"marketEtfCount": int(len(current)), "equityUniverseCount": int(len(market_etf)),
+                    "equityAnalyzedCount": int(len(market_valid)), "classifiedEtfCount": int(len(valid)),
+                    "equityAnalysisCoverage": round(equity_analysis_coverage, 4),
+                    "ungroupedAnalyzedCount": int(len(ungrouped_valid)),
                     "completeUniverseCount": len(universe_records), "unclassifiedEtfCount": len(unclassified),
                     "focusEtfCount": len(focus_records),
                     "officialSessions": len(window), "groupCount": len(groups),
@@ -672,12 +735,14 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
                     "returnProxyCoverage": round(price_coverage, 4),
                     "reconciliation": {"directionCountTotal": count_total, "groupEtfCountTotal": group_etf_total,
                                        "uniqueAnalyzedEtfCount": unique_etf_total, "groupFlow1d": group_flow_1d,
-                                       "marketFlow1d": market["flow1d"], "flowDifference": flow_reconciliation_diff},
+                                       "classifiedFlow1d": classified_flow_1d, "ungroupedFlow1d": ungrouped_flow_1d,
+                                       "marketFlow1d": market["flow1d"], "groupFlowDifference": group_flow_diff,
+                                       "marketFlowDifference": market_flow_diff},
                     "issues": issues},
         "sources": [
             {"name": "上海证券交易所", "field": "沪市ETF日终总份额", "role": "官方主源"},
             {"name": "深圳证券交易所", "field": "深市ETF日终总份额", "role": "官方主源"},
-            {"name": "东方财富基金净值/AKShare", "field": f"{day.isoformat()} 单位净值", "role": "份额变动估值"},
+            {"name": "东方财富基金数据/AKShare", "field": f"基金类型与 {day.isoformat()} 单位净值", "role": "股票ETF范围识别与份额变动估值"},
             {"name": "新浪行情/AKShare", "field": "组内最大规模ETF收盘价", "role": "1/5/20日收益代理"},
         ],
         "methodology": {
@@ -687,7 +752,7 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
             "coordinates": "横轴 = 20日相对沪深300收益率；纵轴 = 5日净申赎 ÷ 5日前参考规模（%）；气泡面积 = 当前ETF规模。",
             "classification": f"SW2021_L1_ETF_V3：行业名称与代码采用申万行业分类标准2021版31个一级行业；只将名称能够高置信对应单一一级行业的ETF纳入行业汇总。白酒、酒类归食品饮料；机器人、泛消费、AI等跨行业指数不强行归类，改在重点ETF异动中逐只展示且不参与行业合计。当前有{len(industry_groups)}个行业实际存在可分析ETF。",
             "identity": "份额数据不包含投资者身份，禁止据此推断国家队、机构、个人或做市商。",
-            "scope": "完整名册保留交易所全部ETF；主分组资金分析只使用已明确归类且具备完整历史与净值的A股股票ETF，每只ETF只进入一个主要组。跨行业与热门ETF清单同样要求完整历史与净值，但仅逐只展示，不参与分组资金合计。",
+            "scope": "完整名册保留交易所全部ETF；首页全量资金统计使用基金类型明确为指数型-股票、排除跨境产品且具备同日净值与完整21日份额历史的A股股票ETF。宽基、风格、申万一级行业是其中的互斥解释子集；所有未归组股票ETF自动进入逐只异动清单，不从全量合计中遗漏。",
         },
     }
 
@@ -738,7 +803,7 @@ def main() -> int:
     except Exception as exc:
         print(f"UPDATE FAILED: {exc}", file=sys.stderr)
         return 1
-    print(f"verified snapshot: {path} ({snapshot['tradeDate']}, {len(snapshot['etfs'])} classified ETFs)")
+    print(f"verified snapshot: {path} ({snapshot['tradeDate']}, {len(snapshot['etfs'])} analyzed A-share equity ETFs)")
     return 0
 
 

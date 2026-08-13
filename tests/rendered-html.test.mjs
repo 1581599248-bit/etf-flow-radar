@@ -21,14 +21,14 @@ test("dashboard contains the answer-first modules and two coordinate maps", asyn
   assert.match(page, /导出高清 JPG/);
   assert.match(page, /全量ETF每日变更检查/);
   assert.match(page, /交易所完整ETF/);
-  assert.match(page, /气泡面积按组内ETF参考规模线性编码/);
+  assert.match(page, /气泡面积与组内ETF参考规模成正比/);
   assert.match(page, /组内ETF参考规模/);
   assert.match(page, /layoutBubbleLabels/);
-  assert.match(page, /全部标签就近避让/);
+  assert.match(page, /标签自动避让并用引线连接/);
   assert.match(page, /全部资金观察组证据表/);
   assert.match(page, /不再设置跨行业主题组/);
-  assert.match(page, /跨行业与热门ETF异动/);
-  assert.match(page, /泛消费和机器人指数通常同时覆盖多个申万一级行业/);
+  assert.match(page, /未归组与热门ETF异动/);
+  assert.match(page, /机器人、泛消费、AI等跨行业指数/);
   assert.match(page, /下一交易日07:30—09:00自动检查完整数据/);
   assert.doesNotMatch(page, /data-kind="theme"/);
   assert.match(page, /等待历史或净值补齐/);
@@ -68,9 +68,18 @@ test("verified snapshot is internally coherent and carries the complete ETF univ
   }
   assert.equal(snapshot.market.increaseEtfCount1d + snapshot.market.decreaseEtfCount1d + snapshot.market.unchangedEtfCount1d, snapshot.market.etfCount);
   assert.equal(snapshot.quality.reconciliation.directionCountTotal, snapshot.market.etfCount);
-  assert.equal(snapshot.quality.reconciliation.groupEtfCountTotal, snapshot.market.etfCount);
+  if (snapshot.schemaVersion >= 7) assert.equal(snapshot.quality.equityAnalyzedCount, snapshot.market.etfCount);
+  if (snapshot.schemaVersion >= 7) {
+    assert.ok(snapshot.quality.equityUniverseCount >= 800);
+    assert.ok(snapshot.quality.equityAnalysisCoverage >= 0.95);
+    assert.equal(snapshot.quality.classifiedEtfCount + snapshot.quality.ungroupedAnalyzedCount, snapshot.market.etfCount);
+  }
+  assert.equal(snapshot.quality.reconciliation.groupEtfCountTotal, snapshot.quality.classifiedEtfCount);
   assert.equal(snapshot.quality.reconciliation.uniqueAnalyzedEtfCount, snapshot.market.etfCount);
-  assert.ok(Math.abs(snapshot.quality.reconciliation.flowDifference) <= 0.5);
+  if (snapshot.schemaVersion >= 7) {
+    assert.ok(Math.abs(snapshot.quality.reconciliation.groupFlowDifference) <= 0.5);
+    assert.ok(Math.abs(snapshot.quality.reconciliation.marketFlowDifference) <= 0.5);
+  } else assert.ok(Math.abs(snapshot.quality.reconciliation.flowDifference) <= 0.5);
   assert.equal(new Set(snapshot.etfs.map((row) => row.code)).size, snapshot.market.etfCount);
   assert.match(snapshot.methodology.counts, /不代表没有二级市场成交/);
   const allowedStates = new Set(["跑赢且流入", "跑输但流入", "跑赢但流出", "跑输且流出"]);
@@ -97,12 +106,16 @@ test("verified snapshot is internally coherent and carries the complete ETF univ
   assert.ok(snapshot.focusEtfs.some((row) => row.familyId === "robotics"));
   assert.ok(snapshot.focusEtfs.some((row) => row.familyId === "consumption"));
   assert.ok(snapshot.focusEtfs.some((row) => row.familyId === "alcohol"));
+  if (snapshot.schemaVersion >= 7) assert.ok(snapshot.focusEtfs.some((row) => row.familyId === "ungrouped"));
   assert.equal(new Set(snapshot.focusEtfs.map((row) => row.code)).size, snapshot.focusEtfs.length);
   const roboticsCodes = new Set(snapshot.focusEtfs.filter((row) => row.familyId === "robotics").map((row) => row.code));
   assert.ok(roboticsCodes.size > 0);
   assert.ok(snapshot.etfs.filter((row) => row.groupId === "sw_machinery").every((row) => !roboticsCodes.has(row.code)));
   const universeByCode = new Map(snapshot.universe.map((row) => [row.code, row]));
   assert.ok(snapshot.focusEtfs.every((row) => universeByCode.get(row.code)?.analysisStatus === "ready"));
+  const focusCodes = new Set(snapshot.focusEtfs.map((row) => row.code));
+  assert.ok(snapshot.etfs.filter((row) => row.classificationStatus === "unclassified").every((row) => focusCodes.has(row.code)));
+  assert.ok(snapshot.etfs.every((row) => universeByCode.has(row.code)));
 });
 
 test("generated output and Render blueprint share one reproducible directory", async () => {
