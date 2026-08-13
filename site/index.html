@@ -63,7 +63,7 @@
     <nav><div class="brand-mark">F</div><div class="brand"><b>资金ETF流动每日跟踪</b><span>A-SHARE ETF FLOW MONITOR</span></div><div class="nav-links"><a href="#summary">结论</a><a href="#broad">宽基摘要</a><a href="#maps">资金坐标</a><a href="#detail">明细</a></div><button id="export" data-export-hide="true">导出高清 JPG</button></nav>
     <main id="report" class="report">
       <header class="masthead"><div><span>DAILY CLIENT BRIEF · OFFICIAL CLOSE</span><h1>资金ETF流动每日跟踪</h1><p>真实份额 · 客观变化 · 可复核结论</p></div><div class="analysis-date"><span>数据交易日</span><strong>${fullDate(data.tradeDate)}</strong><small>${data.windowStartDate} — ${data.tradeDate} · 滚动${data.quality.officialSessions}个交易日，更新后自动前移</small></div></header>
-      <div class="trust"><span><i></i>${data.status.toUpperCase()} 已通过门禁</span><span>观点对应 ${data.tradeDate} 收盘</span><span>下一交易日盘前发送 · 建议09:10前</span><span>盘前07:45—09:15自动检查</span><span>${data.quality.classifiedEtfCount}只A股股票ETF</span></div>
+      <div class="trust"><span><i></i>${data.status.toUpperCase()} 已通过门禁</span><span>观点对应 ${data.tradeDate} 收盘</span><span>下一交易日盘前发送 · 建议09:10前</span><span>盘前07:30—09:00自动检查</span><span>${data.quality.classifiedEtfCount}只A股股票ETF</span></div>
 
       <section id="summary" class="conclusion panel"><div class="section-head"><div><span>PRE-MARKET CLIENT VIEW</span><h2>${opinionDate(data.tradeDate)} ETF跟踪观点</h2><p>${opinionDate(data.tradeDate)}收盘数据 · 下一交易日盘前使用</p></div><b class="confidence">置信度 ${data.conclusion.confidence}</b></div><h3>${esc(data.conclusion.headline)}</h3><div class="facts">${data.conclusion.facts.map((x,i)=>`<article><b>0${i+1}</b><p>${esc(x)}</p></article>`).join("")}</div><div class="view"><b>数据解读</b><p>${esc(data.conclusion.interpretation)}</p></div></section>
 
@@ -79,7 +79,7 @@
 
       <section class="qa-grid"><article class="panel"><div class="section-head"><div><span>DATA QUALITY</span><h2>数据质量与更新状态</h2></div><b class="verified">✓ ${data.status.toUpperCase()}</b></div><div class="qa-stats"><span><b>${data.quality.marketEtfCount}</b>交易所ETF总数</span><span><b>${data.quality.classifiedEtfCount}</b>股票ETF观察池</span><span><b>${(data.quality.returnProxyCoverage*100).toFixed(0)}%</b>收益代理覆盖</span><span><b>${data.quality.officialSessions}</b>官方份额交易日</span></div><p>${data.quality.issues.length?data.quality.issues.map(x=>esc(x.message)).join("；"):"全量、日期、历史窗口、收益代理检查均通过。"}</p></article><article class="panel methodology"><div class="section-head"><div><span>METHODOLOGY</span><h2>指标口径</h2></div></div><dl><dt>资金估算</dt><dd>${esc(data.methodology.flow)}</dd><dt>坐标轴</dt><dd>${esc(data.methodology.coordinates)}</dd><dt>收益代理</dt><dd>${esc(data.methodology.return)}</dd><dt>统计范围</dt><dd>${esc(data.methodology.scope)}</dd></dl></article></section>
 
-      <footer class="disclaimer"><b>资金ETF流动每日跟踪</b><p>数据来源：上海证券交易所、深圳证券交易所、东方财富、新浪公开行情；AKShare为固定版本采集适配层。系统在下一交易日07:45、08:15、08:45和09:15检查上一交易日完整日终份额；拿到新交易日数据才更新，未发布时保留上一份已验证快照。本页不使用模拟数据，不构成投资建议。</p><span>${data.tradeDate}观点</span></footer>
+      <footer class="disclaimer"><b>资金ETF流动每日跟踪</b><p>数据来源：上海证券交易所、深圳证券交易所、东方财富、新浪公开行情；AKShare为固定版本采集适配层。系统在下一交易日07:30、08:00、08:30和09:00检查上一交易日完整日终份额；拿到新交易日数据才更新，未发布时保留上一份已验证快照。本页不使用模拟数据，不构成投资建议。</p><span>${data.tradeDate}观点</span></footer>
     </main><div id="drawer"></div>`;
     bind(data);
   }
