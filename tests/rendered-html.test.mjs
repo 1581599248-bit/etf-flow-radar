@@ -9,7 +9,10 @@ test("dashboard contains the answer-first modules and two coordinate maps", asyn
   assert.match(page, /宽基与风格资金坐标/);
   assert.match(page, /行业板块资金坐标/);
   assert.match(page, /20日相对沪深300收益/);
-  assert.match(page, /5日净申赎强度/);
+  assert.match(page, /5日资金变化率（占5日前规模）/);
+  assert.match(page, /当日ETF增减分布/);
+  assert.match(page, /数据解读/);
+  assert.doesNotMatch(page, /我们怎么看|识别边界| bp/);
   assert.match(page, /导出高清 JPG/);
   assert.doesNotMatch(page, /国家队代理ETF净流入|代理池当日估算净流入/);
 });
@@ -29,6 +32,8 @@ test("verified schema-v4 snapshot is internally coherent", async () => {
     assert.equal(typeof row.flow1d, "number");
     assert.equal(typeof row.flow5d, "number");
     assert.equal(typeof row.flow20d, "number");
+    assert.equal(typeof row.flowIntensity5dPct, "number");
+    assert.equal(row.increaseEtfCount5d + row.decreaseEtfCount5d + row.unchangedEtfCount5d, row.etfCount);
   }
 });
 

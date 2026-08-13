@@ -81,8 +81,10 @@ def fetch_sse_shares(day: date) -> pd.DataFrame:
     result = payload.get("result")
     if not isinstance(result, list):
         raise ValueError("SSE response omitted result rows")
-    frame = pd.DataFrame(result)
     required = ["NUM", "SEC_CODE", "SEC_NAME", "ETF_TYPE", "STAT_DATE", "TOT_VOL"]
+    if not result:
+        return pd.DataFrame(columns=["序号", "基金代码", "基金简称", "ETF类型", "统计日期", "基金份额"])
+    frame = pd.DataFrame(result)
     if any(column not in frame.columns for column in required):
         raise ValueError("SSE response schema changed")
     frame = frame[required].copy()
@@ -95,11 +97,13 @@ def fetch_exchange_shares(day: date) -> pd.DataFrame:
     """Fetch one exact official day-end share cross-section."""
     stamp = day.strftime("%Y%m%d")
     sse_raw = retry("SSE ETF shares", lambda: fetch_sse_shares(day))
+    if sse_raw.empty:
+        raise ValueError(f"{day.isoformat()} SSE closing shares have not been published")
     szse_raw = retry(
         "SZSE ETF shares",
         lambda: ak.fund_scale_daily_szse(start_date=stamp, end_date=stamp, symbol="ETF"),
     )
-    if sse_raw.empty or szse_raw.empty:
+    if szse_raw.empty:
         raise ValueError(f"{day.isoformat()} is not a complete SSE/SZSE trading day")
     if sse_raw.shape[1] < 6 or szse_raw.shape[1] < 4:
         raise ValueError("official exchange response schema changed")
@@ -293,25 +297,36 @@ def generate_conclusion(groups: list[dict[str, Any]], market: dict[str, Any], hi
         key=lambda g: g["flow5d"], reverse=True,
     )
     market_word = _direction(market["flow1d"])
+    broad_in_count = sum(g["flow1d"] > 0 for g in broad)
+    broad_out_count = sum(g["flow1d"] < 0 for g in broad)
+    positive_sectors = [g for g in sec_in if g["flow1d"] > 0]
+    style_in = max(styles, key=lambda g: g["flow1d"])
+    style_out = min(styles, key=lambda g: g["flow1d"])
     headline = (
-        f"A股股票ETF观察池当日估算{market_word}{abs(market['flow1d']):.1f}亿元、申赎广度{market['breadth1d']:+.1f}%；"
-        f"{len([g for g in broad if g['flow1d'] < 0])}个宽基组全部流出，"
-        f"行业端{sec_in[0]['name']}与{sec_in[1]['name']}小幅流入，{sec_out[0]['name']}流出最多。"
+        f"A股股票ETF观察池当日估算{market_word}{abs(market['flow1d']):.1f}亿元；"
+        f"份额增加{market['increaseEtfCount1d']}只、减少{market['decreaseEtfCount1d']}只。"
+        f"宽基中{broad_out_count}个流出、{broad_in_count}个流入；"
+        f"行业资金变化居前的是{sec_in[0]['name']}，流出最多的是{sec_out[0]['name']}。"
     )
     broad_line = (
         f"宽基流出前三为{broad_out[0]['name']}{broad_out[0]['flow1d']:.1f}亿、"
         f"{broad_out[1]['name']}{broad_out[1]['flow1d']:.1f}亿、{broad_out[2]['name']}{broad_out[2]['flow1d']:.1f}亿；"
         f"5日流出最大仍是{min(broad,key=lambda g:g['flow5d'])['name']}。"
     )
-    sector_line = (
-        f"{sec_in[0]['name']}当日{sec_in[0]['flow1d']:+.1f}亿但5日{sec_in[0]['flow5d']:+.1f}亿；"
-        f"{sustained_in[0]['name']}是当前1日与5日均流入的最强组，5日{sustained_in[0]['flow5d']:+.1f}亿。"
+    if positive_sectors:
+        sector_line = "行业净流入居前为" + "、".join(
+            f"{g['name']}{g['flow1d']:+.1f}亿" for g in positive_sectors[:2]
+        ) + f"；净流出最多为{sec_out[0]['name']}{sec_out[0]['flow1d']:+.1f}亿。"
+    else:
+        sector_line = f"行业组当日均未录得净流入；流出最多为{sec_out[0]['name']}{sec_out[0]['flow1d']:+.1f}亿。"
+    sustained_text = (
+        f"{sustained_in[0]['name']}同时录得1日和5日净流入，可继续观察资金延续性。"
+        if sustained_in else "目前没有观察组同时录得1日和5日净流入，尚未形成连续流入方向。"
     )
-    rising_redemptions = [g for g in broad if g["priceFlowState"] == "上涨减配"]
     watch = (
-        f"当前更接近宽基普遍赎回，而不是资金已清晰切换到某个新风格；"
-        f"{len(rising_redemptions)}个宽基组呈“上涨减配”，只能客观解释为价格上涨与份额下降并存。"
-        f"{sustained_in[0]['name']}已出现价格与1日/5日资金共振，仍需后续广度扩散才能确认持续轮动。"
+        f"从份额数据看，宽基当日{broad_out_count}/{len(broad)}个组净流出；"
+        f"风格组中{style_in['name']}当日变化相对靠前，{style_out['name']}流出较多。"
+        f"{sustained_text}"
     )
     concentrated = max([g for g in groups if abs(g["flow1d"]) >= 1], key=lambda g: g["concentration1d"])
     caveat = (
@@ -324,7 +339,6 @@ def generate_conclusion(groups: list[dict[str, Any]], market: dict[str, Any], hi
         "interpretation": watch,
         "confidence": "A" if history_ok else "B",
         "confidenceNote": "21个交易日份额完整，价格代理覆盖充分" if history_ok else "历史或价格代理仍有缺口，结论已降级",
-        "identityBoundary": "公开ETF份额无法识别申赎者身份或动机，因此不使用“国家队”“机构资金”等身份归因。",
     }
 
 
@@ -387,16 +401,31 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         prior5 = float(frame["prior_aum_5d"].sum())
         prior20 = float(frame["prior_aum_20d"].sum())
         breadth = lambda col: float(((frame[col] > 0).sum() - (frame[col] < 0).sum()) / len(frame) * 100)
+        counts = lambda col: {
+            "increase": int((frame[col] > 0).sum()),
+            "decrease": int((frame[col] < 0).sum()),
+            "unchanged": int((frame[col] == 0).sum()),
+        }
+        count1, count5 = counts("delta_1d"), counts("delta_5d")
+        intensity1 = flow1 / max(aum - flow1, .01) * 100
+        intensity5 = flow5 / max(prior5, .01) * 100
+        intensity20 = flow20 / max(prior20, .01) * 100
         groups.append({
             "id": group_id, "code": rule.get("code"), "name": rule["name"], "kind": kind,
             "flow1d": round(flow1, 2), "flow5d": round(flow5, 2), "flow20d": round(flow20, 2),
-            "flowIntensity1dBps": round(flow1 / max(aum - flow1, .01) * 10000, 1),
-            "flowIntensity5dBps": round(flow5 / max(prior5, .01) * 10000, 1),
-            "flowIntensity20dBps": round(flow20 / max(prior20, .01) * 10000, 1),
+            "flowIntensity1dPct": round(intensity1, 2),
+            "flowIntensity5dPct": round(intensity5, 2),
+            "flowIntensity20dPct": round(intensity20, 2),
+            "flowIntensity1dBps": round(intensity1 * 100, 1),
+            "flowIntensity5dBps": round(intensity5 * 100, 1),
+            "flowIntensity20dBps": round(intensity20 * 100, 1),
             "return1d": ret1, "return5d": ret5, "return20d": ret20,
             "relativeReturn20d": round(ret20 - benchmark_20d, 2) if ret20 is not None and benchmark_20d is not None else None,
-            "priceFlowState": _flow_state(ret5, round(flow5 / max(prior5, .01) * 10000, 1)),
+            "priceFlowState": _flow_state(ret5, intensity5),
             "breadth1d": round(breadth("delta_1d"), 1), "breadth5d": round(breadth("delta_5d"), 1),
+            "increaseEtfCount1d": count1["increase"], "decreaseEtfCount1d": count1["decrease"],
+            "unchangedEtfCount1d": count1["unchanged"], "increaseEtfCount5d": count5["increase"],
+            "decreaseEtfCount5d": count5["decrease"], "unchangedEtfCount5d": count5["unchanged"],
             "aum": round(aum, 2), "etfCount": int(len(frame)),
             "concentration1d": round(abs(float(dominant["flow_1d"])) / gross * 100, 1) if gross else 0,
             "representative": {
@@ -406,6 +435,11 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
             "dominantEtf": {"code": str(dominant["code"]), "name": str(dominant["name"]), "flow1d": round(float(dominant["flow_1d"]), 2)},
         })
 
+    market_count1 = {
+        "increase": int((valid["delta_1d"] > 0).sum()),
+        "decrease": int((valid["delta_1d"] < 0).sum()),
+        "unchanged": int((valid["delta_1d"] == 0).sum()),
+    }
     market = {
         "name": "可识别A股股票ETF观察池", "etfCount": int(len(valid)),
         "flow1d": round(float(valid["flow_1d"].sum()), 2),
@@ -413,6 +447,9 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         "flow20d": round(float(valid["flow_20d"].sum()), 2),
         "aum": round(float(valid["aum"].sum()), 2),
         "breadth1d": round(float(((valid["delta_1d"] > 0).sum() - (valid["delta_1d"] < 0).sum()) / len(valid) * 100), 1),
+        "increaseEtfCount1d": market_count1["increase"],
+        "decreaseEtfCount1d": market_count1["decrease"],
+        "unchangedEtfCount1d": market_count1["unchanged"],
     }
     expected_groups = len({rep["group_id"] for rep in reps})
     price_coverage = len(return_series) / max(expected_groups, 1)
@@ -454,7 +491,7 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         "methodology": {
             "flow": "估算净申赎 =（期末份额 − 期初份额）× 期末已验证单位净值；金额用于方向与量级观察，不等同基金公司的最终现金流。",
             "return": "组别收益使用组内当前规模最大的ETF作为价格代理；相对收益以沪深300代理为基准。",
-            "coordinates": "横轴 = 20日相对沪深300收益率；纵轴 = 5日估算净申赎 ÷ 5日前参考规模（bp）；气泡面积 = 当前估算AUM。",
+            "coordinates": "横轴 = 20日相对沪深300收益率；纵轴 = 5日估算净申赎 ÷ 5日前参考规模（%）；气泡面积 = 当前估算AUM。",
             "identity": "份额数据不包含投资者身份，禁止据此推断国家队、机构、个人或做市商。",
             "scope": "每只ETF只进入一个主要观察组，避免宽基、风格和行业重复计数；未能明确归类的ETF不进入全市场观察池。",
         },
@@ -479,14 +516,14 @@ def atomic_publish(snapshot: dict[str, Any]) -> Path:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--date", help="YYYY-MM-DD; defaults to latest complete T-1 official session")
+    parser.add_argument("--date", help="YYYY-MM-DD; defaults to the latest complete official session available today")
     args = parser.parse_args()
     try:
         if args.date:
             day = date.fromisoformat(args.date)
             current = fetch_exchange_shares(day)
         else:
-            day, current = fetch_available_shares(latest_weekday(date.today() - timedelta(days=1)))
+            day, current = fetch_available_shares(latest_weekday(date.today()))
         snapshot = build_snapshot(day, current)
         path = atomic_publish(snapshot)
     except Exception as exc:
