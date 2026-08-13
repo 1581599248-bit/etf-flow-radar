@@ -32,6 +32,7 @@ PUBLIC = ROOT / "site" / "data"
 CONFIG = json.loads((Path(__file__).parent / "classification.json").read_text("utf-8"))
 EXCLUDE = re.compile("|".join(CONFIG["globalExcludePatterns"]), re.IGNORECASE)
 RULES = {kind: CONFIG[kind] for kind in ("broad", "style", "industry")}
+FOCUS_RULES = CONFIG.get("focusEtfFamilies", [])
 MIN_MARKET_ETFS = 500
 MIN_CLASSIFIED_ETFS = 300
 WINDOW_SESSIONS = 21
@@ -217,6 +218,22 @@ def classify_etf(name: str, price_name: str | None = None) -> dict[str, Any] | N
     return None
 
 
+def focus_family(name: str, price_name: str | None = None) -> dict[str, str] | None:
+    """Return a transparent display family for individually listed focus ETFs.
+
+    This is a discovery view, not another aggregation taxonomy. A focus ETF may
+    also have a broad/style/SW industry group, but it is never added twice to
+    market or industry totals.
+    """
+    combined = " ".join(value for value in (name, price_name) if value)
+    if EXCLUDE.search(combined):
+        return None
+    for rule in FOCUS_RULES:
+        if any(re.search(pattern, combined, re.IGNORECASE) for pattern in rule["patterns"]):
+            return {"id": str(rule["id"]), "name": str(rule["name"])}
+    return None
+
+
 def audit_universe(current: pd.DataFrame, previous: pd.DataFrame) -> dict[str, Any]:
     """Diff complete official cross-sections so product lifecycle changes are visible."""
     current_rows = current.set_index("code", drop=False)
@@ -266,6 +283,8 @@ def complete_universe_records(
             "shares": round(float(row.shares), 2), "classificationStatus": scope,
             "analysisStatus": "ready" if str(row.code) in valid_codes else "history_or_nav_pending",
         }
+        if pd.notna(row.price_name):
+            record["fullName"] = str(row.price_name)
         if group:
             record.update({"groupId": str(group["id"]), "groupName": str(group["name"]), "kind": str(group["kind"])})
         if pd.notna(row.reference_price):
@@ -391,7 +410,7 @@ def generate_conclusion(groups: list[dict[str, Any]], market: dict[str, Any], hi
         else f"申万一级行业组当日均未录得净流入，流出最多的是{sec_out[0]['name']}。"
     )
     headline = (
-        f"本期统计的{market['etfCount']}只A股股票ETF当日合计{market_word}{abs(market['flow1d']):.1f}亿元；"
+        f"本期可纳入互斥分组的{market['etfCount']}只A股股票ETF当日合计{market_word}{abs(market['flow1d']):.1f}亿元；"
         f"净流入{market['increaseEtfCount1d']}只、净流出{market['decreaseEtfCount1d']}只。"
         f"宽基中{broad_out_count}个流出、{broad_in_count}个流入；{sector_headline}"
     )
@@ -435,14 +454,27 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
 
     base = current.merge(prices, on="code", how="left", validate="one_to_one")
     classified: list[dict[str, Any]] = []
+    focus_candidates: list[dict[str, Any]] = []
     for row in base.itertuples(index=False):
-        group = classify_etf(str(row.name), str(row.price_name) if pd.notna(row.price_name) else None)
+        full_name = str(row.price_name) if pd.notna(row.price_name) else None
+        group = classify_etf(str(row.name), full_name)
+        family = focus_family(str(row.name), full_name)
+        common = {
+            "code": str(row.code), "name": str(row.name), "full_name": full_name,
+            "exchange": str(row.exchange), "shares": float(row.shares),
+            "reference_price": float(row.reference_price) if pd.notna(row.reference_price) else math.nan,
+            "reference_price_type": str(row.reference_price_type) if pd.notna(row.reference_price_type) else "",
+        }
         if group and pd.notna(row.reference_price):
-            classified.append({
-                "code": str(row.code), "name": str(row.name), "exchange": str(row.exchange),
-                "shares": float(row.shares), "reference_price": float(row.reference_price),
-                "reference_price_type": str(row.reference_price_type), "group_id": str(group["id"]),
+            classified.append({**common, "group_id": str(group["id"]),
                 "group_name": str(group["name"]), "kind": str(group["kind"]),
+            })
+        if family and pd.notna(row.reference_price):
+            focus_candidates.append({
+                **common, "family_id": family["id"], "family_name": family["name"],
+                "primary_group_id": str(group["id"]) if group else None,
+                "primary_group_name": str(group["name"]) if group else None,
+                "primary_kind": str(group["kind"]) if group else None,
             })
     etf = pd.DataFrame(classified)
     if etf.empty:
@@ -450,19 +482,25 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
 
     dates = [d for d, _ in window]
     shares_by_date = {d: f.set_index("code")["shares"] for d, f in window}
-    for offset, label in ((1, "1d"), (5, "5d"), (20, "20d")):
-        start_date = dates[-offset - 1]
-        etf[f"shares_{label}"] = etf["code"].map(shares_by_date[start_date])
-        etf[f"delta_{label}"] = etf["shares"] - etf[f"shares_{label}"]
-        etf[f"flow_{label}"] = etf[f"delta_{label}"] * etf["reference_price"] / 1e8
+    def attach_flow_columns(frame: pd.DataFrame) -> pd.DataFrame:
+        for offset, label in ((1, "1d"), (5, "5d"), (20, "20d")):
+            start_date = dates[-offset - 1]
+            frame[f"shares_{label}"] = frame["code"].map(shares_by_date[start_date])
+            frame[f"delta_{label}"] = frame["shares"] - frame[f"shares_{label}"]
+            frame[f"flow_{label}"] = frame[f"delta_{label}"] * frame["reference_price"] / 1e8
+        frame["aum"] = frame["shares"] * frame["reference_price"] / 1e8
+        frame["prior_aum_5d"] = frame["shares_5d"] * frame["reference_price"] / 1e8
+        frame["prior_aum_20d"] = frame["shares_20d"] * frame["reference_price"] / 1e8
+        return frame
 
-    etf["aum"] = etf["shares"] * etf["reference_price"] / 1e8
-    etf["prior_aum_5d"] = etf["shares_5d"] * etf["reference_price"] / 1e8
-    etf["prior_aum_20d"] = etf["shares_20d"] * etf["reference_price"] / 1e8
+    etf = attach_flow_columns(etf)
+    focus_etf = attach_flow_columns(pd.DataFrame(focus_candidates)) if focus_candidates else pd.DataFrame()
     valid = etf.dropna(subset=["shares_1d", "shares_5d", "shares_20d"])
+    focus_valid = focus_etf.dropna(subset=["shares_1d", "shares_5d", "shares_20d"]) if not focus_etf.empty else focus_etf
     previous = window[-2][1]
     universe_audit = audit_universe(current, previous)
-    universe_records, unclassified = complete_universe_records(current, prices, set(valid["code"].astype(str)))
+    ready_codes = set(valid["code"].astype(str)) | set(focus_valid["code"].astype(str))
+    universe_records, unclassified = complete_universe_records(current, prices, ready_codes)
 
     reps: list[dict[str, str]] = []
     for group_id, frame in valid.groupby("group_id"):
@@ -591,24 +629,39 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
 
     records = [{
         "code": str(r.code), "name": str(r.name), "exchange": str(r.exchange),
+        **({"fullName": str(r.full_name)} if r.full_name else {}),
         "groupId": str(r.group_id), "groupName": str(r.group_name), "kind": str(r.kind),
         "aum": round(float(r.aum), 2), "flow1d": round(float(r.flow_1d), 2),
         "flow5d": round(float(r.flow_5d), 2), "flow20d": round(float(r.flow_20d), 2),
         "referencePrice": round(float(r.reference_price), 4), "referencePriceType": str(r.reference_price_type),
     } for r in valid.itertuples(index=False)]
+    focus_records = [{
+        "code": str(r.code), "name": str(r.name), "exchange": str(r.exchange),
+        **({"fullName": str(r.full_name)} if r.full_name else {}),
+        "familyId": str(r.family_id), "familyName": str(r.family_name),
+        "primaryGroupId": str(r.primary_group_id) if r.primary_group_id else None,
+        "primaryGroupName": str(r.primary_group_name) if r.primary_group_name else None,
+        "primaryKind": str(r.primary_kind) if r.primary_kind else None,
+        "aum": round(float(r.aum), 2), "flow1d": round(float(r.flow_1d), 2),
+        "flow5d": round(float(r.flow_5d), 2), "flow20d": round(float(r.flow_20d), 2),
+        "referencePrice": round(float(r.reference_price), 4),
+        "referencePriceType": str(r.reference_price_type),
+    } for r in focus_valid.itertuples(index=False)]
 
     generated_at = datetime.now(ZoneInfo("Asia/Shanghai"))
     return {
-        "schemaVersion": 5, "status": "failed" if critical else ("warning" if issues else "verified"),
+        "schemaVersion": 6, "status": "failed" if critical else ("warning" if issues else "verified"),
         "tradeDate": day.isoformat(), "previousTradeDate": dates[-2].isoformat(),
         "windowStartDate": dates[0].isoformat(), "generatedAt": generated_at.isoformat(timespec="seconds"),
         "publicationDate": generated_at.date().isoformat(),
         "sourceMode": "REAL", "market": market, "conclusion": conclusion, "groups": groups,
         "etfs": sorted(records, key=lambda x: abs(x["flow1d"]), reverse=True),
+        "focusEtfs": sorted(focus_records, key=lambda x: abs(x["flow1d"]), reverse=True),
         "universe": universe_records,
         "universeAudit": {**universe_audit, "unclassifiedCount": len(unclassified), "unclassified": unclassified},
         "quality": {"marketEtfCount": int(len(current)), "classifiedEtfCount": int(len(valid)),
                     "completeUniverseCount": len(universe_records), "unclassifiedEtfCount": len(unclassified),
+                    "focusEtfCount": len(focus_records),
                     "officialSessions": len(window), "groupCount": len(groups),
                     "industryDefinitionCount": len(RULES["industry"]),
                     "industryGroupCount": len(industry_groups),
@@ -632,9 +685,9 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
             "counts": "ETF只数按交易所日终总份额较前一交易日增加、减少或完全相同划分。总份额不变表示当日没有净份额增减，不代表没有二级市场成交、价格波动，亦不代表申购和赎回均为零。",
             "return": "组别收益使用组内当前规模最大的ETF作为价格代理；相对收益以沪深300代理为基准。",
             "coordinates": "横轴 = 20日相对沪深300收益率；纵轴 = 5日净申赎 ÷ 5日前参考规模（%）；气泡面积 = 当前ETF规模。",
-            "classification": f"SW2021_L1_ETF_V2：行业名称与代码采用申万行业分类标准2021版31个一级行业；ETF按交易所简称与基金全称映射到主要暴露行业，每只ETF只进入一个主要组。当前有{len(industry_groups)}个行业实际存在可分析ETF；不再设置跨行业主题组，未能明确对应申万一级行业、宽基或风格策略的产品不进入资金分析。",
+            "classification": f"SW2021_L1_ETF_V3：行业名称与代码采用申万行业分类标准2021版31个一级行业；只将名称能够高置信对应单一一级行业的ETF纳入行业汇总。白酒、酒类归食品饮料；机器人、泛消费、AI等跨行业指数不强行归类，改在重点ETF异动中逐只展示且不参与行业合计。当前有{len(industry_groups)}个行业实际存在可分析ETF。",
             "identity": "份额数据不包含投资者身份，禁止据此推断国家队、机构、个人或做市商。",
-            "scope": "完整名册保留交易所全部ETF；资金分析只使用已明确归类且具备完整历史与净值的A股股票ETF，每只ETF只进入一个主要分析组，避免重复计数。",
+            "scope": "完整名册保留交易所全部ETF；主分组资金分析只使用已明确归类且具备完整历史与净值的A股股票ETF，每只ETF只进入一个主要组。跨行业与热门ETF清单同样要求完整历史与净值，但仅逐只展示，不参与分组资金合计。",
         },
     }
 

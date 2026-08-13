@@ -1,8 +1,8 @@
 {
   "globalExcludePatterns": [
-    "港股|恒生|中概|纳指|标普|道琼斯|日经|德国|法国|印度|越南|沙特|海外|美国|日本|韩国|东南亚|亚太|QDII",
+    "港股|港股通|香港|沪港深|H股|恒生|中概|纳指|纳斯达克|标普|道琼斯|日经|德国|法国|印度|越南|沙特|巴西|海外|美国|日本|韩国|东南亚|亚太|QDII",
     "国债|政金债|信用债|公司债|城投债|地方债|短融|可转债|转债|科创债|债券|债ETF|同业存单|货币ETF|快线ETF|保证金|收益快线|添富快线|日鑫|理财金",
-    "黄金ETF|黄金基金|黄金9999|工银黄金|中银黄金|白银ETF|豆粕ETF|商品期货|原油ETF|有色金属期货"
+    "黄金ETF|黄金基金|黄金9999|工银黄金|中银黄金|^金ETF|上海金|白银ETF|豆粕ETF|商品ETF|商品期货|原油ETF|有色金属期货"
   ],
   "broad": [
     {"id": "sse50", "code": "000016", "name": "上证50", "patterns": ["上证50", "^50ETF(?:$|易方达|博时|华夏|嘉实|基金|指数)", "^SZ50ETF$", "^沪50ETF$", "^上50ETF$", "^万家50$", "^工银上50$"]},
@@ -50,8 +50,8 @@
     {"id": "sw_food_beverage", "code": "801120", "name": "食品饮料", "patterns": ["食品饮料|食品|白酒|酒ETF|饮料"]},
     {"id": "sw_textile_apparel", "code": "801130", "name": "纺织服饰", "patterns": ["纺织|服装|服饰"]},
     {"id": "sw_light_manufacturing", "code": "801140", "name": "轻工制造", "patterns": ["轻工|家居|造纸|包装印刷"]},
-    {"id": "sw_pharma_bio", "code": "801150", "name": "医药生物", "patterns": ["医药|医疗|生物|创新药|疫苗|中药|医疗器械|医美"]},
-    {"id": "sw_utilities", "code": "801160", "name": "公用事业", "patterns": ["公用事业|电力|绿色电力|水务|燃气"]},
+    {"id": "sw_pharma_bio", "code": "801150", "name": "医药生物", "patterns": ["医药|医疗|生物|创新药|疫苗|中药|医疗器械|医美|^药ETF"]},
+    {"id": "sw_utilities", "code": "801160", "name": "公用事业", "patterns": ["公用事业|电力|绿色电力|绿电|水务|燃气"]},
     {"id": "sw_transportation", "code": "801170", "name": "交通运输", "patterns": ["交通运输|交运|物流|快递|航运|机场|高速公路"]},
     {"id": "sw_real_estate", "code": "801180", "name": "房地产", "patterns": ["房地产|地产"]},
     {"id": "sw_retail", "code": "801200", "name": "商贸零售", "patterns": ["商贸零售|零售|商业贸易|互联网电商"]},
@@ -67,10 +67,19 @@
     {"id": "sw_banks", "code": "801780", "name": "银行", "patterns": ["银行"]},
     {"id": "sw_nonbank_finance", "code": "801790", "name": "非银金融", "patterns": ["非银金融|券商|证券|保险"]},
     {"id": "sw_auto", "code": "801880", "name": "汽车", "patterns": ["汽车|智能车|智能驾驶|新能源车|电动车"]},
-    {"id": "sw_machinery", "code": "801890", "name": "机械设备", "patterns": ["机械设备|机械|机器人|工业母机|自动化设备|高端装备"]},
+    {"id": "sw_machinery", "code": "801890", "name": "机械设备", "patterns": ["机械设备|机械|工业母机|机床|自动化设备"]},
     {"id": "sw_coal", "code": "801950", "name": "煤炭", "patterns": ["煤炭"]},
-    {"id": "sw_petrochemical", "code": "801960", "name": "石油石化", "patterns": ["石油石化|石油|油气"]},
+    {"id": "sw_petrochemical", "code": "801960", "name": "石油石化", "patterns": ["石油石化|石油|石化|油气"]},
     {"id": "sw_environmental", "code": "801970", "name": "环保", "patterns": ["环保|环境治理|固废"]},
     {"id": "sw_beauty_care", "code": "801980", "name": "美容护理", "patterns": ["美容护理|化妆品|美妆"]}
+  ],
+  "focusEtfFamilies": [
+    {"id": "alcohol", "name": "酒类（含白酒）", "patterns": ["白酒|酒ETF|酒类"]},
+    {"id": "robotics", "name": "机器人", "patterns": ["机器人|工业机器人"]},
+    {"id": "consumption", "name": "消费", "patterns": ["消费"]},
+    {"id": "ai_compute", "name": "AI与算力", "patterns": ["人工智能|算力|AI(?:ETF|基金|指数|$)"]},
+    {"id": "new_energy", "name": "新能源", "patterns": ["新能源|光伏|电池|锂电|储能|风电"]},
+    {"id": "technology", "name": "科技", "patterns": ["科技|信息技术|数字经济|TMT|工业互联"]},
+    {"id": "state_owned", "name": "央国企", "patterns": ["央企|国企"]}
   ]
 }

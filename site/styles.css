@@ -13,6 +13,7 @@
 .audit-list{display:grid;grid-template-columns:52px 1fr;margin:8px 0 0;font-size:7.5px;line-height:1.55}
 .audit-list dt,.audit-list dd{padding:6px;border-bottom:1px solid #eceef0;margin:0}
 .audit-list dd{color:#6f7882}
+.focus-filters{flex-wrap:wrap;margin-bottom:9px}.focus-filters button+button{border-left:1px solid var(--line)}.focus-table{border-top:1px solid var(--line)}.focus-row{display:grid;grid-template-columns:1.5fr 1.15fr repeat(3,.55fr);gap:8px;align-items:center;min-height:42px;padding:7px 8px;border-bottom:1px solid #eceef0}.focus-row>span b,.focus-row>span small{display:block}.focus-row>span b{font-size:8.5px}.focus-row>span small{font-size:6.7px;color:#9299a2;margin-top:2px}.focus-row>strong{font-size:8.5px;text-align:right}.focus-head{min-height:27px;background:#f4f5f6;color:#858c95;font-size:7px}.focus-caption{font-size:7px;color:#7b838c;margin:8px 0}.more-button{border:1px solid var(--line);background:#fff;padding:6px 12px;color:#606975;font-size:8px;cursor:pointer}.more-button:hover{background:#f7f7f7}
 
 @media(max-width:680px){
   #detail .section-head{display:block}
@@ -22,6 +23,7 @@
   .e-row small{font-size:5.5px}
   .e-head{font-size:6px}
   .notes-at-end{margin-top:7px}
+  .focus-row{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) repeat(3,minmax(0,.55fr));gap:3px;padding:6px 3px}.focus-row>span b,.focus-row>strong{font-size:6.8px}.focus-row>span small{font-size:5.4px;overflow-wrap:anywhere}
 }
 
 /* Plain-language flow axis: keep the title horizontal so Chinese reads left-to-right. */

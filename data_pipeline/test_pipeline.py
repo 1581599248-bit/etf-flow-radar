@@ -22,6 +22,16 @@ class PipelineTests(unittest.TestCase):
         self.assertIsNone(update_daily.classify_etf("黄金ETF华安"))
         self.assertIsNone(update_daily.classify_etf("招商快线ETF"))
         self.assertEqual(update_daily.classify_etf("黄金股ETF")["id"], "sw_nonferrous")
+        self.assertEqual(update_daily.classify_etf("酒ETF")["id"], "sw_food_beverage")
+        self.assertEqual(update_daily.classify_etf("白酒ETF")["id"], "sw_food_beverage")
+        self.assertEqual(update_daily.classify_etf("机床ETF")["id"], "sw_machinery")
+        self.assertEqual(update_daily.classify_etf("药ETF")["id"], "sw_pharma_bio")
+        self.assertEqual(update_daily.classify_etf("绿电ETF")["id"], "sw_utilities")
+        self.assertEqual(update_daily.classify_etf("石化ETF")["id"], "sw_petrochemical")
+        self.assertIsNone(update_daily.classify_etf("机器人ETF"))
+        self.assertIsNone(update_daily.classify_etf("消费ETF"))
+        self.assertIsNone(update_daily.classify_etf("纳斯达克ETF"))
+        self.assertIsNone(update_daily.classify_etf("金ETF"))
         self.assertEqual(update_daily.classify_etf("自由现金流ETF")["id"], "free_cash_flow")
         self.assertEqual(update_daily.classify_etf("300现金", "沪深300自由现金流ETF汇添富")["id"], "free_cash_flow")
 
@@ -44,6 +54,12 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(update_daily.classify_etf("A100", "A100ETF南方")["id"], "csi_a100")
         self.assertEqual(update_daily.classify_etf("深100ETF易方达")["id"], "szse100")
         self.assertEqual(update_daily.classify_etf("科创200E")["id"], "star200")
+
+    def test_focus_families_are_display_only_and_keep_cross_industry_products_visible(self):
+        self.assertEqual(update_daily.focus_family("机器人ETF")["id"], "robotics")
+        self.assertEqual(update_daily.focus_family("消费ETF")["id"], "consumption")
+        self.assertEqual(update_daily.focus_family("酒ETF")["id"], "alcohol")
+        self.assertIsNone(update_daily.focus_family("纳斯达克ETF"))
 
     def test_universe_audit_detects_added_missing_and_renamed(self):
         previous = pd.DataFrame([

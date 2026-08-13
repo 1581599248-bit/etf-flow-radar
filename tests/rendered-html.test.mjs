@@ -27,6 +27,9 @@ test("dashboard contains the answer-first modules and two coordinate maps", asyn
   assert.match(page, /全部标签就近避让/);
   assert.match(page, /全部资金观察组证据表/);
   assert.match(page, /不再设置跨行业主题组/);
+  assert.match(page, /跨行业与热门ETF异动/);
+  assert.match(page, /泛消费和机器人指数通常同时覆盖多个申万一级行业/);
+  assert.match(page, /次日00:20起探测/);
   assert.doesNotMatch(page, /data-kind="theme"/);
   assert.match(page, /等待历史或净值补齐/);
   assert.doesNotMatch(page, /仅显示防碰撞标签/);
@@ -87,8 +90,19 @@ test("verified snapshot is internally coherent and carries the complete ETF univ
   const universeIndustryRows = snapshot.universe.filter((row) => row.classificationStatus === "classified" && row.kind === "industry");
   assert.equal(snapshot.quality.industryUniverseCount, universeIndustryRows.length);
   assert.equal(snapshot.quality.industryPendingCount, universeIndustryRows.length - snapshot.quality.industryEtfCount);
-  assert.match(snapshot.methodology.classification, /SW2021_L1_ETF_V2/);
+  assert.match(snapshot.methodology.classification, /SW2021_L1_ETF_V3/);
   assert.match(snapshot.methodology.classification, /31个一级行业/);
+  assert.ok(Array.isArray(snapshot.focusEtfs));
+  assert.equal(snapshot.quality.focusEtfCount, snapshot.focusEtfs.length);
+  assert.ok(snapshot.focusEtfs.some((row) => row.familyId === "robotics"));
+  assert.ok(snapshot.focusEtfs.some((row) => row.familyId === "consumption"));
+  assert.ok(snapshot.focusEtfs.some((row) => row.familyId === "alcohol"));
+  assert.equal(new Set(snapshot.focusEtfs.map((row) => row.code)).size, snapshot.focusEtfs.length);
+  const roboticsCodes = new Set(snapshot.focusEtfs.filter((row) => row.familyId === "robotics").map((row) => row.code));
+  assert.ok(roboticsCodes.size > 0);
+  assert.ok(snapshot.etfs.filter((row) => row.groupId === "sw_machinery").every((row) => !roboticsCodes.has(row.code)));
+  const universeByCode = new Map(snapshot.universe.map((row) => [row.code, row]));
+  assert.ok(snapshot.focusEtfs.every((row) => universeByCode.get(row.code)?.analysisStatus === "ready"));
 });
 
 test("generated output and Render blueprint share one reproducible directory", async () => {
