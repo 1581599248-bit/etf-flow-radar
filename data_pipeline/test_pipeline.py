@@ -16,6 +16,11 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(update_daily.classify_etf("半导体ETF")["kind"], "sector")
         self.assertIsNone(update_daily.classify_etf("港股通50ETF"))
         self.assertIsNone(update_daily.classify_etf("30年国债ETF"))
+        self.assertIsNone(update_daily.classify_etf("黄金ETF华安"))
+        self.assertIsNone(update_daily.classify_etf("招商快线ETF"))
+        self.assertEqual(update_daily.classify_etf("黄金股ETF")["id"], "resources")
+        self.assertEqual(update_daily.classify_etf("自由现金流ETF")["id"], "free_cash_flow")
+        self.assertEqual(update_daily.classify_etf("300现金", "沪深300自由现金流ETF汇添富")["id"], "free_cash_flow")
 
     def test_compatibility_index_mapping_avoids_partial_false_matches(self):
         self.assertEqual(update_daily.identify_index("沪深300ETF")[0], "000300")
