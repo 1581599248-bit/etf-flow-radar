@@ -16,7 +16,7 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(update_daily.classify_etf("半导体ETF")["kind"], "industry")
         self.assertEqual(update_daily.classify_etf("银行ETF")["id"], "sw_banks")
         self.assertEqual(update_daily.classify_etf("证券ETF")["id"], "sw_nonbank_finance")
-        self.assertEqual(update_daily.classify_etf("人工智能ETF")["kind"], "theme")
+        self.assertIsNone(update_daily.classify_etf("人工智能ETF"))
         self.assertIsNone(update_daily.classify_etf("港股通50ETF"))
         self.assertIsNone(update_daily.classify_etf("30年国债ETF"))
         self.assertIsNone(update_daily.classify_etf("黄金ETF华安"))

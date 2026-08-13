@@ -1,7 +1,7 @@
 {
   "schemaVersion": 5,
   "tradeDate": "2026-08-13",
-  "generatedAt": "2026-08-14T00:06:35+08:00",
+  "generatedAt": "2026-08-14T00:34:44+08:00",
   "universe": [
     {
       "code": "510010",
@@ -67,11 +67,8 @@
       "name": "央企ETF",
       "exchange": "SSE",
       "shares": 34959200.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 2.6083,
       "referencePriceType": "NAV"
     },
@@ -80,11 +77,8 @@
       "name": "ESG建信",
       "exchange": "SSE",
       "shares": 24581100.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_esg",
-      "groupName": "ESG与可持续",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 2.5123,
       "referencePriceType": "NAV"
     },
@@ -129,11 +123,8 @@
       "name": "消费ETF",
       "exchange": "SSE",
       "shares": 2861178600.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.5159,
       "referencePriceType": "NAV"
     },
@@ -142,11 +133,8 @@
       "name": "产业升级",
       "exchange": "SSE",
       "shares": 192057400.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_industrial_upgrade",
-      "groupName": "产业升级",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8946,
       "referencePriceType": "NAV"
     },
@@ -217,11 +205,8 @@
       "name": "金融ETF",
       "exchange": "SSE",
       "shares": 651808000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_finance",
-      "groupName": "金融综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2988,
       "referencePriceType": "NAV"
     },
@@ -230,11 +215,8 @@
       "name": "国企ETF",
       "exchange": "SSE",
       "shares": 14832100.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.5341,
       "referencePriceType": "NAV"
     },
@@ -373,11 +355,8 @@
       "name": "资源ETF",
       "exchange": "SSE",
       "shares": 439258400.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_resources",
-      "groupName": "资源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.9091,
       "referencePriceType": "NAV"
     },
@@ -503,11 +482,8 @@
       "name": "消费30",
       "exchange": "SSE",
       "shares": 577361500.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8361,
       "referencePriceType": "NAV"
     },
@@ -607,11 +583,8 @@
       "name": "G60创新",
       "exchange": "SSE",
       "shares": 23110700.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_regional",
-      "groupName": "区域战略",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9133,
       "referencePriceType": "NAV"
     },
@@ -633,11 +606,8 @@
       "name": "上海国企",
       "exchange": "SSE",
       "shares": 5966693700.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_regional",
-      "groupName": "区域战略",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8471,
       "referencePriceType": "NAV"
     },
@@ -721,11 +691,8 @@
       "name": "ESG180",
       "exchange": "SSE",
       "shares": 38948600.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_esg",
-      "groupName": "ESG与可持续",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.0591,
       "referencePriceType": "NAV"
     },
@@ -1179,11 +1146,8 @@
       "name": "之江凤凰",
       "exchange": "SSE",
       "shares": 188218400.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_regional",
-      "groupName": "区域战略",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 2.9271,
       "referencePriceType": "NAV"
     },
@@ -1205,11 +1169,8 @@
       "name": "TMTETF",
       "exchange": "SSE",
       "shares": 206967600.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 3.9136,
       "referencePriceType": "NAV"
     },
@@ -1270,11 +1231,8 @@
       "name": "信息ETF",
       "exchange": "SSE",
       "shares": 359688000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.9029,
       "referencePriceType": "NAV"
     },
@@ -1518,11 +1476,8 @@
       "name": "必选消费",
       "exchange": "SSE",
       "shares": 1768856100.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.5872,
       "referencePriceType": "NAV"
     },
@@ -1570,11 +1525,8 @@
       "name": "长三角",
       "exchange": "SSE",
       "shares": 32941600.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_regional",
-      "groupName": "区域战略",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.3648,
       "referencePriceType": "NAV"
     },
@@ -1713,11 +1665,8 @@
       "name": "战略新兴",
       "exchange": "SSE",
       "shares": 98267800.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_industrial_upgrade",
-      "groupName": "产业升级",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 2.6629,
       "referencePriceType": "NAV"
     },
@@ -1765,11 +1714,8 @@
       "name": "杭州湾区",
       "exchange": "SSE",
       "shares": 20410600.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_regional",
-      "groupName": "区域战略",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.4663,
       "referencePriceType": "NAV"
     },
@@ -1830,11 +1776,8 @@
       "name": "AIETF",
       "exchange": "SSE",
       "shares": 4796521300.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6479,
       "referencePriceType": "NAV"
     },
@@ -1856,11 +1799,8 @@
       "name": "央企改革",
       "exchange": "SSE",
       "shares": 4044551000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.509,
       "referencePriceType": "NAV"
     },
@@ -1869,11 +1809,8 @@
       "name": "央调ETF",
       "exchange": "SSE",
       "shares": 3857257300.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.4603,
       "referencePriceType": "NAV"
     },
@@ -1882,11 +1819,8 @@
       "name": "湾区ETF",
       "exchange": "SSE",
       "shares": 5987600.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_regional",
-      "groupName": "区域战略",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.5117,
       "referencePriceType": "NAV"
     },
@@ -2311,11 +2245,8 @@
       "name": "香港科技",
       "exchange": "SSE",
       "shares": 532386000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.1655,
       "referencePriceType": "NAV"
     },
@@ -2626,11 +2557,8 @@
       "name": "科技ETF",
       "exchange": "SSE",
       "shares": 3112579300.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.3179,
       "referencePriceType": "NAV"
     },
@@ -2717,11 +2645,8 @@
       "name": "AI智能",
       "exchange": "SSE",
       "shares": 7330940400.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.1558,
       "referencePriceType": "NAV"
     },
@@ -2743,11 +2668,8 @@
       "name": "可持续",
       "exchange": "SSE",
       "shares": 10801700.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_esg",
-      "groupName": "ESG与可持续",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.418,
       "referencePriceType": "NAV"
     },
@@ -2769,11 +2691,8 @@
       "name": "国企方达",
       "exchange": "SSE",
       "shares": 215295000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.6227,
       "referencePriceType": "NAV"
     },
@@ -2808,11 +2727,8 @@
       "name": "国企富国",
       "exchange": "SSE",
       "shares": 397703200.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.539,
       "referencePriceType": "NAV"
     },
@@ -2870,11 +2786,8 @@
       "name": "创新100",
       "exchange": "SSE",
       "shares": 38943200.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_industrial_upgrade",
-      "groupName": "产业升级",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 2.603,
       "referencePriceType": "NAV"
     },
@@ -3169,11 +3082,8 @@
       "name": "中证科技",
       "exchange": "SSE",
       "shares": 306031400.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.4247,
       "referencePriceType": "NAV"
     },
@@ -3195,11 +3105,8 @@
       "name": "央企创新",
       "exchange": "SSE",
       "shares": 1037797400.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.6702,
       "referencePriceType": "NAV"
     },
@@ -3234,11 +3141,8 @@
       "name": "消费50",
       "exchange": "SSE",
       "shares": 3157184000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.0794,
       "referencePriceType": "NAV"
     },
@@ -3260,11 +3164,8 @@
       "name": "创新央企",
       "exchange": "SSE",
       "shares": 1101264700.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.6799,
       "referencePriceType": "NAV"
     },
@@ -3299,11 +3200,8 @@
       "name": "金科富国",
       "exchange": "SSE",
       "shares": 437611000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_finance",
-      "groupName": "金融综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.7095,
       "referencePriceType": "NAV"
     },
@@ -3325,11 +3223,8 @@
       "name": "科技50",
       "exchange": "SSE",
       "shares": 268140500.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 2.1165,
       "referencePriceType": "NAV"
     },
@@ -3338,11 +3233,8 @@
       "name": "浙江国资",
       "exchange": "SSE",
       "shares": 95888100.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_regional",
-      "groupName": "区域战略",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.3791,
       "referencePriceType": "NAV"
     },
@@ -3426,11 +3318,8 @@
       "name": "科技100",
       "exchange": "SSE",
       "shares": 103878900.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 2.1349,
       "referencePriceType": "NAV"
     },
@@ -3465,11 +3354,8 @@
       "name": "央创ETF",
       "exchange": "SSE",
       "shares": 2238046500.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.6522,
       "referencePriceType": "NAV"
     },
@@ -3491,11 +3377,8 @@
       "name": "智能消费",
       "exchange": "SSE",
       "shares": 65905700.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2296,
       "referencePriceType": "NAV"
     },
@@ -3543,11 +3426,8 @@
       "name": "人工智能",
       "exchange": "SSE",
       "shares": 6011129000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.066,
       "referencePriceType": "NAV"
     },
@@ -3556,11 +3436,8 @@
       "name": "添富国企",
       "exchange": "SSE",
       "shares": 53350200.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.5053,
       "referencePriceType": "NAV"
     },
@@ -3608,11 +3485,8 @@
       "name": "科技龙头",
       "exchange": "SSE",
       "shares": 157228000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.4194,
       "referencePriceType": "NAV"
     },
@@ -3634,11 +3508,8 @@
       "name": "碳中和50",
       "exchange": "SSE",
       "shares": 296646000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.5951,
       "referencePriceType": "NAV"
     },
@@ -3660,11 +3531,8 @@
       "name": "新能源E",
       "exchange": "SSE",
       "shares": 1694844800.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.5093,
       "referencePriceType": "NAV"
     },
@@ -3673,11 +3541,8 @@
       "name": "科技金融",
       "exchange": "SSE",
       "shares": 1128759700.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_finance",
-      "groupName": "金融综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.0557,
       "referencePriceType": "NAV"
     },
@@ -3712,11 +3577,8 @@
       "name": "消费龙头",
       "exchange": "SSE",
       "shares": 1573890000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6906,
       "referencePriceType": "NAV"
     },
@@ -3738,11 +3600,8 @@
       "name": "新能源",
       "exchange": "SSE",
       "shares": 1567142000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 2.5689,
       "referencePriceType": "NAV"
     },
@@ -3842,11 +3701,8 @@
       "name": "物联网50",
       "exchange": "SSE",
       "shares": 45882600.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.386,
       "referencePriceType": "NAV"
     },
@@ -3855,11 +3711,8 @@
       "name": "新能源50",
       "exchange": "SSE",
       "shares": 283409000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.604,
       "referencePriceType": "NAV"
     },
@@ -3920,11 +3773,8 @@
       "name": "物联网",
       "exchange": "SSE",
       "shares": 8471300.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.6004,
       "referencePriceType": "NAV"
     },
@@ -3946,11 +3796,8 @@
       "name": "新材料",
       "exchange": "SSE",
       "shares": 61551800.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_materials",
-      "groupName": "新材料",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.0745,
       "referencePriceType": "NAV"
     },
@@ -4089,11 +3936,8 @@
       "name": "养老ETF",
       "exchange": "SSE",
       "shares": 206258000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_aging",
-      "groupName": "养老产业",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.7784,
       "referencePriceType": "NAV"
     },
@@ -4115,11 +3959,8 @@
       "name": "新能源BS",
       "exchange": "SSE",
       "shares": 145124100.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6058,
       "referencePriceType": "NAV"
     },
@@ -4141,11 +3982,8 @@
       "name": "消服ETF",
       "exchange": "SSE",
       "shares": 113332100.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6303,
       "referencePriceType": "NAV"
     },
@@ -4258,11 +4096,8 @@
       "name": "新材料50",
       "exchange": "SSE",
       "shares": 78272000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_materials",
-      "groupName": "新材料",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.7844,
       "referencePriceType": "NAV"
     },
@@ -4271,11 +4106,8 @@
       "name": "ESGETF",
       "exchange": "SSE",
       "shares": 12337800.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_esg",
-      "groupName": "ESG与可持续",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.1666,
       "referencePriceType": "NAV"
     },
@@ -4362,11 +4194,8 @@
       "name": "智能制造",
       "exchange": "SSE",
       "shares": 178308000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_manufacturing",
-      "groupName": "先进制造",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9953,
       "referencePriceType": "NAV"
     },
@@ -4403,9 +4232,9 @@
       "shares": 87176900.0,
       "classificationStatus": "classified",
       "analysisStatus": "ready",
-      "groupId": "theme_esg",
-      "groupName": "ESG与可持续",
-      "kind": "theme",
+      "groupId": "hs300",
+      "groupName": "沪深300",
+      "kind": "broad",
       "referencePrice": 1.0474,
       "referencePriceType": "NAV"
     },
@@ -4427,11 +4256,8 @@
       "name": "新能源80",
       "exchange": "SSE",
       "shares": 137237000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9462,
       "referencePriceType": "NAV"
     },
@@ -4440,11 +4266,8 @@
       "name": "金融科技",
       "exchange": "SSE",
       "shares": 1147522000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_finance",
-      "groupName": "金融综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.0865,
       "referencePriceType": "NAV"
     },
@@ -4466,11 +4289,8 @@
       "name": "新材ETF",
       "exchange": "SSE",
       "shares": 33311400.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_materials",
-      "groupName": "新材料",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8118,
       "referencePriceType": "NAV"
     },
@@ -4613,11 +4433,8 @@
       "name": "互联网50",
       "exchange": "SSE",
       "shares": 347605000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6908,
       "referencePriceType": "NAV"
     },
@@ -4636,11 +4453,8 @@
       "name": "共赢ETF",
       "exchange": "SSE",
       "shares": 56075000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.5664,
       "referencePriceType": "NAV"
     },
@@ -4698,11 +4512,8 @@
       "name": "长江ETF",
       "exchange": "SSE",
       "shares": 1828777500.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_regional",
-      "groupName": "区域战略",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9744,
       "referencePriceType": "NAV"
     },
@@ -4721,11 +4532,8 @@
       "name": "中国国企",
       "exchange": "SSE",
       "shares": 103496300.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.4827,
       "referencePriceType": "NAV"
     },
@@ -4734,11 +4542,8 @@
       "name": "互联网",
       "exchange": "SSE",
       "shares": 139782000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6096,
       "referencePriceType": "NAV"
     },
@@ -4757,11 +4562,8 @@
       "name": "长江保护",
       "exchange": "SSE",
       "shares": 1806169000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_regional",
-      "groupName": "区域战略",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9859,
       "referencePriceType": "NAV"
     },
@@ -4770,11 +4572,8 @@
       "name": "龙头科技",
       "exchange": "SSE",
       "shares": 49042000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9546,
       "referencePriceType": "NAV"
     },
@@ -4783,11 +4582,8 @@
       "name": "AH科技",
       "exchange": "SSE",
       "shares": 26583000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9785,
       "referencePriceType": "NAV"
     },
@@ -4848,11 +4644,8 @@
       "name": "消费主题",
       "exchange": "SSE",
       "shares": 84917400.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6708,
       "referencePriceType": "NAV"
     },
@@ -4861,11 +4654,8 @@
       "name": "物联网AH",
       "exchange": "SSE",
       "shares": 41080700.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.3047,
       "referencePriceType": "NAV"
     },
@@ -4887,11 +4677,8 @@
       "name": "AI50",
       "exchange": "SSE",
       "shares": 208539700.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.0154,
       "referencePriceType": "NAV"
     },
@@ -4900,11 +4687,8 @@
       "name": "张江ETF",
       "exchange": "SSE",
       "shares": 38185200.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_regional",
-      "groupName": "区域战略",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.3427,
       "referencePriceType": "NAV"
     },
@@ -4913,11 +4697,8 @@
       "name": "品牌消费",
       "exchange": "SSE",
       "shares": 53337100.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.7687,
       "referencePriceType": "NAV"
     },
@@ -4939,11 +4720,8 @@
       "name": "交银科技",
       "exchange": "SSE",
       "shares": 53123200.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2056,
       "referencePriceType": "NAV"
     },
@@ -4965,11 +4743,8 @@
       "name": "上海金",
       "exchange": "SSE",
       "shares": 725416300.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_regional",
-      "groupName": "区域战略",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 9.4233,
       "referencePriceType": "NAV"
     },
@@ -5018,11 +4793,8 @@
       "name": "上海金E",
       "exchange": "SSE",
       "shares": 472059800.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_regional",
-      "groupName": "区域战略",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 9.0623,
       "referencePriceType": "NAV"
     },
@@ -5910,11 +5682,8 @@
       "name": "碳中和基",
       "exchange": "SSE",
       "shares": 76090000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9344,
       "referencePriceType": "NAV"
     },
@@ -6040,11 +5809,8 @@
       "name": "央企科技",
       "exchange": "SSE",
       "shares": 370495500.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2621,
       "referencePriceType": "NAV"
     },
@@ -6055,9 +5821,9 @@
       "shares": 15603000.0,
       "classificationStatus": "classified",
       "analysisStatus": "ready",
-      "groupId": "theme_esg",
-      "groupName": "ESG与可持续",
-      "kind": "theme",
+      "groupId": "hs300",
+      "groupName": "沪深300",
+      "kind": "broad",
       "referencePrice": 1.2119,
       "referencePriceType": "NAV"
     },
@@ -6456,11 +6222,8 @@
       "name": "碳中和",
       "exchange": "SSE",
       "shares": 123597400.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9765,
       "referencePriceType": "NAV"
     },
@@ -6469,11 +6232,8 @@
       "name": "碳中和TK",
       "exchange": "SSE",
       "shares": 72190100.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6916,
       "referencePriceType": "NAV"
     },
@@ -6594,11 +6354,8 @@
       "name": "龙头消费",
       "exchange": "SSE",
       "shares": 350225600.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.751,
       "referencePriceType": "NAV"
     },
@@ -6724,11 +6481,8 @@
       "name": "数字ETF",
       "exchange": "SSE",
       "shares": 287951100.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2049,
       "referencePriceType": "NAV"
     },
@@ -6737,11 +6491,8 @@
       "name": "央企ESG",
       "exchange": "SSE",
       "shares": 188116000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2745,
       "referencePriceType": "NAV"
     },
@@ -6919,11 +6670,8 @@
       "name": "科技先锋",
       "exchange": "SSE",
       "shares": 19187100.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.1924,
       "referencePriceType": "NAV"
     },
@@ -7062,11 +6810,8 @@
       "name": "国货ETF",
       "exchange": "SSE",
       "shares": 85935200.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.0842,
       "referencePriceType": "NAV"
     },
@@ -7114,11 +6859,8 @@
       "name": "双碳ETF",
       "exchange": "SSE",
       "shares": 194318000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9785,
       "referencePriceType": "NAV"
     },
@@ -7140,11 +6882,8 @@
       "name": "国企数字",
       "exchange": "SSE",
       "shares": 44553000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.8691,
       "referencePriceType": "NAV"
     },
@@ -7179,11 +6918,8 @@
       "name": "能源ETF",
       "exchange": "SSE",
       "shares": 25495200.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_resources",
-      "groupName": "资源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2487,
       "referencePriceType": "NAV"
     },
@@ -7241,11 +6977,8 @@
       "name": "矿业ETF",
       "exchange": "SSE",
       "shares": 1838392100.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_resources",
-      "groupName": "资源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9486,
       "referencePriceType": "NAV"
     },
@@ -7358,11 +7091,8 @@
       "name": "AITH",
       "exchange": "SSE",
       "shares": 393520000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8438,
       "referencePriceType": "NAV"
     },
@@ -7615,11 +7345,8 @@
       "name": "现代能源",
       "exchange": "SSE",
       "shares": 59034000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2593,
       "referencePriceType": "NAV"
     },
@@ -7689,9 +7416,9 @@
       "shares": 23334400.0,
       "classificationStatus": "classified",
       "analysisStatus": "ready",
-      "groupId": "theme_esg",
-      "groupName": "ESG与可持续",
-      "kind": "theme",
+      "groupId": "hs300",
+      "groupName": "沪深300",
+      "kind": "broad",
       "referencePrice": 0.9959,
       "referencePriceType": "NAV"
     },
@@ -7752,11 +7479,8 @@
       "name": "央企回报",
       "exchange": "SSE",
       "shares": 57385200.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2446,
       "referencePriceType": "NAV"
     },
@@ -7804,11 +7528,8 @@
       "name": "绿色能源",
       "exchange": "SSE",
       "shares": 19298700.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8985,
       "referencePriceType": "NAV"
     },
@@ -7876,11 +7597,8 @@
       "name": "低碳ETF",
       "exchange": "SSE",
       "shares": 59495000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6915,
       "referencePriceType": "NAV"
     },
@@ -7967,11 +7685,8 @@
       "name": "科技引领",
       "exchange": "SSE",
       "shares": 73628900.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2803,
       "referencePriceType": "NAV"
     },
@@ -8055,11 +7770,8 @@
       "name": "信息技术",
       "exchange": "SSE",
       "shares": 22765500.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 2.3295,
       "referencePriceType": "NAV"
     },
@@ -8081,11 +7793,8 @@
       "name": "可选消费",
       "exchange": "SSE",
       "shares": 36223300.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.0818,
       "referencePriceType": "NAV"
     },
@@ -8185,11 +7894,8 @@
       "name": "央企能源",
       "exchange": "SSE",
       "shares": 191981500.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2644,
       "referencePriceType": "NAV"
     },
@@ -8263,11 +7969,8 @@
       "name": "高端制造",
       "exchange": "SSE",
       "shares": 308227300.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_manufacturing",
-      "groupName": "先进制造",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.859,
       "referencePriceType": "NAV"
     },
@@ -8341,11 +8044,8 @@
       "name": "碳中和E",
       "exchange": "SSE",
       "shares": 379756000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9811,
       "referencePriceType": "NAV"
     },
@@ -8406,11 +8106,8 @@
       "name": "科技央企",
       "exchange": "SSE",
       "shares": 129208400.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.3497,
       "referencePriceType": "NAV"
     },
@@ -8419,11 +8116,8 @@
       "name": "央企50",
       "exchange": "SSE",
       "shares": 189527000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.0758,
       "referencePriceType": "NAV"
     },
@@ -8712,11 +8406,8 @@
       "name": "金融科",
       "exchange": "SSE",
       "shares": 103374000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_finance",
-      "groupName": "金融综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.7436,
       "referencePriceType": "NAV"
     },
@@ -8816,11 +8507,8 @@
       "name": "金科基金",
       "exchange": "SSE",
       "shares": 182987000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_finance",
-      "groupName": "金融综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6839,
       "referencePriceType": "NAV"
     },
@@ -9099,11 +8787,8 @@
       "name": "科创材料",
       "exchange": "SSE",
       "shares": 917925800.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_materials",
-      "groupName": "新材料",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.0874,
       "referencePriceType": "NAV"
     },
@@ -9291,11 +8976,8 @@
       "name": "科创新材",
       "exchange": "SSE",
       "shares": 794496000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_materials",
-      "groupName": "新材料",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.1148,
       "referencePriceType": "NAV"
     },
@@ -9600,11 +9282,8 @@
       "name": "双创AI",
       "exchange": "SSE",
       "shares": 111250000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.237,
       "referencePriceType": "NAV"
     },
@@ -9613,11 +9292,8 @@
       "name": "AI双创",
       "exchange": "SSE",
       "shares": 325648000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2264,
       "referencePriceType": "NAV"
     },
@@ -9626,11 +9302,8 @@
       "name": "科创创AI",
       "exchange": "SSE",
       "shares": 96458000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2656,
       "referencePriceType": "NAV"
     },
@@ -9665,11 +9338,8 @@
       "name": "双创智能",
       "exchange": "SSE",
       "shares": 268907000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8682,
       "referencePriceType": "NAV"
     },
@@ -9678,11 +9348,8 @@
       "name": "AI50双创",
       "exchange": "SSE",
       "shares": 221717000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9272,
       "referencePriceType": "NAV"
     },
@@ -9704,11 +9371,8 @@
       "name": "智能双创",
       "exchange": "SSE",
       "shares": 311175000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8825,
       "referencePriceType": "NAV"
     },
@@ -9730,11 +9394,8 @@
       "name": "AIBOCI",
       "exchange": "SSE",
       "shares": 230233300.0,
-      "classificationStatus": "classified",
+      "classificationStatus": "unclassified",
       "analysisStatus": "history_or_nav_pending",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
       "referencePrice": 0.9689,
       "referencePriceType": "NAV"
     },
@@ -9847,11 +9508,8 @@
       "name": "科创AI",
       "exchange": "SSE",
       "shares": 711396300.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.5419,
       "referencePriceType": "NAV"
     },
@@ -9873,11 +9531,8 @@
       "name": "AI科创",
       "exchange": "SSE",
       "shares": 2257532000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.7822,
       "referencePriceType": "NAV"
     },
@@ -9909,11 +9564,8 @@
       "name": "科创智能",
       "exchange": "SSE",
       "shares": 3103384000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8256,
       "referencePriceType": "NAV"
     },
@@ -9961,11 +9613,8 @@
       "name": "科创新能",
       "exchange": "SSE",
       "shares": 711847900.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2416,
       "referencePriceType": "NAV"
     },
@@ -10091,11 +9740,8 @@
       "name": "科创板AI",
       "exchange": "SSE",
       "shares": 599329000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.6215,
       "referencePriceType": "NAV"
     },
@@ -10130,11 +9776,8 @@
       "name": "新能科创",
       "exchange": "SSE",
       "shares": 146579800.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.1461,
       "referencePriceType": "NAV"
     },
@@ -10182,11 +9825,8 @@
       "name": "科创AI指",
       "exchange": "SSE",
       "shares": 908793000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.4601,
       "referencePriceType": "NAV"
     },
@@ -10273,11 +9913,8 @@
       "name": "KCAI",
       "exchange": "SSE",
       "shares": 164431000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.1039,
       "referencePriceType": "NAV"
     },
@@ -10299,11 +9936,8 @@
       "name": "科AI国泰",
       "exchange": "SSE",
       "shares": 510413000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9592,
       "referencePriceType": "NAV"
     },
@@ -10377,11 +10011,8 @@
       "name": "科创材基",
       "exchange": "SSE",
       "shares": 141818000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_materials",
-      "groupName": "新材料",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.784,
       "referencePriceType": "NAV"
     },
@@ -10442,11 +10073,8 @@
       "name": "AI科创CS",
       "exchange": "SSE",
       "shares": 226053000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8939,
       "referencePriceType": "NAV"
     },
@@ -10533,11 +10161,8 @@
       "name": "科创人工",
       "exchange": "SSE",
       "shares": 289491800.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8537,
       "referencePriceType": "NAV"
     },
@@ -10598,11 +10223,8 @@
       "name": "AI科创指",
       "exchange": "SSE",
       "shares": 91694300.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.4766,
       "referencePriceType": "NAV"
     },
@@ -10637,11 +10259,8 @@
       "name": "科创AIJS",
       "exchange": "SSE",
       "shares": 542565600.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8679,
       "referencePriceType": "NAV"
     },
@@ -10676,11 +10295,8 @@
       "name": "AI科创板",
       "exchange": "SSE",
       "shares": 741104600.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.622,
       "referencePriceType": "NAV"
     },
@@ -10702,11 +10318,8 @@
       "name": "科创AITF",
       "exchange": "SSE",
       "shares": 235355000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9849,
       "referencePriceType": "NAV"
     },
@@ -10936,11 +10549,8 @@
       "name": "科创新源",
       "exchange": "SSE",
       "shares": 167316000.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8764,
       "referencePriceType": "NAV"
     },
@@ -11051,11 +10661,8 @@
       "name": "创业板新能源ETF易方达",
       "exchange": "SZSE",
       "shares": 61392703.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9051,
       "referencePriceType": "NAV"
     },
@@ -11100,11 +10707,8 @@
       "name": "工业互联网ETF大成",
       "exchange": "SZSE",
       "shares": 43578881.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.0286,
       "referencePriceType": "NAV"
     },
@@ -11201,11 +10805,8 @@
       "name": "科创创业人工智能ETF富国",
       "exchange": "SZSE",
       "shares": 162630967.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.0335,
       "referencePriceType": "NAV"
     },
@@ -11696,11 +11297,8 @@
       "name": "创业板新能源ETF华泰柏瑞",
       "exchange": "SZSE",
       "shares": 54770440.0,
-      "classificationStatus": "classified",
+      "classificationStatus": "unclassified",
       "analysisStatus": "history_or_nav_pending",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
       "referencePrice": 1.0546,
       "referencePriceType": "NAV"
     },
@@ -11748,11 +11346,8 @@
       "name": "工业互联网ETF华夏",
       "exchange": "SZSE",
       "shares": 185197165.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9337,
       "referencePriceType": "NAV"
     },
@@ -11761,11 +11356,8 @@
       "name": "创业板新能源ETF华宝",
       "exchange": "SZSE",
       "shares": 256373015.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8817,
       "referencePriceType": "NAV"
     },
@@ -11836,11 +11428,8 @@
       "name": "金融科技ETF广发",
       "exchange": "SZSE",
       "shares": 35399823.0,
-      "classificationStatus": "classified",
+      "classificationStatus": "unclassified",
       "analysisStatus": "history_or_nav_pending",
-      "groupId": "theme_finance",
-      "groupName": "金融综合",
-      "kind": "theme",
       "referencePrice": 1.0714,
       "referencePriceType": "NAV"
     },
@@ -11926,11 +11515,8 @@
       "name": "金融科技ETF汇添富",
       "exchange": "SZSE",
       "shares": 311406771.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_finance",
-      "groupName": "金融综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6731,
       "referencePriceType": "NAV"
     },
@@ -12108,11 +11694,8 @@
       "name": "创业板新能源ETF富国",
       "exchange": "SZSE",
       "shares": 65160935.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.927,
       "referencePriceType": "NAV"
     },
@@ -12276,11 +11859,8 @@
       "name": "科创创业人工智能ETF华泰柏瑞",
       "exchange": "SZSE",
       "shares": 164109210.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2917,
       "referencePriceType": "NAV"
     },
@@ -12289,11 +11869,8 @@
       "name": "科创创业人工智能ETF易方达",
       "exchange": "SZSE",
       "shares": 461936834.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2977,
       "referencePriceType": "NAV"
     },
@@ -12302,11 +11879,8 @@
       "name": "科创创业人工智能ETF永赢",
       "exchange": "SZSE",
       "shares": 1551060730.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2109,
       "referencePriceType": "NAV"
     },
@@ -12315,11 +11889,8 @@
       "name": "科创创业人工智能ETF景顺",
       "exchange": "SZSE",
       "shares": 1173260142.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2388,
       "referencePriceType": "NAV"
     },
@@ -12390,11 +11961,8 @@
       "name": "创业板新能源ETF工银",
       "exchange": "SZSE",
       "shares": 55515298.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.886,
       "referencePriceType": "NAV"
     },
@@ -12811,11 +12379,8 @@
       "name": "创业板新能源ETF景顺",
       "exchange": "SZSE",
       "shares": 53176266.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8811,
       "referencePriceType": "NAV"
     },
@@ -12847,11 +12412,8 @@
       "name": "创业板新能源ETF天弘",
       "exchange": "SZSE",
       "shares": 70069299.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8765,
       "referencePriceType": "NAV"
     },
@@ -13428,11 +12990,8 @@
       "name": "创业板人工智能ETF大成",
       "exchange": "SZSE",
       "shares": 544278583.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 2.1109,
       "referencePriceType": "NAV"
     },
@@ -13441,11 +13000,8 @@
       "name": "创业板人工智能ETF招商",
       "exchange": "SZSE",
       "shares": 142030224.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2734,
       "referencePriceType": "NAV"
     },
@@ -13464,11 +13020,8 @@
       "name": "创业板人工智能ETF富国",
       "exchange": "SZSE",
       "shares": 3259655606.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.1782,
       "referencePriceType": "NAV"
     },
@@ -13490,11 +13043,8 @@
       "name": "人工智能ETF万家",
       "exchange": "SZSE",
       "shares": 123095652.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.8205,
       "referencePriceType": "NAV"
     },
@@ -13617,11 +13167,8 @@
       "name": "创业板新能源ETF鹏华",
       "exchange": "SZSE",
       "shares": 47814904.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.4341,
       "referencePriceType": "NAV"
     },
@@ -13804,11 +13351,8 @@
       "name": "创业板人工智能ETF华安",
       "exchange": "SZSE",
       "shares": 150387534.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.4194,
       "referencePriceType": "NAV"
     },
@@ -14010,11 +13554,8 @@
       "name": "金融科技ETF易方达",
       "exchange": "SZSE",
       "shares": 666472981.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_finance",
-      "groupName": "金融综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.7103,
       "referencePriceType": "NAV"
     },
@@ -14134,11 +13675,8 @@
       "name": "数字经济ETF易方达",
       "exchange": "SZSE",
       "shares": 39383993.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.5269,
       "referencePriceType": "NAV"
     },
@@ -14345,11 +13883,8 @@
       "name": "央企科创ETF融通",
       "exchange": "SZSE",
       "shares": 63483689.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.5373,
       "referencePriceType": "NAV"
     },
@@ -14566,11 +14101,8 @@
       "name": "创业板人工智能ETF华宝",
       "exchange": "SZSE",
       "shares": 5440169924.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2515,
       "referencePriceType": "NAV"
     },
@@ -14612,11 +14144,8 @@
       "name": "创业板新能源ETF华夏",
       "exchange": "SZSE",
       "shares": 1030579682.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.689,
       "referencePriceType": "NAV"
     },
@@ -14765,11 +14294,8 @@
       "name": "创业板人工智能ETF华夏",
       "exchange": "SZSE",
       "shares": 1703153206.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.1853,
       "referencePriceType": "NAV"
     },
@@ -14778,11 +14304,8 @@
       "name": "创业板人工智能ETF南方",
       "exchange": "SZSE",
       "shares": 787055714.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 2.658,
       "referencePriceType": "NAV"
     },
@@ -14804,11 +14327,8 @@
       "name": "数字经济ETF富国",
       "exchange": "SZSE",
       "shares": 49002525.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.875,
       "referencePriceType": "NAV"
     },
@@ -14830,11 +14350,8 @@
       "name": "创业板新能源ETF国泰",
       "exchange": "SZSE",
       "shares": 1447189648.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.7603,
       "referencePriceType": "NAV"
     },
@@ -14843,11 +14360,8 @@
       "name": "创业板人工智能ETF国泰",
       "exchange": "SZSE",
       "shares": 856736984.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.0242,
       "referencePriceType": "NAV"
     },
@@ -14856,11 +14370,8 @@
       "name": "数字经济ETF嘉实",
       "exchange": "SZSE",
       "shares": 136093364.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.8942,
       "referencePriceType": "NAV"
     },
@@ -15174,11 +14685,8 @@
       "name": "消费龙头ETF工银",
       "exchange": "SZSE",
       "shares": 155177649.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.933,
       "referencePriceType": "NAV"
     },
@@ -15252,11 +14760,8 @@
       "name": "国企改革ETF富国",
       "exchange": "SZSE",
       "shares": 7320773.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2587,
       "referencePriceType": "NAV"
     },
@@ -15491,11 +14996,8 @@
       "name": "互联网ETF东财",
       "exchange": "SZSE",
       "shares": 201828785.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8299,
       "referencePriceType": "NAV"
     },
@@ -16225,11 +15727,8 @@
       "name": "ESGETF国泰",
       "exchange": "SZSE",
       "shares": 14434717.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_esg",
-      "groupName": "ESG与可持续",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.1756,
       "referencePriceType": "NAV"
     },
@@ -16409,11 +15908,8 @@
       "name": "碳中和ETF南方",
       "exchange": "SZSE",
       "shares": 203290171.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9705,
       "referencePriceType": "NAV"
     },
@@ -16422,11 +15918,8 @@
       "name": "碳中和龙头ETF工银",
       "exchange": "SZSE",
       "shares": 58845198.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9487,
       "referencePriceType": "NAV"
     },
@@ -16435,11 +15928,8 @@
       "name": "碳中和ETF招商",
       "exchange": "SZSE",
       "shares": 86719131.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.0075,
       "referencePriceType": "NAV"
     },
@@ -16448,11 +15938,8 @@
       "name": "碳中和ETF大成",
       "exchange": "SZSE",
       "shares": 22439923.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9548,
       "referencePriceType": "NAV"
     },
@@ -16543,11 +16030,8 @@
       "name": "ESG300ETF国联安",
       "exchange": "SZSE",
       "shares": 52972068.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_esg",
-      "groupName": "ESG与可持续",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2048,
       "referencePriceType": "NAV"
     },
@@ -16590,11 +16074,8 @@
       "name": "数字经济ETF华安",
       "exchange": "SZSE",
       "shares": 42894877.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.8097,
       "referencePriceType": "NAV"
     },
@@ -16707,11 +16188,8 @@
       "name": "消费50ETF国联安",
       "exchange": "SZSE",
       "shares": 55706921.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8762,
       "referencePriceType": "NAV"
     },
@@ -16733,11 +16211,8 @@
       "name": "消费ETF博时",
       "exchange": "SZSE",
       "shares": 131887409.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6471,
       "referencePriceType": "NAV"
     },
@@ -16907,11 +16382,8 @@
       "name": "消费ETF南方",
       "exchange": "SZSE",
       "shares": 94147787.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6514,
       "referencePriceType": "NAV"
     },
@@ -17023,11 +16495,8 @@
       "name": "物联网ETF招商",
       "exchange": "SZSE",
       "shares": 5705601.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2822,
       "referencePriceType": "NAV"
     },
@@ -17036,11 +16505,8 @@
       "name": "新材料ETF天弘",
       "exchange": "SZSE",
       "shares": 60181591.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_materials",
-      "groupName": "新材料",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9391,
       "referencePriceType": "NAV"
     },
@@ -17088,11 +16554,8 @@
       "name": "物联网ETF工银",
       "exchange": "SZSE",
       "shares": 21484060.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.7508,
       "referencePriceType": "NAV"
     },
@@ -17160,11 +16623,8 @@
       "name": "ESGETF鹏华",
       "exchange": "SZSE",
       "shares": 22873183.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_esg",
-      "groupName": "ESG与可持续",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.0612,
       "referencePriceType": "NAV"
     },
@@ -17183,11 +16643,8 @@
       "name": "国企ETF平安",
       "exchange": "SZSE",
       "shares": 27195986.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.5758,
       "referencePriceType": "NAV"
     },
@@ -17222,11 +16679,8 @@
       "name": "科技龙头ETF汇添富",
       "exchange": "SZSE",
       "shares": 31025575.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.1072,
       "referencePriceType": "NAV"
     },
@@ -17235,11 +16689,8 @@
       "name": "线上消费ETF工银",
       "exchange": "SZSE",
       "shares": 135424924.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.7936,
       "referencePriceType": "NAV"
     },
@@ -17258,11 +16709,8 @@
       "name": "在线消费ETF南方",
       "exchange": "SZSE",
       "shares": 47910129.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.7922,
       "referencePriceType": "NAV"
     },
@@ -17271,11 +16719,8 @@
       "name": "互联网ETF汇添富",
       "exchange": "SZSE",
       "shares": 64960633.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.719,
       "referencePriceType": "NAV"
     },
@@ -17422,11 +16867,8 @@
       "name": "香港科技ETF南方",
       "exchange": "SZSE",
       "shares": 316712278.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2168,
       "referencePriceType": "NAV"
     },
@@ -17468,11 +16910,8 @@
       "name": "新能源ETF申万菱信",
       "exchange": "SZSE",
       "shares": 415958917.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6252,
       "referencePriceType": "NAV"
     },
@@ -17533,11 +16972,8 @@
       "name": "新材料ETF国泰",
       "exchange": "SZSE",
       "shares": 198734117.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_materials",
-      "groupName": "新材料",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8331,
       "referencePriceType": "NAV"
     },
@@ -17546,11 +16982,8 @@
       "name": "新材料ETF建信",
       "exchange": "SZSE",
       "shares": 89707747.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_materials",
-      "groupName": "新材料",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.7552,
       "referencePriceType": "NAV"
     },
@@ -17611,11 +17044,8 @@
       "name": "创业板科技ETF华泰柏瑞",
       "exchange": "SZSE",
       "shares": 185903120.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.3503,
       "referencePriceType": "NAV"
     },
@@ -17647,11 +17077,8 @@
       "name": "创科技ETF国联安",
       "exchange": "SZSE",
       "shares": 28280565.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2668,
       "referencePriceType": "NAV"
     },
@@ -17660,11 +17087,8 @@
       "name": "工业互联网ETF鹏华",
       "exchange": "SZSE",
       "shares": 41755382.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.2238,
       "referencePriceType": "NAV"
     },
@@ -17771,11 +17195,8 @@
       "name": "碳中和ETF华夏",
       "exchange": "SZSE",
       "shares": 1592528485.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.7236,
       "referencePriceType": "NAV"
     },
@@ -17784,11 +17205,8 @@
       "name": "300ESGETF华夏",
       "exchange": "SZSE",
       "shares": 31083347.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_esg",
-      "groupName": "ESG与可持续",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.1206,
       "referencePriceType": "NAV"
     },
@@ -17807,11 +17225,8 @@
       "name": "线上消费ETF平安",
       "exchange": "SZSE",
       "shares": 44758908.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8222,
       "referencePriceType": "NAV"
     },
@@ -17859,11 +17274,8 @@
       "name": "消费ETF易方达",
       "exchange": "SZSE",
       "shares": 187245390.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.8665,
       "referencePriceType": "NAV"
     },
@@ -17934,11 +17346,8 @@
       "name": "科技ETF易方达",
       "exchange": "SZSE",
       "shares": 879051428.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.9553,
       "referencePriceType": "NAV"
     },
@@ -18026,11 +17435,8 @@
       "name": "人工智能ETF易方达",
       "exchange": "SZSE",
       "shares": 11587229669.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_ai_computing",
-      "groupName": "AI与算力",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.8278,
       "referencePriceType": "NAV"
     },
@@ -18331,11 +17737,8 @@
       "name": "金融科技ETF华宝",
       "exchange": "SZSE",
       "shares": 10265904148.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_finance",
-      "groupName": "金融综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6324,
       "referencePriceType": "NAV"
     },
@@ -18370,11 +17773,8 @@
       "name": "互联网龙头ETF工银",
       "exchange": "SZSE",
       "shares": 347372474.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6052,
       "referencePriceType": "NAV"
     },
@@ -18422,11 +17822,8 @@
       "name": "碳中和50ETF国泰",
       "exchange": "SZSE",
       "shares": 97117535.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.0594,
       "referencePriceType": "NAV"
     },
@@ -18575,11 +17972,8 @@
       "name": "新能源ETF嘉实",
       "exchange": "SZSE",
       "shares": 2659662899.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6091,
       "referencePriceType": "NAV"
     },
@@ -18653,11 +18047,8 @@
       "name": "碳中和ETF鹏华",
       "exchange": "SZSE",
       "shares": 246467316.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_new_energy",
-      "groupName": "新能源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.7342,
       "referencePriceType": "NAV"
     },
@@ -18754,11 +18145,8 @@
       "name": "物联网ETF易方达",
       "exchange": "SZSE",
       "shares": 73241864.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.4109,
       "referencePriceType": "NAV"
     },
@@ -18767,11 +18155,8 @@
       "name": "物联网ETF南方",
       "exchange": "SZSE",
       "shares": 35055960.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.3021,
       "referencePriceType": "NAV"
     },
@@ -18891,11 +18276,8 @@
       "name": "TMT50ETF招商",
       "exchange": "SZSE",
       "shares": 526561992.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.354,
       "referencePriceType": "NAV"
     },
@@ -19038,11 +18420,8 @@
       "name": "消费ETF汇添富",
       "exchange": "SZSE",
       "shares": 23610629040.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 0.6836,
       "referencePriceType": "NAV"
     },
@@ -19064,11 +18443,8 @@
       "name": "能源ETF汇添富",
       "exchange": "SZSE",
       "shares": 525898150.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_resources",
-      "groupName": "资源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.6785,
       "referencePriceType": "NAV"
     },
@@ -19126,11 +18502,8 @@
       "name": "可选消费ETF广发",
       "exchange": "SZSE",
       "shares": 108156094.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_consumer",
-      "groupName": "消费综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.9321,
       "referencePriceType": "NAV"
     },
@@ -19162,11 +18535,8 @@
       "name": "信息技术ETF广发",
       "exchange": "SZSE",
       "shares": 833656106.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_digital_economy",
-      "groupName": "数字经济",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.1379,
       "referencePriceType": "NAV"
     },
@@ -19219,11 +18589,8 @@
       "name": "能源ETF广发",
       "exchange": "SZSE",
       "shares": 65072327.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_resources",
-      "groupName": "资源综合",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.3476,
       "referencePriceType": "NAV"
     },
@@ -19320,11 +18687,8 @@
       "name": "央企ETF银华",
       "exchange": "SZSE",
       "shares": 1827891780.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.6315,
       "referencePriceType": "NAV"
     },
@@ -19464,11 +18828,8 @@
       "name": "央企创新ETF富国",
       "exchange": "SZSE",
       "shares": 39432422.0,
-      "classificationStatus": "classified",
-      "analysisStatus": "ready",
-      "groupId": "theme_central_soe",
-      "groupName": "央国企",
-      "kind": "theme",
+      "classificationStatus": "unclassified",
+      "analysisStatus": "history_or_nav_pending",
       "referencePrice": 1.786,
       "referencePriceType": "NAV"
     },
@@ -19687,7 +19048,7 @@
         "currentName": "港高股息"
       }
     ],
-    "unclassifiedCount": 74,
+    "unclassifiedCount": 287,
     "unclassified": [
       {
         "code": "510010",
@@ -19700,13 +19061,68 @@
         "exchange": "SSE"
       },
       {
+        "code": "510060",
+        "name": "央企ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "510090",
+        "name": "ESG建信",
+        "exchange": "SSE"
+      },
+      {
         "code": "510130",
         "name": "中盘ETF",
         "exchange": "SSE"
       },
       {
+        "code": "510150",
+        "name": "消费ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "510160",
+        "name": "产业升级",
+        "exchange": "SSE"
+      },
+      {
         "code": "510170",
         "name": "商品ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "510230",
+        "name": "金融ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "510270",
+        "name": "国企ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "510410",
+        "name": "资源ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "510630",
+        "name": "消费30",
+        "exchange": "SSE"
+      },
+      {
+        "code": "510770",
+        "name": "G60创新",
+        "exchange": "SSE"
+      },
+      {
+        "code": "510810",
+        "name": "上海国企",
+        "exchange": "SSE"
+      },
+      {
+        "code": "510990",
+        "name": "ESG180",
         "exchange": "SSE"
       },
       {
@@ -19722,6 +19138,21 @@
       {
         "code": "512180",
         "name": "建信MSCI",
+        "exchange": "SSE"
+      },
+      {
+        "code": "512190",
+        "name": "之江凤凰",
+        "exchange": "SSE"
+      },
+      {
+        "code": "512220",
+        "name": "TMTETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "512330",
+        "name": "信息ETF",
         "exchange": "SSE"
       },
       {
@@ -19745,6 +19176,46 @@
         "exchange": "SSE"
       },
       {
+        "code": "512600",
+        "name": "必选消费",
+        "exchange": "SSE"
+      },
+      {
+        "code": "512650",
+        "name": "长三角",
+        "exchange": "SSE"
+      },
+      {
+        "code": "512770",
+        "name": "战略新兴",
+        "exchange": "SSE"
+      },
+      {
+        "code": "512870",
+        "name": "杭州湾区",
+        "exchange": "SSE"
+      },
+      {
+        "code": "512930",
+        "name": "AIETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "512950",
+        "name": "央企改革",
+        "exchange": "SSE"
+      },
+      {
+        "code": "512960",
+        "name": "央调ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "512970",
+        "name": "湾区ETF",
+        "exchange": "SSE"
+      },
+      {
         "code": "512990",
         "name": "MSCIA股",
         "exchange": "SSE"
@@ -19755,13 +19226,203 @@
         "exchange": "SSE"
       },
       {
+        "code": "513560",
+        "name": "香港科技",
+        "exchange": "SSE"
+      },
+      {
+        "code": "515000",
+        "name": "科技ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "515070",
+        "name": "AI智能",
+        "exchange": "SSE"
+      },
+      {
+        "code": "515090",
+        "name": "可持续",
+        "exchange": "SSE"
+      },
+      {
+        "code": "515110",
+        "name": "国企方达",
+        "exchange": "SSE"
+      },
+      {
+        "code": "515150",
+        "name": "国企富国",
+        "exchange": "SSE"
+      },
+      {
         "code": "515160",
         "name": "MSCI招商",
         "exchange": "SSE"
       },
       {
+        "code": "515200",
+        "name": "创新100",
+        "exchange": "SSE"
+      },
+      {
+        "code": "515580",
+        "name": "中证科技",
+        "exchange": "SSE"
+      },
+      {
+        "code": "515600",
+        "name": "央企创新",
+        "exchange": "SSE"
+      },
+      {
+        "code": "515650",
+        "name": "消费50",
+        "exchange": "SSE"
+      },
+      {
+        "code": "515680",
+        "name": "创新央企",
+        "exchange": "SSE"
+      },
+      {
+        "code": "515720",
+        "name": "金科富国",
+        "exchange": "SSE"
+      },
+      {
+        "code": "515750",
+        "name": "科技50",
+        "exchange": "SSE"
+      },
+      {
+        "code": "515760",
+        "name": "浙江国资",
+        "exchange": "SSE"
+      },
+      {
         "code": "515770",
         "name": "MSCIAETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "515860",
+        "name": "科技100",
+        "exchange": "SSE"
+      },
+      {
+        "code": "515900",
+        "name": "央创ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "515920",
+        "name": "智能消费",
+        "exchange": "SSE"
+      },
+      {
+        "code": "515980",
+        "name": "人工智能",
+        "exchange": "SSE"
+      },
+      {
+        "code": "515990",
+        "name": "添富国企",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516050",
+        "name": "科技龙头",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516070",
+        "name": "碳中和50",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516090",
+        "name": "新能源E",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516100",
+        "name": "科技金融",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516130",
+        "name": "消费龙头",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516160",
+        "name": "新能源",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516260",
+        "name": "物联网50",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516270",
+        "name": "新能源50",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516330",
+        "name": "物联网",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516360",
+        "name": "新材料",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516560",
+        "name": "养老ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516580",
+        "name": "新能源BS",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516600",
+        "name": "消服ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516710",
+        "name": "新材料50",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516720",
+        "name": "ESGETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516800",
+        "name": "智能制造",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516850",
+        "name": "新能源80",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516860",
+        "name": "金融科技",
+        "exchange": "SSE"
+      },
+      {
+        "code": "516890",
+        "name": "新材ETF",
         "exchange": "SSE"
       },
       {
@@ -19780,8 +19441,18 @@
         "exchange": "SSE"
       },
       {
+        "code": "517050",
+        "name": "互联网50",
+        "exchange": "SSE"
+      },
+      {
         "code": "517080",
         "name": "HGS500",
+        "exchange": "SSE"
+      },
+      {
+        "code": "517090",
+        "name": "共赢ETF",
         "exchange": "SSE"
       },
       {
@@ -19790,8 +19461,23 @@
         "exchange": "SSE"
       },
       {
+        "code": "517160",
+        "name": "长江ETF",
+        "exchange": "SSE"
+      },
+      {
         "code": "517170",
         "name": "沪港深E",
+        "exchange": "SSE"
+      },
+      {
+        "code": "517180",
+        "name": "中国国企",
+        "exchange": "SSE"
+      },
+      {
+        "code": "517200",
+        "name": "互联网",
         "exchange": "SSE"
       },
       {
@@ -19800,8 +19486,63 @@
         "exchange": "SSE"
       },
       {
+        "code": "517330",
+        "name": "长江保护",
+        "exchange": "SSE"
+      },
+      {
+        "code": "517350",
+        "name": "龙头科技",
+        "exchange": "SSE"
+      },
+      {
+        "code": "517360",
+        "name": "AH科技",
+        "exchange": "SSE"
+      },
+      {
+        "code": "517550",
+        "name": "消费主题",
+        "exchange": "SSE"
+      },
+      {
+        "code": "517660",
+        "name": "物联网AH",
+        "exchange": "SSE"
+      },
+      {
+        "code": "517800",
+        "name": "AI50",
+        "exchange": "SSE"
+      },
+      {
+        "code": "517850",
+        "name": "张江ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "517880",
+        "name": "品牌消费",
+        "exchange": "SSE"
+      },
+      {
+        "code": "517950",
+        "name": "交银科技",
+        "exchange": "SSE"
+      },
+      {
+        "code": "518600",
+        "name": "上海金",
+        "exchange": "SSE"
+      },
+      {
         "code": "518680",
         "name": "金ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "518860",
+        "name": "上海金E",
         "exchange": "SSE"
       },
       {
@@ -19835,8 +19576,68 @@
         "exchange": "SSE"
       },
       {
+        "code": "560060",
+        "name": "碳中和基",
+        "exchange": "SSE"
+      },
+      {
+        "code": "560170",
+        "name": "央企科技",
+        "exchange": "SSE"
+      },
+      {
+        "code": "560550",
+        "name": "碳中和",
+        "exchange": "SSE"
+      },
+      {
+        "code": "560560",
+        "name": "碳中和TK",
+        "exchange": "SSE"
+      },
+      {
         "code": "560650",
         "name": "核心50",
+        "exchange": "SSE"
+      },
+      {
+        "code": "560680",
+        "name": "龙头消费",
+        "exchange": "SSE"
+      },
+      {
+        "code": "560800",
+        "name": "数字ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "560810",
+        "name": "央企ESG",
+        "exchange": "SSE"
+      },
+      {
+        "code": "560990",
+        "name": "科技先锋",
+        "exchange": "SSE"
+      },
+      {
+        "code": "561130",
+        "name": "国货ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "561190",
+        "name": "双碳ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "561220",
+        "name": "国企数字",
+        "exchange": "SSE"
+      },
+      {
+        "code": "561260",
+        "name": "能源ETF",
         "exchange": "SSE"
       },
       {
@@ -19845,8 +19646,23 @@
         "exchange": "SSE"
       },
       {
+        "code": "561330",
+        "name": "矿业ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "561460",
+        "name": "AITH",
+        "exchange": "SSE"
+      },
+      {
         "code": "561500",
         "name": "漂亮50",
+        "exchange": "SSE"
+      },
+      {
+        "code": "561790",
+        "name": "现代能源",
         "exchange": "SSE"
       },
       {
@@ -19860,13 +19676,68 @@
         "exchange": "SSE"
       },
       {
+        "code": "561960",
+        "name": "央企回报",
+        "exchange": "SSE"
+      },
+      {
+        "code": "562010",
+        "name": "绿色能源",
+        "exchange": "SSE"
+      },
+      {
         "code": "562050",
         "name": "药ETF",
         "exchange": "SSE"
       },
       {
+        "code": "562300",
+        "name": "低碳ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "562380",
+        "name": "科技引领",
+        "exchange": "SSE"
+      },
+      {
         "code": "562550",
         "name": "绿电ETF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "562560",
+        "name": "信息技术",
+        "exchange": "SSE"
+      },
+      {
+        "code": "562580",
+        "name": "可选消费",
+        "exchange": "SSE"
+      },
+      {
+        "code": "562850",
+        "name": "央企能源",
+        "exchange": "SSE"
+      },
+      {
+        "code": "562910",
+        "name": "高端制造",
+        "exchange": "SSE"
+      },
+      {
+        "code": "562990",
+        "name": "碳中和E",
+        "exchange": "SSE"
+      },
+      {
+        "code": "563050",
+        "name": "科技央企",
+        "exchange": "SSE"
+      },
+      {
+        "code": "563060",
+        "name": "央企50",
         "exchange": "SSE"
       },
       {
@@ -19880,8 +19751,23 @@
         "exchange": "SSE"
       },
       {
+        "code": "563570",
+        "name": "金融科",
+        "exchange": "SSE"
+      },
+      {
+        "code": "563670",
+        "name": "金科基金",
+        "exchange": "SSE"
+      },
+      {
         "code": "563780",
         "name": "现金指数",
+        "exchange": "SSE"
+      },
+      {
+        "code": "588010",
+        "name": "科创材料",
         "exchange": "SSE"
       },
       {
@@ -19890,8 +19776,58 @@
         "exchange": "SSE"
       },
       {
+        "code": "588160",
+        "name": "科创新材",
+        "exchange": "SSE"
+      },
+      {
         "code": "588260",
         "name": "科创技术",
+        "exchange": "SSE"
+      },
+      {
+        "code": "588410",
+        "name": "双创AI",
+        "exchange": "SSE"
+      },
+      {
+        "code": "588420",
+        "name": "AI双创",
+        "exchange": "SSE"
+      },
+      {
+        "code": "588430",
+        "name": "科创创AI",
+        "exchange": "SSE"
+      },
+      {
+        "code": "588470",
+        "name": "双创智能",
+        "exchange": "SSE"
+      },
+      {
+        "code": "588480",
+        "name": "AI50双创",
+        "exchange": "SSE"
+      },
+      {
+        "code": "588510",
+        "name": "智能双创",
+        "exchange": "SSE"
+      },
+      {
+        "code": "588530",
+        "name": "AIBOCI",
+        "exchange": "SSE"
+      },
+      {
+        "code": "588730",
+        "name": "科创AI",
+        "exchange": "SSE"
+      },
+      {
+        "code": "588760",
+        "name": "AI科创",
         "exchange": "SSE"
       },
       {
@@ -19900,8 +19836,98 @@
         "exchange": "SSE"
       },
       {
+        "code": "588790",
+        "name": "科创智能",
+        "exchange": "SSE"
+      },
+      {
+        "code": "588830",
+        "name": "科创新能",
+        "exchange": "SSE"
+      },
+      {
+        "code": "588930",
+        "name": "科创板AI",
+        "exchange": "SSE"
+      },
+      {
+        "code": "588960",
+        "name": "新能科创",
+        "exchange": "SSE"
+      },
+      {
+        "code": "589010",
+        "name": "科创AI指",
+        "exchange": "SSE"
+      },
+      {
+        "code": "589090",
+        "name": "KCAI",
+        "exchange": "SSE"
+      },
+      {
+        "code": "589110",
+        "name": "科AI国泰",
+        "exchange": "SSE"
+      },
+      {
+        "code": "589180",
+        "name": "科创材基",
+        "exchange": "SSE"
+      },
+      {
+        "code": "589230",
+        "name": "AI科创CS",
+        "exchange": "SSE"
+      },
+      {
+        "code": "589310",
+        "name": "科创人工",
+        "exchange": "SSE"
+      },
+      {
+        "code": "589380",
+        "name": "AI科创指",
+        "exchange": "SSE"
+      },
+      {
+        "code": "589410",
+        "name": "科创AIJS",
+        "exchange": "SSE"
+      },
+      {
+        "code": "589520",
+        "name": "AI科创板",
+        "exchange": "SSE"
+      },
+      {
+        "code": "589560",
+        "name": "科创AITF",
+        "exchange": "SSE"
+      },
+      {
+        "code": "589960",
+        "name": "科创新源",
+        "exchange": "SSE"
+      },
+      {
         "code": "159005",
         "name": "快钱ETF汇添富",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159009",
+        "name": "创业板新能源ETF易方达",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159013",
+        "name": "工业互联网ETF大成",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159022",
+        "name": "科创创业人工智能ETF富国",
         "exchange": "SZSE"
       },
       {
@@ -19915,8 +19941,28 @@
         "exchange": "SZSE"
       },
       {
+        "code": "159069",
+        "name": "创业板新能源ETF华泰柏瑞",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159075",
+        "name": "工业互联网ETF华夏",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159076",
+        "name": "创业板新能源ETF华宝",
+        "exchange": "SZSE"
+      },
+      {
         "code": "159078",
         "name": "A股ETF富国",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159086",
+        "name": "金融科技ETF广发",
         "exchange": "SZSE"
       },
       {
@@ -19925,8 +19971,108 @@
         "exchange": "SZSE"
       },
       {
+        "code": "159103",
+        "name": "金融科技ETF汇添富",
+        "exchange": "SZSE"
+      },
+      {
         "code": "159106",
         "name": "民企300ETF前海开源",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159122",
+        "name": "创业板新能源ETF富国",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159139",
+        "name": "科创创业人工智能ETF华泰柏瑞",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159140",
+        "name": "科创创业人工智能ETF易方达",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159141",
+        "name": "科创创业人工智能ETF永赢",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159142",
+        "name": "科创创业人工智能ETF景顺",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159149",
+        "name": "创业板新能源ETF工银",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159187",
+        "name": "创业板新能源ETF景顺",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159190",
+        "name": "创业板新能源ETF天弘",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159242",
+        "name": "创业板人工智能ETF大成",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159243",
+        "name": "创业板人工智能ETF招商",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159246",
+        "name": "创业板人工智能ETF富国",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159248",
+        "name": "人工智能ETF万家",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159261",
+        "name": "创业板新能源ETF鹏华",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159279",
+        "name": "创业板人工智能ETF华安",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159299",
+        "name": "金融科技ETF易方达",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159311",
+        "name": "数字经济ETF易方达",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159335",
+        "name": "央企科创ETF融通",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159363",
+        "name": "创业板人工智能ETF华宝",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159368",
+        "name": "创业板新能源ETF华夏",
         "exchange": "SZSE"
       },
       {
@@ -19935,8 +20081,58 @@
         "exchange": "SZSE"
       },
       {
+        "code": "159381",
+        "name": "创业板人工智能ETF华夏",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159382",
+        "name": "创业板人工智能ETF南方",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159385",
+        "name": "数字经济ETF富国",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159387",
+        "name": "创业板新能源ETF国泰",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159388",
+        "name": "创业板人工智能ETF国泰",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159389",
+        "name": "数字经济ETF嘉实",
+        "exchange": "SZSE"
+      },
+      {
         "code": "159513",
         "name": "纳斯达克100ETF大成",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159520",
+        "name": "消费龙头ETF工银",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159528",
+        "name": "国企改革ETF富国",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159550",
+        "name": "互联网ETF东财",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159621",
+        "name": "ESGETF国泰",
         "exchange": "SZSE"
       },
       {
@@ -19950,6 +20146,36 @@
         "exchange": "SZSE"
       },
       {
+        "code": "159639",
+        "name": "碳中和ETF南方",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159640",
+        "name": "碳中和龙头ETF工银",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159641",
+        "name": "碳中和ETF招商",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159642",
+        "name": "碳中和ETF大成",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159653",
+        "name": "ESG300ETF国联安",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159658",
+        "name": "数字经济ETF华安",
+        "exchange": "SZSE"
+      },
+      {
         "code": "159659",
         "name": "纳斯达克100ETF招商",
         "exchange": "SZSE"
@@ -19957,6 +20183,66 @@
       {
         "code": "159663",
         "name": "机床ETF华夏",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159670",
+        "name": "消费50ETF国联安",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159672",
+        "name": "消费ETF博时",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159689",
+        "name": "消费ETF南方",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159701",
+        "name": "物联网ETF招商",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159703",
+        "name": "新材料ETF天弘",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159709",
+        "name": "物联网ETF工银",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159717",
+        "name": "ESGETF鹏华",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159719",
+        "name": "国企ETF平安",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159723",
+        "name": "科技龙头ETF汇添富",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159725",
+        "name": "线上消费ETF工银",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159728",
+        "name": "在线消费ETF南方",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159729",
+        "name": "互联网ETF汇添富",
         "exchange": "SZSE"
       },
       {
@@ -19970,13 +20256,73 @@
         "exchange": "SZSE"
       },
       {
+        "code": "159747",
+        "name": "香港科技ETF南方",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159752",
+        "name": "新能源ETF申万菱信",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159761",
+        "name": "新材料ETF国泰",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159763",
+        "name": "新材料ETF建信",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159773",
+        "name": "创业板科技ETF华泰柏瑞",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159777",
+        "name": "创科技ETF国联安",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159778",
+        "name": "工业互联网ETF鹏华",
+        "exchange": "SZSE"
+      },
+      {
         "code": "159786",
         "name": "VRETF银华",
         "exchange": "SZSE"
       },
       {
+        "code": "159790",
+        "name": "碳中和ETF华夏",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159791",
+        "name": "300ESGETF华夏",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159793",
+        "name": "线上消费ETF平安",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159798",
+        "name": "消费ETF易方达",
+        "exchange": "SZSE"
+      },
+      {
         "code": "159804",
         "name": "创中盘88ETF国寿",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159807",
+        "name": "科技ETF易方达",
         "exchange": "SZSE"
       },
       {
@@ -19987,6 +20333,11 @@
       {
         "code": "159814",
         "name": "创业大盘ETF西部利得",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159819",
+        "name": "人工智能ETF易方达",
         "exchange": "SZSE"
       },
       {
@@ -20015,6 +20366,41 @@
         "exchange": "SZSE"
       },
       {
+        "code": "159851",
+        "name": "金融科技ETF华宝",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159856",
+        "name": "互联网龙头ETF工银",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159861",
+        "name": "碳中和50ETF国泰",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159875",
+        "name": "新能源ETF嘉实",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159885",
+        "name": "碳中和ETF鹏华",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159895",
+        "name": "物联网ETF易方达",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159896",
+        "name": "物联网ETF南方",
+        "exchange": "SZSE"
+      },
+      {
         "code": "159902",
         "name": "中小100ETF华夏",
         "exchange": "SZSE"
@@ -20022,6 +20408,11 @@
       {
         "code": "159903",
         "name": "深成ETF南方",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159909",
+        "name": "TMT50ETF招商",
         "exchange": "SZSE"
       },
       {
@@ -20035,8 +20426,38 @@
         "exchange": "SZSE"
       },
       {
+        "code": "159928",
+        "name": "消费ETF汇添富",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159930",
+        "name": "能源ETF汇添富",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159936",
+        "name": "可选消费ETF广发",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159939",
+        "name": "信息技术ETF广发",
+        "exchange": "SZSE"
+      },
+      {
         "code": "159944",
         "name": "材料ETF广发",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159945",
+        "name": "能源ETF广发",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159959",
+        "name": "央企ETF银华",
         "exchange": "SZSE"
       },
       {
@@ -20047,6 +20468,11 @@
       {
         "code": "159973",
         "name": "民企ETF弘毅远方",
+        "exchange": "SZSE"
+      },
+      {
+        "code": "159974",
+        "name": "央企创新ETF富国",
         "exchange": "SZSE"
       },
       {

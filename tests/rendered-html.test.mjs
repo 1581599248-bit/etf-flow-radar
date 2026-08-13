@@ -26,7 +26,8 @@ test("dashboard contains the answer-first modules and two coordinate maps", asyn
   assert.match(page, /layoutBubbleLabels/);
   assert.match(page, /全部标签就近避让/);
   assert.match(page, /全部资金观察组证据表/);
-  assert.match(page, /跨行业产品单列“主题”/);
+  assert.match(page, /不再设置跨行业主题组/);
+  assert.doesNotMatch(page, /data-kind="theme"/);
   assert.match(page, /等待历史或净值补齐/);
   assert.doesNotMatch(page, /仅显示防碰撞标签/);
   assert.match(page, /当日流入领跑 \/ 流出领跑/);
@@ -48,7 +49,7 @@ test("verified snapshot is internally coherent and carries the complete ETF univ
   assert.ok(snapshot.groups.some((row) => row.kind === "broad"));
   assert.ok(snapshot.groups.some((row) => row.kind === "style"));
   assert.ok(snapshot.groups.some((row) => row.kind === "industry"));
-  assert.ok(snapshot.groups.some((row) => row.kind === "theme"));
+  assert.ok(snapshot.groups.every((row) => row.kind !== "theme"));
   assert.match(snapshot.methodology.identity, /禁止据此推断/);
   if (snapshot.schemaVersion >= 5) {
     assert.equal(snapshot.universe.length, snapshot.quality.marketEtfCount);
@@ -86,7 +87,7 @@ test("verified snapshot is internally coherent and carries the complete ETF univ
   const universeIndustryRows = snapshot.universe.filter((row) => row.classificationStatus === "classified" && row.kind === "industry");
   assert.equal(snapshot.quality.industryUniverseCount, universeIndustryRows.length);
   assert.equal(snapshot.quality.industryPendingCount, universeIndustryRows.length - snapshot.quality.industryEtfCount);
-  assert.match(snapshot.methodology.classification, /SW2021_L1_ETF_V1/);
+  assert.match(snapshot.methodology.classification, /SW2021_L1_ETF_V2/);
   assert.match(snapshot.methodology.classification, /31个一级行业/);
 });
 

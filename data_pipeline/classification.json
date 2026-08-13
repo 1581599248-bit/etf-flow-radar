@@ -72,20 +72,5 @@
     {"id": "sw_petrochemical", "code": "801960", "name": "石油石化", "patterns": ["石油石化|石油|油气"]},
     {"id": "sw_environmental", "code": "801970", "name": "环保", "patterns": ["环保|环境治理|固废"]},
     {"id": "sw_beauty_care", "code": "801980", "name": "美容护理", "patterns": ["美容护理|化妆品|美妆"]}
-  ],
-  "theme": [
-    {"id": "theme_finance", "name": "金融综合", "patterns": ["^金融ETF|金融ETF|金融科技|金融地产|大金融"]},
-    {"id": "theme_consumer", "name": "消费综合", "patterns": ["^消费ETF|消费主题|消费龙头|消费30|消费50|必选消费|可选消费|智能消费|线上消费|在线消费|品牌消费|消费服务|消服ETF|国货"]},
-    {"id": "theme_resources", "name": "资源综合", "patterns": ["^资源ETF|资源产业|矿业ETF|能源ETF"]},
-    {"id": "theme_manufacturing", "name": "先进制造", "patterns": ["智能制造|高端制造|制造ETF|制造业"]},
-    {"id": "theme_ai_computing", "name": "AI与算力", "patterns": ["人工智能|AI|算力|数据中心|东数西算"]},
-    {"id": "theme_digital_economy", "name": "数字经济", "patterns": ["数字经济|信息技术|TMT|物联网|互联网|科技ETF|科技龙头|科技50|科技100|科技先锋"]},
-    {"id": "theme_new_energy", "name": "新能源综合", "patterns": ["^新能源|新能源ETF|绿色能源|清洁能源|碳中和|碳科技|新能源产业"]},
-    {"id": "theme_new_materials", "name": "新材料", "patterns": ["新材料|新材ETF|新材50"]},
-    {"id": "theme_central_soe", "name": "央国企", "patterns": ["央企|国企|国新"]},
-    {"id": "theme_esg", "name": "ESG与可持续", "patterns": ["ESG|可持续|绿色发展"]},
-    {"id": "theme_regional", "name": "区域战略", "patterns": ["长三角|杭州湾|湾区|长江|之江|浙江|上海|G60|张江|一带一路"]},
-    {"id": "theme_industrial_upgrade", "name": "产业升级", "patterns": ["产业升级|战略新兴|创新100|科技创新|新兴产业"]},
-    {"id": "theme_aging", "name": "养老产业", "patterns": ["养老"]}
   ]
 }
