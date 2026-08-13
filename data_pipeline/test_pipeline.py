@@ -31,6 +31,28 @@ class PipelineTests(unittest.TestCase):
         self.assertFalse(update_daily.is_plain_benchmark("沪深300增强ETF"))
         self.assertFalse(update_daily.is_plain_benchmark("A500红利低波ETF"))
 
+    def test_broad_classification_uses_full_name_and_beats_manager_suffixes(self):
+        self.assertEqual(update_daily.classify_etf("创业板ETF中银证券")["id"], "chinext")
+        self.assertEqual(update_daily.classify_etf("A100", "A100ETF南方")["id"], "csi_a100")
+        self.assertEqual(update_daily.classify_etf("深100ETF易方达")["id"], "szse100")
+        self.assertEqual(update_daily.classify_etf("科创200E")["id"], "star200")
+
+    def test_universe_audit_detects_added_missing_and_renamed(self):
+        previous = pd.DataFrame([
+            {"code": "510300", "name": "300ETF", "exchange": "SSE"},
+            {"code": "159001", "name": "旧名称", "exchange": "SZSE"},
+            {"code": "159999", "name": "已消失", "exchange": "SZSE"},
+        ])
+        current = pd.DataFrame([
+            {"code": "510300", "name": "300ETF", "exchange": "SSE"},
+            {"code": "159001", "name": "新名称", "exchange": "SZSE"},
+            {"code": "159058", "name": "证券ETF大成", "exchange": "SZSE"},
+        ])
+        audit = update_daily.audit_universe(current, previous)
+        self.assertEqual([row["code"] for row in audit["added"]], ["159058"])
+        self.assertEqual([row["code"] for row in audit["missing"]], ["159999"])
+        self.assertEqual(audit["renamed"][0]["previousName"], "旧名称")
+
     def test_price_flow_state_covers_all_four_quadrants(self):
         self.assertEqual(update_daily._flow_state(1, 1), "上涨增配")
         self.assertEqual(update_daily._flow_state(-1, 1), "逆势承接")
