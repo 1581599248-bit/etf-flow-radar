@@ -350,12 +350,12 @@ def _flow_state(ret: float | None, intensity: float | None) -> str:
     if ret is None or intensity is None:
         return "待补充"
     if ret >= 0 and intensity >= 0:
-        return "上涨增配"
+        return "上涨且流入"
     if ret < 0 <= intensity:
-        return "逆势承接"
+        return "下跌但流入"
     if ret >= 0 > intensity:
-        return "上涨减配"
-    return "下跌流出"
+        return "上涨但流出"
+    return "下跌且流出"
 
 
 def _direction(value: float) -> str:
@@ -383,11 +383,16 @@ def generate_conclusion(groups: list[dict[str, Any]], market: dict[str, Any], hi
     positive_sectors = [g for g in sec_in if g["flow1d"] > 0]
     style_in = max(styles, key=lambda g: g["flow1d"])
     style_out = min(styles, key=lambda g: g["flow1d"])
+    sector_headline = (
+        f"行业资金流入居前的是{sec_in[0]['name']}，流出最多的是{sec_out[0]['name']}。"
+        if sec_in[0]["flow1d"] > 0
+        else f"行业组当日均未录得估算净流入，流出最多的是{sec_out[0]['name']}。"
+    )
     headline = (
-        f"已完成分析的A股股票ETF当日估算{market_word}{abs(market['flow1d']):.1f}亿元；"
-        f"份额增加{market['increaseEtfCount1d']}只、减少{market['decreaseEtfCount1d']}只。"
-        f"宽基中{broad_out_count}个流出、{broad_in_count}个流入；"
-        f"行业资金变化居前的是{sec_in[0]['name']}，流出最多的是{sec_out[0]['name']}。"
+        f"本期统计的{market['etfCount']}只A股股票ETF当日合计估算{market_word}{abs(market['flow1d']):.1f}亿元；"
+        f"估算净流入{market['increaseEtfCount1d']}只、估算净流出{market['decreaseEtfCount1d']}只、"
+        f"总份额不变{market['unchangedEtfCount1d']}只。"
+        f"宽基中{broad_out_count}个流出、{broad_in_count}个流入；{sector_headline}"
     )
     broad_line = (
         f"宽基流出前三为{broad_out[0]['name']}{broad_out[0]['flow1d']:.1f}亿、"
@@ -409,14 +414,13 @@ def generate_conclusion(groups: list[dict[str, Any]], market: dict[str, Any], hi
         f"风格组中{style_in['name']}当日变化相对靠前，{style_out['name']}流出较多。"
         f"{sustained_text}"
     )
-    concentrated = max([g for g in groups if abs(g["flow1d"]) >= 1], key=lambda g: g["concentration1d"])
-    caveat = (
-        f"{concentrated['name']}单只产品贡献占绝对流量{concentrated['concentration1d']:.0f}%，"
-        "需防止把集中申赎误判为板块共识。"
+    anomaly = (
+        f"单只ETF大额变化：{market['topInflowEtf']['name']}估算净流入{market['topInflowEtf']['flow1d']:+.1f}亿元；"
+        f"{market['topOutflowEtf']['name']}估算净流出{market['topOutflowEtf']['flow1d']:+.1f}亿元。"
     )
     return {
         "headline": headline,
-        "facts": [broad_line, sector_line, caveat],
+        "facts": [broad_line, sector_line, anomaly],
         "interpretation": watch,
         "confidence": "A" if history_ok else "B",
         "confidenceNote": "21个交易日份额完整，价格代理覆盖充分" if history_ok else "历史或价格代理仍有缺口，结论已降级",
@@ -524,8 +528,10 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         "decrease": int((valid["delta_1d"] < 0).sum()),
         "unchanged": int((valid["delta_1d"] == 0).sum()),
     }
+    top_inflow_etf = valid.loc[valid["flow_1d"].idxmax()]
+    top_outflow_etf = valid.loc[valid["flow_1d"].idxmin()]
     market = {
-        "name": "已完成分析的A股股票ETF", "etfCount": int(len(valid)),
+        "name": "A股股票ETF统计范围", "etfCount": int(len(valid)),
         "flow1d": round(float(valid["flow_1d"].sum()), 2),
         "flow5d": round(float(valid["flow_5d"].sum()), 2),
         "flow20d": round(float(valid["flow_20d"].sum()), 2),
@@ -534,6 +540,9 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         "increaseEtfCount1d": market_count1["increase"],
         "decreaseEtfCount1d": market_count1["decrease"],
         "unchangedEtfCount1d": market_count1["unchanged"],
+        "unchangedEtfPct1d": round(market_count1["unchanged"] / len(valid) * 100, 2),
+        "topInflowEtf": {"code": str(top_inflow_etf["code"]), "name": str(top_inflow_etf["name"]), "flow1d": round(float(top_inflow_etf["flow_1d"]), 2)},
+        "topOutflowEtf": {"code": str(top_outflow_etf["code"]), "name": str(top_outflow_etf["name"]), "flow1d": round(float(top_outflow_etf["flow_1d"]), 2)},
     }
     expected_groups = len({rep["group_id"] for rep in reps})
     price_coverage = len(return_series) / max(expected_groups, 1)
@@ -551,6 +560,17 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         issues.append({"severity": "critical", "check": "classification_coverage", "message": f"可识别A股股票ETF仅{len(valid)}只"})
     if price_coverage < .8:
         issues.append({"severity": "warning", "check": "return_proxy_coverage", "message": f"组别收益代理覆盖率{price_coverage:.1%}"})
+    count_total = sum(market_count1.values())
+    group_etf_total = sum(g["etfCount"] for g in groups)
+    unique_etf_total = int(valid["code"].nunique())
+    group_flow_1d = round(sum(g["flow1d"] for g in groups), 2)
+    flow_reconciliation_diff = round(group_flow_1d - market["flow1d"], 2)
+    if count_total != len(valid):
+        issues.append({"severity": "critical", "check": "direction_count_reconciliation", "message": "流入、流出与总份额不变只数无法与统计ETF总数对账"})
+    if group_etf_total != len(valid) or unique_etf_total != len(valid):
+        issues.append({"severity": "critical", "check": "group_count_reconciliation", "message": "观察组ETF数量存在遗漏或重复"})
+    if abs(flow_reconciliation_diff) > 0.5:
+        issues.append({"severity": "critical", "check": "flow_reconciliation", "message": "观察组资金变化合计与全体ETF合计偏差超过舍入容差"})
     critical = any(i["severity"] == "critical" for i in issues)
     history_ok = len(window) == WINDOW_SESSIONS and price_coverage >= .8
     groups = sorted(groups, key=lambda x: (x["kind"], -x["flow1d"]))
@@ -577,7 +597,11 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         "quality": {"marketEtfCount": int(len(current)), "classifiedEtfCount": int(len(valid)),
                     "completeUniverseCount": len(universe_records), "unclassifiedEtfCount": len(unclassified),
                     "officialSessions": len(window), "groupCount": len(groups),
-                    "returnProxyCoverage": round(price_coverage, 4), "issues": issues},
+                    "returnProxyCoverage": round(price_coverage, 4),
+                    "reconciliation": {"directionCountTotal": count_total, "groupEtfCountTotal": group_etf_total,
+                                       "uniqueAnalyzedEtfCount": unique_etf_total, "groupFlow1d": group_flow_1d,
+                                       "marketFlow1d": market["flow1d"], "flowDifference": flow_reconciliation_diff},
+                    "issues": issues},
         "sources": [
             {"name": "上海证券交易所", "field": "沪市ETF日终总份额", "role": "官方主源"},
             {"name": "深圳证券交易所", "field": "深市ETF日终总份额", "role": "官方主源"},
@@ -586,6 +610,7 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         ],
         "methodology": {
             "flow": "估算净申赎 =（期末份额 − 期初份额）× 期末已验证单位净值；金额用于方向与量级观察，不等同基金公司的最终现金流。",
+            "counts": "ETF只数按交易所日终总份额较前一交易日增加、减少或完全相同划分。总份额不变表示当日没有净份额增减，不代表没有二级市场成交、价格波动，亦不代表申购和赎回均为零。",
             "return": "组别收益使用组内当前规模最大的ETF作为价格代理；相对收益以沪深300代理为基准。",
             "coordinates": "横轴 = 20日相对沪深300收益率；纵轴 = 5日估算净申赎 ÷ 5日前参考规模（%）；气泡面积 = 当前估算AUM。",
             "identity": "份额数据不包含投资者身份，禁止据此推断国家队、机构、个人或做市商。",

@@ -7,6 +7,7 @@
 .evidence-table{overflow:visible}
 .e-row{grid-template-columns:minmax(115px,1.25fr) repeat(3,minmax(58px,.7fr)) minmax(68px,.75fr) minmax(90px,.9fr);gap:7px;min-width:0}
 .e-row>span,.e-row>strong{min-width:0}
+.e-row[hidden]{display:none!important}
 .audit-list{display:grid;grid-template-columns:52px 1fr;margin:8px 0 0;font-size:7.5px;line-height:1.55}
 .audit-list dt,.audit-list dd{padding:6px;border-bottom:1px solid #eceef0;margin:0}
 .audit-list dd{color:#6f7882}

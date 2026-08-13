@@ -59,10 +59,10 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(audit["renamed"][0]["previousName"], "旧名称")
 
     def test_price_flow_state_covers_all_four_quadrants(self):
-        self.assertEqual(update_daily._flow_state(1, 1), "上涨增配")
-        self.assertEqual(update_daily._flow_state(-1, 1), "逆势承接")
-        self.assertEqual(update_daily._flow_state(1, -1), "上涨减配")
-        self.assertEqual(update_daily._flow_state(-1, -1), "下跌流出")
+        self.assertEqual(update_daily._flow_state(1, 1), "上涨且流入")
+        self.assertEqual(update_daily._flow_state(-1, 1), "下跌但流入")
+        self.assertEqual(update_daily._flow_state(1, -1), "上涨但流出")
+        self.assertEqual(update_daily._flow_state(-1, -1), "下跌且流出")
 
     def test_sse_adapter_rejects_schema_drift(self):
         response = unittest.mock.Mock()
