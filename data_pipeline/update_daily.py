@@ -24,6 +24,7 @@ from typing import Any, Callable
 
 import akshare as ak
 import pandas as pd
+import requests
 
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "site" / "data"
@@ -35,7 +36,7 @@ MIN_CLASSIFIED_ETFS = 300
 WINDOW_SESSIONS = 21
 
 
-def retry(label: str, operation: Callable[[], pd.DataFrame], attempts: int = 3) -> pd.DataFrame:
+def retry(label: str, operation: Callable[[], pd.DataFrame], attempts: int = 5) -> pd.DataFrame:
     last_error: Exception | None = None
     for attempt in range(1, attempts + 1):
         try:
@@ -46,7 +47,7 @@ def retry(label: str, operation: Callable[[], pd.DataFrame], attempts: int = 3) 
         except Exception as exc:  # upstream network/schema errors vary
             last_error = exc
             if attempt < attempts:
-                time.sleep(1.5 * attempt)
+                time.sleep(min(30, 3 * (2 ** (attempt - 1))))
     raise RuntimeError(f"{label} failed after {attempts} attempts: {last_error}")
 
 
@@ -56,10 +57,44 @@ def latest_weekday(day: date) -> date:
     return day
 
 
+def fetch_sse_shares(day: date) -> pd.DataFrame:
+    """Call the official SSE endpoint with timeout/backoff-safe parsing.
+
+    AKShare's wrapper is intentionally simple and calls ``response.json()``
+    without a timeout. Shared CI exits occasionally receive an empty or HTML
+    response, so we keep the exact official query but validate HTTP and JSON.
+    """
+    url = "https://query.sse.com.cn/commonQuery.do"
+    params = {
+        "isPagination": "true", "pageHelp.pageSize": "10000", "pageHelp.pageNo": "1",
+        "pageHelp.beginPage": "1", "pageHelp.cacheSize": "1", "pageHelp.endPage": "1",
+        "sqlId": "COMMON_SSE_ZQPZ_ETFZL_XXPL_ETFGM_SEARCH_L", "STAT_DATE": day.isoformat(),
+    }
+    headers = {
+        "Referer": "https://www.sse.com.cn/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36",
+        "Accept": "application/json,text/plain,*/*",
+    }
+    response = requests.get(url, params=params, headers=headers, timeout=(10, 30))
+    response.raise_for_status()
+    payload = response.json()
+    result = payload.get("result")
+    if not isinstance(result, list):
+        raise ValueError("SSE response omitted result rows")
+    frame = pd.DataFrame(result)
+    required = ["NUM", "SEC_CODE", "SEC_NAME", "ETF_TYPE", "STAT_DATE", "TOT_VOL"]
+    if any(column not in frame.columns for column in required):
+        raise ValueError("SSE response schema changed")
+    frame = frame[required].copy()
+    frame.columns = ["序号", "基金代码", "基金简称", "ETF类型", "统计日期", "基金份额"]
+    frame["基金份额"] = pd.to_numeric(frame["基金份额"], errors="coerce") * 10000
+    return frame
+
+
 def fetch_exchange_shares(day: date) -> pd.DataFrame:
     """Fetch one exact official day-end share cross-section."""
     stamp = day.strftime("%Y%m%d")
-    sse_raw = retry("SSE ETF shares", lambda: ak.fund_etf_scale_sse(date=stamp))
+    sse_raw = retry("SSE ETF shares", lambda: fetch_sse_shares(day))
     szse_raw = retry(
         "SZSE ETF shares",
         lambda: ak.fund_scale_daily_szse(start_date=stamp, end_date=stamp, symbol="ETF"),
@@ -111,6 +146,7 @@ def fetch_share_window(end_day: date, end_frame: pd.DataFrame, sessions: int = W
                 if len(frame) >= MIN_MARKET_ETFS:
                     found.append((candidate, frame))
                     print(f"official share history: {len(found)}/{sessions} ({candidate})", flush=True)
+                    time.sleep(.35)
             except Exception:
                 pass  # weekends are skipped above; holidays have empty exchange responses
         candidate -= timedelta(days=1)
