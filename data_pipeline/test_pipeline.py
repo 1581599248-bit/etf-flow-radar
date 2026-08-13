@@ -45,6 +45,15 @@ class PipelineTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 update_daily.fetch_sse_shares(date(2026, 8, 12))
 
+    def test_sse_adapter_treats_empty_day_as_not_yet_published(self):
+        response = unittest.mock.Mock()
+        response.raise_for_status.return_value = None
+        response.json.return_value = {"result": []}
+        with patch.object(update_daily.requests, "get", return_value=response):
+            frame = update_daily.fetch_sse_shares(date(2026, 8, 13))
+        self.assertTrue(frame.empty)
+        self.assertEqual(list(frame.columns), ["序号", "基金代码", "基金简称", "ETF类型", "统计日期", "基金份额"])
+
     def test_failed_snapshot_never_replaces_latest(self):
         with tempfile.TemporaryDirectory() as temp:
             public = Path(temp)
