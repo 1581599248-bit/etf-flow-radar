@@ -2,7 +2,9 @@ name: Daily ETF data
 
 on:
   schedule:
-    - cron: "15 1 * * 1-5" # 09:15 Asia/Shanghai; exchanges publish T-1 data around 08:30
+    - cron: "30 12 * * 1-5" # 20:30 Asia/Shanghai: first check for the current trading day's closing shares
+    - cron: "0 15 * * 1-5"  # 23:00 Asia/Shanghai: same-day retry for a late exchange release
+    - cron: "15 1 * * 2-6"  # 09:15 Asia/Shanghai: next-morning retry when the exchange published later
   workflow_dispatch:
     inputs:
       trade_date:
@@ -48,3 +50,4 @@ jobs:
           git diff --cached --quiet && exit 0
           git commit -m "data: update verified ETF snapshot"
           git push
+
