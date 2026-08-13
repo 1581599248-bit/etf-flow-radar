@@ -20,7 +20,7 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -38,6 +38,8 @@ jobs:
           else
             python data_pipeline/update_daily.py
           fi
+      - name: Validate published schema and client bundle
+        run: npm ci && npm test
       - name: Commit only a verified change
         run: |
           git config user.name "etf-flow-radar-bot"

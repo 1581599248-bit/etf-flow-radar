@@ -1,0 +1,44 @@
+{
+  "globalExcludePatterns": [
+    "港股|恒生|中概|纳指|标普|道琼斯|日经|德国|法国|印度|越南|沙特|海外|美国|日本|韩国|东南亚|亚太|QDII",
+    "国债|政金债|信用债|公司债|城投债|地方债|短融|可转债|转债|科创债|债券|债ETF|货币|现金|同业存单",
+    "黄金|白银|豆粕|商品期货|原油|有色金属期货"
+  ],
+  "broad": [
+    {"id": "sse50", "code": "000016", "name": "上证50", "patterns": ["上证50", "^50ETF(?:$|易方达|博时|华夏|嘉实|基金|指数)", "^SZ50ETF$", "^沪50ETF$", "^上50ETF$", "^万家50$", "^工银上50$"]},
+    {"id": "hs300", "code": "000300", "name": "沪深300", "patterns": ["沪深300", "^300ETF", "^HS300ETF$", "^华夏300$", "^工银300$", "^广发300$", "^兴业300$", "^国寿300$", "^平安300$", "^300中金$"]},
+    {"id": "csi_a500", "code": "000510", "name": "中证A500", "patterns": ["中证A500", "^A500(?:ETF|E|基金|中金|指数|联接|$)"]},
+    {"id": "csi500", "code": "000905", "name": "中证500", "patterns": ["中证500", "^500ETF", "^ZZ500ETF$", "^ETF500$", "^广发500$", "^工银500$", "^方正500$", "^国寿500$", "^兴业500$", "^平安500$"]},
+    {"id": "csi1000", "code": "000852", "name": "中证1000", "patterns": ["中证1000", "^1000ETF"]},
+    {"id": "csi2000", "code": "932000", "name": "中证2000", "patterns": ["中证2000", "^2000ETF"]},
+    {"id": "chinext", "code": "399006", "name": "创业板指", "patterns": ["^创业板ETF", "创业板指ETF", "^创业板指$"]},
+    {"id": "star50", "code": "000688", "name": "科创50", "patterns": ["科创50", "科创板50"]},
+    {"id": "star100", "code": "000698", "name": "科创100", "patterns": ["科创100", "科创板100"]}
+  ],
+  "style": [
+    {"id": "enhanced", "name": "指数增强", "patterns": ["增强|指增"]},
+    {"id": "dividend_lowvol", "name": "红利低波", "patterns": ["红利低波|红低波|低波红利"]},
+    {"id": "dividend", "name": "红利", "patterns": ["红利|股息|高股息"]},
+    {"id": "value", "name": "价值", "patterns": ["价值"]},
+    {"id": "growth", "name": "成长", "patterns": ["成长"]},
+    {"id": "quality", "name": "质量", "patterns": ["质量|基本面"]}
+  ],
+  "sector": [
+    {"id": "semiconductor", "name": "半导体", "patterns": ["半导体|芯片|集成电路"]},
+    {"id": "ai_computing", "name": "AI与算力", "patterns": ["人工智能|AI|算力|云计算|大数据|软件|计算机|数字经济"]},
+    {"id": "communications", "name": "通信", "patterns": ["通信|5G|卫星|光通信"]},
+    {"id": "media_game", "name": "传媒游戏", "patterns": ["传媒|游戏|动漫|影视"]},
+    {"id": "electronics", "name": "电子", "patterns": ["电子|消费电子|信息技术|TMT"]},
+    {"id": "finance", "name": "大金融", "patterns": ["券商|证券|银行|保险|金融|证券保险"]},
+    {"id": "healthcare", "name": "医药医疗", "patterns": ["医药|医疗|生物|创新药|疫苗|中药"]},
+    {"id": "new_energy", "name": "新能源", "patterns": ["新能源|光伏|电池|锂电|储能|碳中和|清洁能源"]},
+    {"id": "auto", "name": "汽车", "patterns": ["汽车|智能车|新能源车"]},
+    {"id": "manufacturing", "name": "高端制造", "patterns": ["机器人|工业母机|机械|军工|航空|航天|制造|高端装备"]},
+    {"id": "consumer", "name": "消费", "patterns": ["消费|食品饮料|白酒|酒ETF|家电|旅游|养殖|农业|畜牧"]},
+    {"id": "resources", "name": "资源周期", "patterns": ["有色|煤炭|钢铁|化工|稀土|资源|石油|油气"]},
+    {"id": "utilities", "name": "公用事业", "patterns": ["电力|公用事业|绿色电力"]},
+    {"id": "real_estate", "name": "地产", "patterns": ["地产|房地产"]},
+    {"id": "infrastructure", "name": "基建", "patterns": ["基建|建筑|建材"]},
+    {"id": "central_soe", "name": "央国企", "patterns": ["央企|国企|国新"]}
+  ]
+}

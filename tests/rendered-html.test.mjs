@@ -2,22 +2,42 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-test("static source keeps the evidence-first analysis and identity boundary", async () => {
+test("dashboard contains the answer-first modules and two coordinate maps", async () => {
   const page = await readFile("site/index.html", "utf8");
   assert.match(page, /资金ETF流动每日跟踪/);
-  assert.match(page, /资金强度 × 申赎广度/);
-  assert.match(page, /不能确认/);
-  assert.match(page, /删除“国家队代理资金”/);
+  assert.match(page, /主要宽基数据摘要/);
+  assert.match(page, /宽基与风格资金坐标/);
+  assert.match(page, /行业板块资金坐标/);
+  assert.match(page, /20日相对沪深300收益/);
+  assert.match(page, /5日净申赎强度/);
+  assert.match(page, /导出高清 JPG/);
   assert.doesNotMatch(page, /国家队代理ETF净流入|代理池当日估算净流入/);
 });
 
-test("generated output and Render blueprint use one reproducible directory", async () => {
+test("verified schema-v4 snapshot is internally coherent", async () => {
+  const snapshot = JSON.parse(await readFile("site/data/latest.json", "utf8"));
+  assert.equal(snapshot.schemaVersion, 4);
+  assert.equal(snapshot.sourceMode, "REAL");
+  assert.equal(snapshot.status, "verified");
+  assert.ok(snapshot.quality.officialSessions >= 21);
+  assert.ok(snapshot.quality.classifiedEtfCount >= 300);
+  assert.ok(snapshot.groups.some((row) => row.kind === "broad"));
+  assert.ok(snapshot.groups.some((row) => row.kind === "style"));
+  assert.ok(snapshot.groups.some((row) => row.kind === "sector"));
+  assert.match(snapshot.methodology.identity, /禁止据此推断/);
+  for (const row of snapshot.groups) {
+    assert.equal(typeof row.flow1d, "number");
+    assert.equal(typeof row.flow5d, "number");
+    assert.equal(typeof row.flow20d, "number");
+  }
+});
+
+test("generated output and Render blueprint share one reproducible directory", async () => {
   const page = await readFile("dist/index.html", "utf8");
   const snapshot = JSON.parse(await readFile("dist/data/latest.json", "utf8"));
   const blueprint = await readFile("render.yaml", "utf8");
-  assert.match(page, /资金强度 × 申赎广度/);
-  assert.equal(snapshot.schemaVersion, 3);
-  assert.equal(snapshot.sourceMode, "REAL");
+  assert.match(page, /宽基与风格资金坐标/);
+  assert.equal(snapshot.schemaVersion, 4);
   assert.match(blueprint, /buildCommand: npm ci && npm run build/);
   assert.match(blueprint, /staticPublishPath: \.\/dist/);
   assert.match(blueprint, /autoDeployTrigger: commit/);
