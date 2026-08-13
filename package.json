@@ -7,7 +7,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "npx --yes serve site",
+    "dev": "npm run build && npx --yes serve dist",
     "build": "node scripts/build-site.mjs",
     "test": "npm run build && node --test tests/rendered-html.test.mjs"
   },

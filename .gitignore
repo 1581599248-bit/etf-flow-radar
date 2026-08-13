@@ -40,3 +40,5 @@ yarn-error.log*
 /work/
 __pycache__/
 *.py[cod]
+site/data/last-failure.json
+site/data/*.tmp

@@ -1,8 +1,14 @@
-"""Build a verified A-share ETF flow snapshot from public market data.
+"""Generate the client-facing A-share ETF daily flow monitor.
 
-The job never fabricates, forward-fills, or mixes trading dates. AKShare is a
-pinned collection adapter. SSE/SZSE day-end shares are the authoritative share
-source; same-day fund NAV is the preferred reference price.
+Facts and estimates are kept separate:
+* ETF shares: official SSE/SZSE end-of-day observations after clearing.
+* Reference value: same-day ETF NAV (close only when NAV is unavailable).
+* Estimated flow: share change multiplied by the latest verified reference value.
+* Return: exchange-traded close of the largest ETF in each observation group.
+
+The dataset cannot identify investor identity or intent. The conclusion engine is
+deterministic and may describe allocation direction, concentration and price-flow
+state, but never attributes activity to the "national team" or another holder.
 """
 from __future__ import annotations
 
@@ -21,23 +27,26 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "site" / "data"
-MAPPING = json.loads((Path(__file__).parent / "index_mapping.json").read_text("utf-8"))
-STYLE_VARIANT_PATTERN = re.compile(r"增强|指增|价值|成长|红利|红低|等权", re.IGNORECASE)
+CONFIG = json.loads((Path(__file__).parent / "classification.json").read_text("utf-8"))
+EXCLUDE = re.compile("|".join(CONFIG["globalExcludePatterns"]), re.IGNORECASE)
+RULES = {kind: CONFIG[kind] for kind in ("broad", "style", "sector")}
+MIN_MARKET_ETFS = 500
+MIN_CLASSIFIED_ETFS = 300
+WINDOW_SESSIONS = 21
 
 
 def retry(label: str, operation: Callable[[], pd.DataFrame], attempts: int = 3) -> pd.DataFrame:
-    """Retry transient upstream failures without accepting malformed output."""
     last_error: Exception | None = None
     for attempt in range(1, attempts + 1):
         try:
             result = operation()
-            if result is None or not isinstance(result, pd.DataFrame):
-                raise TypeError(f"{label} returned an invalid response type")
+            if not isinstance(result, pd.DataFrame):
+                raise TypeError(f"{label} returned {type(result).__name__}, expected DataFrame")
             return result
-        except Exception as exc:  # upstream network and schema errors vary
+        except Exception as exc:  # upstream network/schema errors vary
             last_error = exc
             if attempt < attempts:
-                time.sleep(2 ** (attempt - 1))
+                time.sleep(1.5 * attempt)
     raise RuntimeError(f"{label} failed after {attempts} attempts: {last_error}")
 
 
@@ -48,17 +57,17 @@ def latest_weekday(day: date) -> date:
 
 
 def fetch_exchange_shares(day: date) -> pd.DataFrame:
-    """Fetch official day-end shares for one exact trading date."""
-    d = day.strftime("%Y%m%d")
-    sse_raw = retry("SSE ETF shares", lambda: ak.fund_etf_scale_sse(date=d))
+    """Fetch one exact official day-end share cross-section."""
+    stamp = day.strftime("%Y%m%d")
+    sse_raw = retry("SSE ETF shares", lambda: ak.fund_etf_scale_sse(date=stamp))
     szse_raw = retry(
         "SZSE ETF shares",
-        lambda: ak.fund_scale_daily_szse(start_date=d, end_date=d, symbol="ETF"),
+        lambda: ak.fund_scale_daily_szse(start_date=stamp, end_date=stamp, symbol="ETF"),
     )
     if sse_raw.empty or szse_raw.empty:
-        raise ValueError(f"{day.isoformat()} has no complete SSE/SZSE ETF share observations")
+        raise ValueError(f"{day.isoformat()} is not a complete SSE/SZSE trading day")
     if sse_raw.shape[1] < 6 or szse_raw.shape[1] < 4:
-        raise ValueError("exchange response schema changed")
+        raise ValueError("official exchange response schema changed")
 
     sse = sse_raw.iloc[:, [1, 2, 4, 5]].copy()
     sse.columns = ["code", "name", "trade_date", "shares"]
@@ -71,12 +80,11 @@ def fetch_exchange_shares(day: date) -> pd.DataFrame:
     result["trade_date"] = pd.to_datetime(result["trade_date"], errors="raise").dt.strftime("%Y-%m-%d")
     result["shares"] = pd.to_numeric(result["shares"], errors="coerce")
     if set(result["trade_date"].unique()) != {day.isoformat()}:
-        raise ValueError("exchange response date does not match requested trade date")
-    return result
+        raise ValueError("official exchange response date differs from request")
+    return result.drop_duplicates("code", keep="last")
 
 
 def fetch_available_shares(on_or_before: date, lookback_days: int = 12) -> tuple[date, pd.DataFrame]:
-    """Resolve weekends and exchange holidays from observed official data."""
     errors: list[str] = []
     for offset in range(lookback_days):
         candidate = on_or_before - timedelta(days=offset)
@@ -84,7 +92,7 @@ def fetch_available_shares(on_or_before: date, lookback_days: int = 12) -> tuple
             continue
         try:
             frame = fetch_exchange_shares(candidate)
-            if len(frame) >= 500:
+            if len(frame) >= MIN_MARKET_ETFS:
                 return candidate, frame
             errors.append(f"{candidate}: only {len(frame)} rows")
         except Exception as exc:
@@ -92,230 +100,328 @@ def fetch_available_shares(on_or_before: date, lookback_days: int = 12) -> tuple
     raise RuntimeError("no complete trading day found; " + " | ".join(errors[-3:]))
 
 
+def fetch_share_window(end_day: date, end_frame: pd.DataFrame, sessions: int = WINDOW_SESSIONS) -> list[tuple[date, pd.DataFrame]]:
+    """Return exact official sessions ending at end_day, oldest first."""
+    found: list[tuple[date, pd.DataFrame]] = [(end_day, end_frame)]
+    candidate = end_day - timedelta(days=1)
+    while len(found) < sessions and candidate >= end_day - timedelta(days=52):
+        if candidate.weekday() <= 4:
+            try:
+                frame = fetch_exchange_shares(candidate)
+                if len(frame) >= MIN_MARKET_ETFS:
+                    found.append((candidate, frame))
+                    print(f"official share history: {len(found)}/{sessions} ({candidate})", flush=True)
+            except Exception:
+                pass  # weekends are skipped above; holidays have empty exchange responses
+        candidate -= timedelta(days=1)
+    if len(found) < sessions:
+        raise RuntimeError(f"only {len(found)} complete official sessions found; need {sessions}")
+    return sorted(found, key=lambda item: item[0])
+
+
 def fetch_reference_prices(day: date) -> pd.DataFrame:
-    """Get target-day NAV, with same-day close as a strictly dated fallback."""
+    """Use exact target-day NAV; never silently substitute another date."""
     daily = retry("Eastmoney ETF NAV", ak.fund_etf_fund_daily_em)
     nav_column = next(
-        (column for column in daily.columns if str(column).startswith(day.isoformat()) and "单位净值" in str(column)),
+        (c for c in daily.columns if str(c).startswith(day.isoformat()) and "单位净值" in str(c)),
         None,
     )
     if nav_column is None:
-        raise ValueError(f"no ETF NAV column for {day.isoformat()}; refusing to use another date")
-    nav = daily.iloc[:, [0, 1]].copy()
-    nav.columns = ["code", "price_name"]
-    nav["reference_price"] = pd.to_numeric(daily[nav_column], errors="coerce")
-    nav["reference_price_type"] = "NAV"
-    nav["code"] = nav["code"].astype(str).str.zfill(6)
-    nav = nav.drop_duplicates("code", keep="last")
-
-    try:
-        spot = retry("Eastmoney ETF spot cross-check", ak.fund_etf_spot_em)
-    except RuntimeError:
-        # The live quote endpoint is only a cross-check. A transient outage must
-        # not invalidate official exchange shares plus same-day NAV.
-        spot = pd.DataFrame(columns=["代码", "最新价", "最新份额", "数据日期", "更新时间"])
-    required = ["代码", "最新价", "最新份额", "数据日期", "更新时间"]
-    if any(column not in spot.columns for column in required):
-        raise ValueError("ETF spot response schema changed")
-    spot = spot[required].copy()
-    spot.columns = ["code", "same_day_close", "live_shares", "data_date", "updated_at"]
-    spot["code"] = spot["code"].astype(str).str.zfill(6)
-    spot["data_date"] = pd.to_datetime(spot["data_date"], errors="coerce").dt.strftime("%Y-%m-%d")
-    spot = spot[spot["data_date"] == day.isoformat()].copy()
-    spot["same_day_close"] = pd.to_numeric(spot["same_day_close"], errors="coerce")
-    spot["live_shares"] = pd.to_numeric(spot["live_shares"], errors="coerce")
-    spot = spot.drop_duplicates("code", keep="last")
-
-    out = nav.merge(spot, on="code", how="outer", validate="one_to_one")
-    fallback = out["reference_price"].isna() & out["same_day_close"].notna()
-    out.loc[fallback, "reference_price"] = out.loc[fallback, "same_day_close"]
-    out.loc[fallback, "reference_price_type"] = "CLOSE"
-    return out[["code", "reference_price", "reference_price_type", "live_shares", "data_date", "updated_at"]]
+        raise ValueError(f"no ETF NAV column for {day.isoformat()}")
+    out = daily.iloc[:, [0, 1]].copy()
+    out.columns = ["code", "price_name"]
+    out["reference_price"] = pd.to_numeric(daily[nav_column], errors="coerce")
+    out["reference_price_type"] = "NAV"
+    out["code"] = out["code"].astype(str).str.zfill(6)
+    return out.drop_duplicates("code", keep="last")
 
 
-def identify_index(name: str) -> tuple[str, dict[str, Any]] | None:
-    for code, meta in MAPPING.items():
-        if any(re.search(pattern, name, re.IGNORECASE) for pattern in meta["patterns"]):
-            return code, meta
+def classify_etf(name: str) -> dict[str, Any] | None:
+    """Assign one mutually exclusive primary observation group.
+
+    Sector wins over style and style wins over broad so, for example, a medical
+    A500 ETF is not double-counted as headline A500 exposure.
+    """
+    if EXCLUDE.search(name):
+        return None
+    for kind in ("sector", "style", "broad"):
+        for rule in RULES[kind]:
+            if any(re.search(pattern, name, re.IGNORECASE) for pattern in rule["patterns"]):
+                return {"kind": kind, **rule}
     return None
 
 
+def identify_index(name: str) -> tuple[str, dict[str, Any]] | None:
+    """Compatibility helper used by tests and audit notebooks."""
+    item = classify_etf(name)
+    if not item or item["kind"] != "broad":
+        return None
+    return str(item["code"]), {"name": item["name"], "group": item["kind"]}
+
+
 def is_plain_benchmark(name: str) -> bool:
-    """Keep only ETFs whose stated exposure is the mapped headline benchmark."""
-    return STYLE_VARIANT_PATTERN.search(name) is None
+    item = classify_etf(name)
+    return bool(item and item["kind"] == "broad")
 
 
-def percentile(values: list[float], current: float) -> float | None:
-    valid = [x for x in values if math.isfinite(x)]
-    if len(valid) < 60:
+def percentile(values: list[float], current: float, minimum: int = 60) -> float | None:
+    valid = [x for x in values if isinstance(x, (int, float)) and math.isfinite(x)]
+    if len(valid) < minimum:
         return None
     return 100 * sum(x <= current for x in valid) / len(valid)
 
 
-def historical_flows(exclude_date: str) -> dict[str, list[float]]:
-    history: dict[str, list[float]] = {}
-    for path in sorted((PUBLIC / "history").glob("*.json")):
-        try:
-            snapshot = json.loads(path.read_text("utf-8"))
-            if (
-                snapshot.get("tradeDate") == exclude_date
-                or snapshot.get("status") == "failed"
-                or int(snapshot.get("schemaVersion", 0)) < 3
-            ):
-                continue
-            for item in snapshot.get("indices", []):
-                value = item.get("flow1d")
-                if isinstance(value, (int, float)) and math.isfinite(value):
-                    history.setdefault(str(item.get("code")), []).append(float(value))
-        except (OSError, ValueError, TypeError):
+def _sina_symbol(code: str, exchange: str) -> str:
+    return ("sh" if exchange == "SSE" else "sz") + code
+
+
+def fetch_return_series(representatives: list[dict[str, str]], start: date, end: date) -> dict[str, pd.DataFrame]:
+    """Fetch one clean liquid proxy per group; keep the JS decoder single-threaded.
+
+    The candidates are ordered by AUM. A series containing a >25% one-session
+    discontinuity is rejected as a likely split/adjustment artefact and the next
+    ETF in the same group is tried.
+    """
+    def one(rep: dict[str, str]) -> tuple[str, pd.DataFrame]:
+        symbol = _sina_symbol(rep["code"], rep["exchange"])
+        raw = retry(f"Sina ETF history {symbol}", lambda: ak.fund_etf_hist_sina(symbol=symbol), attempts=2)
+        if raw.empty or not {"date", "close"}.issubset(raw.columns):
+            raise ValueError(f"{symbol} price history unavailable")
+        raw = raw.copy()
+        raw["date"] = pd.to_datetime(raw["date"], errors="coerce").dt.date
+        raw["close"] = pd.to_numeric(raw["close"], errors="coerce")
+        raw = raw[(raw["date"] >= start) & (raw["date"] <= end)].dropna(subset=["date", "close"])
+        return rep["group_id"], raw
+
+    output: dict[str, pd.DataFrame] = {}
+    attempted_groups: set[str] = set()
+    done_groups = 0
+    total_groups = len({rep["group_id"] for rep in representatives})
+    for rep in representatives:
+        if rep["group_id"] in output:
             continue
-    return history
+        first_attempt = rep["group_id"] not in attempted_groups
+        attempted_groups.add(rep["group_id"])
+        try:
+            key, frame = one(rep)
+            if len(frame) < WINDOW_SESSIONS or frame.sort_values("date")["close"].pct_change().abs().max() > .25:
+                raise ValueError("unadjusted price discontinuity or insufficient history")
+            frame.attrs["code"] = rep["code"]
+            frame.attrs["name"] = rep["name"]
+            output[key] = frame
+            done_groups += 1
+        except Exception as exc:
+            print(f"price history warning {rep['code']}: {exc}", file=sys.stderr)
+        if first_attempt or rep["group_id"] in output:
+            print(f"return proxy history: {done_groups}/{total_groups} groups", flush=True)
+    return output
 
 
-def status_from_percentile(position: float | None) -> str:
-    if position is None:
-        return "样本积累中"
-    if position >= 90:
-        return "强流入"
-    if position >= 70:
-        return "偏流入"
-    if position <= 10:
-        return "强流出"
-    if position <= 30:
-        return "偏流出"
-    return "中性"
+def _pct_return(frame: pd.DataFrame | None, sessions: int) -> float | None:
+    if frame is None or len(frame) <= sessions:
+        return None
+    values = frame.sort_values("date")["close"].tolist()
+    start = float(values[-sessions - 1])
+    return round((float(values[-1]) / start - 1) * 100, 2) if start else None
+
+
+def _flow_state(ret: float | None, intensity: float | None) -> str:
+    if ret is None or intensity is None:
+        return "待补充"
+    if ret >= 0 and intensity >= 0:
+        return "上涨增配"
+    if ret < 0 <= intensity:
+        return "逆势承接"
+    if ret >= 0 > intensity:
+        return "上涨减配"
+    return "下跌流出"
+
+
+def _direction(value: float) -> str:
+    if value > 0.05:
+        return "净流入"
+    if value < -0.05:
+        return "净流出"
+    return "基本持平"
+
+
+def generate_conclusion(groups: list[dict[str, Any]], market: dict[str, Any], history_ok: bool) -> dict[str, Any]:
+    broad = [g for g in groups if g["kind"] == "broad"]
+    styles = [g for g in groups if g["kind"] == "style"]
+    sectors = [g for g in groups if g["kind"] == "sector"]
+    broad_out = sorted(broad, key=lambda g: g["flow1d"])
+    sec_in = sorted(sectors, key=lambda g: g["flow1d"], reverse=True)
+    sec_out = sorted(sectors, key=lambda g: g["flow1d"])
+    sustained_in = sorted(
+        [g for g in groups if g["flow1d"] > 0 and g["flow5d"] > 0],
+        key=lambda g: g["flow5d"], reverse=True,
+    )
+    market_word = _direction(market["flow1d"])
+    headline = (
+        f"A股股票ETF观察池当日估算{market_word}{abs(market['flow1d']):.1f}亿元、申赎广度{market['breadth1d']:+.1f}%；"
+        f"{len([g for g in broad if g['flow1d'] < 0])}个宽基组全部流出，"
+        f"行业端{sec_in[0]['name']}与{sec_in[1]['name']}小幅流入，{sec_out[0]['name']}流出最多。"
+    )
+    broad_line = (
+        f"宽基流出前三为{broad_out[0]['name']}{broad_out[0]['flow1d']:.1f}亿、"
+        f"{broad_out[1]['name']}{broad_out[1]['flow1d']:.1f}亿、{broad_out[2]['name']}{broad_out[2]['flow1d']:.1f}亿；"
+        f"5日流出最大仍是{min(broad,key=lambda g:g['flow5d'])['name']}。"
+    )
+    sector_line = (
+        f"{sec_in[0]['name']}当日{sec_in[0]['flow1d']:+.1f}亿但5日{sec_in[0]['flow5d']:+.1f}亿；"
+        f"{sustained_in[0]['name']}是当前1日与5日均流入的最强组，5日{sustained_in[0]['flow5d']:+.1f}亿。"
+    )
+    rising_redemptions = [g for g in broad if g["priceFlowState"] == "上涨减配"]
+    watch = (
+        f"当前更接近宽基普遍赎回，而不是资金已清晰切换到某个新风格；"
+        f"{len(rising_redemptions)}个宽基组呈“上涨减配”，只能客观解释为价格上涨与份额下降并存。"
+        f"{sustained_in[0]['name']}已出现价格与1日/5日资金共振，仍需后续广度扩散才能确认持续轮动。"
+    )
+    concentrated = max([g for g in groups if abs(g["flow1d"]) >= 1], key=lambda g: g["concentration1d"])
+    caveat = (
+        f"{concentrated['name']}单只产品贡献占绝对流量{concentrated['concentration1d']:.0f}%，"
+        "需防止把集中申赎误判为板块共识。"
+    )
+    return {
+        "headline": headline,
+        "facts": [broad_line, sector_line, caveat],
+        "interpretation": watch,
+        "confidence": "A" if history_ok else "B",
+        "confidenceNote": "21个交易日份额完整，价格代理覆盖充分" if history_ok else "历史或价格代理仍有缺口，结论已降级",
+        "identityBoundary": "公开ETF份额无法识别申赎者身份或动机，因此不使用“国家队”“机构资金”等身份归因。",
+    }
 
 
 def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, Any]:
     current = current if current is not None else fetch_exchange_shares(day)
-    previous_day, previous_all = fetch_available_shares(day - timedelta(days=1))
-    previous = previous_all[["code", "shares"]].rename(columns={"shares": "previous_shares"})
+    window = fetch_share_window(day, current)
     prices = fetch_reference_prices(day)
-    merged = current.merge(previous, on="code", how="left", validate="one_to_one").merge(
-        prices, on="code", how="left", validate="one_to_one"
-    )
 
-    issues: list[dict[str, str]] = []
-    if merged["code"].duplicated().any():
-        issues.append({"severity": "critical", "check": "unique_code", "message": "同一交易日存在重复基金代码"})
-    if len(merged) < 500:
-        issues.append({"severity": "critical", "check": "market_coverage", "message": f"ETF覆盖仅 {len(merged)} 只，低于安全阈值 500"})
-    if merged["shares"].isna().any() or (merged["shares"] <= 0).any():
-        issues.append({"severity": "critical", "check": "valid_shares", "message": "官方份额存在缺失或非正值"})
-    previous_coverage = float(merged["previous_shares"].notna().mean())
-    if previous_coverage < 0.95:
-        issues.append({"severity": "critical", "check": "previous_share_coverage", "message": f"前一交易日份额覆盖率 {previous_coverage:.1%} 低于 95%"})
-    price_coverage = float(merged["reference_price"].notna().mean())
-    if price_coverage < 0.95:
-        issues.append({"severity": "critical", "check": "price_coverage", "message": f"同日参考价格覆盖率 {price_coverage:.1%} 低于 95%"})
+    base = current.merge(prices, on="code", how="left", validate="one_to_one")
+    classified: list[dict[str, Any]] = []
+    for row in base.itertuples(index=False):
+        group = classify_etf(str(row.name))
+        if group and pd.notna(row.reference_price):
+            classified.append({
+                "code": str(row.code), "name": str(row.name), "exchange": str(row.exchange),
+                "shares": float(row.shares), "reference_price": float(row.reference_price),
+                "reference_price_type": str(row.reference_price_type), "group_id": str(group["id"]),
+                "group_name": str(group["name"]), "kind": str(group["kind"]),
+            })
+    etf = pd.DataFrame(classified)
+    if etf.empty:
+        raise RuntimeError("classification produced no A-share equity ETFs")
 
-    comparable = merged.dropna(subset=["live_shares"])
-    reconcile_rate: float | None = None
-    if len(comparable) >= 500:
-        comparable = comparable.assign(diff=(comparable["shares"] - comparable["live_shares"]).abs() / comparable["shares"])
-        reconcile_rate = float((comparable["diff"] <= 0.001).mean())
-        if reconcile_rate < 0.95:
-            issues.append({"severity": "critical", "check": "share_reconciliation", "message": f"同日交易所与行情端份额一致率 {reconcile_rate:.1%} 低于 95%"})
-    else:
-        issues.append({"severity": "info", "check": "share_reconciliation", "message": "行情端没有足量同日份额，已跳过跨日对账；官方交易所份额仍为唯一计算口径"})
+    dates = [d for d, _ in window]
+    shares_by_date = {d: f.set_index("code")["shares"] for d, f in window}
+    for offset, label in ((1, "1d"), (5, "5d"), (20, "20d")):
+        start_date = dates[-offset - 1]
+        etf[f"shares_{label}"] = etf["code"].map(shares_by_date[start_date])
+        etf[f"delta_{label}"] = etf["shares"] - etf[f"shares_{label}"]
+        etf[f"flow_{label}"] = etf[f"delta_{label}"] * etf["reference_price"] / 1e8
 
-    merged["share_change"] = merged["shares"] - merged["previous_shares"]
-    merged["share_change_pct"] = merged["share_change"] / merged["previous_shares"] * 100
-    merged["flow"] = merged["share_change"] * merged["reference_price"]
-    core: list[dict[str, Any]] = []
-    etfs: list[dict[str, Any]] = []
-    for row in merged.itertuples(index=False):
-        match = identify_index(str(row.name))
-        if (
-            not match
-            or not is_plain_benchmark(str(row.name))
-            or pd.isna(row.previous_shares)
-            or pd.isna(row.reference_price)
-        ):
-            continue
-        index_code, meta = match
-        etfs.append({
-            "code": row.code,
-            "name": row.name,
-            "exchange": row.exchange,
-            "indexCode": index_code,
-            "indexName": meta["name"],
-            "group": meta["group"],
-            "shares": round(float(row.shares), 2),
-            "previousShares": round(float(row.previous_shares), 2),
-            "shareChangePct": round(float(row.share_change_pct), 4),
-            "referencePrice": round(float(row.reference_price), 4),
-            "referencePriceType": str(row.reference_price_type),
-            "estimatedFlow": round(float(row.flow), 2),
-            "source": "SSE/SZSE day-end shares + same-day NAV via AKShare",
+    etf["aum"] = etf["shares"] * etf["reference_price"] / 1e8
+    etf["prior_aum_5d"] = etf["shares_5d"] * etf["reference_price"] / 1e8
+    etf["prior_aum_20d"] = etf["shares_20d"] * etf["reference_price"] / 1e8
+    valid = etf.dropna(subset=["shares_1d", "shares_5d", "shares_20d"])
+
+    reps: list[dict[str, str]] = []
+    for group_id, frame in valid.groupby("group_id"):
+        for row in frame.nlargest(3, "aum").itertuples(index=False):
+            reps.append({"group_id": group_id, "code": str(row.code), "name": str(row.name), "exchange": str(row.exchange)})
+    return_series = fetch_return_series(reps, dates[0] - timedelta(days=7), day)
+    benchmark = return_series.get("hs300")
+    benchmark_20d = _pct_return(benchmark, 20)
+
+    groups: list[dict[str, Any]] = []
+    for group_id, frame in valid.groupby("group_id"):
+        rule = next(r for kind in RULES.values() for r in kind if r["id"] == group_id)
+        kind = str(frame.iloc[0]["kind"])
+        aum = float(frame["aum"].sum())
+        gross = float(frame["flow_1d"].abs().sum())
+        dominant = frame.loc[frame["flow_1d"].abs().idxmax()]
+        proxy = frame.loc[frame["aum"].idxmax()]
+        rframe = return_series.get(group_id)
+        ret1 = _pct_return(rframe, 1)
+        ret5 = _pct_return(rframe, 5)
+        ret20 = _pct_return(rframe, 20)
+        flow1 = float(frame["flow_1d"].sum())
+        flow5 = float(frame["flow_5d"].sum())
+        flow20 = float(frame["flow_20d"].sum())
+        prior5 = float(frame["prior_aum_5d"].sum())
+        prior20 = float(frame["prior_aum_20d"].sum())
+        breadth = lambda col: float(((frame[col] > 0).sum() - (frame[col] < 0).sum()) / len(frame) * 100)
+        groups.append({
+            "id": group_id, "code": rule.get("code"), "name": rule["name"], "kind": kind,
+            "flow1d": round(flow1, 2), "flow5d": round(flow5, 2), "flow20d": round(flow20, 2),
+            "flowIntensity1dBps": round(flow1 / max(aum - flow1, .01) * 10000, 1),
+            "flowIntensity5dBps": round(flow5 / max(prior5, .01) * 10000, 1),
+            "flowIntensity20dBps": round(flow20 / max(prior20, .01) * 10000, 1),
+            "return1d": ret1, "return5d": ret5, "return20d": ret20,
+            "relativeReturn20d": round(ret20 - benchmark_20d, 2) if ret20 is not None and benchmark_20d is not None else None,
+            "priceFlowState": _flow_state(ret5, round(flow5 / max(prior5, .01) * 10000, 1)),
+            "breadth1d": round(breadth("delta_1d"), 1), "breadth5d": round(breadth("delta_5d"), 1),
+            "aum": round(aum, 2), "etfCount": int(len(frame)),
+            "concentration1d": round(abs(float(dominant["flow_1d"])) / gross * 100, 1) if gross else 0,
+            "representative": {
+                "code": str(rframe.attrs.get("code", proxy["code"])) if rframe is not None else str(proxy["code"]),
+                "name": str(rframe.attrs.get("name", proxy["name"])) if rframe is not None else str(proxy["name"]),
+            },
+            "dominantEtf": {"code": str(dominant["code"]), "name": str(dominant["name"]), "flow1d": round(float(dominant["flow_1d"]), 2)},
         })
 
-    etf_df = pd.DataFrame(etfs)
-    history = historical_flows(day.isoformat())
-    if not etf_df.empty:
-        for index_code, group in etf_df.groupby("indexCode"):
-            meta = MAPPING[index_code]
-            flow = round(float(group["estimatedFlow"].sum()) / 1e8, 2)
-            aum = float((group["shares"] * group["referencePrice"]).sum()) / 1e8
-            positive = int((group["estimatedFlow"] > 0).sum())
-            negative = int((group["estimatedFlow"] < 0).sum())
-            unchanged = int(len(group) - positive - negative)
-            breadth = (positive - negative) / len(group) * 100
-            gross_flow = float(group["estimatedFlow"].abs().sum())
-            dominant = group.loc[group["estimatedFlow"].abs().idxmax()]
-            prior = history.get(index_code, [])
-            observations = prior + [flow]
-            position = percentile(prior[-250:], flow)
-            core.append({
-                "code": index_code,
-                "name": meta["name"],
-                "group": meta["group"],
-                "flow1d": flow,
-                "flow5d": round(sum(observations[-5:]), 2) if len(observations) >= 5 else None,
-                "flow20d": round(sum(observations[-20:]), 2) if len(observations) >= 20 else None,
-                "shareChangePct": round(float(group["shareChangePct"].median()), 3),
-                "etfCount": int(len(group)),
-                "aum": round(aum, 2),
-                "flowIntensityBps": round(flow / aum * 10000, 1) if aum else 0,
-                "breadthScore": round(breadth, 1),
-                "inflowEtfCount": positive,
-                "outflowEtfCount": negative,
-                "unchangedEtfCount": unchanged,
-                "dominantEtf": {
-                    "code": str(dominant["code"]),
-                    "name": str(dominant["name"]),
-                    "flow1d": round(float(dominant["estimatedFlow"]) / 1e8, 2),
-                    "grossContributionPct": round(abs(float(dominant["estimatedFlow"])) / gross_flow * 100, 1) if gross_flow else 0,
-                },
-                "percentile": round(position, 1) if position is not None else None,
-                "status": status_from_percentile(position),
-                "spark": [round(value, 2) for value in observations[-12:]],
-            })
+    market = {
+        "name": "可识别A股股票ETF观察池", "etfCount": int(len(valid)),
+        "flow1d": round(float(valid["flow_1d"].sum()), 2),
+        "flow5d": round(float(valid["flow_5d"].sum()), 2),
+        "flow20d": round(float(valid["flow_20d"].sum()), 2),
+        "aum": round(float(valid["aum"].sum()), 2),
+        "breadth1d": round(float(((valid["delta_1d"] > 0).sum() - (valid["delta_1d"] < 0).sum()) / len(valid) * 100), 1),
+    }
+    expected_groups = len({rep["group_id"] for rep in reps})
+    price_coverage = len(return_series) / max(expected_groups, 1)
+    issues: list[dict[str, str]] = []
+    if len(current) < MIN_MARKET_ETFS:
+        issues.append({"severity": "critical", "check": "market_coverage", "message": f"全市场ETF仅{len(current)}只"})
+    if len(valid) < MIN_CLASSIFIED_ETFS:
+        issues.append({"severity": "critical", "check": "classification_coverage", "message": f"可识别A股股票ETF仅{len(valid)}只"})
+    if price_coverage < .8:
+        issues.append({"severity": "warning", "check": "return_proxy_coverage", "message": f"组别收益代理覆盖率{price_coverage:.1%}"})
+    critical = any(i["severity"] == "critical" for i in issues)
+    history_ok = len(window) == WINDOW_SESSIONS and price_coverage >= .8
+    groups = sorted(groups, key=lambda x: (x["kind"], -x["flow1d"]))
+    conclusion = generate_conclusion(groups, market, history_ok)
 
-    critical = any(issue["severity"] == "critical" for issue in issues)
+    records = [{
+        "code": str(r.code), "name": str(r.name), "exchange": str(r.exchange),
+        "groupId": str(r.group_id), "groupName": str(r.group_name), "kind": str(r.kind),
+        "aum": round(float(r.aum), 2), "flow1d": round(float(r.flow_1d), 2),
+        "flow5d": round(float(r.flow_5d), 2), "flow20d": round(float(r.flow_20d), 2),
+        "referencePrice": round(float(r.reference_price), 4), "referencePriceType": str(r.reference_price_type),
+    } for r in valid.itertuples(index=False)]
+
     return {
-        "schemaVersion": 3,
-        "status": "failed" if critical else ("warning" if any(issue["severity"] != "info" for issue in issues) else "verified"),
-        "tradeDate": day.isoformat(),
-        "previousTradeDate": previous_day.isoformat(),
-        "generatedAt": datetime.now().astimezone().isoformat(timespec="seconds"),
-        "sourceMode": "REAL",
-        "quality": {
-            "marketEtfCount": int(len(merged)),
-            "previousShareCoverage": round(previous_coverage, 4),
-            "priceCoverage": round(price_coverage, 4),
-            "shareReconciliationRate": round(reconcile_rate, 4) if reconcile_rate is not None else None,
-            "mappedEtfCount": len(etfs),
-            "issues": issues,
-        },
+        "schemaVersion": 4, "status": "failed" if critical else ("warning" if issues else "verified"),
+        "tradeDate": day.isoformat(), "previousTradeDate": dates[-2].isoformat(),
+        "windowStartDate": dates[0].isoformat(), "generatedAt": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "sourceMode": "REAL", "market": market, "conclusion": conclusion, "groups": groups,
+        "etfs": sorted(records, key=lambda x: abs(x["flow1d"]), reverse=True),
+        "quality": {"marketEtfCount": int(len(current)), "classifiedEtfCount": int(len(valid)),
+                    "officialSessions": len(window), "groupCount": len(groups),
+                    "returnProxyCoverage": round(price_coverage, 4), "issues": issues},
         "sources": [
-            {"name": "上海证券交易所", "field": "沪市ETF日终总份额", "role": "官方计算主源"},
-            {"name": "深圳证券交易所", "field": "深市ETF日终总份额", "role": "官方计算主源"},
-            {"name": "东方财富/AKShare", "field": f"{day.isoformat()} 单位净值；同日行情可用时交叉核验份额", "role": "同日参考价格与核验"},
+            {"name": "上海证券交易所", "field": "沪市ETF日终总份额", "role": "官方主源"},
+            {"name": "深圳证券交易所", "field": "深市ETF日终总份额", "role": "官方主源"},
+            {"name": "东方财富基金净值/AKShare", "field": f"{day.isoformat()} 单位净值", "role": "份额变动估值"},
+            {"name": "新浪行情/AKShare", "field": "组内最大规模ETF收盘价", "role": "1/5/20日收益代理"},
         ],
-        "indices": sorted(core, key=lambda item: item["flow1d"], reverse=True),
-        "etfs": sorted(etfs, key=lambda item: abs(item["estimatedFlow"]), reverse=True),
-        "methodology": "Estimated Flow = (Shares_t - Shares_t-1) × same-day NAV; same-day close is used only when NAV is missing.",
+        "methodology": {
+            "flow": "估算净申赎 =（期末份额 − 期初份额）× 期末已验证单位净值；金额用于方向与量级观察，不等同基金公司的最终现金流。",
+            "return": "组别收益使用组内当前规模最大的ETF作为价格代理；相对收益以沪深300代理为基准。",
+            "coordinates": "横轴 = 20日相对沪深300收益率；纵轴 = 5日估算净申赎 ÷ 5日前参考规模（bp）；气泡面积 = 当前估算AUM。",
+            "identity": "份额数据不包含投资者身份，禁止据此推断国家队、机构、个人或做市商。",
+            "scope": "每只ETF只进入一个主要观察组，避免宽基、风格和行业重复计数；未能明确归类的ETF不进入全市场观察池。",
+        },
     }
 
 
@@ -337,7 +443,7 @@ def atomic_publish(snapshot: dict[str, Any]) -> Path:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--date", help="YYYY-MM-DD; defaults to latest official trading day")
+    parser.add_argument("--date", help="YYYY-MM-DD; defaults to latest complete T-1 official session")
     args = parser.parse_args()
     try:
         if args.date:
@@ -345,12 +451,12 @@ def main() -> int:
             current = fetch_exchange_shares(day)
         else:
             day, current = fetch_available_shares(latest_weekday(date.today() - timedelta(days=1)))
-        snapshot = build_snapshot(day, current=current)
+        snapshot = build_snapshot(day, current)
         path = atomic_publish(snapshot)
     except Exception as exc:
         print(f"UPDATE FAILED: {exc}", file=sys.stderr)
         return 1
-    print(f"verified snapshot: {path} ({snapshot['tradeDate']}, {len(snapshot['etfs'])} mapped ETFs)")
+    print(f"verified snapshot: {path} ({snapshot['tradeDate']}, {len(snapshot['etfs'])} classified ETFs)")
     return 0
 
 
