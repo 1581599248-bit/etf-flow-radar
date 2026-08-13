@@ -2,10 +2,10 @@ name: Daily ETF data
 
 on:
   schedule:
-    - cron: "45 23 * * 1-5" # 07:45 Asia/Shanghai, Tuesday-Saturday
-    - cron: "15 0 * * 2-6"  # 08:15 Asia/Shanghai, Tuesday-Saturday
-    - cron: "45 0 * * 2-6"  # 08:45 Asia/Shanghai, Tuesday-Saturday
-    - cron: "15 1 * * 2-6"  # 09:15 Asia/Shanghai final pre-open retry
+    - cron: "30 23 * * 1-5" # 07:30 Asia/Shanghai, Tuesday-Saturday
+    - cron: "0 0 * * 2-6"   # 08:00 Asia/Shanghai, Tuesday-Saturday
+    - cron: "30 0 * * 2-6"  # 08:30 Asia/Shanghai, Tuesday-Saturday
+    - cron: "0 1 * * 2-6"   # 09:00 Asia/Shanghai final pre-open retry
   workflow_dispatch:
     inputs:
       trade_date:
