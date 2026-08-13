@@ -11,9 +11,8 @@ test("dashboard contains the answer-first modules and two coordinate maps", asyn
   assert.match(page, /行业板块资金坐标/);
   assert.match(page, /20日相对沪深300收益/);
   assert.match(page, /5日资金变化率（占5日前规模）/);
-  assert.match(page, /当日ETF估算流入流出分布/);
-  assert.match(page, /三类合计\$\{data\.market\.etfCount\}只/);
-  assert.match(page, /“不变”指总份额不变/);
+  assert.match(page, /当日ETF流入流出分布/);
+  assert.match(page, /\$\{r\[`increaseEtfCount\$\{period\}`\].*\}只流入 \/ \$\{r\[`decreaseEtfCount\$\{period\}`\].*\}只流出/);
   assert.match(page, /数据解读/);
   assert.match(page, /ETF跟踪观点/);
   assert.match(page, /下一交易日盘前使用/);
@@ -21,11 +20,12 @@ test("dashboard contains the answer-first modules and two coordinate maps", asyn
   assert.match(page, /导出高清 JPG/);
   assert.match(page, /全量ETF每日变更检查/);
   assert.match(page, /交易所完整ETF/);
-  assert.match(page, /组内ETF估算总规模（总份额 × 单位净值）/);
+  assert.match(page, /组内ETF规模（总份额 × 单位净值）/);
   assert.match(page, /当日流入领跑 \/ 流出领跑/);
   assert.match(page, /近5日.*流入领跑 \/ 流出领跑/);
   assert.doesNotMatch(page, /气泡面积 = 当前估算规模|当日流入 \/ 流出领跑/);
   assert.doesNotMatch(page, /国家队代理ETF净流入|代理池当日估算净流入/);
+  assert.doesNotMatch(page, /总份额不变|只不变|不变\$\{|当日估算|估算净流入|估算净流出/);
   assert.doesNotMatch(page, /上涨增配|上涨减配|逆势承接|下跌流出|已完成分析的A股股票ETF/);
   assert.match(css, /\.e-row\[hidden\]\{display:none!important\}/);
 });

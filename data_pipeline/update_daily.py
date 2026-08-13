@@ -386,12 +386,11 @@ def generate_conclusion(groups: list[dict[str, Any]], market: dict[str, Any], hi
     sector_headline = (
         f"行业资金流入居前的是{sec_in[0]['name']}，流出最多的是{sec_out[0]['name']}。"
         if sec_in[0]["flow1d"] > 0
-        else f"行业组当日均未录得估算净流入，流出最多的是{sec_out[0]['name']}。"
+        else f"行业组当日均未录得净流入，流出最多的是{sec_out[0]['name']}。"
     )
     headline = (
-        f"本期统计的{market['etfCount']}只A股股票ETF当日合计估算{market_word}{abs(market['flow1d']):.1f}亿元；"
-        f"估算净流入{market['increaseEtfCount1d']}只、估算净流出{market['decreaseEtfCount1d']}只、"
-        f"总份额不变{market['unchangedEtfCount1d']}只。"
+        f"本期统计的{market['etfCount']}只A股股票ETF当日合计{market_word}{abs(market['flow1d']):.1f}亿元；"
+        f"净流入{market['increaseEtfCount1d']}只、净流出{market['decreaseEtfCount1d']}只。"
         f"宽基中{broad_out_count}个流出、{broad_in_count}个流入；{sector_headline}"
     )
     broad_line = (
@@ -415,8 +414,8 @@ def generate_conclusion(groups: list[dict[str, Any]], market: dict[str, Any], hi
         f"{sustained_text}"
     )
     anomaly = (
-        f"单只ETF大额变化：{market['topInflowEtf']['name']}估算净流入{market['topInflowEtf']['flow1d']:+.1f}亿元；"
-        f"{market['topOutflowEtf']['name']}估算净流出{market['topOutflowEtf']['flow1d']:+.1f}亿元。"
+        f"单只ETF大额变化：{market['topInflowEtf']['name']}净流入{market['topInflowEtf']['flow1d']:+.1f}亿元；"
+        f"{market['topOutflowEtf']['name']}净流出{market['topOutflowEtf']['flow1d']:+.1f}亿元。"
     )
     return {
         "headline": headline,
@@ -609,10 +608,10 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
             {"name": "新浪行情/AKShare", "field": "组内最大规模ETF收盘价", "role": "1/5/20日收益代理"},
         ],
         "methodology": {
-            "flow": "估算净申赎 =（期末份额 − 期初份额）× 期末已验证单位净值；金额用于方向与量级观察，不等同基金公司的最终现金流。",
+            "flow": "参考净申赎 =（期末份额 − 期初份额）× 期末已验证单位净值；金额用于方向与量级观察，不等同基金公司的最终现金流。",
             "counts": "ETF只数按交易所日终总份额较前一交易日增加、减少或完全相同划分。总份额不变表示当日没有净份额增减，不代表没有二级市场成交、价格波动，亦不代表申购和赎回均为零。",
             "return": "组别收益使用组内当前规模最大的ETF作为价格代理；相对收益以沪深300代理为基准。",
-            "coordinates": "横轴 = 20日相对沪深300收益率；纵轴 = 5日估算净申赎 ÷ 5日前参考规模（%）；气泡面积 = 当前估算AUM。",
+            "coordinates": "横轴 = 20日相对沪深300收益率；纵轴 = 5日净申赎 ÷ 5日前参考规模（%）；气泡面积 = 当前ETF规模。",
             "identity": "份额数据不包含投资者身份，禁止据此推断国家队、机构、个人或做市商。",
             "scope": "完整名册保留交易所全部ETF；资金分析只使用已明确归类且具备完整历史与净值的A股股票ETF，每只ETF只进入一个主要分析组，避免重复计数。",
         },
