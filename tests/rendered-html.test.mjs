@@ -9,7 +9,7 @@ test("dashboard contains the answer-first modules and two coordinate maps", asyn
   assert.match(page, /主要宽基数据摘要/);
   assert.match(page, /宽基与风格资金坐标/);
   assert.match(page, /行业主题资金坐标/);
-  assert.match(page, /不等同一级行业全覆盖/);
+  assert.match(page, /不是申万一级行业分类/);
   assert.match(page, /20日相对沪深300收益/);
   assert.match(page, /5日资金变化率（占5日前规模）/);
   assert.match(page, /当日ETF流入流出分布/);
@@ -24,6 +24,11 @@ test("dashboard contains the answer-first modules and two coordinate maps", asyn
   assert.match(page, /气泡面积按组内ETF规模线性编码/);
   assert.match(page, /组内ETF规模/);
   assert.match(page, /layoutBubbleLabels/);
+  assert.match(page, /全部气泡均显示标签/);
+  assert.match(page, /全部资金观察组证据表/);
+  assert.match(page, /现有主题体系不完备/);
+  assert.match(page, /等待数据补齐/);
+  assert.doesNotMatch(page, /仅显示防碰撞标签/);
   assert.match(page, /当日流入领跑 \/ 流出领跑/);
   assert.match(page, /近5日.*流入领跑 \/ 流出领跑/);
   assert.doesNotMatch(page, /气泡面积 = 当前估算规模|当日流入 \/ 流出领跑/);
@@ -71,7 +76,14 @@ test("verified snapshot is internally coherent and carries the complete ETF univ
       : (row.flowIntensity5dPct >= 0 ? "跑输但流入" : "跑输且流出");
     assert.equal(row.priceFlowState, expected);
   }
-  assert.match(snapshot.methodology.classification, /不是申万或中证一级行业全覆盖/);
+  const sectorGroups = snapshot.groups.filter((row) => row.kind === "sector");
+  assert.equal(snapshot.quality.sectorThemeGroupCount, sectorGroups.length);
+  assert.equal(snapshot.quality.sectorThemeEtfCount, sectorGroups.reduce((sum, row) => sum + row.etfCount, 0));
+  const universeSectorRows = snapshot.universe.filter((row) => row.classificationStatus === "classified" && row.kind === "sector");
+  assert.equal(snapshot.quality.sectorThemeUniverseCount, universeSectorRows.length);
+  assert.equal(snapshot.quality.sectorThemePendingCount, universeSectorRows.length - snapshot.quality.sectorThemeEtfCount);
+  assert.match(snapshot.methodology.classification, /CUSTOM_THEME_V1/);
+  assert.match(snapshot.methodology.classification, /不是申万一级行业/);
 });
 
 test("generated output and Render blueprint share one reproducible directory", async () => {

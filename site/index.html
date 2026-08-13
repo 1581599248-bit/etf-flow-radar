@@ -45,18 +45,44 @@
         <div class="quad-label q1"><b>跑赢基准 · 资金流入</b><span>20日相对强，5日份额增加</span></div><div class="quad-label q2"><b>跑输基准 · 资金流入</b><span>20日相对弱，5日份额增加</span></div>
         <div class="quad-label q3"><b>跑输基准 · 资金流出</b><span>20日相对弱，5日份额减少</span></div><div class="quad-label q4"><b>跑赢基准 · 资金流出</b><span>20日相对强，5日份额减少</span></div>
         <i class="axis axis-x"></i><i class="axis axis-y"></i>
-        ${plotted.map(r=>{const rate=flowRate(r),left=50+r.relativeReturn20d/xMax*45,top=50-rate/yMax*43,size=bubbleDiameter(r.aum,aMax),priority=Math.log1p(r.aum)+Math.abs(r.relativeReturn20d/xMax)*2+Math.abs(rate/yMax)*2,above=top>72?" label-above":"";return `<button class="bubble ${tone(rate)}${above}" data-id="${r.id}" data-label-priority="${priority}" style="left:${left}%;top:${top}%;width:${size}px;height:${size}px" title="${r.name}｜规模 ${r.aum.toFixed(1)}亿｜20日相对收益 ${pct(r.relativeReturn20d)}｜5日资金变化率 ${pct(rate)}"><span>${r.name}</span></button>`}).join("")}
+        ${plotted.map(r=>{const rate=flowRate(r),left=50+r.relativeReturn20d/xMax*45,top=50-rate/yMax*43,size=bubbleDiameter(r.aum,aMax),priority=Math.log1p(r.aum)+Math.abs(r.relativeReturn20d/xMax)*2+Math.abs(rate/yMax)*2;return `<button class="bubble ${tone(rate)}" data-id="${r.id}" data-label-priority="${priority}" style="left:${left}%;top:${top}%;width:${size}px;height:${size}px" title="${r.name}｜规模 ${r.aum.toFixed(1)}亿｜20日相对收益 ${pct(r.relativeReturn20d)}｜5日资金变化率 ${pct(rate)}"><i class="label-link"></i><span>${r.name}</span></button>`}).join("")}
         <span class="axis-title x-title">20日相对沪深300收益 →</span><span class="axis-title y-title">↑ 5日资金变化率（占5日前规模）</span>
       </div>
-      <div class="legend"><span><i class="red"></i>5日净流入</span><span><i class="green"></i>5日净流出</span><span>气泡面积按组内ETF规模线性编码（小规模组设9px点击下限）</span><span>仅显示防碰撞标签，点击任意气泡看详情</span></div>
+      <div class="legend"><span><i class="red"></i>5日净流入</span><span><i class="green"></i>5日净流出</span><span>气泡面积按组内ETF规模线性编码（小规模组设9px点击下限）</span><span>全部气泡均显示标签，细线连接对应气泡</span></div>
     </article>`;
   }
 
   function layoutBubbleLabels(){
     document.querySelectorAll(".quadrant").forEach(plot=>{
-      const bubbles=[...plot.querySelectorAll(".bubble")].sort((a,b)=>Number(b.dataset.labelPriority)-Number(a.dataset.labelPriority)),accepted=[],limit=plot.getBoundingClientRect().width<500?7:12;
-      bubbles.forEach(bubble=>{const label=bubble.querySelector("span");label.hidden=false;label.style.visibility="hidden"});
-      for(const bubble of bubbles){const label=bubble.querySelector("span");if(accepted.length>=limit){label.hidden=true;continue}const rect=label.getBoundingClientRect(),padded={left:rect.left-4,right:rect.right+4,top:rect.top-3,bottom:rect.bottom+3},collides=accepted.some(x=>!(padded.right<x.left||padded.left>x.right||padded.bottom<x.top||padded.top>x.bottom));if(collides)label.hidden=true;else{label.style.visibility="visible";accepted.push(padded)}}
+      const bubbles=[...plot.querySelectorAll(".bubble")].sort((a,b)=>Number(b.dataset.labelPriority)-Number(a.dataset.labelPriority)),accepted=[],bounds=plot.getBoundingClientRect(),xs=[0,-18,18,-36,36,-54,54,-72,72],ys=[-18,18,-33,33,-48,48,-63,63,0],candidates=[];
+      if(bounds.width<500){
+        const center=bounds.left+bounds.width/2,left=[],right=[];
+        for(const bubble of bubbles){const anchor=bubble.getBoundingClientRect(),item={bubble,anchor,cy:anchor.top+anchor.height/2};(anchor.left+anchor.width/2<center?left:right).push(item)}
+        while(Math.abs(left.length-right.length)>1){const source=left.length>right.length?left:right,target=source===left?right:left;target.push(source.splice(source.length-1,1)[0])}
+        for(const [side,items] of [["left",left],["right",right]]){
+          items.sort((a,b)=>a.cy-b.cy);const step=(bounds.height-16)/Math.max(items.length-1,1);
+          items.forEach((item,index)=>{const {bubble,anchor}=item,label=bubble.querySelector("span"),link=bubble.querySelector(".label-link");label.hidden=false;label.style.setProperty("--label-x","0px");label.style.setProperty("--label-y","0px");const measured=label.getBoundingClientRect(),cx=anchor.left+anchor.width/2,cy=anchor.top+anchor.height/2,x=side==="left"?bounds.left+measured.width/2+4:bounds.right-measured.width/2-4,y=bounds.top+8+index*step,dx=x-cx,dy=y-cy,length=Math.hypot(dx,dy),angle=Math.atan2(dy,dx)*180/Math.PI;label.style.setProperty("--label-x",`${dx}px`);label.style.setProperty("--label-y",`${dy}px`);link.style.setProperty("--link-length",`${length}px`);link.style.setProperty("--link-angle",`${angle}deg`);link.hidden=false})
+        }
+        return;
+      }
+      for(const y of ys)for(const x of xs)candidates.push({x,y,d:Math.hypot(x,y)});
+      candidates.sort((a,b)=>a.d-b.d);
+      for(const bubble of bubbles){
+        const label=bubble.querySelector("span"),link=bubble.querySelector(".label-link"),anchor=bubble.getBoundingClientRect();
+        label.hidden=false;label.style.setProperty("--label-x","0px");label.style.setProperty("--label-y","0px");
+        const measured=label.getBoundingClientRect(),w=measured.width,h=measured.height,cx=anchor.left+anchor.width/2,cy=anchor.top+anchor.height/2;
+        let best=null;
+        for(const candidate of candidates){
+          const x=Math.min(bounds.right-w/2-3,Math.max(bounds.left+w/2+3,cx+candidate.x)),y=Math.min(bounds.bottom-h/2-3,Math.max(bounds.top+h/2+3,cy+candidate.y)),rect={left:x-w/2,right:x+w/2,top:y-h/2,bottom:y+h/2};
+          const overlap=accepted.reduce((sum,r)=>sum+Math.max(0,Math.min(rect.right,r.right)-Math.max(rect.left,r.left))*Math.max(0,Math.min(rect.bottom,r.bottom)-Math.max(rect.top,r.top)),0),score=overlap*100+Math.hypot(x-cx,y-cy);
+          if(!best||score<best.score)best={x,y,rect,score};
+          if(overlap===0)break;
+        }
+        const dx=best.x-cx,dy=best.y-cy,length=Math.hypot(dx,dy),angle=Math.atan2(dy,dx)*180/Math.PI;
+        label.style.setProperty("--label-x",`${dx}px`);label.style.setProperty("--label-y",`${dy}px`);
+        link.style.setProperty("--link-length",`${length}px`);link.style.setProperty("--link-angle",`${angle}deg`);link.hidden=length<16;
+        accepted.push(best.rect);
+      }
     })
   }
 
@@ -80,11 +106,11 @@
 
       <section id="broad" class="panel"><div class="section-head"><div><span>CORE BROAD INDEXES</span><h2>主要宽基数据摘要</h2><p>先看今天，再用5日和20日辨别一次性申赎还是持续切换</p></div></div><div class="summary-grid">${cards.map(summaryCard).join("")}</div></section>
 
-      <section id="maps" class="map-grid">${chart(wide,"宽基与风格资金坐标","宽基与风格放在同一标尺，定位大小盘与红利/成长的配置切换")}${chart(sectors,"行业主题资金坐标",`${sectors.length}个互斥主题组，覆盖${sectorEtfs}只ETF；按名称关键词归类，不等同一级行业全覆盖`)}</section>
+      <section id="maps" class="map-grid">${chart(wide,"宽基与风格资金坐标","宽基与风格放在同一标尺，定位大小盘与红利/成长的配置切换")}${chart(sectors,"行业主题资金坐标",`CUSTOM_THEME_V1：${sectors.length}个互斥主题组，覆盖${sectorEtfs}只ETF；不是申万一级行业分类`)}</section>
 
       <section class="lower-grid"><article class="panel"><div class="section-head"><div><span>FLOW LEADERS</span><h2 id="flow-leaders-title">当日流入领跑 / 流出领跑</h2><p>前半部分为净流入最多的组，后半部分为净流出最多的组</p></div><div class="tabs" data-rank-tabs><button class="active" data-period="1d">1日</button><button data-period="5d">5日</button><button data-period="20d">20日</button></div></div><div id="ranking">${ranking(data.groups,"1d",10)}</div></article><article class="panel"><div class="section-head"><div><span>PRICE × FLOW STATE</span><h2>近20日相对表现与近5日资金方向</h2><p>价格为代表ETF近20日相对沪深300表现，资金为组内ETF近5日净流入/流出；与上方坐标图使用同一口径</p></div></div><div class="state-grid">${["跑赢且流入","跑输但流入","跑赢但流出","跑输且流出"].map(state=>{const rs=data.groups.filter(r=>r.priceFlowState===state).sort((a,b)=>Math.abs(b.flow5d)-Math.abs(a.flow5d));const empty=`当前暂无“${state}”的观察组`;return `<article><span>${state}</span><b>${rs.slice(0,3).map(r=>r.name).join(" · ")||empty}</b><small>${state==="跑赢且流入"?"近20日跑赢沪深300，近5日资金流入":state==="跑输但流入"?"近20日跑输沪深300，但近5日资金流入":state==="跑赢但流出"?"近20日跑赢沪深300，但近5日资金流出":"近20日跑输沪深300，近5日资金流出"}</small></article>`}).join("")}</div></article></section>
 
-      <section id="detail" class="panel"><div class="section-head"><div><span>OBJECTIVE EVIDENCE TABLE</span><h2>全部观察组证据表</h2><p>1/5/20日资金变化、5日资金变化率与价格—资金状态</p></div><div class="filters"><button class="active" data-kind="all">全部</button><button data-kind="broad">宽基</button><button data-kind="style">风格</button><button data-kind="sector">行业主题</button></div></div><div class="evidence-table"><div class="e-row e-head"><span>观察组</span><span>1日</span><span>5日</span><span>20日</span><span>5日变化率</span><span>状态</span></div><div id="evidence-rows">${evidenceRows(data.groups)}</div></div></section>
+      <section id="detail" class="panel"><div class="section-head"><div><span>OBJECTIVE EVIDENCE TABLE</span><h2>全部资金观察组证据表</h2><p>${broad.length}个宽基组 + ${styles.length}个风格策略组 + ${sectors.length}个行业主题组；行业主题为自定义ETF主题口径，不是申万一级行业</p></div><div class="filters"><button class="active" data-kind="all">全部 ${data.groups.length}</button><button data-kind="broad">宽基 ${broad.length}</button><button data-kind="style">风格 ${styles.length}</button><button data-kind="sector">行业主题 ${sectors.length}</button></div></div><div class="classification-callout"><b>行业主题展示范围</b><span>CUSTOM_THEME_V1规则命中${data.quality.sectorThemeUniverseCount??sectorEtfs}只ETF，其中${sectorEtfs}只具备完整21日份额与净值、进入本期分析，${data.quality.sectorThemePendingCount??0}只等待数据补齐。现有主题体系不完备，也不代表申万31个一级行业全覆盖。</span></div><div class="evidence-table"><div class="e-row e-head"><span>观察组</span><span>1日</span><span>5日</span><span>20日</span><span>5日变化率</span><span>状态</span></div><div id="evidence-rows">${evidenceRows(data.groups)}</div></div></section>
 
       ${bottomNotes(data)}
 
@@ -95,7 +121,7 @@
 
   function evidenceRows(rows){return rows.map(r=>`<button class="e-row" data-id="${r.id}" data-kind-row="${r.kind}"><span><b>${r.name}</b><small>${kindName[r.kind]} · ${r.etfCount}只</small></span><strong class="${tone(r.flow1d)}">${money(r.flow1d)}</strong><strong class="${tone(r.flow5d)}">${money(r.flow5d)}</strong><strong class="${tone(r.flow20d)}">${money(r.flow20d)}</strong><span class="${tone(flowRate(r))}">${pct(flowRate(r))}</span><span><b>${r.priceFlowState}</b><small>${countText(r,"5d")}</small></span></button>`).join("")}
 
-  function bottomNotes(data){const audit=data.universeAudit||{},added=audit.added||[],missing=audit.missing||[],renamed=audit.renamed||[];const productList=rows=>rows.length?rows.slice(0,6).map(x=>`${esc(x.name||x.currentName)}（${esc(x.code)}）`).join("、")+(rows.length>6?`等${rows.length}只`:""):"无";return `<section class="qa-grid notes-at-end"><article class="panel"><div class="section-head"><div><span>ETF UNIVERSE CHECK</span><h2>全量ETF每日变更检查</h2></div></div><div class="qa-stats"><span><b>${data.quality.completeUniverseCount??data.quality.marketEtfCount}</b>交易所完整ETF</span><span><b>${added.length}</b>当日新增</span><span><b>${missing.length}</b>当日消失</span><span><b>${renamed.length}</b>名称变化</span></div><dl class="audit-list"><dt>新增</dt><dd>${productList(added)}</dd><dt>消失</dt><dd>${productList(missing)}</dd><dt>名称变化</dt><dd>${renamed.length?renamed.slice(0,6).map(x=>`${esc(x.previousName)} → ${esc(x.currentName)}（${esc(x.code)}）`).join("、"):"无"}</dd></dl></article><article class="panel methodology"><div class="section-head"><div><span>DATA & METHODOLOGY</span><h2>数据与指标说明</h2></div></div><dl><dt>更新时间</dt><dd>${data.windowStartDate}—${data.tradeDate}，共${data.quality.officialSessions}个交易日；下一交易日07:30—09:00自动检查完整数据。</dd><dt>发布检查</dt><dd>${data.status.toUpperCase()}；完整ETF ${data.quality.marketEtfCount}只，本期统计 ${data.quality.classifiedEtfCount}只，待归类 ${data.quality.unclassifiedEtfCount??"—"}只。</dd><dt>行业分类</dt><dd>${esc(data.methodology.classification)}</dd><dt>资金口径</dt><dd>${esc(data.methodology.flow)}</dd><dt>坐标轴</dt><dd>${esc(data.methodology.coordinates)}</dd><dt>统计范围</dt><dd>${esc(data.methodology.scope)}</dd></dl></article></section>`}
+  function bottomNotes(data){const audit=data.universeAudit||{},added=audit.added||[],missing=audit.missing||[],renamed=audit.renamed||[];const productList=rows=>rows.length?rows.slice(0,6).map(x=>`${esc(x.name||x.currentName)}（${esc(x.code)}）`).join("、")+(rows.length>6?`等${rows.length}只`:""):"无";return `<section class="qa-grid notes-at-end"><article class="panel"><div class="section-head"><div><span>ETF UNIVERSE CHECK</span><h2>全量ETF每日变更检查</h2></div></div><div class="qa-stats"><span><b>${data.quality.completeUniverseCount??data.quality.marketEtfCount}</b>交易所完整ETF</span><span><b>${added.length}</b>当日新增</span><span><b>${missing.length}</b>当日消失</span><span><b>${renamed.length}</b>名称变化</span></div><dl class="audit-list"><dt>新增</dt><dd>${productList(added)}</dd><dt>消失</dt><dd>${productList(missing)}</dd><dt>名称变化</dt><dd>${renamed.length?renamed.slice(0,6).map(x=>`${esc(x.previousName)} → ${esc(x.currentName)}（${esc(x.code)}）`).join("、"):"无"}</dd></dl></article><article class="panel methodology"><div class="section-head"><div><span>DATA & METHODOLOGY</span><h2>数据与指标说明</h2></div></div><dl><dt>更新时间</dt><dd>${data.windowStartDate}—${data.tradeDate}，共${data.quality.officialSessions}个交易日；下一交易日07:30—09:00自动检查完整数据。</dd><dt>发布检查</dt><dd>${data.status.toUpperCase()}；完整ETF ${data.quality.marketEtfCount}只，本期统计 ${data.quality.classifiedEtfCount}只，待归类 ${data.quality.unclassifiedEtfCount??"—"}只。</dd><dt>行业主题覆盖</dt><dd>${data.quality.sectorThemeGroupCount??"—"}个主题组、${data.quality.sectorThemeEtfCount??"—"}只ETF；每日与组内ETF合计自动对账。</dd><dt>行业主题口径</dt><dd>${esc(data.methodology.classification)}</dd><dt>资金口径</dt><dd>${esc(data.methodology.flow)}</dd><dt>坐标轴</dt><dd>${esc(data.methodology.coordinates)}</dd><dt>统计范围</dt><dd>${esc(data.methodology.scope)}</dd></dl></article></section>`}
 
   function bind(data){
     document.querySelectorAll("[data-id]").forEach(el=>el.onclick=()=>openDrawer(data,el.dataset.id));

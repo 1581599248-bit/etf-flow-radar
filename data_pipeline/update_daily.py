@@ -574,6 +574,12 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
     critical = any(i["severity"] == "critical" for i in issues)
     history_ok = len(window) == WINDOW_SESSIONS and price_coverage >= .8
     groups = sorted(groups, key=lambda x: (x["kind"], -x["flow1d"]))
+    sector_theme_groups = [g for g in groups if g["kind"] == "sector"]
+    sector_theme_etf_count = sum(g["etfCount"] for g in sector_theme_groups)
+    sector_theme_universe_count = sum(
+        record.get("classificationStatus") == "classified" and record.get("kind") == "sector"
+        for record in universe_records
+    )
     conclusion = generate_conclusion(groups, market, history_ok)
 
     records = [{
@@ -597,6 +603,10 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         "quality": {"marketEtfCount": int(len(current)), "classifiedEtfCount": int(len(valid)),
                     "completeUniverseCount": len(universe_records), "unclassifiedEtfCount": len(unclassified),
                     "officialSessions": len(window), "groupCount": len(groups),
+                    "sectorThemeGroupCount": len(sector_theme_groups),
+                    "sectorThemeEtfCount": sector_theme_etf_count,
+                    "sectorThemeUniverseCount": sector_theme_universe_count,
+                    "sectorThemePendingCount": sector_theme_universe_count - sector_theme_etf_count,
                     "returnProxyCoverage": round(price_coverage, 4),
                     "reconciliation": {"directionCountTotal": count_total, "groupEtfCountTotal": group_etf_total,
                                        "uniqueAnalyzedEtfCount": unique_etf_total, "groupFlow1d": group_flow_1d,
@@ -613,7 +623,7 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
             "counts": "ETF只数按交易所日终总份额较前一交易日增加、减少或完全相同划分。总份额不变表示当日没有净份额增减，不代表没有二级市场成交、价格波动，亦不代表申购和赎回均为零。",
             "return": "组别收益使用组内当前规模最大的ETF作为价格代理；相对收益以沪深300代理为基准。",
             "coordinates": "横轴 = 20日相对沪深300收益率；纵轴 = 5日净申赎 ÷ 5日前参考规模（%）；气泡面积 = 当前ETF规模。",
-            "classification": "行业主题观察组按交易所简称与净值产品全称的关键词规则互斥归类，每只ETF只进入一个主要组。当前不是申万或中证一级行业全覆盖；未命中规则的产品进入每日待归类清单。",
+            "classification": f"CUSTOM_THEME_V1：按交易所简称与净值产品全称的关键词规则，将ETF互斥归入{len(sector_theme_groups)}个行业主题观察组，当前覆盖{sector_theme_etf_count}只ETF，每只ETF只进入一个主要组。该口径不是申万一级行业，也不代表申万31个一级行业全覆盖；未命中规则的产品进入每日待归类清单。",
             "identity": "份额数据不包含投资者身份，禁止据此推断国家队、机构、个人或做市商。",
             "scope": "完整名册保留交易所全部ETF；资金分析只使用已明确归类且具备完整历史与净值的A股股票ETF，每只ETF只进入一个主要分析组，避免重复计数。",
         },
