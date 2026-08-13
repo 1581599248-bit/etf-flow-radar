@@ -29,7 +29,7 @@ test("dashboard contains the answer-first modules and two coordinate maps", asyn
   assert.match(page, /不再设置跨行业主题组/);
   assert.match(page, /跨行业与热门ETF异动/);
   assert.match(page, /泛消费和机器人指数通常同时覆盖多个申万一级行业/);
-  assert.match(page, /次日00:20起探测/);
+  assert.match(page, /下一交易日07:30—09:00自动检查完整数据/);
   assert.doesNotMatch(page, /data-kind="theme"/);
   assert.match(page, /等待历史或净值补齐/);
   assert.doesNotMatch(page, /仅显示防碰撞标签/);
