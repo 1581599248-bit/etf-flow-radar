@@ -18,6 +18,10 @@ test("dashboard contains the answer-first modules and two coordinate maps", asyn
   assert.match(page, /导出高清 JPG/);
   assert.match(page, /全量ETF每日变更检查/);
   assert.match(page, /交易所完整ETF/);
+  assert.match(page, /组内ETF估算总规模（总份额 × 单位净值）/);
+  assert.match(page, /当日流入领跑 \/ 流出领跑/);
+  assert.match(page, /近5日.*流入领跑 \/ 流出领跑/);
+  assert.doesNotMatch(page, /气泡面积 = 当前估算规模|当日流入 \/ 流出领跑/);
   assert.doesNotMatch(page, /国家队代理ETF净流入|代理池当日估算净流入/);
 });
 

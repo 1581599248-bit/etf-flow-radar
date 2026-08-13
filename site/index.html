@@ -46,7 +46,7 @@
         ${usable.map(r=>{const rate=flowRate(r),left=50+r.relativeReturn20d/xMax*45,top=50-rate/yMax*43,size=12+Math.sqrt((r.aum-aMin+1)/(aMax-aMin+1))*20;return `<button class="bubble ${tone(rate)}" data-id="${r.id}" style="left:${left}%;top:${top}%;width:${size}px;height:${size}px" title="${r.name}｜20日相对收益 ${pct(r.relativeReturn20d)}｜5日资金变化率 ${pct(rate)}"><span>${r.name}</span></button>`}).join("")}
         <span class="axis-title x-title">20日相对沪深300收益 →</span><span class="axis-title y-title">↑ 5日资金变化率（占5日前规模）</span>
       </div>
-      <div class="legend"><span><i class="red"></i>5日净流入</span><span><i class="green"></i>5日净流出</span><span>气泡面积 = 当前估算规模</span></div>
+      <div class="legend"><span><i class="red"></i>5日净流入</span><span><i class="green"></i>5日净流出</span><span>气泡面积 = 组内ETF估算总规模（总份额 × 单位净值）</span></div>
     </article>`;
   }
 
@@ -72,7 +72,7 @@
 
       <section id="maps" class="map-grid">${chart(wide,"宽基与风格资金坐标","宽基与风格放在同一标尺，定位大小盘与红利/成长的配置切换")}${chart(sectors,"行业板块资金坐标","行业观察组互斥归类，避免同一ETF在多个板块重复计数")}</section>
 
-      <section class="lower-grid"><article class="panel"><div class="section-head"><div><span>FLOW LEADERS</span><h2>当日流入 / 流出领跑</h2><p>点击任何行查看组内产品与信号质量</p></div><div class="tabs" data-rank-tabs><button class="active" data-period="1d">1日</button><button data-period="5d">5日</button><button data-period="20d">20日</button></div></div><div id="ranking">${ranking(data.groups,"1d",10)}</div></article><article class="panel"><div class="section-head"><div><span>PRICE × FLOW STATE</span><h2>价格—资金状态</h2><p>把“涨跌”与“申赎”分开，避免错误归因</p></div></div><div class="state-grid">${["上涨增配","逆势承接","上涨减配","下跌流出"].map(state=>{const rs=data.groups.filter(r=>r.priceFlowState===state).sort((a,b)=>Math.abs(b.flow5d)-Math.abs(a.flow5d));return `<article><span>${state}</span><b>${rs.slice(0,3).map(r=>r.name).join(" · ")||"暂无"}</b><small>${state==="上涨增配"?"价格与资金同向走强":state==="逆势承接"?"价格弱、份额增，观察是否止跌":state==="上涨减配"?"价格强、资金出，关注兑现":"价格与资金同向走弱"}</small></article>`}).join("")}</div></article></section>
+      <section class="lower-grid"><article class="panel"><div class="section-head"><div><span>FLOW LEADERS</span><h2 id="flow-leaders-title">当日流入领跑 / 流出领跑</h2><p>前半部分为净流入最多的组，后半部分为净流出最多的组</p></div><div class="tabs" data-rank-tabs><button class="active" data-period="1d">1日</button><button data-period="5d">5日</button><button data-period="20d">20日</button></div></div><div id="ranking">${ranking(data.groups,"1d",10)}</div></article><article class="panel"><div class="section-head"><div><span>PRICE × FLOW STATE</span><h2>价格—资金状态</h2><p>把“涨跌”与“申赎”分开，避免错误归因</p></div></div><div class="state-grid">${["上涨增配","逆势承接","上涨减配","下跌流出"].map(state=>{const rs=data.groups.filter(r=>r.priceFlowState===state).sort((a,b)=>Math.abs(b.flow5d)-Math.abs(a.flow5d));return `<article><span>${state}</span><b>${rs.slice(0,3).map(r=>r.name).join(" · ")||"暂无"}</b><small>${state==="上涨增配"?"价格与资金同向走强":state==="逆势承接"?"价格弱、份额增，观察是否止跌":state==="上涨减配"?"价格强、资金出，关注兑现":"价格与资金同向走弱"}</small></article>`}).join("")}</div></article></section>
 
       <section id="detail" class="panel"><div class="section-head"><div><span>OBJECTIVE EVIDENCE TABLE</span><h2>全部观察组证据表</h2><p>1/5/20日资金变化、5日资金变化率与价格—资金状态</p></div><div class="filters"><button class="active" data-kind="all">全部</button><button data-kind="broad">宽基</button><button data-kind="style">风格</button><button data-kind="sector">行业</button></div></div><div class="evidence-table"><div class="e-row e-head"><span>观察组</span><span>1日</span><span>5日</span><span>20日</span><span>5日变化率</span><span>状态</span></div><div id="evidence-rows">${evidenceRows(data.groups)}</div></div></section>
 
@@ -89,7 +89,7 @@
 
   function bind(data){
     document.querySelectorAll("[data-id]").forEach(el=>el.onclick=()=>openDrawer(data,el.dataset.id));
-    document.querySelectorAll("[data-rank-tabs] button").forEach(button=>button.onclick=()=>{document.querySelectorAll("[data-rank-tabs] button").forEach(x=>x.classList.remove("active"));button.classList.add("active");$("#ranking").innerHTML=ranking(data.groups,button.dataset.period,10);$("#ranking").querySelectorAll("[data-id]").forEach(el=>el.onclick=()=>openDrawer(data,el.dataset.id))});
+    document.querySelectorAll("[data-rank-tabs] button").forEach(button=>button.onclick=()=>{document.querySelectorAll("[data-rank-tabs] button").forEach(x=>x.classList.remove("active"));button.classList.add("active");const label={"1d":"当日","5d":"近5日","20d":"近20日"}[button.dataset.period];$("#flow-leaders-title").textContent=`${label}流入领跑 / 流出领跑`;$("#ranking").innerHTML=ranking(data.groups,button.dataset.period,10);$("#ranking").querySelectorAll("[data-id]").forEach(el=>el.onclick=()=>openDrawer(data,el.dataset.id))});
     document.querySelectorAll("[data-kind]").forEach(button=>button.onclick=()=>{document.querySelectorAll("[data-kind]").forEach(x=>x.classList.remove("active"));button.classList.add("active");document.querySelectorAll("[data-kind-row]").forEach(row=>row.hidden=button.dataset.kind!=="all"&&row.dataset.kindRow!==button.dataset.kind)});
     $("#export").onclick=()=>exportJpg(data.tradeDate);
   }
