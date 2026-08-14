@@ -1,6 +1,6 @@
 {
   "name": "etf-flow-radar",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -8,8 +8,8 @@
   },
   "scripts": {
     "dev": "npm run build && npx --yes serve dist",
-    "build": "node scripts/build-site.mjs",
-    "test": "npm run build && node --test tests/rendered-html.test.mjs"
+    "build": "node scripts/build-site-v2.mjs",
+    "test": "npm run build && node --test tests/rendered-html-v2.test.mjs"
   },
   "dependencies": {
     "html-to-image": "1.11.13"
