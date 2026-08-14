@@ -3,6 +3,10 @@ name: Daily ETF data
 on:
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
+    paths-ignore:
+      - "site/data/**"
   schedule:
     - cron: "30 23 * * 1-5" # 07:30 Asia/Shanghai, Tuesday-Saturday
     - cron: "0 0 * * 2-6"   # 08:00 Asia/Shanghai, Tuesday-Saturday
