@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="基于沪深交易所ETF日终份额的A股ETF资金流跟踪。">
+  <title>资金ETF流动每日跟踪</title>
+  <link rel="icon" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="v2.css">
+</head>
+<body>
+<div id="app"><main class="loading"><b>VERIFIED DATA</b><h1>正在读取已验证快照…</h1></main></div>
+<script src="html-to-image.js" onload="window.__imageExportReady=true"></script>
+<script>
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
+const money=n=>n==null?"—":`${n>0?"+":n<0?"−":""}${Math.abs(n).toFixed(1)}亿`;
+const pct=n=>n==null?"—":`${n>0?"+":""}${Number(n).toFixed(2)}%`;
+const tone=n=>n>0?"up":n<0?"down":"flat";
+const kindName={broad:"宽基",style:"风格",theme:"市场主题",industry:"申万一级行业"};
+const periodKey={"1d":"flow1d","5d":"flow5d","20d":"flow20d"};
+const fullDate=d=>new Intl.DateTimeFormat("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"short"}).format(new Date(`${d}T12:00:00+08:00`));
+const opinionDate=d=>new Intl.DateTimeFormat("zh-CN",{year:"numeric",month:"long",day:"numeric"}).format(new Date(`${d}T12:00:00+08:00`));
+const displayName=r=>r.displayName||r.fullName||r.name;
+const flowRate=r=>r.flowIntensity5dPct??(r.flowIntensity5dBps==null?null:r.flowIntensity5dBps/100);
+
+async function load(){
+  try{
+    const res=await fetch(`data/latest.json?v=${Date.now()}`,{cache:"no-store"});
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    const data=await res.json();
+    if(data.schemaVersion<8||data.sourceMode!=="REAL"||data.status==="failed")throw new Error("数据快照未通过V2发布检查");
+    render(data);
+  }catch(e){document.getElementById("app").innerHTML=`<main class="loading error"><b>DATA BLOCKED</b><h1>数据暂未发布</h1><p>${esc(e.message)}</p></main>`}
+}
+
+function rankList(rows,period="1d",limit=10){
+  const key=periodKey[period], sorted=[...rows].sort((a,b)=>(b[key]||0)-(a[key]||0));
+  const pos=sorted.filter(r=>(r[key]||0)>0).slice(0,Math.ceil(limit/2));
+  const neg=[...sorted].reverse().filter(r=>(r[key]||0)<0).slice(0,Math.floor(limit/2));
+  return [...pos,...neg].map(r=>`<button class="rank-row" data-id="${r.id}"><span><b>${esc(r.name)}</b><small>${kindName[r.kind]||r.kind} · ${r.etfCount}只ETF</small></span><strong class="${tone(r[key])}">${money(r[key])}</strong></button>`).join("");
+}
+
+function chart(rows,title){
+  const usable=rows.filter(r=>r.relativeReturn20d!=null&&flowRate(r)!=null);
+  if(!usable.length)return `<article class="panel"><h2>${title}</h2><p>收益代理暂未完整。</p></article>`;
+  const xMax=Math.max(2,...usable.map(r=>Math.abs(r.relativeReturn20d)))*1.15;
+  const yMax=Math.max(.5,...usable.map(r=>Math.abs(flowRate(r))))*1.15;
+  const aMax=Math.max(1,...usable.map(r=>r.aum||0));
+  return `<article class="panel chart-card"><div class="section-head"><div><span>PRICE × FLOW MAP</span><h2>${title}</h2><p>横轴20日相对沪深300收益，纵轴5日资金变化率</p></div></div><div class="quadrant">
+    <div class="quad-label q1"><b>跑赢 · 流入</b></div><div class="quad-label q2"><b>跑输 · 流入</b></div><div class="quad-label q3"><b>跑输 · 流出</b></div><div class="quad-label q4"><b>跑赢 · 流出</b></div><i class="axis axis-x"></i><i class="axis axis-y"></i>
+    ${usable.map(r=>{const rate=flowRate(r),left=50+r.relativeReturn20d/xMax*44,top=50-rate/yMax*42,size=Math.max(10,Math.sqrt((r.aum||0)/aMax)*38);return `<button class="bubble ${tone(rate)}" data-id="${r.id}" style="left:${left}%;top:${top}%;width:${size}px;height:${size}px" title="${esc(r.name)}｜${money(r.flow5d)}"><span>${esc(r.name)}</span></button>`}).join("")}
+    <span class="axis-title x-title">20日相对沪深300收益 →</span><span class="axis-title y-title">↑ 5日资金变化率</span></div></article>`;
+}
+
+function groupCards(rows){return rows.map(r=>`<button class="summary-card" data-id="${r.id}"><div><span>${kindName[r.kind]||r.kind} · ${r.etfCount}只</span><h3>${esc(r.name)}</h3></div><strong class="${tone(r.flow1d)}">${money(r.flow1d)}</strong><div class="periods"><span><b class="${tone(r.flow1d)}">${money(r.flow1d)}</b><small>1日</small></span><span><b class="${tone(r.flow5d)}">${money(r.flow5d)}</b><small>5日</small></span><span><b class="${tone(r.flow20d)}">${money(r.flow20d)}</b><small>20日</small></span></div></button>`).join("")}
+
+function render(data){
+  window.snapshot=data;
+  const groups=data.groups||[], broad=groups.filter(r=>r.kind==="broad"), style=groups.filter(r=>r.kind==="style"), themes=groups.filter(r=>r.kind==="theme"), industries=groups.filter(r=>r.kind==="industry");
+  const coreIds=["hs300","csi_a500","csi500","csi1000","chinext","star50"];
+  const coreCards=coreIds.map(id=>groups.find(r=>r.id===id)).filter(Boolean);
+  const topThemeIn=[...themes].sort((a,b)=>b.flow1d-a.flow1d)[0], topThemeOut=[...themes].sort((a,b)=>a.flow1d-b.flow1d)[0];
+  document.getElementById("app").innerHTML=`
+  <nav><div class="brand-mark">F</div><div class="brand"><b>资金ETF流动每日跟踪</b><span>A-SHARE ETF FLOW MONITOR</span></div><div class="nav-links"><a href="#summary">结论</a><a href="#broad">宽基</a><a href="#taxonomy">主题</a><a href="#detail">ETF明细</a></div><button id="export" data-export-hide="true">导出高清 JPG</button></nav>
+  <main id="report" class="report">
+    <header class="masthead"><div><span>DAILY CLIENT BRIEF · VERIFIED CLOSE</span><h1>资金ETF流动每日跟踪</h1><p>官方份额 · 统一净值 · 市场化分类</p></div><div class="analysis-date"><span>数据交易日</span><strong>${fullDate(data.tradeDate)}</strong></div></header>
+
+    <section id="summary" class="conclusion panel"><div class="section-head"><div><span>PRE-MARKET CLIENT VIEW</span><h2>${opinionDate(data.tradeDate)} ETF跟踪观点</h2><p>${opinionDate(data.tradeDate)}收盘数据 · 下一交易日盘前使用</p></div><b class="confidence">置信度 ${data.conclusion.confidence}</b></div><h3>${esc(data.conclusion.headline)}</h3><div class="facts">${data.conclusion.facts.map((x,i)=>`<article><b>0${i+1}</b><p>${esc(x)}</p></article>`).join("")}</div><div class="view"><b>分类说明</b><p>${esc(data.conclusion.interpretation)}</p></div></section>
+
+    <section class="market-strip"><article><span>A股股票ETF全量资金变化</span><strong class="${tone(data.market.flow1d)}">${money(data.market.flow1d)}</strong><small>${data.market.etfCount}只完整样本</small></article><article><span>5日累计资金变化</span><strong class="${tone(data.market.flow5d)}">${money(data.market.flow5d)}</strong></article><article><span>20日累计资金变化</span><strong class="${tone(data.market.flow20d)}">${money(data.market.flow20d)}</strong></article><article><span>当日ETF流入 / 流出</span><strong>${data.market.increaseEtfCount1d} / ${data.market.decreaseEtfCount1d}</strong></article><article><span>主题最大流入</span><strong class="up">${topThemeIn?esc(topThemeIn.name):"—"}</strong><small>${topThemeIn?money(topThemeIn.flow1d):"—"}</small></article><article><span>主题最大流出</span><strong class="down">${topThemeOut?esc(topThemeOut.name):"—"}</strong><small>${topThemeOut?money(topThemeOut.flow1d):"—"}</small></article></section>
+
+    <section id="broad" class="panel"><div class="section-head"><div><span>CORE BROAD INDEXES</span><h2>核心宽基资金</h2><p>同一指数下ETF合并统计，避免只看单只产品。</p></div></div><div class="card-grid">${groupCards(coreCards)}</div></section>
+
+    <section id="taxonomy" class="panel"><div class="section-head"><div><span>MARKET TAXONOMY V2</span><h2>市场主题与行业资金</h2><p>机器人、新能源、白酒、消费、AI算力等独立主题优先于申万行业识别。</p></div><div class="period-switch"><button class="active" data-period="1d">1日</button><button data-period="5d">5日</button><button data-period="20d">20日</button></div></div><div class="taxonomy-grid"><div><h3>市场主题</h3><div id="themeRank" class="rank-list">${rankList(themes,"1d",12)}</div></div><div><h3>申万一级行业</h3><div id="industryRank" class="rank-list">${rankList(industries,"1d",12)}</div></div></div></section>
+
+    <section id="maps" class="map-grid">${chart([...broad,...style],"宽基与风格：价格 × 资金")}${chart([...themes,...industries],"主题与行业：价格 × 资金")}</section>
+
+    <section id="detail" class="panel"><div class="section-head"><div><span>ETF LEVEL DETAIL</span><h2>单只ETF明细</h2><p>单只产品一律显示完整基金简称与代码，避免“300ETF”这类歧义。</p></div></div><div class="detail-tools"><input id="search" placeholder="搜索ETF名称、代码或分类"><select id="groupFilter"><option value="all">全部分类</option>${groups.map(g=>`<option value="${g.id}">${kindName[g.kind]||g.kind}｜${esc(g.name)}</option>`).join("")}</select><select id="detailPeriod"><option value="1d">按1日排序</option><option value="5d">按5日排序</option><option value="20d">按20日排序</option></select></div><div id="etfTable"></div></section>
+
+    <section class="panel methodology"><div class="section-head"><div><span>DATA METHOD</span><h2>数据口径</h2></div></div><div class="method-grid"><article><b>份额主数据</b><p>沪深交易所日终ETF份额，经AKShare统一适配。</p></article><article><b>资金估值</b><p>${esc(data.methodology.flow)}</p></article><article><b>收益代理</b><p>${esc(data.methodology.return)}</p></article><article><b>分类体系</b><p>${esc(data.methodology.classification)}</p></article></div></section>
+  </main><div id="modal" class="modal" hidden></div>`;
+
+  function renderTable(){
+    const q=$("#search").value.trim().toLowerCase(), gid=$("#groupFilter").value, p=$("#detailPeriod").value, key=periodKey[p];
+    const rows=(data.etfs||[]).filter(r=>(gid==="all"||r.groupId===gid)&&(!q||`${displayName(r)} ${r.name} ${r.code} ${r.groupName||""}`.toLowerCase().includes(q))).sort((a,b)=>Math.abs(b[key]||0)-Math.abs(a[key]||0)).slice(0,250);
+    $("#etfTable").innerHTML=`<div class="etf-row etf-head"><span>ETF</span><span>分类</span><span>规模</span><span>1日</span><span>5日</span><span>20日</span></div>${rows.map(r=>`<div class="etf-row"><span><b>${esc(displayName(r))}</b><small>${r.code}</small></span><span><b>${esc(r.groupName||"其他股票ETF")}</b><small>${kindName[r.kind]||"待细分"}</small></span><span>${r.aum.toFixed(1)}亿</span><strong class="${tone(r.flow1d)}">${money(r.flow1d)}</strong><strong class="${tone(r.flow5d)}">${money(r.flow5d)}</strong><strong class="${tone(r.flow20d)}">${money(r.flow20d)}</strong></div>`).join("")}<p class="table-note">当前显示${rows.length}只；按${p}绝对资金变化排序。</p>`;
+  }
+  renderTable();
+  $("#search").addEventListener("input",renderTable);$("#groupFilter").addEventListener("change",renderTable);$("#detailPeriod").addEventListener("change",renderTable);
+  document.querySelectorAll(".period-switch button").forEach(btn=>btn.onclick=()=>{document.querySelectorAll(".period-switch button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");$("#themeRank").innerHTML=rankList(themes,btn.dataset.period,12);$("#industryRank").innerHTML=rankList(industries,btn.dataset.period,12);bindGroupClicks();});
+  bindGroupClicks();
+  bindExport();
+}
+
+function bindGroupClicks(){document.querySelectorAll("[data-id]").forEach(el=>{el.onclick=()=>openGroup(el.dataset.id)})}
+function openGroup(id){
+  const data=window.snapshot,g=data.groups.find(x=>x.id===id);if(!g)return;
+  const rows=data.etfs.filter(r=>r.groupId===id).sort((a,b)=>Math.abs(b.flow1d)-Math.abs(a.flow1d));
+  const modal=$("#modal");modal.hidden=false;modal.innerHTML=`<div class="modal-backdrop" data-close="1"></div><article class="modal-card"><button class="modal-close" data-close="1">×</button><span>${kindName[g.kind]||g.kind}</span><h2>${esc(g.name)}</h2><p>${g.etfCount}只ETF｜1日 ${money(g.flow1d)}｜5日 ${money(g.flow5d)}｜20日 ${money(g.flow20d)}</p><div class="modal-list">${rows.map(r=>`<div><span><b>${esc(displayName(r))}</b><small>${r.code}</small></span><span>${r.aum.toFixed(1)}亿</span><strong class="${tone(r.flow1d)}">${money(r.flow1d)}</strong></div>`).join("")}</div></article>`;modal.querySelectorAll("[data-close]").forEach(x=>x.onclick=()=>modal.hidden=true);
+}
+function bindExport(){const btn=$("#export");btn.onclick=async()=>{if(!window.htmlToImage){alert("导出组件尚未加载");return}btn.disabled=true;try{const node=$("#report"),url=await htmlToImage.toJpeg(node,{quality:.96,pixelRatio:2.5,backgroundColor:"#f3f5f7",filter:n=>!n.dataset?.exportHide});const a=document.createElement("a");a.href=url;a.download=`ETF资金跟踪-${window.snapshot.tradeDate}.jpg`;a.click()}finally{btn.disabled=false}}}
+load();
+</script>
+</body>
+</html>
