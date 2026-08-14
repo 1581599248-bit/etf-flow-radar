@@ -1,6 +1,8 @@
 name: Daily ETF data
 
 on:
+  pull_request:
+    branches: [main]
   schedule:
     - cron: "30 23 * * 1-5" # 07:30 Asia/Shanghai, Tuesday-Saturday
     - cron: "0 0 * * 2-6"   # 08:00 Asia/Shanghai, Tuesday-Saturday
@@ -17,7 +19,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: daily-etf-data
+  group: daily-etf-data-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -46,6 +48,7 @@ jobs:
       - name: Validate V2 client bundle
         run: npm ci && npm test
       - name: Commit only a verified change
+        if: github.event_name != 'pull_request'
         run: |
           git config user.name "etf-flow-radar-bot"
           git config user.email "etf-flow-radar-bot@users.noreply.github.com"
