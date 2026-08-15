@@ -166,14 +166,33 @@ def fetch_share_window(end_day: date, end_frame: pd.DataFrame, sessions: int = W
 
 
 def fetch_full_names() -> pd.DataFrame:
-    """Fund-manager-qualified full short names (e.g. 科创半导体设备ETF鹏华)."""
-    frame = retry("Eastmoney fund full names", ak.fund_name_em)
+    """Fund-manager-qualified full short names (e.g. 科创半导体设备ETF鹏华).
+
+    This source is best-effort: if it is unreachable (e.g. blocked from CI),
+    the pipeline must still publish with shorter official names.
+    """
+    try:
+        frame = retry("Eastmoney fund full names", ak.fund_name_em, attempts=2)
+    except Exception as exc:
+        print(f"full name source unavailable, falling back to shorter names: {exc}", file=sys.stderr)
+        return pd.DataFrame(columns=["code", "full_name"])
     out = frame[["基金代码", "基金简称"]].copy()
     out.columns = ["code", "full_name"]
     out["code"] = out["code"].astype(str).str.zfill(6)
     out["full_name"] = out["full_name"].astype(str).str.strip()
     out = out[out["full_name"].str.len() > 0]
     return out.drop_duplicates("code", keep="last")
+
+
+def _display_name(row: Any) -> str:
+    """Best available display name: full name, else longer NAV name, else exchange name."""
+    name = str(row.display_name)
+    price_name = getattr(row, "price_name", None)
+    if name == str(row.name) and pd.notna(price_name):
+        alt = str(price_name).strip()
+        if len(alt) > len(name):
+            return alt
+    return name
 
 
 def with_display_names(frame: pd.DataFrame, names: pd.DataFrame) -> pd.DataFrame:
@@ -290,9 +309,9 @@ def complete_universe_records(
         group = classify_etf(str(row.name), str(row.price_name) if pd.notna(row.price_name) else None)
         scope = "excluded" if EXCLUDE.search(" ".join(filter(None, [str(row.name), str(row.price_name) if pd.notna(row.price_name) else ""]))) else ("classified" if group else "unclassified")
         if scope == "unclassified":
-            unclassified.append({"code": str(row.code), "name": str(row.display_name), "exchange": str(row.exchange)})
+            unclassified.append({"code": str(row.code), "name": _display_name(row), "exchange": str(row.exchange)})
         record = {
-            "code": str(row.code), "name": str(row.display_name), "exchange": str(row.exchange),
+            "code": str(row.code), "name": _display_name(row), "exchange": str(row.exchange),
             "shares": round(float(row.shares), 2), "classificationStatus": scope,
             "analysisStatus": "ready" if str(row.code) in valid_codes else "history_or_nav_pending",
         }
@@ -472,7 +491,7 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         group = classify_etf(str(row.name), str(row.price_name) if pd.notna(row.price_name) else None)
         if group and pd.notna(row.reference_price):
             classified.append({
-                "code": str(row.code), "name": str(row.display_name), "exchange": str(row.exchange),
+                "code": str(row.code), "name": _display_name(row), "exchange": str(row.exchange),
                 "shares": float(row.shares), "reference_price": float(row.reference_price),
                 "reference_price_type": str(row.reference_price_type), "group_id": str(group["id"]),
                 "group_name": str(group["name"]), "kind": str(group["kind"]),
