@@ -79,9 +79,10 @@ test("verified snapshot is internally coherent and carries the complete ETF univ
     assert.equal(row.priceFlowState, expected);
   }
   const industryGroups = snapshot.groups.filter((row) => row.kind === "industry");
-  assert.ok(industryGroups.length <= 31);
+  const industryParentCount = new Set(industryGroups.map((row) => row.parent || row.id)).size;
+  assert.ok(industryParentCount <= 31);
   assert.equal(snapshot.quality.industryDefinitionCount, 31);
-  assert.equal(snapshot.quality.industryGroupCount, industryGroups.length);
+  assert.equal(snapshot.quality.industryGroupCount, industryParentCount);
   assert.equal(snapshot.quality.industryGroupCount + snapshot.quality.industryMissingGroups.length, 31);
   assert.equal(snapshot.quality.industryEtfCount, industryGroups.reduce((sum, row) => sum + row.etfCount, 0));
   const universeIndustryRows = snapshot.universe.filter((row) => row.classificationStatus === "classified" && row.kind === "industry");
