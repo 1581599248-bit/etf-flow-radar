@@ -8,7 +8,7 @@ test("dashboard contains the answer-first modules and two coordinate maps", asyn
   assert.match(page, /资金ETF流动每日跟踪/);
   assert.match(page, /主要宽基数据摘要/);
   assert.match(page, /宽基与风格资金坐标/);
-  assert.match(page, /申万一级行业资金坐标/);
+  assert.match(page, /申万一级与主流行业资金坐标/);
   assert.match(page, /申万行业分类标准2021版/);
   assert.match(page, /20日相对沪深300收益/);
   assert.match(page, /5日资金变化率（占5日前规模）/);
@@ -97,7 +97,7 @@ test("generated output and Render blueprint share one reproducible directory", a
   const snapshot = JSON.parse(await readFile("dist/data/latest.json", "utf8"));
   const blueprint = await readFile("render.yaml", "utf8");
   assert.match(page, /宽基与风格资金坐标/);
-  assert.match(page, /申万一级行业资金坐标/);
+  assert.match(page, /申万一级与主流行业资金坐标/);
   assert.ok(snapshot.schemaVersion >= 4);
   assert.match(blueprint, /buildCommand: npm ci && npm run build/);
   assert.match(blueprint, /staticPublishPath: \.\/dist/);
