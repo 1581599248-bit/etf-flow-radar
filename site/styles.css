@@ -30,4 +30,4 @@
 .view b{font-size:9px}
 .quadrant{margin-top:27px}
 .y-title{left:0;top:-22px;writing-mode:horizontal-tb;transform:none;font-weight:700;color:#59616b}
-@media(max-width:680px){.view{grid-template-columns:65px 1fr}.quadrant{height:440px;margin-top:27px}.bubble span{font-size:5.8px;padding:1px}.y-title{left:0}.classification-callout{grid-template-columns:1fr;gap:4px}.filters{flex-wrap:wrap}.filters button+button{border-left:1px solid var(--line)}}
+@media(max-width:680px){.view{grid-template-columns:65px 1fr}.quadrant{height:540px;margin-top:27px}.bubble span{font-size:5.8px;padding:1px}.y-title{left:0}.classification-callout{grid-template-columns:1fr;gap:4px}.filters{flex-wrap:wrap}.filters button+button{border-left:1px solid var(--line)}}

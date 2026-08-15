@@ -675,7 +675,7 @@
       "id": "elec_semiconductor",
       "parent": "sw_electronics",
       "code": "801080",
-      "name": "电子·半导体芯片",
+      "name": "半导体芯片",
       "patterns": [
         "半导体",
         "芯片",
@@ -691,7 +691,7 @@
       "id": "elec_consumer",
       "parent": "sw_electronics",
       "code": "801080",
-      "name": "电子·消费电子",
+      "name": "消费电子",
       "patterns": [
         "消费电子",
         "智能消费",
@@ -707,7 +707,7 @@
       "id": "comp_ai",
       "parent": "sw_computer",
       "code": "801750",
-      "name": "计算机·AI算力",
+      "name": "AI算力",
       "patterns": [
         "人工智能",
         "AI",
@@ -731,7 +731,7 @@
       "id": "comp_software",
       "parent": "sw_computer",
       "code": "801750",
-      "name": "计算机·软件信创",
+      "name": "软件信创",
       "patterns": [
         "软件",
         "信创",
@@ -744,7 +744,7 @@
       "id": "comp_internet",
       "parent": "sw_computer",
       "code": "801750",
-      "name": "计算机·互联网",
+      "name": "互联网",
       "patterns": [
         "互联网",
         "物联网"
@@ -754,7 +754,7 @@
       "id": "comp_fintech",
       "parent": "sw_computer",
       "code": "801750",
-      "name": "计算机·金融科技",
+      "name": "金融科技",
       "patterns": [
         "金融科技",
         "科技金融",
@@ -765,7 +765,7 @@
       "id": "pharma_innovative",
       "parent": "sw_pharma_bio",
       "code": "801150",
-      "name": "医药生物·创新药",
+      "name": "创新药",
       "patterns": [
         "创新药",
         "生物医药",
@@ -780,7 +780,7 @@
       "id": "pharma_device",
       "parent": "sw_pharma_bio",
       "code": "801150",
-      "name": "医药生物·医疗器械",
+      "name": "医疗器械",
       "patterns": [
         "医疗器械",
         "医疗设备"
@@ -790,7 +790,7 @@
       "id": "pharma_tcm",
       "parent": "sw_pharma_bio",
       "code": "801150",
-      "name": "医药生物·中药",
+      "name": "中药",
       "patterns": [
         "中药"
       ]
@@ -799,7 +799,7 @@
       "id": "power_pv",
       "parent": "sw_power_equipment",
       "code": "801730",
-      "name": "电力设备·光伏",
+      "name": "光伏",
       "patterns": [
         "光伏"
       ]
@@ -808,7 +808,7 @@
       "id": "power_battery",
       "parent": "sw_power_equipment",
       "code": "801730",
-      "name": "电力设备·锂电池",
+      "name": "锂电池",
       "patterns": [
         "锂电",
         "电池",
@@ -820,7 +820,7 @@
       "id": "power_storage",
       "parent": "sw_power_equipment",
       "code": "801730",
-      "name": "电力设备·储能风电",
+      "name": "储能风电",
       "patterns": [
         "储能",
         "风电",
@@ -831,7 +831,7 @@
       "id": "auto_nev",
       "parent": "sw_auto",
       "code": "801880",
-      "name": "汽车·新能源车",
+      "name": "新能源车",
       "patterns": [
         "新能源车",
         "新能车",
@@ -842,7 +842,7 @@
       "id": "auto_smart",
       "parent": "sw_auto",
       "code": "801880",
-      "name": "汽车·智能驾驶",
+      "name": "智能驾驶",
       "patterns": [
         "智能车",
         "智能驾驶",
@@ -856,7 +856,7 @@
       "id": "media_game",
       "parent": "sw_media",
       "code": "801760",
-      "name": "传媒·游戏动漫",
+      "name": "游戏",
       "patterns": [
         "游戏",
         "动漫",
@@ -867,7 +867,7 @@
       "id": "comm_optical",
       "parent": "sw_communications",
       "code": "801770",
-      "name": "通信·光通信",
+      "name": "光通信",
       "patterns": [
         "光通信",
         "光模块",
@@ -879,7 +879,7 @@
       "id": "fin_broker",
       "parent": "sw_nonbank_finance",
       "code": "801790",
-      "name": "非银金融·券商",
+      "name": "券商",
       "patterns": [
         "券商",
         "证券"
@@ -889,7 +889,7 @@
       "id": "food_liquor",
       "parent": "sw_food_beverage",
       "code": "801120",
-      "name": "食品饮料·白酒",
+      "name": "白酒",
       "patterns": [
         "白酒",
         "酒ETF",
@@ -900,7 +900,7 @@
       "id": "metal_rare",
       "parent": "sw_nonferrous",
       "code": "801050",
-      "name": "有色金属·稀土",
+      "name": "稀土",
       "patterns": [
         "稀土",
         "稀有金属",
@@ -911,7 +911,7 @@
       "id": "metal_gold",
       "parent": "sw_nonferrous",
       "code": "801050",
-      "name": "有色金属·黄金股",
+      "name": "黄金股",
       "patterns": [
         "黄金股",
         "黄金股票",
@@ -922,7 +922,7 @@
       "id": "mach_robot",
       "parent": "sw_machinery",
       "code": "801890",
-      "name": "机械设备·机器人",
+      "name": "机器人",
       "patterns": [
         "机器人",
         "人形机器人",
@@ -933,7 +933,7 @@
       "id": "agri_farming",
       "parent": "sw_agriculture",
       "code": "801010",
-      "name": "农林牧渔·养殖",
+      "name": "养殖",
       "patterns": [
         "养殖",
         "畜牧",
