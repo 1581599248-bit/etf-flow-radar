@@ -1,76 +1,944 @@
 {
   "globalExcludePatterns": [
-    "港股|恒生|中概|纳指|标普|道琼斯|日经|德国|法国|印度|越南|沙特|海外|美国|日本|韩国|东南亚|亚太|QDII",
-    "国债|政金债|信用债|公司债|城投债|地方债|短融|可转债|转债|科创债|债券|债ETF|同业存单|货币ETF|快线ETF|保证金|收益快线|添富快线|日鑫|理财金",
-    "黄金ETF|黄金基金|黄金9999|工银黄金|中银黄金|白银ETF|豆粕ETF|商品期货|原油ETF|有色金属期货"
+    "港股|恒生|中概|纳指|标普|道琼斯|日经|德国|法国|印度|越南|沙特|海外|美国|日本|韩国|东南亚|亚太|QDII|纳斯达克|香港|沪港深|HGS|新兴亚洲|巴西|AH300|AH500|AH科技|物联网AH|H股|^HK|HKC|科技HK|HS科技|^225ETF|恒指|恒科|港科|港信息",
+    "国债|政金债|信用债|公司债|城投债|地方债|短融|可转债|转债|科创债|债券|债ETF|同业存单|货币ETF|快线ETF|保证金|收益快线|添富快线|日鑫|理财金|快钱|国开债|地债|科债|城投",
+    "黄金ETF|黄金基金|黄金9999|工银黄金|中银黄金|白银ETF|豆粕ETF|商品期货|原油ETF|有色金属期货|上海金|^金ETF"
   ],
   "broad": [
-    {"id": "sse50", "code": "000016", "name": "上证50", "patterns": ["上证50", "^50ETF(?:$|易方达|博时|华夏|嘉实|基金|指数)", "^SZ50ETF$", "^沪50ETF$", "^上50ETF$", "^万家50$", "^工银上50$"]},
-    {"id": "sse180", "code": "000010", "name": "上证180", "patterns": ["上证180", "^180ETF", "^上180ETF$", "^180指$"]},
-    {"id": "sse380", "code": "000009", "name": "上证380", "patterns": ["上证380", "^380ETF$"]},
-    {"id": "sse_composite", "code": "000001", "name": "上证综指", "patterns": ["上证综指", "^上证综合$", "^综指ETF$", "^上证指(?:CS)?$", "^上证ETF$"]},
-    {"id": "hs300", "code": "000300", "name": "沪深300", "patterns": ["沪深300", "^300ETF", "^HS300ETF$", "^华夏300$", "^工银300$", "^广发300$", "^兴业300$", "^国寿300$", "^平安300$", "^300中金$"]},
-    {"id": "csi_a50", "code": "930050", "name": "中证A50", "patterns": ["中证A50", "^A50(?:ETF|中证|博时|基金|指数|新华|龙头|$)", "^中国A50"]},
-    {"id": "csi_a100", "code": "000903", "name": "中证A100", "patterns": ["中证A100", "^A100(?:ETF|基金|指基|指数|$)", "^100ETF$"]},
-    {"id": "csi_a500", "code": "000510", "name": "中证A500", "patterns": ["中证A500", "^A500(?:ETF|E|基金|中金|指数|联接|$)"]},
-    {"id": "csi500", "code": "000905", "name": "中证500", "patterns": ["中证500", "^500ETF", "^ZZ500ETF$", "^ETF500$", "^广发500$", "^工银500$", "^方正500$", "^国寿500$", "^兴业500$", "^平安500$"]},
-    {"id": "csi800", "code": "000906", "name": "中证800", "patterns": ["中证800", "^800ETF"]},
-    {"id": "csi1000", "code": "000852", "name": "中证1000", "patterns": ["中证1000", "^1000ETF"]},
-    {"id": "csi2000", "code": "932000", "name": "中证2000", "patterns": ["中证2000", "^2000ETF"]},
-    {"id": "cni2000", "code": "399303", "name": "国证2000", "patterns": ["国证2000"]},
-    {"id": "szse_component", "code": "399001", "name": "深证成指", "patterns": ["深证成指"]},
-    {"id": "szse50", "code": "399850", "name": "深证50", "patterns": ["深证50", "深证主板50"]},
-    {"id": "szse100", "code": "399330", "name": "深证100", "patterns": ["深证100", "^深100ETF"]},
-    {"id": "chinext", "code": "399006", "name": "创业板指", "patterns": ["^创业板ETF", "创业板指ETF", "^创业板指$"]},
-    {"id": "chinext50", "code": "399673", "name": "创业板50", "patterns": ["创业板50"]},
-    {"id": "chinext200", "code": "399019", "name": "创业板200", "patterns": ["创业板200"]},
-    {"id": "chinext_composite", "code": "399102", "name": "创业板综指", "patterns": ["创业板综", "创业综指"]},
-    {"id": "dual_innovation50", "code": "931643", "name": "双创50", "patterns": ["双创50", "科创创业50", "科创创业ETF"]},
-    {"id": "star50", "code": "000688", "name": "科创50", "patterns": ["科创50", "科创板50"]},
-    {"id": "star100", "code": "000698", "name": "科创100", "patterns": ["科创100", "科创板100", "^科100ETF$"]},
-    {"id": "star200", "code": "932151", "name": "科创200", "patterns": ["科创200"]},
-    {"id": "star_composite", "code": "000680", "name": "科创综指", "patterns": ["科创综指", "科创综合", "^科创综(?:E|Z)?$", "^科创板综$"]}
+    {
+      "id": "sse50",
+      "code": "000016",
+      "name": "上证50",
+      "patterns": [
+        "上证50",
+        "^50ETF(?:$|易方达|博时|华夏|嘉实|基金|指数)",
+        "^SZ50ETF$",
+        "^沪50ETF$",
+        "^上50ETF$",
+        "^万家50$",
+        "^工银上50$",
+        "SH50",
+        "50ETF基"
+      ]
+    },
+    {
+      "id": "sse180",
+      "code": "000010",
+      "name": "上证180",
+      "patterns": [
+        "上证180",
+        "^180ETF",
+        "^上180ETF$",
+        "^180指$",
+        "180"
+      ]
+    },
+    {
+      "id": "sse380",
+      "code": "000009",
+      "name": "上证380",
+      "patterns": [
+        "上证380",
+        "^380ETF$"
+      ]
+    },
+    {
+      "id": "sse_composite",
+      "code": "000001",
+      "name": "上证综指",
+      "patterns": [
+        "上证综指",
+        "^上证综合$",
+        "^综指ETF$",
+        "^上证指(?:CS)?$",
+        "^上证ETF$",
+        "^上证综"
+      ]
+    },
+    {
+      "id": "hs300",
+      "code": "000300",
+      "name": "沪深300",
+      "patterns": [
+        "沪深300",
+        "^300ETF",
+        "^HS300ETF$",
+        "^华夏300$",
+        "^工银300$",
+        "^广发300$",
+        "^兴业300$",
+        "^国寿300$",
+        "^平安300$",
+        "^300中金$",
+        "^深300",
+        "300$",
+        "HS300"
+      ]
+    },
+    {
+      "id": "csi_a50",
+      "code": "930050",
+      "name": "中证A50",
+      "patterns": [
+        "中证A50",
+        "^A50(?!0)",
+        "^中国A50"
+      ]
+    },
+    {
+      "id": "csi_a100",
+      "code": "000903",
+      "name": "中证A100",
+      "patterns": [
+        "中证A100",
+        "^A100(?:ETF|基金|指基|指数|$)",
+        "^100ETF$"
+      ]
+    },
+    {
+      "id": "csi_a500",
+      "code": "000510",
+      "name": "中证A500",
+      "patterns": [
+        "中证A500",
+        "^A500"
+      ]
+    },
+    {
+      "id": "csi500",
+      "code": "000905",
+      "name": "中证500",
+      "patterns": [
+        "中证500",
+        "^500ETF",
+        "^ZZ500ETF$",
+        "^ETF500$",
+        "^广发500$",
+        "^工银500$",
+        "^方正500$",
+        "^国寿500$",
+        "^兴业500$",
+        "^平安500$",
+        "500$"
+      ]
+    },
+    {
+      "id": "csi800",
+      "code": "000906",
+      "name": "中证800",
+      "patterns": [
+        "中证800",
+        "^800ETF",
+        "800$",
+        "ZZ800"
+      ]
+    },
+    {
+      "id": "csi1000",
+      "code": "000852",
+      "name": "中证1000",
+      "patterns": [
+        "中证1000",
+        "^1000ETF",
+        "1000"
+      ]
+    },
+    {
+      "id": "csi2000",
+      "code": "932000",
+      "name": "中证2000",
+      "patterns": [
+        "中证2000",
+        "^2000ETF",
+        "2000",
+        "ZZ2000"
+      ]
+    },
+    {
+      "id": "cni2000",
+      "code": "399303",
+      "name": "国证2000",
+      "patterns": [
+        "国证2000"
+      ]
+    },
+    {
+      "id": "szse_component",
+      "code": "399001",
+      "name": "深证成指",
+      "patterns": [
+        "深证成指",
+        "深成"
+      ]
+    },
+    {
+      "id": "szse50",
+      "code": "399850",
+      "name": "深证50",
+      "patterns": [
+        "深证50",
+        "深证主板50"
+      ]
+    },
+    {
+      "id": "szse100",
+      "code": "399330",
+      "name": "深证100",
+      "patterns": [
+        "深证100",
+        "^深100ETF"
+      ]
+    },
+    {
+      "id": "chinext",
+      "code": "399006",
+      "name": "创业板指",
+      "patterns": [
+        "^创业板ETF",
+        "创业板指ETF",
+        "^创业板指$"
+      ]
+    },
+    {
+      "id": "chinext50",
+      "code": "399673",
+      "name": "创业板50",
+      "patterns": [
+        "创业板50",
+        "^创50"
+      ]
+    },
+    {
+      "id": "chinext200",
+      "code": "399019",
+      "name": "创业板200",
+      "patterns": [
+        "创业板200"
+      ]
+    },
+    {
+      "id": "chinext_composite",
+      "code": "399102",
+      "name": "创业板综指",
+      "patterns": [
+        "创业板综",
+        "创业综指"
+      ]
+    },
+    {
+      "id": "dual_innovation50",
+      "code": "931643",
+      "name": "双创50",
+      "patterns": [
+        "双创50",
+        "科创创业50",
+        "科创创业ETF",
+        "双创五零",
+        "^双创ETF",
+        "双创基金",
+        "双创龙头",
+        "^双创$",
+        "创创ETF",
+        "科创创业"
+      ]
+    },
+    {
+      "id": "star50",
+      "code": "000688",
+      "name": "科创50",
+      "patterns": [
+        "科创50",
+        "科创板50",
+        "^科创ETF",
+        "科创板ETF",
+        "^科创板$",
+        "科创龙头",
+        "上证科创",
+        "科创指数",
+        "科创指基",
+        "科创全指",
+        "科创策略",
+        "50科创",
+        "^科创E$",
+        "科创五零"
+      ]
+    },
+    {
+      "id": "star100",
+      "code": "000698",
+      "name": "科创100",
+      "patterns": [
+        "科创100",
+        "科创板100",
+        "^科100ETF$",
+        "^科100"
+      ]
+    },
+    {
+      "id": "star200",
+      "code": "932151",
+      "name": "科创200",
+      "patterns": [
+        "科创200",
+        "^科200"
+      ]
+    },
+    {
+      "id": "star_composite",
+      "code": "000680",
+      "name": "科创综指",
+      "patterns": [
+        "科创综指",
+        "科创综合",
+        "^科创综(?:E|Z)?$",
+        "^科创板综$",
+        "科综"
+      ]
+    },
+    {
+      "id": "sse580",
+      "code": "000580",
+      "name": "上证580",
+      "patterns": [
+        "上证580",
+        "^580ETF"
+      ]
+    },
+    {
+      "id": "msci_a",
+      "code": "",
+      "name": "MSCI中国A股",
+      "patterns": [
+        "MSCI",
+        "^A股"
+      ]
+    }
   ],
   "style": [
-    {"id": "free_cash_flow", "name": "自由现金流策略", "patterns": ["自由现金流|中证现金流|现金流ETF|现金流指数"]},
-    {"id": "enhanced", "name": "指数增强", "patterns": ["增强|指增"]},
-    {"id": "dividend_lowvol", "name": "红利低波", "patterns": ["红利低波|红低波|低波红利"]},
-    {"id": "dividend", "name": "红利", "patterns": ["红利|股息|高股息"]},
-    {"id": "value", "name": "价值", "patterns": ["价值"]},
-    {"id": "growth", "name": "成长", "patterns": ["成长"]},
-    {"id": "quality", "name": "质量", "patterns": ["质量|基本面"]}
+    {
+      "id": "free_cash_flow",
+      "name": "自由现金流策略",
+      "patterns": [
+        "自由现金流",
+        "现金流",
+        "现金"
+      ]
+    },
+    {
+      "id": "enhanced",
+      "name": "指数增强",
+      "patterns": [
+        "增强|指增",
+        "增指"
+      ]
+    },
+    {
+      "id": "dividend_lowvol",
+      "name": "红利低波",
+      "patterns": [
+        "红利低波|红低波|低波红利"
+      ]
+    },
+    {
+      "id": "dividend",
+      "name": "红利",
+      "patterns": [
+        "红利|股息|高股息"
+      ]
+    },
+    {
+      "id": "value",
+      "name": "价值",
+      "patterns": [
+        "价值"
+      ]
+    },
+    {
+      "id": "growth",
+      "name": "成长",
+      "patterns": [
+        "成长"
+      ]
+    },
+    {
+      "id": "quality",
+      "name": "质量",
+      "patterns": [
+        "质量|基本面"
+      ]
+    },
+    {
+      "id": "soe",
+      "name": "央国企",
+      "patterns": [
+        "央企",
+        "国企",
+        "国资",
+        "央调",
+        "国新",
+        "中特估",
+        "央创"
+      ]
+    },
+    {
+      "id": "esg",
+      "name": "ESG",
+      "patterns": [
+        "ESG",
+        "可持续",
+        "社会责任"
+      ]
+    },
+    {
+      "id": "carbon",
+      "name": "碳中和",
+      "patterns": [
+        "碳中和",
+        "双碳",
+        "低碳"
+      ]
+    },
+    {
+      "id": "region",
+      "name": "区域战略",
+      "patterns": [
+        "长三角",
+        "粤港澳",
+        "大湾区",
+        "湾区",
+        "湾创",
+        "杭州湾",
+        "雄安",
+        "浦东",
+        "京津冀",
+        "成渝",
+        "长江",
+        "之江",
+        "G60",
+        "张江",
+        "湖北"
+      ]
+    }
   ],
   "industry": [
-    {"id": "sw_agriculture", "code": "801010", "name": "农林牧渔", "patterns": ["农林牧渔|农业|农牧|养殖|畜牧|种业|粮食"]},
-    {"id": "sw_basic_chemicals", "code": "801030", "name": "基础化工", "patterns": ["基础化工|化工|化学|化纤"]},
-    {"id": "sw_steel", "code": "801040", "name": "钢铁", "patterns": ["钢铁"]},
-    {"id": "sw_nonferrous", "code": "801050", "name": "有色金属", "patterns": ["有色|稀土|稀有金属|稀金属|工业金属|贵金属|黄金股|黄金股票|黄金产业"]},
-    {"id": "sw_electronics", "code": "801080", "name": "电子", "patterns": ["电子|半导体|芯片|集成电路|消费电子|面板|元器件"]},
-    {"id": "sw_home_appliances", "code": "801110", "name": "家用电器", "patterns": ["家用电器|家电"]},
-    {"id": "sw_food_beverage", "code": "801120", "name": "食品饮料", "patterns": ["食品饮料|食品|白酒|酒ETF|饮料"]},
-    {"id": "sw_textile_apparel", "code": "801130", "name": "纺织服饰", "patterns": ["纺织|服装|服饰"]},
-    {"id": "sw_light_manufacturing", "code": "801140", "name": "轻工制造", "patterns": ["轻工|家居|造纸|包装印刷"]},
-    {"id": "sw_pharma_bio", "code": "801150", "name": "医药生物", "patterns": ["医药|医疗|生物|创新药|疫苗|中药|医疗器械|医美"]},
-    {"id": "sw_utilities", "code": "801160", "name": "公用事业", "patterns": ["公用事业|电力|绿色电力|水务|燃气"]},
-    {"id": "sw_transportation", "code": "801170", "name": "交通运输", "patterns": ["交通运输|交运|物流|快递|航运|机场|高速公路"]},
-    {"id": "sw_real_estate", "code": "801180", "name": "房地产", "patterns": ["房地产|地产"]},
-    {"id": "sw_retail", "code": "801200", "name": "商贸零售", "patterns": ["商贸零售|零售|商业贸易|互联网电商"]},
-    {"id": "sw_social_services", "code": "801210", "name": "社会服务", "patterns": ["社会服务|旅游|酒店|教育|餐饮|人力资源"]},
-    {"id": "sw_comprehensive", "code": "801230", "name": "综合", "patterns": ["^综合ETF$|申万综合"]},
-    {"id": "sw_building_materials", "code": "801710", "name": "建筑材料", "patterns": ["建筑材料|建材|水泥|玻璃玻纤"]},
-    {"id": "sw_construction", "code": "801720", "name": "建筑装饰", "patterns": ["建筑装饰|建筑|基建"]},
-    {"id": "sw_power_equipment", "code": "801730", "name": "电力设备", "patterns": ["电力设备|光伏|电池|锂电|储能|风电|电网"]},
-    {"id": "sw_defense", "code": "801740", "name": "国防军工", "patterns": ["国防军工|国防|军工|航空|航天|船舶"]},
-    {"id": "sw_computer", "code": "801750", "name": "计算机", "patterns": ["计算机|软件|信创|信息安全|云计算|大数据"]},
-    {"id": "sw_media", "code": "801760", "name": "传媒", "patterns": ["传媒|游戏|动漫|影视|出版"]},
-    {"id": "sw_communications", "code": "801770", "name": "通信", "patterns": ["通信|5G|光通信|电信|卫星"]},
-    {"id": "sw_banks", "code": "801780", "name": "银行", "patterns": ["银行"]},
-    {"id": "sw_nonbank_finance", "code": "801790", "name": "非银金融", "patterns": ["非银金融|券商|证券|保险"]},
-    {"id": "sw_auto", "code": "801880", "name": "汽车", "patterns": ["汽车|智能车|智能驾驶|新能源车|电动车"]},
-    {"id": "sw_machinery", "code": "801890", "name": "机械设备", "patterns": ["机械设备|机械|机器人|工业母机|自动化设备|高端装备"]},
-    {"id": "sw_coal", "code": "801950", "name": "煤炭", "patterns": ["煤炭"]},
-    {"id": "sw_petrochemical", "code": "801960", "name": "石油石化", "patterns": ["石油石化|石油|油气"]},
-    {"id": "sw_environmental", "code": "801970", "name": "环保", "patterns": ["环保|环境治理|固废"]},
-    {"id": "sw_beauty_care", "code": "801980", "name": "美容护理", "patterns": ["美容护理|化妆品|美妆"]}
+    {
+      "id": "sw_agriculture",
+      "code": "801010",
+      "name": "农林牧渔",
+      "patterns": [
+        "农林牧渔|农业|农牧|养殖|畜牧|种业|粮食"
+      ]
+    },
+    {
+      "id": "sw_basic_chemicals",
+      "code": "801030",
+      "name": "基础化工",
+      "patterns": [
+        "基础化工|化工|化学|化纤|新材料|新材|材料"
+      ]
+    },
+    {
+      "id": "sw_steel",
+      "code": "801040",
+      "name": "钢铁",
+      "patterns": [
+        "钢铁"
+      ]
+    },
+    {
+      "id": "sw_nonferrous",
+      "code": "801050",
+      "name": "有色金属",
+      "patterns": [
+        "有色|稀土|稀有金属|稀金属|工业金属|贵金属|黄金股|黄金股票|黄金产业|矿业"
+      ]
+    },
+    {
+      "id": "sw_electronics",
+      "code": "801080",
+      "name": "电子",
+      "patterns": [
+        "电子|半导体|芯片|集成电路|消费电子|面板|元器件"
+      ]
+    },
+    {
+      "id": "sw_home_appliances",
+      "code": "801110",
+      "name": "家用电器",
+      "patterns": [
+        "家用电器|家电"
+      ]
+    },
+    {
+      "id": "sw_food_beverage",
+      "code": "801120",
+      "name": "食品饮料",
+      "patterns": [
+        "食品饮料|食品|白酒|酒ETF|饮料|消费|主要消费|必选消费|消费龙头|品牌消费|龙头消费|消费主题"
+      ]
+    },
+    {
+      "id": "sw_textile_apparel",
+      "code": "801130",
+      "name": "纺织服饰",
+      "patterns": [
+        "纺织|服装|服饰"
+      ]
+    },
+    {
+      "id": "sw_light_manufacturing",
+      "code": "801140",
+      "name": "轻工制造",
+      "patterns": [
+        "轻工|家居|造纸|包装印刷"
+      ]
+    },
+    {
+      "id": "sw_pharma_bio",
+      "code": "801150",
+      "name": "医药生物",
+      "patterns": [
+        "医药|医疗|生物|创新药|疫苗|中药|医疗器械|医美|药ETF|医服|保健"
+      ]
+    },
+    {
+      "id": "sw_utilities",
+      "code": "801160",
+      "name": "公用事业",
+      "patterns": [
+        "公用事业|电力|绿色电力|水务|燃气|绿电|绿色能源|公用"
+      ]
+    },
+    {
+      "id": "sw_transportation",
+      "code": "801170",
+      "name": "交通运输",
+      "patterns": [
+        "交通运输|交运|物流|快递|航运|机场|高速公路"
+      ]
+    },
+    {
+      "id": "sw_real_estate",
+      "code": "801180",
+      "name": "房地产",
+      "patterns": [
+        "房地产|地产"
+      ]
+    },
+    {
+      "id": "sw_retail",
+      "code": "801200",
+      "name": "商贸零售",
+      "patterns": [
+        "商贸零售|零售|商业贸易|互联网电商|可选消费|线上消费|在线消费"
+      ]
+    },
+    {
+      "id": "sw_social_services",
+      "code": "801210",
+      "name": "社会服务",
+      "patterns": [
+        "社会服务|旅游|酒店|教育|餐饮|人力资源"
+      ]
+    },
+    {
+      "id": "sw_comprehensive",
+      "code": "801230",
+      "name": "综合",
+      "patterns": [
+        "^综合ETF$|申万综合"
+      ]
+    },
+    {
+      "id": "sw_building_materials",
+      "code": "801710",
+      "name": "建筑材料",
+      "patterns": [
+        "建筑材料|建材|水泥|玻璃玻纤"
+      ]
+    },
+    {
+      "id": "sw_construction",
+      "code": "801720",
+      "name": "建筑装饰",
+      "patterns": [
+        "建筑装饰|建筑|基建"
+      ]
+    },
+    {
+      "id": "sw_power_equipment",
+      "code": "801730",
+      "name": "电力设备",
+      "patterns": [
+        "电力设备|光伏|电池|锂电|储能|风电|电网|新能源|新能"
+      ]
+    },
+    {
+      "id": "sw_defense",
+      "code": "801740",
+      "name": "国防军工",
+      "patterns": [
+        "国防军工|国防|军工|航空|航天|船舶|通航"
+      ]
+    },
+    {
+      "id": "sw_computer",
+      "code": "801750",
+      "name": "计算机",
+      "patterns": [
+        "计算机|软件|信创|信息安全|云计算|大数据|数据"
+      ]
+    },
+    {
+      "id": "sw_media",
+      "code": "801760",
+      "name": "传媒",
+      "patterns": [
+        "传媒|游戏|动漫|影视|出版"
+      ]
+    },
+    {
+      "id": "sw_communications",
+      "code": "801770",
+      "name": "通信",
+      "patterns": [
+        "通信|5G|光通信|电信|卫星"
+      ]
+    },
+    {
+      "id": "sw_banks",
+      "code": "801780",
+      "name": "银行",
+      "patterns": [
+        "银行"
+      ]
+    },
+    {
+      "id": "sw_nonbank_finance",
+      "code": "801790",
+      "name": "非银金融",
+      "patterns": [
+        "非银金融|券商|证券|保险"
+      ]
+    },
+    {
+      "id": "sw_auto",
+      "code": "801880",
+      "name": "汽车",
+      "patterns": [
+        "汽车|智能车|智能驾驶|新能源车|电动车"
+      ]
+    },
+    {
+      "id": "sw_machinery",
+      "code": "801890",
+      "name": "机械设备",
+      "patterns": [
+        "机械设备|机械|机器人|工业母机|自动化设备|高端装备|机床|智能制造|高端制造|装备"
+      ]
+    },
+    {
+      "id": "sw_coal",
+      "code": "801950",
+      "name": "煤炭",
+      "patterns": [
+        "煤炭"
+      ]
+    },
+    {
+      "id": "sw_petrochemical",
+      "code": "801960",
+      "name": "石油石化",
+      "patterns": [
+        "石油石化|石油|油气|能源|现代能源|石化"
+      ]
+    },
+    {
+      "id": "sw_environmental",
+      "code": "801970",
+      "name": "环保",
+      "patterns": [
+        "环保|环境治理|固废"
+      ]
+    },
+    {
+      "id": "sw_beauty_care",
+      "code": "801980",
+      "name": "美容护理",
+      "patterns": [
+        "美容护理|化妆品|美妆"
+      ]
+    }
+  ],
+  "industryDetail": [
+    {
+      "id": "elec_semiconductor",
+      "parent": "sw_electronics",
+      "code": "801080",
+      "name": "电子·半导体芯片",
+      "patterns": [
+        "半导体",
+        "芯片",
+        "集成电路",
+        "光刻",
+        "封测",
+        "晶圆",
+        "半导",
+        "芯"
+      ]
+    },
+    {
+      "id": "elec_consumer",
+      "parent": "sw_electronics",
+      "code": "801080",
+      "name": "电子·消费电子",
+      "patterns": [
+        "消费电子",
+        "智能消费",
+        "智能穿戴",
+        "VR",
+        "面板",
+        "光学",
+        "苹果",
+        "消电"
+      ]
+    },
+    {
+      "id": "comp_ai",
+      "parent": "sw_computer",
+      "code": "801750",
+      "name": "计算机·AI算力",
+      "patterns": [
+        "人工智能",
+        "AI",
+        "AITH",
+        "KCAI",
+        "算力",
+        "智算",
+        "云计算",
+        "大数据",
+        "数据中心",
+        "数据要素",
+        "东数西算",
+        "人工",
+        "双创智能",
+        "智能双创",
+        "双创AI",
+        "AI双创"
+      ]
+    },
+    {
+      "id": "comp_software",
+      "parent": "sw_computer",
+      "code": "801750",
+      "name": "计算机·软件信创",
+      "patterns": [
+        "软件",
+        "信创",
+        "信息安全",
+        "网络安全",
+        "数字经济"
+      ]
+    },
+    {
+      "id": "comp_internet",
+      "parent": "sw_computer",
+      "code": "801750",
+      "name": "计算机·互联网",
+      "patterns": [
+        "互联网",
+        "物联网"
+      ]
+    },
+    {
+      "id": "comp_fintech",
+      "parent": "sw_computer",
+      "code": "801750",
+      "name": "计算机·金融科技",
+      "patterns": [
+        "金融科技",
+        "科技金融",
+        "金科"
+      ]
+    },
+    {
+      "id": "pharma_innovative",
+      "parent": "sw_pharma_bio",
+      "code": "801150",
+      "name": "医药生物·创新药",
+      "patterns": [
+        "创新药",
+        "生物医药",
+        "生物科技",
+        "CXO",
+        "新药",
+        "生科",
+        "科创药"
+      ]
+    },
+    {
+      "id": "pharma_device",
+      "parent": "sw_pharma_bio",
+      "code": "801150",
+      "name": "医药生物·医疗器械",
+      "patterns": [
+        "医疗器械",
+        "医疗设备"
+      ]
+    },
+    {
+      "id": "pharma_tcm",
+      "parent": "sw_pharma_bio",
+      "code": "801150",
+      "name": "医药生物·中药",
+      "patterns": [
+        "中药"
+      ]
+    },
+    {
+      "id": "power_pv",
+      "parent": "sw_power_equipment",
+      "code": "801730",
+      "name": "电力设备·光伏",
+      "patterns": [
+        "光伏"
+      ]
+    },
+    {
+      "id": "power_battery",
+      "parent": "sw_power_equipment",
+      "code": "801730",
+      "name": "电力设备·锂电池",
+      "patterns": [
+        "锂电",
+        "电池",
+        "动力电池",
+        "固态电池"
+      ]
+    },
+    {
+      "id": "power_storage",
+      "parent": "sw_power_equipment",
+      "code": "801730",
+      "name": "电力设备·储能风电",
+      "patterns": [
+        "储能",
+        "风电",
+        "特高压"
+      ]
+    },
+    {
+      "id": "auto_nev",
+      "parent": "sw_auto",
+      "code": "801880",
+      "name": "汽车·新能源车",
+      "patterns": [
+        "新能源车",
+        "新能车",
+        "电动车"
+      ]
+    },
+    {
+      "id": "auto_smart",
+      "parent": "sw_auto",
+      "code": "801880",
+      "name": "汽车·智能驾驶",
+      "patterns": [
+        "智能车",
+        "智能驾驶",
+        "自动驾驶",
+        "车联网",
+        "汽车零部件",
+        "智能电车"
+      ]
+    },
+    {
+      "id": "media_game",
+      "parent": "sw_media",
+      "code": "801760",
+      "name": "传媒·游戏动漫",
+      "patterns": [
+        "游戏",
+        "动漫",
+        "电竞"
+      ]
+    },
+    {
+      "id": "comm_optical",
+      "parent": "sw_communications",
+      "code": "801770",
+      "name": "通信·光通信",
+      "patterns": [
+        "光通信",
+        "光模块",
+        "光器件",
+        "CPO"
+      ]
+    },
+    {
+      "id": "fin_broker",
+      "parent": "sw_nonbank_finance",
+      "code": "801790",
+      "name": "非银金融·券商",
+      "patterns": [
+        "券商",
+        "证券"
+      ]
+    },
+    {
+      "id": "food_liquor",
+      "parent": "sw_food_beverage",
+      "code": "801120",
+      "name": "食品饮料·白酒",
+      "patterns": [
+        "白酒",
+        "酒ETF",
+        "酒类"
+      ]
+    },
+    {
+      "id": "metal_rare",
+      "parent": "sw_nonferrous",
+      "code": "801050",
+      "name": "有色金属·稀土",
+      "patterns": [
+        "稀土",
+        "稀有金属",
+        "稀金属"
+      ]
+    },
+    {
+      "id": "metal_gold",
+      "parent": "sw_nonferrous",
+      "code": "801050",
+      "name": "有色金属·黄金股",
+      "patterns": [
+        "黄金股",
+        "黄金股票",
+        "黄金产业"
+      ]
+    },
+    {
+      "id": "mach_robot",
+      "parent": "sw_machinery",
+      "code": "801890",
+      "name": "机械设备·机器人",
+      "patterns": [
+        "机器人",
+        "人形机器人",
+        "减速器"
+      ]
+    },
+    {
+      "id": "agri_farming",
+      "parent": "sw_agriculture",
+      "code": "801010",
+      "name": "农林牧渔·养殖",
+      "patterns": [
+        "养殖",
+        "畜牧",
+        "生猪"
+      ]
+    }
   ]
 }
