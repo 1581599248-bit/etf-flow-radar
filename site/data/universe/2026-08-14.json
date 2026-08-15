@@ -1,7 +1,7 @@
 {
   "schemaVersion": 5,
   "tradeDate": "2026-08-14",
-  "generatedAt": "2026-08-16T03:42:14+08:00",
+  "generatedAt": "2026-08-16T05:43:55+08:00",
   "universe": [
     {
       "code": "510010",
@@ -194,7 +194,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 1.1815,
       "referencePriceType": "NAV"
@@ -951,7 +951,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 0.5191,
       "referencePriceType": "NAV"
@@ -1042,7 +1042,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 0.7814,
       "referencePriceType": "NAV"
@@ -1260,7 +1260,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 1.0835,
       "referencePriceType": "NAV"
@@ -1387,7 +1387,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "agri_farming",
-      "groupName": "农林牧渔·养殖",
+      "groupName": "养殖",
       "kind": "industry",
       "referencePrice": 0.8847,
       "referencePriceType": "NAV"
@@ -1400,7 +1400,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.8871,
       "referencePriceType": "NAV"
@@ -1413,7 +1413,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.0764,
       "referencePriceType": "NAV"
@@ -1504,7 +1504,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 1.0921,
       "referencePriceType": "NAV"
@@ -1634,7 +1634,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "food_liquor",
-      "groupName": "食品饮料·白酒",
+      "groupName": "白酒",
       "kind": "industry",
       "referencePrice": 0.4413,
       "referencePriceType": "NAV"
@@ -1712,7 +1712,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.1463,
       "referencePriceType": "NAV"
@@ -1787,7 +1787,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 1.0857,
       "referencePriceType": "NAV"
@@ -1813,7 +1813,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 1.0741,
       "referencePriceType": "NAV"
@@ -1839,7 +1839,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.6538,
       "referencePriceType": "NAV"
@@ -2204,7 +2204,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 4.4438,
       "referencePriceType": "NAV"
@@ -2642,7 +2642,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 1.2494,
       "referencePriceType": "NAV"
@@ -2668,7 +2668,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "auto_nev",
-      "groupName": "汽车·新能源车",
+      "groupName": "新能源车",
       "kind": "industry",
       "referencePrice": 1.6701,
       "referencePriceType": "NAV"
@@ -2720,7 +2720,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.1664,
       "referencePriceType": "NAV"
@@ -2785,7 +2785,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.6869,
       "referencePriceType": "NAV"
@@ -2912,7 +2912,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.7208,
       "referencePriceType": "NAV"
@@ -3042,7 +3042,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_pv",
-      "groupName": "电力设备·光伏",
+      "groupName": "光伏",
       "kind": "industry",
       "referencePrice": 0.8259,
       "referencePriceType": "NAV"
@@ -3081,7 +3081,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.9126,
       "referencePriceType": "NAV"
@@ -3159,7 +3159,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 0.9964,
       "referencePriceType": "NAV"
@@ -3208,7 +3208,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 1.2541,
       "referencePriceType": "NAV"
@@ -3273,7 +3273,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "auto_nev",
-      "groupName": "汽车·新能源车",
+      "groupName": "新能源车",
       "kind": "industry",
       "referencePrice": 2.2343,
       "referencePriceType": "NAV"
@@ -3299,7 +3299,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_fintech",
-      "groupName": "计算机·金融科技",
+      "groupName": "金融科技",
       "kind": "industry",
       "referencePrice": 0.7026,
       "referencePriceType": "NAV"
@@ -3361,7 +3361,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_pv",
-      "groupName": "电力设备·光伏",
+      "groupName": "光伏",
       "kind": "industry",
       "referencePrice": 0.8656,
       "referencePriceType": "NAV"
@@ -3413,7 +3413,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 1.3535,
       "referencePriceType": "NAV"
@@ -3488,7 +3488,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_consumer",
-      "groupName": "电子·消费电子",
+      "groupName": "消费电子",
       "kind": "industry",
       "referencePrice": 1.2354,
       "referencePriceType": "NAV"
@@ -3540,7 +3540,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.0799,
       "referencePriceType": "NAV"
@@ -3566,7 +3566,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.0016,
       "referencePriceType": "NAV"
@@ -3579,7 +3579,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "media_game",
-      "groupName": "传媒·游戏动漫",
+      "groupName": "游戏",
       "kind": "industry",
       "referencePrice": 1.137,
       "referencePriceType": "NAV"
@@ -3615,7 +3615,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.6371,
       "referencePriceType": "NAV"
@@ -3641,7 +3641,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.7317,
       "referencePriceType": "NAV"
@@ -3667,7 +3667,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_fintech",
-      "groupName": "计算机·金融科技",
+      "groupName": "金融科技",
       "kind": "industry",
       "referencePrice": 1.0455,
       "referencePriceType": "NAV"
@@ -3719,7 +3719,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_rare",
-      "groupName": "有色金属·稀土",
+      "groupName": "稀土",
       "kind": "industry",
       "referencePrice": 1.8067,
       "referencePriceType": "NAV"
@@ -3745,7 +3745,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_pv",
-      "groupName": "电力设备·光伏",
+      "groupName": "光伏",
       "kind": "industry",
       "referencePrice": 0.7155,
       "referencePriceType": "NAV"
@@ -3771,7 +3771,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 1.0381,
       "referencePriceType": "NAV"
@@ -3810,7 +3810,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_pv",
-      "groupName": "电力设备·光伏",
+      "groupName": "光伏",
       "kind": "industry",
       "referencePrice": 0.798,
       "referencePriceType": "NAV"
@@ -3836,7 +3836,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_internet",
-      "groupName": "计算机·互联网",
+      "groupName": "互联网",
       "kind": "industry",
       "referencePrice": 1.3997,
       "referencePriceType": "NAV"
@@ -3862,7 +3862,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_pv",
-      "groupName": "电力设备·光伏",
+      "groupName": "光伏",
       "kind": "industry",
       "referencePrice": 0.5371,
       "referencePriceType": "NAV"
@@ -3914,7 +3914,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_internet",
-      "groupName": "计算机·互联网",
+      "groupName": "互联网",
       "kind": "industry",
       "referencePrice": 1.6155,
       "referencePriceType": "NAV"
@@ -3927,7 +3927,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.7075,
       "referencePriceType": "NAV"
@@ -3966,7 +3966,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "auto_smart",
-      "groupName": "汽车·智能驾驶",
+      "groupName": "智能驾驶",
       "kind": "industry",
       "referencePrice": 0.9001,
       "referencePriceType": "NAV"
@@ -3979,7 +3979,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "auto_nev",
-      "groupName": "汽车·新能源车",
+      "groupName": "新能源车",
       "kind": "industry",
       "referencePrice": 0.8913,
       "referencePriceType": "NAV"
@@ -4018,7 +4018,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.6708,
       "referencePriceType": "NAV"
@@ -4031,7 +4031,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.7714,
       "referencePriceType": "NAV"
@@ -4044,7 +4044,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "auto_smart",
-      "groupName": "汽车·智能驾驶",
+      "groupName": "智能驾驶",
       "kind": "industry",
       "referencePrice": 1.0752,
       "referencePriceType": "NAV"
@@ -4145,7 +4145,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_device",
-      "groupName": "医药生物·医疗器械",
+      "groupName": "医疗器械",
       "kind": "industry",
       "referencePrice": 0.4392,
       "referencePriceType": "NAV"
@@ -4171,7 +4171,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.7291,
       "referencePriceType": "NAV"
@@ -4184,7 +4184,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.5106,
       "referencePriceType": "NAV"
@@ -4210,7 +4210,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "auto_nev",
-      "groupName": "汽车·新能源车",
+      "groupName": "新能源车",
       "kind": "industry",
       "referencePrice": 1.0146,
       "referencePriceType": "NAV"
@@ -4223,7 +4223,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "agri_farming",
-      "groupName": "农林牧渔·养殖",
+      "groupName": "养殖",
       "kind": "industry",
       "referencePrice": 0.5993,
       "referencePriceType": "NAV"
@@ -4236,7 +4236,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.9519,
       "referencePriceType": "NAV"
@@ -4275,7 +4275,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 0.9885,
       "referencePriceType": "NAV"
@@ -4301,7 +4301,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "agri_farming",
-      "groupName": "农林牧渔·养殖",
+      "groupName": "养殖",
       "kind": "industry",
       "referencePrice": 0.5726,
       "referencePriceType": "NAV"
@@ -4314,7 +4314,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "media_game",
-      "groupName": "传媒·游戏动漫",
+      "groupName": "游戏",
       "kind": "industry",
       "referencePrice": 1.2033,
       "referencePriceType": "NAV"
@@ -4327,7 +4327,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_rare",
-      "groupName": "有色金属·稀土",
+      "groupName": "稀土",
       "kind": "industry",
       "referencePrice": 0.8819,
       "referencePriceType": "NAV"
@@ -4431,7 +4431,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_fintech",
-      "groupName": "计算机·金融科技",
+      "groupName": "金融科技",
       "kind": "industry",
       "referencePrice": 1.0756,
       "referencePriceType": "NAV"
@@ -4444,7 +4444,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_pv",
-      "groupName": "电力设备·光伏",
+      "groupName": "光伏",
       "kind": "industry",
       "referencePrice": 0.7371,
       "referencePriceType": "NAV"
@@ -4496,7 +4496,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.4643,
       "referencePriceType": "NAV"
@@ -4509,7 +4509,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.5237,
       "referencePriceType": "NAV"
@@ -4561,7 +4561,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 1.0673,
       "referencePriceType": "NAV"
@@ -4604,7 +4604,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_internet",
-      "groupName": "计算机·互联网",
+      "groupName": "互联网",
       "kind": "industry",
       "referencePrice": 0.6895,
       "referencePriceType": "NAV"
@@ -4650,7 +4650,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.8013,
       "referencePriceType": "NAV"
@@ -4663,7 +4663,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.7674,
       "referencePriceType": "NAV"
@@ -4676,7 +4676,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.0016,
       "referencePriceType": "NAV"
@@ -4725,7 +4725,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_internet",
-      "groupName": "计算机·互联网",
+      "groupName": "互联网",
       "kind": "industry",
       "referencePrice": 0.6085,
       "referencePriceType": "NAV"
@@ -4781,7 +4781,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.8735,
       "referencePriceType": "NAV"
@@ -4794,7 +4794,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 2.0187,
       "referencePriceType": "NAV"
@@ -4807,7 +4807,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_gold",
-      "groupName": "有色金属·黄金股",
+      "groupName": "黄金股",
       "kind": "industry",
       "referencePrice": 1.5815,
       "referencePriceType": "NAV"
@@ -4820,7 +4820,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_gold",
-      "groupName": "有色金属·黄金股",
+      "groupName": "黄金股",
       "kind": "industry",
       "referencePrice": 2.0047,
       "referencePriceType": "NAV"
@@ -4853,7 +4853,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "media_game",
-      "groupName": "传媒·游戏动漫",
+      "groupName": "游戏",
       "kind": "industry",
       "referencePrice": 0.9178,
       "referencePriceType": "NAV"
@@ -4866,7 +4866,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.0199,
       "referencePriceType": "NAV"
@@ -5912,7 +5912,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_tcm",
-      "groupName": "医药生物·中药",
+      "groupName": "中药",
       "kind": "industry",
       "referencePrice": 0.9941,
       "referencePriceType": "NAV"
@@ -5925,7 +5925,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 1.1652,
       "referencePriceType": "NAV"
@@ -6081,7 +6081,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_pv",
-      "groupName": "电力设备·光伏",
+      "groupName": "光伏",
       "kind": "industry",
       "referencePrice": 0.7787,
       "referencePriceType": "NAV"
@@ -6172,7 +6172,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_pv",
-      "groupName": "电力设备·光伏",
+      "groupName": "光伏",
       "kind": "industry",
       "referencePrice": 0.7814,
       "referencePriceType": "NAV"
@@ -6224,7 +6224,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 1.283,
       "referencePriceType": "NAV"
@@ -6276,7 +6276,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 0.9847,
       "referencePriceType": "NAV"
@@ -6289,7 +6289,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.8827,
       "referencePriceType": "NAV"
@@ -6523,7 +6523,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "mach_robot",
-      "groupName": "机械设备·机器人",
+      "groupName": "机器人",
       "kind": "industry",
       "referencePrice": 1.1339,
       "referencePriceType": "NAV"
@@ -6544,7 +6544,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.1534,
       "referencePriceType": "NAV"
@@ -6661,7 +6661,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "mach_robot",
-      "groupName": "机械设备·机器人",
+      "groupName": "机器人",
       "kind": "industry",
       "referencePrice": 0.9982,
       "referencePriceType": "NAV"
@@ -6674,7 +6674,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.0935,
       "referencePriceType": "NAV"
@@ -6687,7 +6687,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.8681,
       "referencePriceType": "NAV"
@@ -6700,7 +6700,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 1.2102,
       "referencePriceType": "NAV"
@@ -6752,7 +6752,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 1.3976,
       "referencePriceType": "NAV"
@@ -6804,7 +6804,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.9868,
       "referencePriceType": "NAV"
@@ -6817,7 +6817,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.7913,
       "referencePriceType": "NAV"
@@ -6882,7 +6882,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_pv",
-      "groupName": "电力设备·光伏",
+      "groupName": "光伏",
       "kind": "industry",
       "referencePrice": 0.6656,
       "referencePriceType": "NAV"
@@ -6918,7 +6918,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.9007,
       "referencePriceType": "NAV"
@@ -6957,7 +6957,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_rare",
-      "groupName": "有色金属·稀土",
+      "groupName": "稀土",
       "kind": "industry",
       "referencePrice": 0.906,
       "referencePriceType": "NAV"
@@ -7009,7 +7009,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_consumer",
-      "groupName": "电子·消费电子",
+      "groupName": "消费电子",
       "kind": "industry",
       "referencePrice": 1.6771,
       "referencePriceType": "NAV"
@@ -7045,7 +7045,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.7665,
       "referencePriceType": "NAV"
@@ -7136,7 +7136,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "history_or_nav_pending",
       "groupId": "metal_rare",
-      "groupName": "有色金属·稀土",
+      "groupName": "稀土",
       "kind": "industry",
       "referencePrice": 1.0645,
       "referencePriceType": "NAV"
@@ -7188,7 +7188,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_consumer",
-      "groupName": "电子·消费电子",
+      "groupName": "消费电子",
       "kind": "industry",
       "referencePrice": 0.7374,
       "referencePriceType": "NAV"
@@ -7279,7 +7279,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "history_or_nav_pending",
       "groupId": "agri_farming",
-      "groupName": "农林牧渔·养殖",
+      "groupName": "养殖",
       "kind": "industry",
       "referencePrice": 0.996,
       "referencePriceType": "NAV"
@@ -7331,7 +7331,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.8514,
       "referencePriceType": "NAV"
@@ -7344,7 +7344,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "agri_farming",
-      "groupName": "农林牧渔·养殖",
+      "groupName": "养殖",
       "kind": "industry",
       "referencePrice": 1.0148,
       "referencePriceType": "NAV"
@@ -7380,7 +7380,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_tcm",
-      "groupName": "医药生物·中药",
+      "groupName": "中药",
       "kind": "industry",
       "referencePrice": 0.9743,
       "referencePriceType": "NAV"
@@ -7458,7 +7458,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_consumer",
-      "groupName": "电子·消费电子",
+      "groupName": "消费电子",
       "kind": "industry",
       "referencePrice": 0.7646,
       "referencePriceType": "NAV"
@@ -7601,7 +7601,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_rare",
-      "groupName": "有色金属·稀土",
+      "groupName": "稀土",
       "kind": "industry",
       "referencePrice": 1.0556,
       "referencePriceType": "NAV"
@@ -7614,7 +7614,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "history_or_nav_pending",
       "groupId": "pharma_device",
-      "groupName": "医药生物·医疗器械",
+      "groupName": "医疗器械",
       "kind": "industry",
       "referencePrice": 1.0206,
       "referencePriceType": "NAV"
@@ -7679,7 +7679,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.76,
       "referencePriceType": "NAV"
@@ -7744,7 +7744,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 0.7171,
       "referencePriceType": "NAV"
@@ -7796,7 +7796,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.5227,
       "referencePriceType": "NAV"
@@ -7936,7 +7936,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "mach_robot",
-      "groupName": "机械设备·机器人",
+      "groupName": "机器人",
       "kind": "industry",
       "referencePrice": 1.0834,
       "referencePriceType": "NAV"
@@ -7962,7 +7962,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_tcm",
-      "groupName": "医药生物·中药",
+      "groupName": "中药",
       "kind": "industry",
       "referencePrice": 0.9047,
       "referencePriceType": "NAV"
@@ -7975,7 +7975,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "mach_robot",
-      "groupName": "机械设备·机器人",
+      "groupName": "机器人",
       "kind": "industry",
       "referencePrice": 1.0022,
       "referencePriceType": "NAV"
@@ -8050,7 +8050,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 1.4138,
       "referencePriceType": "NAV"
@@ -8076,7 +8076,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.0481,
       "referencePriceType": "NAV"
@@ -8089,7 +8089,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_device",
-      "groupName": "医药生物·医疗器械",
+      "groupName": "医疗器械",
       "kind": "industry",
       "referencePrice": 0.7907,
       "referencePriceType": "NAV"
@@ -8115,7 +8115,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "auto_smart",
-      "groupName": "汽车·智能驾驶",
+      "groupName": "智能驾驶",
       "kind": "industry",
       "referencePrice": 1.2265,
       "referencePriceType": "NAV"
@@ -8128,7 +8128,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_rare",
-      "groupName": "有色金属·稀土",
+      "groupName": "稀土",
       "kind": "industry",
       "referencePrice": 0.9782,
       "referencePriceType": "NAV"
@@ -8154,7 +8154,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.0001,
       "referencePriceType": "NAV"
@@ -8193,7 +8193,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 0.9217,
       "referencePriceType": "NAV"
@@ -8206,7 +8206,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.7846,
       "referencePriceType": "NAV"
@@ -8258,7 +8258,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.962,
       "referencePriceType": "NAV"
@@ -8271,7 +8271,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.7399,
       "referencePriceType": "NAV"
@@ -8284,7 +8284,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_consumer",
-      "groupName": "电子·消费电子",
+      "groupName": "消费电子",
       "kind": "industry",
       "referencePrice": 1.6148,
       "referencePriceType": "NAV"
@@ -8310,7 +8310,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_pv",
-      "groupName": "电力设备·光伏",
+      "groupName": "光伏",
       "kind": "industry",
       "referencePrice": 1.0109,
       "referencePriceType": "NAV"
@@ -8697,7 +8697,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_fintech",
-      "groupName": "计算机·金融科技",
+      "groupName": "金融科技",
       "kind": "industry",
       "referencePrice": 0.7362,
       "referencePriceType": "NAV"
@@ -8801,7 +8801,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_fintech",
-      "groupName": "计算机·金融科技",
+      "groupName": "金融科技",
       "kind": "industry",
       "referencePrice": 0.6769,
       "referencePriceType": "NAV"
@@ -9240,7 +9240,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 1.0781,
       "referencePriceType": "NAV"
@@ -9292,7 +9292,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.0202,
       "referencePriceType": "NAV"
@@ -9331,7 +9331,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.2117,
       "referencePriceType": "NAV"
@@ -9445,7 +9445,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 3.5562,
       "referencePriceType": "NAV"
@@ -9588,7 +9588,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.256,
       "referencePriceType": "NAV"
@@ -9601,7 +9601,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.245,
       "referencePriceType": "NAV"
@@ -9614,7 +9614,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.2851,
       "referencePriceType": "NAV"
@@ -9653,7 +9653,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.8814,
       "referencePriceType": "NAV"
@@ -9666,7 +9666,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.941,
       "referencePriceType": "NAV"
@@ -9692,7 +9692,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.8961,
       "referencePriceType": "NAV"
@@ -9718,7 +9718,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "history_or_nav_pending",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.9835,
       "referencePriceType": "NAV"
@@ -9809,7 +9809,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.0532,
       "referencePriceType": "NAV"
@@ -9835,7 +9835,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.5454,
       "referencePriceType": "NAV"
@@ -9848,7 +9848,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 2.4242,
       "referencePriceType": "NAV"
@@ -9861,7 +9861,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.7839,
       "referencePriceType": "NAV"
@@ -9884,7 +9884,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.0103,
       "referencePriceType": "NAV"
@@ -9897,7 +9897,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.8274,
       "referencePriceType": "NAV"
@@ -9923,7 +9923,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 2.5961,
       "referencePriceType": "NAV"
@@ -10027,7 +10027,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 4.1064,
       "referencePriceType": "NAV"
@@ -10066,7 +10066,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.1633,
       "referencePriceType": "NAV"
@@ -10079,7 +10079,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.6247,
       "referencePriceType": "NAV"
@@ -10144,7 +10144,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 3.7834,
       "referencePriceType": "NAV"
@@ -10170,7 +10170,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.4635,
       "referencePriceType": "NAV"
@@ -10183,7 +10183,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.2416,
       "referencePriceType": "NAV"
@@ -10196,7 +10196,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.1749,
       "referencePriceType": "NAV"
@@ -10235,7 +10235,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.099,
       "referencePriceType": "NAV"
@@ -10261,7 +10261,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.1064,
       "referencePriceType": "NAV"
@@ -10274,7 +10274,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 0.9384,
       "referencePriceType": "NAV"
@@ -10287,7 +10287,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.9613,
       "referencePriceType": "NAV"
@@ -10300,7 +10300,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.9019,
       "referencePriceType": "NAV"
@@ -10313,7 +10313,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.4413,
       "referencePriceType": "NAV"
@@ -10339,7 +10339,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.3173,
       "referencePriceType": "NAV"
@@ -10352,7 +10352,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.107,
       "referencePriceType": "NAV"
@@ -10378,7 +10378,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 0.6597,
       "referencePriceType": "NAV"
@@ -10404,7 +10404,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 0.6945,
       "referencePriceType": "NAV"
@@ -10430,7 +10430,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.8959,
       "referencePriceType": "NAV"
@@ -10443,7 +10443,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.2764,
       "referencePriceType": "NAV"
@@ -10456,7 +10456,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.2798,
       "referencePriceType": "NAV"
@@ -10495,7 +10495,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 0.8125,
       "referencePriceType": "NAV"
@@ -10521,7 +10521,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.8554,
       "referencePriceType": "NAV"
@@ -10560,7 +10560,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 0.7897,
       "referencePriceType": "NAV"
@@ -10586,7 +10586,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.4801,
       "referencePriceType": "NAV"
@@ -10599,7 +10599,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 0.7799,
       "referencePriceType": "NAV"
@@ -10612,7 +10612,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 0.7807,
       "referencePriceType": "NAV"
@@ -10625,7 +10625,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.8697,
       "referencePriceType": "NAV"
@@ -10638,7 +10638,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 0.7835,
       "referencePriceType": "NAV"
@@ -10664,7 +10664,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.6232,
       "referencePriceType": "NAV"
@@ -10690,7 +10690,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.9868,
       "referencePriceType": "NAV"
@@ -10781,7 +10781,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.9782,
       "referencePriceType": "NAV"
@@ -11013,7 +11013,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "agri_farming",
-      "groupName": "农林牧渔·养殖",
+      "groupName": "养殖",
       "kind": "industry",
       "referencePrice": 0.8683,
       "referencePriceType": "NAV"
@@ -11026,7 +11026,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 1.014,
       "referencePriceType": "NAV"
@@ -11062,7 +11062,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "agri_farming",
-      "groupName": "农林牧渔·养殖",
+      "groupName": "养殖",
       "kind": "industry",
       "referencePrice": 1.043,
       "referencePriceType": "NAV"
@@ -11088,7 +11088,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_internet",
-      "groupName": "计算机·互联网",
+      "groupName": "互联网",
       "kind": "industry",
       "referencePrice": 1.0419,
       "referencePriceType": "NAV"
@@ -11111,7 +11111,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 1.0116,
       "referencePriceType": "NAV"
@@ -11163,7 +11163,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "agri_farming",
-      "groupName": "农林牧渔·养殖",
+      "groupName": "养殖",
       "kind": "industry",
       "referencePrice": 0.8982,
       "referencePriceType": "NAV"
@@ -11202,7 +11202,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "agri_farming",
-      "groupName": "农林牧渔·养殖",
+      "groupName": "养殖",
       "kind": "industry",
       "referencePrice": 1.049,
       "referencePriceType": "NAV"
@@ -11228,7 +11228,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "agri_farming",
-      "groupName": "农林牧渔·养殖",
+      "groupName": "养殖",
       "kind": "industry",
       "referencePrice": 0.8939,
       "referencePriceType": "NAV"
@@ -11316,7 +11316,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.8613,
       "referencePriceType": "NAV"
@@ -11329,7 +11329,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.9661,
       "referencePriceType": "NAV"
@@ -11368,7 +11368,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "mach_robot",
-      "groupName": "机械设备·机器人",
+      "groupName": "机器人",
       "kind": "industry",
       "referencePrice": 0.8768,
       "referencePriceType": "NAV"
@@ -11417,7 +11417,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_rare",
-      "groupName": "有色金属·稀土",
+      "groupName": "稀土",
       "kind": "industry",
       "referencePrice": 0.8414,
       "referencePriceType": "NAV"
@@ -11443,7 +11443,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "mach_robot",
-      "groupName": "机械设备·机器人",
+      "groupName": "机器人",
       "kind": "industry",
       "referencePrice": 0.9018,
       "referencePriceType": "NAV"
@@ -11469,7 +11469,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "mach_robot",
-      "groupName": "机械设备·机器人",
+      "groupName": "机器人",
       "kind": "industry",
       "referencePrice": 0.8929,
       "referencePriceType": "NAV"
@@ -11482,7 +11482,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_device",
-      "groupName": "医药生物·医疗器械",
+      "groupName": "医疗器械",
       "kind": "industry",
       "referencePrice": 1.0379,
       "referencePriceType": "NAV"
@@ -11495,7 +11495,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.8779,
       "referencePriceType": "NAV"
@@ -11508,7 +11508,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_rare",
-      "groupName": "有色金属·稀土",
+      "groupName": "稀土",
       "kind": "industry",
       "referencePrice": 0.9423,
       "referencePriceType": "NAV"
@@ -11521,7 +11521,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_rare",
-      "groupName": "有色金属·稀土",
+      "groupName": "稀土",
       "kind": "industry",
       "referencePrice": 0.9572,
       "referencePriceType": "NAV"
@@ -11534,7 +11534,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_device",
-      "groupName": "医药生物·医疗器械",
+      "groupName": "医疗器械",
       "kind": "industry",
       "referencePrice": 1.0371,
       "referencePriceType": "NAV"
@@ -11547,7 +11547,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_device",
-      "groupName": "医药生物·医疗器械",
+      "groupName": "医疗器械",
       "kind": "industry",
       "referencePrice": 1.0267,
       "referencePriceType": "NAV"
@@ -11560,7 +11560,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "history_or_nav_pending",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 0.9887,
       "referencePriceType": "NAV"
@@ -11612,7 +11612,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_rare",
-      "groupName": "有色金属·稀土",
+      "groupName": "稀土",
       "kind": "industry",
       "referencePrice": 0.8596,
       "referencePriceType": "NAV"
@@ -11677,7 +11677,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 1.0415,
       "referencePriceType": "NAV"
@@ -11716,7 +11716,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.8648,
       "referencePriceType": "NAV"
@@ -11742,7 +11742,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_internet",
-      "groupName": "计算机·互联网",
+      "groupName": "互联网",
       "kind": "industry",
       "referencePrice": 0.9458,
       "referencePriceType": "NAV"
@@ -11768,7 +11768,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "history_or_nav_pending",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 1.0043,
       "referencePriceType": "NAV"
@@ -11833,7 +11833,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "history_or_nav_pending",
       "groupId": "comp_fintech",
-      "groupName": "计算机·金融科技",
+      "groupName": "金融科技",
       "kind": "industry",
       "referencePrice": 1.0602,
       "referencePriceType": "NAV"
@@ -11895,7 +11895,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "history_or_nav_pending",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.0467,
       "referencePriceType": "NAV"
@@ -11936,7 +11936,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_fintech",
-      "groupName": "计算机·金融科技",
+      "groupName": "金融科技",
       "kind": "industry",
       "referencePrice": 0.6663,
       "referencePriceType": "NAV"
@@ -11969,7 +11969,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.7847,
       "referencePriceType": "NAV"
@@ -11982,7 +11982,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.9947,
       "referencePriceType": "NAV"
@@ -12131,7 +12131,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_pv",
-      "groupName": "电力设备·光伏",
+      "groupName": "光伏",
       "kind": "industry",
       "referencePrice": 0.925,
       "referencePriceType": "NAV"
@@ -12348,7 +12348,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.8623,
       "referencePriceType": "NAV"
@@ -12374,7 +12374,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.893,
       "referencePriceType": "NAV"
@@ -12449,7 +12449,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_consumer",
-      "groupName": "电子·消费电子",
+      "groupName": "消费电子",
       "kind": "industry",
       "referencePrice": 1.2374,
       "referencePriceType": "NAV"
@@ -12462,7 +12462,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.8923,
       "referencePriceType": "NAV"
@@ -12475,7 +12475,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.9176,
       "referencePriceType": "NAV"
@@ -12527,7 +12527,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.8783,
       "referencePriceType": "NAV"
@@ -12579,7 +12579,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "agri_farming",
-      "groupName": "农林牧渔·养殖",
+      "groupName": "养殖",
       "kind": "industry",
       "referencePrice": 0.8528,
       "referencePriceType": "NAV"
@@ -12661,7 +12661,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "agri_farming",
-      "groupName": "农林牧渔·养殖",
+      "groupName": "养殖",
       "kind": "industry",
       "referencePrice": 0.8209,
       "referencePriceType": "NAV"
@@ -12687,7 +12687,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.9473,
       "referencePriceType": "NAV"
@@ -12726,7 +12726,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_consumer",
-      "groupName": "电子·消费电子",
+      "groupName": "消费电子",
       "kind": "industry",
       "referencePrice": 1.0851,
       "referencePriceType": "NAV"
@@ -12749,7 +12749,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 1.0534,
       "referencePriceType": "NAV"
@@ -12788,7 +12788,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "auto_nev",
-      "groupName": "汽车·新能源车",
+      "groupName": "新能源车",
       "kind": "industry",
       "referencePrice": 0.8891,
       "referencePriceType": "NAV"
@@ -12893,7 +12893,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.8257,
       "referencePriceType": "NAV"
@@ -13112,7 +13112,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "mach_robot",
-      "groupName": "机械设备·机器人",
+      "groupName": "机器人",
       "kind": "industry",
       "referencePrice": 1.2058,
       "referencePriceType": "NAV"
@@ -13438,7 +13438,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 2.1725,
       "referencePriceType": "NAV"
@@ -13451,7 +13451,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.3103,
       "referencePriceType": "NAV"
@@ -13474,7 +13474,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.2129,
       "referencePriceType": "NAV"
@@ -13500,7 +13500,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.8372,
       "referencePriceType": "NAV"
@@ -13562,7 +13562,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.8632,
       "referencePriceType": "NAV"
@@ -13588,7 +13588,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "mach_robot",
-      "groupName": "机械设备·机器人",
+      "groupName": "机器人",
       "kind": "industry",
       "referencePrice": 1.1316,
       "referencePriceType": "NAV"
@@ -13614,7 +13614,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 0.8582,
       "referencePriceType": "NAV"
@@ -13739,7 +13739,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "mach_robot",
-      "groupName": "机械设备·机器人",
+      "groupName": "机器人",
       "kind": "industry",
       "referencePrice": 0.8456,
       "referencePriceType": "NAV"
@@ -13752,7 +13752,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.4772,
       "referencePriceType": "NAV"
@@ -13801,7 +13801,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "mach_robot",
-      "groupName": "机械设备·机器人",
+      "groupName": "机器人",
       "kind": "industry",
       "referencePrice": 0.9936,
       "referencePriceType": "NAV"
@@ -13814,7 +13814,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.4609,
       "referencePriceType": "NAV"
@@ -14020,7 +14020,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_fintech",
-      "groupName": "计算机·金融科技",
+      "groupName": "金融科技",
       "kind": "industry",
       "referencePrice": 0.7032,
       "referencePriceType": "NAV"
@@ -14079,7 +14079,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_storage",
-      "groupName": "电力设备·储能风电",
+      "groupName": "储能风电",
       "kind": "industry",
       "referencePrice": 0.8491,
       "referencePriceType": "NAV"
@@ -14092,7 +14092,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "auto_smart",
-      "groupName": "汽车·智能驾驶",
+      "groupName": "智能驾驶",
       "kind": "industry",
       "referencePrice": 1.1724,
       "referencePriceType": "NAV"
@@ -14131,7 +14131,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 2.9483,
       "referencePriceType": "NAV"
@@ -14144,7 +14144,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 1.533,
       "referencePriceType": "NAV"
@@ -14167,7 +14167,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_gold",
-      "groupName": "有色金属·黄金股",
+      "groupName": "黄金股",
       "kind": "industry",
       "referencePrice": 1.6402,
       "referencePriceType": "NAV"
@@ -14213,7 +14213,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_gold",
-      "groupName": "有色金属·黄金股",
+      "groupName": "黄金股",
       "kind": "industry",
       "referencePrice": 1.5351,
       "referencePriceType": "NAV"
@@ -14226,7 +14226,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_gold",
-      "groupName": "有色金属·黄金股",
+      "groupName": "黄金股",
       "kind": "industry",
       "referencePrice": 1.6125,
       "referencePriceType": "NAV"
@@ -14249,7 +14249,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 2.2162,
       "referencePriceType": "NAV"
@@ -14275,7 +14275,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.1881,
       "referencePriceType": "NAV"
@@ -14576,7 +14576,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.2883,
       "referencePriceType": "NAV"
@@ -14778,7 +14778,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.2201,
       "referencePriceType": "NAV"
@@ -14791,7 +14791,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 2.7374,
       "referencePriceType": "NAV"
@@ -14817,7 +14817,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 1.8881,
       "referencePriceType": "NAV"
@@ -14856,7 +14856,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.0543,
       "referencePriceType": "NAV"
@@ -14869,7 +14869,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 1.9078,
       "referencePriceType": "NAV"
@@ -15062,7 +15062,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.8634,
       "referencePriceType": "NAV"
@@ -15143,7 +15143,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 0.7413,
       "referencePriceType": "NAV"
@@ -15239,7 +15239,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "mach_robot",
-      "groupName": "机械设备·机器人",
+      "groupName": "机器人",
       "kind": "industry",
       "referencePrice": 1.4838,
       "referencePriceType": "NAV"
@@ -15252,7 +15252,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.75,
       "referencePriceType": "NAV"
@@ -15286,7 +15286,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "mach_robot",
-      "groupName": "机械设备·机器人",
+      "groupName": "机器人",
       "kind": "industry",
       "referencePrice": 1.3999,
       "referencePriceType": "NAV"
@@ -15364,7 +15364,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.9411,
       "referencePriceType": "NAV"
@@ -15377,7 +15377,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.9482,
       "referencePriceType": "NAV"
@@ -15390,7 +15390,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 1.8708,
       "referencePriceType": "NAV"
@@ -15403,7 +15403,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 2.0093,
       "referencePriceType": "NAV"
@@ -15465,7 +15465,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 0.8044,
       "referencePriceType": "NAV"
@@ -15504,7 +15504,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_internet",
-      "groupName": "计算机·互联网",
+      "groupName": "互联网",
       "kind": "industry",
       "referencePrice": 0.8283,
       "referencePriceType": "NAV"
@@ -15517,7 +15517,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "mach_robot",
-      "groupName": "机械设备·机器人",
+      "groupName": "机器人",
       "kind": "industry",
       "referencePrice": 1.3067,
       "referencePriceType": "NAV"
@@ -15592,7 +15592,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.1632,
       "referencePriceType": "NAV"
@@ -15605,7 +15605,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "mach_robot",
-      "groupName": "机械设备·机器人",
+      "groupName": "机器人",
       "kind": "industry",
       "referencePrice": 1.2622,
       "referencePriceType": "NAV"
@@ -15618,7 +15618,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 2.3738,
       "referencePriceType": "NAV"
@@ -15639,7 +15639,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_gold",
-      "groupName": "有色金属·黄金股",
+      "groupName": "黄金股",
       "kind": "industry",
       "referencePrice": 2.1784,
       "referencePriceType": "NAV"
@@ -15665,7 +15665,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "auto_smart",
-      "groupName": "汽车·智能驾驶",
+      "groupName": "智能驾驶",
       "kind": "industry",
       "referencePrice": 1.3282,
       "referencePriceType": "NAV"
@@ -15678,7 +15678,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_storage",
-      "groupName": "电力设备·储能风电",
+      "groupName": "储能风电",
       "kind": "industry",
       "referencePrice": 1.9057,
       "referencePriceType": "NAV"
@@ -15830,7 +15830,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 0.79,
       "referencePriceType": "NAV"
@@ -15908,7 +15908,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.9211,
       "referencePriceType": "NAV"
@@ -15999,7 +15999,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 2.9136,
       "referencePriceType": "NAV"
@@ -16090,7 +16090,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_rare",
-      "groupName": "有色金属·稀土",
+      "groupName": "稀土",
       "kind": "industry",
       "referencePrice": 1.1275,
       "referencePriceType": "NAV"
@@ -16103,7 +16103,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_pv",
-      "groupName": "电力设备·光伏",
+      "groupName": "光伏",
       "kind": "industry",
       "referencePrice": 0.5037,
       "referencePriceType": "NAV"
@@ -16150,7 +16150,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.9076,
       "referencePriceType": "NAV"
@@ -16199,7 +16199,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_pv",
-      "groupName": "电力设备·光伏",
+      "groupName": "光伏",
       "kind": "industry",
       "referencePrice": 0.6818,
       "referencePriceType": "NAV"
@@ -16251,7 +16251,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 1.1984,
       "referencePriceType": "NAV"
@@ -16399,7 +16399,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "auto_nev",
-      "groupName": "汽车·新能源车",
+      "groupName": "新能源车",
       "kind": "industry",
       "referencePrice": 0.837,
       "referencePriceType": "NAV"
@@ -16503,7 +16503,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_tcm",
-      "groupName": "医药生物·中药",
+      "groupName": "中药",
       "kind": "industry",
       "referencePrice": 0.9233,
       "referencePriceType": "NAV"
@@ -16606,7 +16606,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 1.8169,
       "referencePriceType": "NAV"
@@ -16674,7 +16674,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 2.5289,
       "referencePriceType": "NAV"
@@ -16739,7 +16739,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_rare",
-      "groupName": "有色金属·稀土",
+      "groupName": "稀土",
       "kind": "industry",
       "referencePrice": 1.3817,
       "referencePriceType": "NAV"
@@ -16962,7 +16962,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 1.2134,
       "referencePriceType": "NAV"
@@ -17042,7 +17042,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_internet",
-      "groupName": "计算机·互联网",
+      "groupName": "互联网",
       "kind": "industry",
       "referencePrice": 1.2948,
       "referencePriceType": "NAV"
@@ -17107,7 +17107,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_internet",
-      "groupName": "计算机·互联网",
+      "groupName": "互联网",
       "kind": "industry",
       "referencePrice": 1.7702,
       "referencePriceType": "NAV"
@@ -17140,7 +17140,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_rare",
-      "groupName": "有色金属·稀土",
+      "groupName": "稀土",
       "kind": "industry",
       "referencePrice": 1.3197,
       "referencePriceType": "NAV"
@@ -17153,7 +17153,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "metal_rare",
-      "groupName": "有色金属·稀土",
+      "groupName": "稀土",
       "kind": "industry",
       "referencePrice": 1.2153,
       "referencePriceType": "NAV"
@@ -17215,7 +17215,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "auto_smart",
-      "groupName": "汽车·智能驾驶",
+      "groupName": "智能驾驶",
       "kind": "industry",
       "referencePrice": 0.7395,
       "referencePriceType": "NAV"
@@ -17287,7 +17287,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_internet",
-      "groupName": "计算机·互联网",
+      "groupName": "互联网",
       "kind": "industry",
       "referencePrice": 0.7177,
       "referencePriceType": "NAV"
@@ -17326,7 +17326,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_consumer",
-      "groupName": "电子·消费电子",
+      "groupName": "消费电子",
       "kind": "industry",
       "referencePrice": 1.4236,
       "referencePriceType": "NAV"
@@ -17362,7 +17362,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 2.1351,
       "referencePriceType": "NAV"
@@ -17375,7 +17375,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 0.8386,
       "referencePriceType": "NAV"
@@ -17454,7 +17454,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.8507,
       "referencePriceType": "NAV"
@@ -17500,7 +17500,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.9813,
       "referencePriceType": "NAV"
@@ -17513,7 +17513,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.8174,
       "referencePriceType": "NAV"
@@ -17591,7 +17591,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.7993,
       "referencePriceType": "NAV"
@@ -17617,7 +17617,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "mach_robot",
-      "groupName": "机械设备·机器人",
+      "groupName": "机器人",
       "kind": "industry",
       "referencePrice": 1.0386,
       "referencePriceType": "NAV"
@@ -17640,7 +17640,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.8144,
       "referencePriceType": "NAV"
@@ -17673,7 +17673,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_internet",
-      "groupName": "计算机·互联网",
+      "groupName": "互联网",
       "kind": "industry",
       "referencePrice": 1.2395,
       "referencePriceType": "NAV"
@@ -17686,7 +17686,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_consumer",
-      "groupName": "电子·消费电子",
+      "groupName": "消费电子",
       "kind": "industry",
       "referencePrice": 1.4997,
       "referencePriceType": "NAV"
@@ -17751,7 +17751,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_consumer",
-      "groupName": "电子·消费电子",
+      "groupName": "消费电子",
       "kind": "industry",
       "referencePrice": 1.1827,
       "referencePriceType": "NAV"
@@ -17849,7 +17849,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.889,
       "referencePriceType": "NAV"
@@ -17862,7 +17862,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_device",
-      "groupName": "医药生物·医疗器械",
+      "groupName": "医疗器械",
       "kind": "industry",
       "referencePrice": 0.6864,
       "referencePriceType": "NAV"
@@ -17901,7 +17901,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.1918,
       "referencePriceType": "NAV"
@@ -17937,7 +17937,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "auto_nev",
-      "groupName": "汽车·新能源车",
+      "groupName": "新能源车",
       "kind": "industry",
       "referencePrice": 0.7309,
       "referencePriceType": "NAV"
@@ -18006,7 +18006,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 0.7692,
       "referencePriceType": "NAV"
@@ -18039,7 +18039,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.8444,
       "referencePriceType": "NAV"
@@ -18086,7 +18086,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "auto_nev",
-      "groupName": "汽车·新能源车",
+      "groupName": "新能源车",
       "kind": "industry",
       "referencePrice": 1.12,
       "referencePriceType": "NAV"
@@ -18168,7 +18168,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.7114,
       "referencePriceType": "NAV"
@@ -18191,7 +18191,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.5243,
       "referencePriceType": "NAV"
@@ -18217,7 +18217,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.3904,
       "referencePriceType": "NAV"
@@ -18230,7 +18230,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_battery",
-      "groupName": "电力设备·锂电池",
+      "groupName": "锂电池",
       "kind": "industry",
       "referencePrice": 0.7915,
       "referencePriceType": "NAV"
@@ -18243,7 +18243,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 0.9842,
       "referencePriceType": "NAV"
@@ -18256,7 +18256,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 1.0335,
       "referencePriceType": "NAV"
@@ -18308,7 +18308,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 0.865,
       "referencePriceType": "NAV"
@@ -18321,7 +18321,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.5309,
       "referencePriceType": "NAV"
@@ -18344,7 +18344,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_fintech",
-      "groupName": "计算机·金融科技",
+      "groupName": "金融科技",
       "kind": "industry",
       "referencePrice": 0.6259,
       "referencePriceType": "NAV"
@@ -18357,7 +18357,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.7113,
       "referencePriceType": "NAV"
@@ -18383,7 +18383,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_internet",
-      "groupName": "计算机·互联网",
+      "groupName": "互联网",
       "kind": "industry",
       "referencePrice": 0.604,
       "referencePriceType": "NAV"
@@ -18396,7 +18396,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_pv",
-      "groupName": "电力设备·光伏",
+      "groupName": "光伏",
       "kind": "industry",
       "referencePrice": 0.7399,
       "referencePriceType": "NAV"
@@ -18409,7 +18409,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.7386,
       "referencePriceType": "NAV"
@@ -18422,7 +18422,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.4204,
       "referencePriceType": "NAV"
@@ -18461,7 +18461,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_pv",
-      "groupName": "电力设备·光伏",
+      "groupName": "光伏",
       "kind": "industry",
       "referencePrice": 0.58,
       "referencePriceType": "NAV"
@@ -18474,7 +18474,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "power_pv",
-      "groupName": "电力设备·光伏",
+      "groupName": "光伏",
       "kind": "industry",
       "referencePrice": 0.566,
       "referencePriceType": "NAV"
@@ -18487,7 +18487,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "agri_farming",
-      "groupName": "农林牧渔·养殖",
+      "groupName": "养殖",
       "kind": "industry",
       "referencePrice": 0.5325,
       "referencePriceType": "NAV"
@@ -18510,7 +18510,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "agri_farming",
-      "groupName": "农林牧渔·养殖",
+      "groupName": "养殖",
       "kind": "industry",
       "referencePrice": 0.5425,
       "referencePriceType": "NAV"
@@ -18523,7 +18523,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "media_game",
-      "groupName": "传媒·游戏动漫",
+      "groupName": "游戏",
       "kind": "industry",
       "referencePrice": 1.1461,
       "referencePriceType": "NAV"
@@ -18575,7 +18575,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_device",
-      "groupName": "医药生物·医疗器械",
+      "groupName": "医疗器械",
       "kind": "industry",
       "referencePrice": 0.5369,
       "referencePriceType": "NAV"
@@ -18653,7 +18653,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_device",
-      "groupName": "医药生物·医疗器械",
+      "groupName": "医疗器械",
       "kind": "industry",
       "referencePrice": 0.4475,
       "referencePriceType": "NAV"
@@ -18731,7 +18731,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_ai",
-      "groupName": "计算机·AI算力",
+      "groupName": "AI算力",
       "kind": "industry",
       "referencePrice": 1.8109,
       "referencePriceType": "NAV"
@@ -18767,7 +18767,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_internet",
-      "groupName": "计算机·互联网",
+      "groupName": "互联网",
       "kind": "industry",
       "referencePrice": 1.4247,
       "referencePriceType": "NAV"
@@ -18780,7 +18780,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_internet",
-      "groupName": "计算机·互联网",
+      "groupName": "互联网",
       "kind": "industry",
       "referencePrice": 1.315,
       "referencePriceType": "NAV"
@@ -18793,7 +18793,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_device",
-      "groupName": "医药生物·医疗器械",
+      "groupName": "医疗器械",
       "kind": "industry",
       "referencePrice": 0.4998,
       "referencePriceType": "NAV"
@@ -18806,7 +18806,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "comp_software",
-      "groupName": "计算机·软件信创",
+      "groupName": "软件信创",
       "kind": "industry",
       "referencePrice": 0.7361,
       "referencePriceType": "NAV"
@@ -19591,7 +19591,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "pharma_innovative",
-      "groupName": "医药生物·创新药",
+      "groupName": "创新药",
       "kind": "industry",
       "referencePrice": 0.9171,
       "referencePriceType": "NAV"
@@ -19604,7 +19604,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "fin_broker",
-      "groupName": "非银金融·券商",
+      "groupName": "券商",
       "kind": "industry",
       "referencePrice": 1.1736,
       "referencePriceType": "NAV"
@@ -19630,7 +19630,7 @@
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
-      "groupName": "电子·半导体芯片",
+      "groupName": "半导体芯片",
       "kind": "industry",
       "referencePrice": 1.2019,
       "referencePriceType": "NAV"
