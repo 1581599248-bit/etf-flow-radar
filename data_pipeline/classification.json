@@ -820,11 +820,9 @@
       "id": "power_storage",
       "parent": "sw_power_equipment",
       "code": "801730",
-      "name": "储能风电",
+      "name": "储能",
       "patterns": [
-        "储能",
-        "风电",
-        "特高压"
+        "储能"
       ]
     },
     {
