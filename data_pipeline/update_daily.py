@@ -2,7 +2,8 @@
 
 Facts and estimates are kept separate:
 * ETF shares: official SSE/SZSE end-of-day observations after clearing.
-* Reference value: same-day ETF NAV (close only when NAV is unavailable).
+* Reference value: same-day ETF average traded price (amount / volume), falling
+  back to the exchange close, then to same-day NAV when trading data is missing.
 * Estimated flow: share change multiplied by the latest verified reference value.
 * Return: exchange-traded close of the largest ETF in each observation group.
 
@@ -24,6 +25,7 @@ from typing import Any, Callable
 from zoneinfo import ZoneInfo
 
 import akshare as ak
+import numpy as np
 import pandas as pd
 import requests
 
@@ -202,8 +204,45 @@ def with_display_names(frame: pd.DataFrame, names: pd.DataFrame) -> pd.DataFrame
     return merged.drop(columns=["full_name"])
 
 
+def fetch_trading_prices() -> pd.DataFrame:
+    """Same-day average traded price (amount / volume) from the Eastmoney snapshot.
+
+    The snapshot is taken after the close on the run day, so its amount/volume
+    describe that trade day. Eastmoney reports volume in lots (100 shares); the
+    lot/share ambiguity is resolved by picking whichever conversion lands closer
+    to the close, then the average must stay within a sane band around the close
+    or the close itself is used instead.
+    """
+    spot = retry("Eastmoney ETF spot", ak.fund_etf_spot_em)
+    spot.columns = [str(c).strip() for c in spot.columns]
+    out = pd.DataFrame({
+        "code": spot["代码"].astype(str).str.zfill(6),
+        "close": pd.to_numeric(spot["最新价"], errors="coerce"),
+        "volume": pd.to_numeric(spot["成交量"], errors="coerce"),
+        "amount": pd.to_numeric(spot["成交额"], errors="coerce"),
+    })
+    out = out.drop_duplicates("code", keep="last")
+    with np.errstate(divide="ignore", invalid="ignore"):
+        raw_share = out["amount"] / out["volume"]
+        raw_lot = out["amount"] / (out["volume"] * 100)
+    close = out["close"].where(out["close"] > 0)
+    pick_share = (raw_share / close - 1).abs() < (raw_lot / close - 1).abs()
+    avg = raw_share.where(pick_share, raw_lot)
+    ratio = avg / close
+    avg_ok = avg.notna() & (avg > 0) & ratio.between(0.5, 2.0)
+    out["reference_price"] = avg.where(avg_ok, close)
+    out["reference_price_type"] = np.where(avg_ok, "AVG", "CLOSE")
+    return out[["code", "reference_price", "reference_price_type"]]
+
+
 def fetch_reference_prices(day: date) -> pd.DataFrame:
-    """Use exact target-day NAV; never silently substitute another date."""
+    """Reference value for flow estimates: same-day average traded price first.
+
+    Same-day NAV is still fetched and required: it validates that observations
+    exist for the exact target day (never silently substitute another date),
+    supplies the fund full name used for classification, and serves as the
+    fallback reference value for ETFs missing from the trading snapshot.
+    """
     daily = retry("Eastmoney ETF NAV", ak.fund_etf_fund_daily_em)
     nav_column = next(
         (c for c in daily.columns if str(c).startswith(day.isoformat()) and "单位净值" in str(c)),
@@ -213,10 +252,19 @@ def fetch_reference_prices(day: date) -> pd.DataFrame:
         raise ValueError(f"no ETF NAV column for {day.isoformat()}")
     out = daily.iloc[:, [0, 1]].copy()
     out.columns = ["code", "price_name"]
-    out["reference_price"] = pd.to_numeric(daily[nav_column], errors="coerce")
-    out["reference_price_type"] = "NAV"
+    out["nav"] = pd.to_numeric(daily[nav_column], errors="coerce")
     out["code"] = out["code"].astype(str).str.zfill(6)
-    return out.drop_duplicates("code", keep="last")
+    out = out.drop_duplicates("code", keep="last")
+    try:
+        traded = fetch_trading_prices()
+    except Exception as exc:  # trading snapshot unreachable: NAV keeps the pipeline alive
+        print(f"[warn] trading price snapshot failed ({exc}); falling back to NAV", file=sys.stderr)
+        traded = pd.DataFrame(columns=["code", "reference_price", "reference_price_type"])
+    out = out.merge(traded, on="code", how="left", validate="one_to_one")
+    use_traded = out["reference_price"].notna() & (out["reference_price"] > 0)
+    out["reference_price"] = out["reference_price"].where(use_traded, out["nav"])
+    out["reference_price_type"] = out["reference_price_type"].where(use_traded, "NAV")
+    return out[["code", "price_name", "reference_price", "reference_price_type"]]
 
 
 def classify_etf(name: str, price_name: str | None = None) -> dict[str, Any] | None:
@@ -678,11 +726,12 @@ def build_snapshot(day: date, current: pd.DataFrame | None = None) -> dict[str, 
         "sources": [
             {"name": "上海证券交易所", "field": "沪市ETF日终总份额", "role": "官方主源"},
             {"name": "深圳证券交易所", "field": "深市ETF日终总份额", "role": "官方主源"},
-            {"name": "东方财富基金净值/AKShare", "field": f"{day.isoformat()} 单位净值", "role": "份额变动估值"},
+            {"name": "东方财富行情/AKShare", "field": f"{day.isoformat()} 成交额与成交量（成交均价=成交额÷成交量）", "role": "份额变动估值"},
+            {"name": "东方财富基金净值/AKShare", "field": f"{day.isoformat()} 单位净值", "role": "日期校验与估值回退"},
             {"name": "新浪行情/AKShare", "field": "组内最大规模ETF收盘价", "role": "1/5/20日收益代理"},
         ],
         "methodology": {
-            "flow": "参考净申赎 =（期末份额 − 期初份额）× 期末已验证单位净值；金额用于方向与量级观察，不等同基金公司的最终现金流。",
+            "flow": "参考净申赎 =（期末份额 − 期初份额）× 当日成交均价（成交额÷成交量，与主流资讯口径一致）；成交均价缺失时依次回退当日收盘价、单位净值；金额用于方向与量级观察，不等同基金公司的最终现金流。",
             "counts": "ETF只数按交易所日终总份额较前一交易日增加、减少或完全相同划分。总份额不变表示当日没有净份额增减，不代表没有二级市场成交、价格波动，亦不代表申购和赎回均为零。",
             "return": "组别收益使用组内当前规模最大的ETF作为价格代理；相对收益以沪深300代理为基准。",
             "coordinates": "横轴 = 20日相对沪深300收益率；纵轴 = 5日净申赎 ÷ 5日前参考规模（%）；气泡面积 = 当前ETF规模。",
