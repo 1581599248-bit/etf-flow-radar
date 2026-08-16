@@ -11,7 +11,7 @@ permissions:
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     env:
       TZ: Asia/Shanghai
     steps:
@@ -26,3 +26,26 @@ jobs:
         run: python -m unittest discover -s data_pipeline -p "test_*.py"
       - name: Independent 2026-08-14 flow reconciliation
         run: python data_pipeline/audit_flow_20260814.py
+      - name: Rebuild production snapshot with repaired logic
+        run: python data_pipeline/update_daily_production.py --date "2026-08-14"
+      - name: Assert the known 588710 regression and market scope
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path('site/data/latest.json').read_text('utf-8'))
+          target=next(x for x in data['etfs'] if x['code']=='588710')
+          assert -1.5 < target['flow1d'] < -1.0, target
+          assert 1240 <= data['market']['etfCount'] <= 1260, data['market']
+          assert -50.0 < data['market']['flow1d'] < -45.0, data['market']
+          assert data.get('industryRollups'), 'missing SW level-1 rollups'
+          names={x['name'] for x in data['industryRollups']}
+          assert '电子' in names and '非银金融' in names, names
+          assert '半导体' not in names, names
+          assert data['status'] in {'verified','warning'}, data['status']
+          print('verified 588710', target['flow1d'])
+          print('verified market', data['market']['etfCount'], data['market']['flow1d'])
+          print('headline', data['conclusion']['headline'])
+          PY
+      - name: Validate client bundle
+        run: npm ci && npm test
