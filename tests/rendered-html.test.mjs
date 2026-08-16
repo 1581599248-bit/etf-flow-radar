@@ -10,6 +10,9 @@ test("dashboard contains the answer-first modules and two coordinate maps", asyn
   assert.match(page, /宽基与风格资金坐标/);
   assert.match(page, /申万一级与主流行业资金坐标/);
   assert.match(page, /申万行业分类标准2021版/);
+  assert.match(page, /热门主题/);
+  assert.match(page, /个申万一级行业组 \+ \$\{industries\.filter\(r=>r\.parent\)\.length\}个热门主题组/);
+  assert.match(page, /const groupTag=r=>r\.kind==="industry"&&r\.parent\?"热门主题":kindName\[r\.kind\]/);
   assert.match(page, /20日相对沪深300收益/);
   assert.match(page, /5日资金变化率（占5日前规模）/);
   assert.match(page, /当日ETF流入流出分布/);
