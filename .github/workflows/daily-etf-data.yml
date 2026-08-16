@@ -43,9 +43,9 @@ jobs:
       - name: Build guarded verified snapshot
         run: |
           if [ -n "${{ inputs.trade_date }}" ]; then
-            python data_pipeline/update_daily_resilient.py --date "${{ inputs.trade_date }}"
+            python data_pipeline/update_daily_production.py --date "${{ inputs.trade_date }}"
           else
-            python data_pipeline/update_daily_resilient.py
+            python data_pipeline/update_daily_production.py
           fi
       - name: Validate published schema and client bundle
         run: npm ci && npm test
