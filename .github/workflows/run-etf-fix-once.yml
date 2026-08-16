@@ -24,8 +24,8 @@ jobs:
       - run: pip install -r data_pipeline/requirements.txt
       - name: Run pipeline tests
         run: python -m unittest discover -s data_pipeline -p "test_*.py"
-      - name: Rebuild 2026-08-14 with guardrails
-        run: python data_pipeline/update_daily_guarded.py --date "2026-08-14"
+      - name: Rebuild 2026-08-14 with resilient guardrails
+        run: python data_pipeline/update_daily_resilient.py --date "2026-08-14"
       - name: Validate published schema and client bundle
         run: npm ci && npm test
       - name: Commit corrected data if verified
@@ -34,5 +34,5 @@ jobs:
           git config user.email "etf-flow-radar-bot@users.noreply.github.com"
           git add site/data
           git diff --cached --quiet && exit 0
-          git commit -m "data: rebuild 2026-08-14 with ETF guardrails"
+          git commit -m "data: rebuild 2026-08-14 with resilient ETF guardrails"
           git push
