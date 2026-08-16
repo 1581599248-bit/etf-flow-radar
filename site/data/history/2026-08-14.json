@@ -4,21 +4,21 @@
   "tradeDate": "2026-08-14",
   "previousTradeDate": "2026-08-13",
   "windowStartDate": "2026-07-17",
-  "generatedAt": "2026-08-17T03:27:48+08:00",
+  "generatedAt": "2026-08-17T04:10:58+08:00",
   "publicationDate": "2026-08-17",
   "sourceMode": "REAL",
   "market": {
-    "name": "A股股票ETF统计范围",
-    "etfCount": 1213,
-    "flow1d": -46.42,
-    "flow5d": -491.06,
-    "flow20d": 786.02,
-    "aum": 27283.44,
-    "breadth1d": -13.8,
-    "increaseEtfCount1d": 231,
-    "decreaseEtfCount1d": 398,
-    "unchangedEtfCount1d": 584,
-    "unchangedEtfPct1d": 48.15,
+    "name": "A股股票ETF主口径",
+    "etfCount": 1249,
+    "flow1d": -48.23,
+    "flow5d": -521.93,
+    "flow20d": 394.72,
+    "aum": 27015.74,
+    "breadth1d": -14.3,
+    "increaseEtfCount1d": 247,
+    "decreaseEtfCount1d": 425,
+    "unchangedEtfCount1d": 577,
+    "unchangedEtfPct1d": 46.2,
     "topInflowEtf": {
       "code": "512880",
       "name": "证券ETF国泰",
@@ -28,16 +28,20 @@
       "code": "510300",
       "name": "沪深300ETF华泰柏瑞",
       "flow1d": -8.37
-    }
+    },
+    "etfCount5d": 1245,
+    "etfCount20d": 1226,
+    "scope": "fund_type_equity_minus_crossborder_bond_commodity_money",
+    "multiDayMethod": "endpoint_share_change_times_current_reference_price"
   },
   "conclusion": {
-    "headline": "本期统计的1213只A股股票ETF当日合计净流出46.4亿元；净流入231只、净流出398只。宽基中14个流出、8个流入；申万一级行业资金流入居前的是券商，流出最多的是半导体。",
+    "headline": "本期统计的1249只A股股票ETF当日合计净流出48.2亿元；净流入247只、净流出425只。宽基中14个流出、8个流入；申万一级行业资金流入居前的是非银金融，流出最多的是通信。",
     "facts": [
-      "宽基流出前三为沪深300-9.6亿、中证1000-9.3亿、创业板指-9.2亿；5日流出最大仍是中证1000。",
-      "申万一级行业净流入居前为券商+14.7亿、芯片+6.8亿；净流出最多为半导体-10.8亿。",
+      "宽基流出前三为沪深300-9.6亿、中证1000-9.3亿、创业板指-9.2亿；5日端点变化流出最大为中证1000。",
+      "申万一级行业净流入居前为非银金融+14.7亿、计算机+1.4亿；净流出最多为通信-7.4亿。",
       "单只ETF大额变化：证券ETF国泰净流入+10.0亿元；沪深300ETF华泰柏瑞净流出-8.4亿元。"
     ],
-    "interpretation": "从份额数据看，宽基当日14/27个组净流出；风格组中红利低波当日变化相对靠前，指数增强流出较多。券商同时录得1日和5日净流入，可继续观察资金延续性。",
+    "interpretation": "从份额数据看，宽基当日14/27个组净流出；风格组中红利低波当日变化相对靠前，指数增强流出较多。券商的1日与5日端点份额变化均为净流入，可继续观察延续性。",
     "confidence": "A",
     "confidenceNote": "21个交易日份额完整，价格代理覆盖充分"
   },
@@ -1198,13 +1202,13 @@
       "parent": "sw_electronics",
       "flow1d": 6.81,
       "flow5d": 3.68,
-      "flow20d": 311.19,
+      "flow20d": -49.49,
       "flowIntensity1dPct": 0.44,
       "flowIntensity5dPct": 0.24,
-      "flowIntensity20dPct": 25.04,
+      "flowIntensity20dPct": -3.09,
       "flowIntensity1dBps": 44.0,
       "flowIntensity5dBps": 23.8,
-      "flowIntensity20dBps": 2503.7,
+      "flowIntensity20dBps": -308.6,
       "return1d": 0.92,
       "return5d": -0.74,
       "return20d": -1.39,
@@ -1362,13 +1366,13 @@
       "parent": "sw_computer",
       "flow1d": 0.81,
       "flow5d": -7.64,
-      "flow20d": -19.08,
+      "flow20d": -23.58,
       "flowIntensity1dPct": 0.1,
       "flowIntensity5dPct": -0.97,
-      "flowIntensity20dPct": -2.39,
+      "flowIntensity20dPct": -2.94,
       "flowIntensity1dBps": 10.4,
       "flowIntensity5dBps": -97.2,
-      "flowIntensity20dBps": -239.3,
+      "flowIntensity20dBps": -294.0,
       "return1d": 1.09,
       "return5d": -0.96,
       "return20d": 1.54,
@@ -2264,13 +2268,13 @@
       "parent": "sw_electronics",
       "flow1d": -0.39,
       "flow5d": 1.11,
-      "flow20d": -3.69,
+      "flow20d": -4.94,
       "flowIntensity1dPct": -0.56,
       "flowIntensity5dPct": 1.62,
-      "flowIntensity20dPct": -5.01,
+      "flowIntensity20dPct": -6.6,
       "flowIntensity1dBps": -55.8,
       "flowIntensity5dBps": 161.8,
-      "flowIntensity20dBps": -501.1,
+      "flowIntensity20dBps": -659.8,
       "return1d": 0.92,
       "return5d": -0.28,
       "return20d": 1.43,
@@ -2879,13 +2883,13 @@
       "parent": null,
       "flow1d": -1.59,
       "flow5d": -1.56,
-      "flow20d": 29.95,
+      "flow20d": 24.15,
       "flowIntensity1dPct": -0.22,
       "flowIntensity5dPct": -0.22,
-      "flowIntensity20dPct": 4.42,
+      "flowIntensity20dPct": 3.54,
       "flowIntensity1dBps": -22.4,
       "flowIntensity5dBps": -22.0,
-      "flowIntensity20dBps": 442.4,
+      "flowIntensity20dBps": 353.8,
       "return1d": 1.12,
       "return5d": -4.79,
       "return20d": 15.53,
@@ -3084,13 +3088,13 @@
       "parent": null,
       "flow1d": -5.45,
       "flow5d": -13.5,
-      "flow20d": -148.48,
+      "flow20d": -154.72,
       "flowIntensity1dPct": -0.77,
       "flowIntensity5dPct": -1.89,
-      "flowIntensity20dPct": -17.5,
+      "flowIntensity20dPct": -18.1,
       "flowIntensity1dBps": -77.3,
       "flowIntensity5dBps": -189.2,
-      "flowIntensity20dBps": -1750.1,
+      "flowIntensity20dBps": -1810.4,
       "return1d": 3.6,
       "return5d": 4.55,
       "return20d": 4.7,
@@ -3123,31 +3127,31 @@
       "name": "半导体",
       "kind": "industry",
       "parent": "sw_electronics",
-      "flow1d": -10.76,
-      "flow5d": 80.18,
-      "flow20d": 241.83,
-      "flowIntensity1dPct": -0.63,
-      "flowIntensity5dPct": 5.0,
-      "flowIntensity20dPct": 16.76,
-      "flowIntensity1dBps": -63.5,
-      "flowIntensity5dBps": 499.6,
-      "flowIntensity20dBps": 1675.8,
+      "flow1d": -12.03,
+      "flow5d": 57.0,
+      "flow20d": 246.83,
+      "flowIntensity1dPct": -0.68,
+      "flowIntensity5dPct": 3.35,
+      "flowIntensity20dPct": 16.32,
+      "flowIntensity1dBps": -67.9,
+      "flowIntensity5dBps": 334.8,
+      "flowIntensity20dBps": 1632.0,
       "return1d": 0.95,
       "return5d": 0.54,
       "return20d": 5.85,
       "relativeReturn20d": 2.86,
       "priceFlowState": "跑赢且流入",
-      "breadth1d": 6.7,
+      "breadth1d": -6.7,
       "breadth5d": 40.0,
-      "increaseEtfCount1d": 6,
-      "decreaseEtfCount1d": 5,
+      "increaseEtfCount1d": 5,
+      "decreaseEtfCount1d": 6,
       "unchangedEtfCount1d": 4,
       "increaseEtfCount5d": 10,
       "decreaseEtfCount5d": 4,
       "unchangedEtfCount5d": 1,
-      "aum": 1684.88,
+      "aum": 1759.28,
       "etfCount": 15,
-      "concentration1d": 53.6,
+      "concentration1d": 48.6,
       "representative": {
         "code": "159516",
         "name": "半导体设备ETF国泰"
@@ -3817,7 +3821,7 @@
       "aum": 510.76,
       "flow1d": 2.56,
       "flow5d": -7.45,
-      "flow20d": 331.37,
+      "flow20d": -27.41,
       "referencePrice": 1.2087,
       "referencePriceType": "AVG"
     },
@@ -3990,6 +3994,20 @@
       "referencePriceType": "AVG"
     },
     {
+      "code": "588710",
+      "name": "科创半导体设备ETF华泰柏瑞",
+      "exchange": "SSE",
+      "groupId": "elec_semiconductor",
+      "groupName": "半导体",
+      "kind": "industry",
+      "aum": 112.24,
+      "flow1d": -1.26,
+      "flow5d": 3.29,
+      "flow20d": 37.73,
+      "referencePrice": 1.0532,
+      "referencePriceType": "NAV"
+    },
+    {
       "code": "159949",
       "name": "创业板50ETF华安",
       "exchange": "SZSE",
@@ -4068,8 +4086,8 @@
       "kind": "industry",
       "aum": 51.43,
       "flow1d": -1.14,
-      "flow5d": 26.48,
-      "flow20d": 34.1,
+      "flow5d": 1.53,
+      "flow20d": 16.76,
       "referencePrice": 1.2362,
       "referencePriceType": "AVG"
     },
@@ -7751,7 +7769,7 @@
       "aum": 3.74,
       "flow1d": 0.06,
       "flow5d": 0.12,
-      "flow20d": 1.84,
+      "flow20d": -0.06,
       "referencePrice": 1.162,
       "referencePriceType": "AVG"
     },
@@ -8255,7 +8273,7 @@
       "aum": 3.7,
       "flow1d": -0.05,
       "flow5d": -0.07,
-      "flow20d": 1.67,
+      "flow20d": -0.36,
       "referencePrice": 0.8302,
       "referencePriceType": "AVG"
     },
@@ -10495,7 +10513,7 @@
       "aum": 8.07,
       "flow1d": -0.02,
       "flow5d": -0.15,
-      "flow20d": 4.95,
+      "flow20d": -1.29,
       "referencePrice": 0.9642,
       "referencePriceType": "AVG"
     },
@@ -11839,7 +11857,7 @@
       "aum": 3.39,
       "flow1d": -0.01,
       "flow5d": -0.16,
-      "flow20d": 2.16,
+      "flow20d": -0.31,
       "referencePrice": 0.7426,
       "referencePriceType": "AVG"
     },
@@ -12203,7 +12221,7 @@
       "aum": 12.35,
       "flow1d": 0.01,
       "flow5d": 0.57,
-      "flow20d": 6.56,
+      "flow20d": 0.76,
       "referencePrice": 0.962,
       "referencePriceType": "AVG"
     },
@@ -15059,7 +15077,7 @@
       "aum": 2.14,
       "flow1d": 0.0,
       "flow5d": 0.09,
-      "flow20d": 0.89,
+      "flow20d": -0.37,
       "referencePrice": 0.7618,
       "referencePriceType": "AVG"
     },
@@ -15479,7 +15497,7 @@
       "aum": 3.95,
       "flow1d": 0.0,
       "flow5d": -0.1,
-      "flow20d": 2.75,
+      "flow20d": 0.36,
       "referencePrice": 0.9959,
       "referencePriceType": "AVG"
     },
@@ -16350,20 +16368,6 @@
       "flow20d": 0.05,
       "referencePrice": 1.2356,
       "referencePriceType": "AVG"
-    },
-    {
-      "code": "588710",
-      "name": "科创半导体设备ETF华泰柏瑞",
-      "exchange": "SSE",
-      "groupId": "elec_semiconductor",
-      "groupName": "半导体",
-      "kind": "industry",
-      "aum": 37.83,
-      "flow1d": 0.0,
-      "flow5d": 1.52,
-      "flow20d": 13.0,
-      "referencePrice": 1.0532,
-      "referencePriceType": "NAV"
     },
     {
       "code": "588720",
@@ -30437,7 +30441,7 @@
       "code": "588710",
       "name": "科创半导体设备ETF华泰柏瑞",
       "exchange": "SSE",
-      "shares": 3592295008.0,
+      "shares": 10656885000.0,
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
@@ -40617,32 +40621,45 @@
       "directionCountTotal": 1213,
       "groupEtfCountTotal": 1213,
       "uniqueAnalyzedEtfCount": 1213,
-      "groupFlow1d": -46.36,
-      "marketFlow1d": -46.42,
-      "flowDifference": 0.06
+      "groupFlow1d": -47.63,
+      "marketFlow1d": -47.68,
+      "flowDifference": 0.05
     },
     "issues": [
       {
         "severity": "info",
         "check": "price_nav_guard",
         "message": "1只ETF成交参考价与同日NAV偏离超过20%，已回退NAV。"
+      },
+      {
+        "severity": "info",
+        "check": "corporate_action_adjustment",
+        "message": "识别并调整11个经价格反向跳变确认的ETF份额拆分/合并事件。"
+      },
+      {
+        "severity": "info",
+        "check": "secondary_share_disagreement",
+        "message": "1只ETF的第三方最新份额与交易所官方份额显著不一致；官方份额已保留，并进入公司行动校验。"
       }
     ],
     "shareCrossCheck": {
       "status": "usable",
       "scale": 1.0,
-      "medianRelativeError": 0.000856,
+      "medianRelativeError": 0.000837,
       "commonCount": 1552,
-      "repaired": [
+      "repaired": [],
+      "disagreements": [
         {
           "code": "588710",
           "name": "科半导体",
           "officialShares": 10656885000.0,
           "secondaryShares": 3592295008.0,
           "previousOfficialShares": 3592295000.0,
-          "officialJumpPct": 196.66
+          "officialJumpPct": 196.66,
+          "action": "official_retained_event_check_required"
         }
-      ]
+      ],
+      "policy": "official_exchange_shares_retained"
     },
     "priceNavGuards": [
       {
@@ -40653,7 +40670,87 @@
         "deviationPct": 198.6
       }
     ],
-    "corporateActions": []
+    "corporateActions": [
+      {
+        "code": "159695",
+        "date": "2026-07-20",
+        "shareFactor": 3.0,
+        "method": "share jump + inverse unadjusted price move"
+      },
+      {
+        "code": "588200",
+        "date": "2026-07-20",
+        "shareFactor": 3.0,
+        "method": "share jump + inverse unadjusted price move"
+      },
+      {
+        "code": "159527",
+        "date": "2026-07-21",
+        "shareFactor": 3.0,
+        "method": "share jump + inverse unadjusted price move"
+      },
+      {
+        "code": "561600",
+        "date": "2026-07-22",
+        "shareFactor": 2.0,
+        "method": "share jump + inverse unadjusted price move"
+      },
+      {
+        "code": "562820",
+        "date": "2026-07-22",
+        "shareFactor": 3.0,
+        "method": "share jump + inverse unadjusted price move"
+      },
+      {
+        "code": "588100",
+        "date": "2026-07-22",
+        "shareFactor": 3.0,
+        "method": "share jump + inverse unadjusted price move"
+      },
+      {
+        "code": "159739",
+        "date": "2026-07-31",
+        "shareFactor": 2.0,
+        "method": "share jump + inverse unadjusted price move"
+      },
+      {
+        "code": "159880",
+        "date": "2026-07-31",
+        "shareFactor": 2.0,
+        "method": "share jump + inverse unadjusted price move"
+      },
+      {
+        "code": "588920",
+        "date": "2026-08-07",
+        "shareFactor": 2.0,
+        "method": "share jump + inverse unadjusted price move"
+      },
+      {
+        "code": "589020",
+        "date": "2026-08-10",
+        "shareFactor": 2.0,
+        "method": "share jump + inverse unadjusted price move"
+      },
+      {
+        "code": "588710",
+        "date": "2026-08-14",
+        "shareFactor": 3.0,
+        "method": "share jump + inverse unadjusted price move"
+      }
+    ],
+    "marketScopeEtfCount": 1249,
+    "marketScope5dCount": 1245,
+    "marketScope20dCount": 1226,
+    "marketScopeSource": "同花顺精确交易日基金类型 + 沪深交易所日终份额",
+    "classifiedCoverageOfMarketPct": 97.12,
+    "marketScopeReconciliation": {
+      "previousClassifiedMarketFlow1d": -47.68,
+      "aShareEquityMarketFlow1d": -48.23,
+      "classifiedGroupFlow1d": -47.63,
+      "ungroupedDifference": -0.6
+    },
+    "industryRollupCount": 27,
+    "themeGroupCount": 23
   },
   "sources": [
     {
@@ -40683,12 +40780,1604 @@
     }
   ],
   "methodology": {
-    "flow": "参考净申赎 =（期末份额 − 期初份额）× 当日成交均价（成交额÷成交量，与主流资讯口径一致）；成交均价缺失时依次回退当日收盘价、单位净值；金额用于方向与量级观察，不等同基金公司的最终现金流。",
+    "flow": "1日参考净申赎 =（T日交易所日终份额 − T-1日经公司行动调整后的可比份额）× T日成交均价；成交均价与同日NAV异常偏离时回退NAV。交易所日终份额为主源，第三方份额只做交叉核验，不覆盖官方值。",
     "counts": "ETF只数按交易所日终总份额较前一交易日增加、减少或完全相同划分。总份额不变表示当日没有净份额增减，不代表没有二级市场成交、价格波动，亦不代表申购和赎回均为零。",
     "return": "组别收益使用组内当前规模最大的ETF作为价格代理；相对收益以沪深300代理为基准。",
-    "coordinates": "横轴 = 20日相对沪深300收益率；纵轴 = 5日净申赎 ÷ 5日前参考规模（%）。",
-    "classification": "SW2021_L1_ETF_V2：行业名称与代码采用申万行业分类标准2021版31个一级行业；ETF按交易所简称与基金全称映射到主要暴露行业，每只ETF只进入一个主要组。当前有27个一级行业实际存在可分析ETF；对ETF集中度高、市场关注度高的热门一级行业进一步拆分子组（如电子拆分为半导体、芯片、消费电子，通信拆分为光通信、卫星，计算机拆分为AI算力、软件信创等），子组归属相应一级行业，不重复计数；不再设置跨行业主题组，未能明确对应申万一级行业、宽基或风格策略的产品不进入资金分析。",
+    "coordinates": "横轴 = 20日相对沪深300收益率；纵轴 = 5日端点份额变化估算 ÷ 5日前参考规模（%）。",
+    "classification": "申万一级行业与热门主题采用两层结构：ETF仍保留唯一叶子归属避免重复计数；申万一级行业榜单使用父级汇总，自动把半导体/芯片/消费电子等子主题回卷到电子等对应一级行业，热门主题单独展示，不再把子主题称为申万一级行业。",
     "identity": "份额数据不包含投资者身份，禁止据此推断国家队、机构、个人或做市商。",
-    "scope": "完整名册保留交易所全部ETF；资金分析只使用已明确归类且具备完整历史与净值的A股股票ETF，每只ETF只进入一个主要分析组，避免重复计数。"
-  }
+    "scope": "市场总量先按精确交易日基金类型筛选股票型ETF，再剔除跨境、债券、商品、货币等非A股股票品种；市场总量不依赖行业/主题分类是否完成。分组统计仅使用已归类产品。",
+    "multiDay": "5日/20日当前展示端点份额变化估算：期末份额减去5/20个交易日前可比份额，再乘期末参考价；它用于观察中期份额方向，不等同逐日资金流之和，因此页面不再称为‘累计净流入’。",
+    "aum": "页面规模为参考规模；市场总规模优先按同日NAV×份额估算，分组参考规模沿用当前参考价口径并明确标注为参考值。"
+  },
+  "industryRollups": [
+    {
+      "id": "sw_nonbank_finance",
+      "code": "801790",
+      "name": "非银金融",
+      "kind": "industryRollup",
+      "flow1d": 14.72,
+      "flow5d": 8.38,
+      "flow20d": 15.61,
+      "aum": 1698.91,
+      "etfCount": 24,
+      "increaseEtfCount1d": 18,
+      "decreaseEtfCount1d": 3,
+      "unchangedEtfCount1d": 3,
+      "dominantEtf": {
+        "code": "512880",
+        "name": "证券ETF国泰",
+        "flow1d": 10.03
+      },
+      "concentration1d": 63.5,
+      "leafGroups": [
+        "fin_broker"
+      ]
+    },
+    {
+      "id": "sw_computer",
+      "code": "801750",
+      "name": "计算机",
+      "kind": "industryRollup",
+      "flow1d": 1.45,
+      "flow5d": -3.6,
+      "flow20d": -6.05,
+      "aum": 1145.57,
+      "etfCount": 102,
+      "increaseEtfCount1d": 26,
+      "decreaseEtfCount1d": 29,
+      "unchangedEtfCount1d": 47,
+      "dominantEtf": {
+        "code": "159852",
+        "name": "软件ETF嘉实",
+        "flow1d": 1.45
+      },
+      "concentration1d": 16.9,
+      "leafGroups": [
+        "comp_ai",
+        "comp_fintech",
+        "comp_internet",
+        "comp_software",
+        "sw_computer"
+      ]
+    },
+    {
+      "id": "sw_pharma_bio",
+      "code": "801150",
+      "name": "医药生物",
+      "kind": "industryRollup",
+      "flow1d": 1.37,
+      "flow5d": -46.08,
+      "flow20d": -108.79,
+      "aum": 1288.9,
+      "etfCount": 63,
+      "increaseEtfCount1d": 11,
+      "decreaseEtfCount1d": 34,
+      "unchangedEtfCount1d": 18,
+      "dominantEtf": {
+        "code": "589720",
+        "name": "科创创新药ETF国泰",
+        "flow1d": 1.99
+      },
+      "concentration1d": 25.5,
+      "leafGroups": [
+        "pharma_device",
+        "pharma_innovative",
+        "pharma_tcm",
+        "sw_pharma_bio"
+      ]
+    },
+    {
+      "id": "sw_banks",
+      "code": "801780",
+      "name": "银行",
+      "kind": "industryRollup",
+      "flow1d": 1.05,
+      "flow5d": -12.2,
+      "flow20d": -57.2,
+      "aum": 202.83,
+      "etfCount": 13,
+      "increaseEtfCount1d": 8,
+      "decreaseEtfCount1d": 1,
+      "unchangedEtfCount1d": 4,
+      "dominantEtf": {
+        "code": "512800",
+        "name": "银行ETF华宝",
+        "flow1d": 0.38
+      },
+      "concentration1d": 33.0,
+      "leafGroups": [
+        "sw_banks"
+      ]
+    },
+    {
+      "id": "sw_agriculture",
+      "code": "801010",
+      "name": "农林牧渔",
+      "kind": "industryRollup",
+      "flow1d": 0.92,
+      "flow5d": 1.88,
+      "flow20d": 0.95,
+      "aum": 175.4,
+      "etfCount": 33,
+      "increaseEtfCount1d": 12,
+      "decreaseEtfCount1d": 3,
+      "unchangedEtfCount1d": 18,
+      "dominantEtf": {
+        "code": "159865",
+        "name": "养殖ETF国泰",
+        "flow1d": 0.57
+      },
+      "concentration1d": 55.9,
+      "leafGroups": [
+        "agri_farming",
+        "sw_agriculture"
+      ]
+    },
+    {
+      "id": "sw_utilities",
+      "code": "801160",
+      "name": "公用事业",
+      "kind": "industryRollup",
+      "flow1d": 0.64,
+      "flow5d": -5.93,
+      "flow20d": -2.25,
+      "aum": 253.83,
+      "etfCount": 29,
+      "increaseEtfCount1d": 9,
+      "decreaseEtfCount1d": 7,
+      "unchangedEtfCount1d": 13,
+      "dominantEtf": {
+        "code": "159611",
+        "name": "电力ETF广发",
+        "flow1d": 0.66
+      },
+      "concentration1d": 61.1,
+      "leafGroups": [
+        "sw_utilities"
+      ]
+    },
+    {
+      "id": "sw_social_services",
+      "code": "801210",
+      "name": "社会服务",
+      "kind": "industryRollup",
+      "flow1d": 0.33,
+      "flow5d": 0.22,
+      "flow20d": -0.96,
+      "aum": 39.52,
+      "etfCount": 3,
+      "increaseEtfCount1d": 3,
+      "decreaseEtfCount1d": 0,
+      "unchangedEtfCount1d": 0,
+      "dominantEtf": {
+        "code": "159766",
+        "name": "旅游ETF富国",
+        "flow1d": 0.28
+      },
+      "concentration1d": 84.8,
+      "leafGroups": [
+        "sw_social_services"
+      ]
+    },
+    {
+      "id": "sw_environmental",
+      "code": "801970",
+      "name": "环保",
+      "kind": "industryRollup",
+      "flow1d": -0.01,
+      "flow5d": -0.02,
+      "flow20d": -0.09,
+      "aum": 6.91,
+      "etfCount": 1,
+      "increaseEtfCount1d": 0,
+      "decreaseEtfCount1d": 1,
+      "unchangedEtfCount1d": 0,
+      "dominantEtf": {
+        "code": "512580",
+        "name": "环保ETF广发",
+        "flow1d": -0.01
+      },
+      "concentration1d": 100.0,
+      "leafGroups": [
+        "sw_environmental"
+      ]
+    },
+    {
+      "id": "sw_retail",
+      "code": "801200",
+      "name": "商贸零售",
+      "kind": "industryRollup",
+      "flow1d": -0.02,
+      "flow5d": -0.09,
+      "flow20d": 0.15,
+      "aum": 4.24,
+      "etfCount": 5,
+      "increaseEtfCount1d": 0,
+      "decreaseEtfCount1d": 2,
+      "unchangedEtfCount1d": 3,
+      "dominantEtf": {
+        "code": "159725",
+        "name": "线上消费ETF工银",
+        "flow1d": -0.01
+      },
+      "concentration1d": 50.0,
+      "leafGroups": [
+        "sw_retail"
+      ]
+    },
+    {
+      "id": "sw_transportation",
+      "code": "801170",
+      "name": "交通运输",
+      "kind": "industryRollup",
+      "flow1d": -0.03,
+      "flow5d": -0.11,
+      "flow20d": -0.2,
+      "aum": 3.25,
+      "etfCount": 5,
+      "increaseEtfCount1d": 1,
+      "decreaseEtfCount1d": 1,
+      "unchangedEtfCount1d": 3,
+      "dominantEtf": {
+        "code": "159666",
+        "name": "交通运输ETF华夏",
+        "flow1d": -0.04
+      },
+      "concentration1d": 80.0,
+      "leafGroups": [
+        "sw_transportation"
+      ]
+    },
+    {
+      "id": "sw_building_materials",
+      "code": "801710",
+      "name": "建筑材料",
+      "kind": "industryRollup",
+      "flow1d": -0.05,
+      "flow5d": 0.59,
+      "flow20d": 0.81,
+      "aum": 8.82,
+      "etfCount": 3,
+      "increaseEtfCount1d": 0,
+      "decreaseEtfCount1d": 1,
+      "unchangedEtfCount1d": 2,
+      "dominantEtf": {
+        "code": "159745",
+        "name": "建材ETF国泰",
+        "flow1d": -0.05
+      },
+      "concentration1d": 100.0,
+      "leafGroups": [
+        "sw_building_materials"
+      ]
+    },
+    {
+      "id": "sw_construction",
+      "code": "801720",
+      "name": "建筑装饰",
+      "kind": "industryRollup",
+      "flow1d": -0.07,
+      "flow5d": -0.36,
+      "flow20d": 0.25,
+      "aum": 16.09,
+      "etfCount": 4,
+      "increaseEtfCount1d": 0,
+      "decreaseEtfCount1d": 2,
+      "unchangedEtfCount1d": 2,
+      "dominantEtf": {
+        "code": "516970",
+        "name": "基建ETF广发",
+        "flow1d": -0.06
+      },
+      "concentration1d": 85.7,
+      "leafGroups": [
+        "sw_construction"
+      ]
+    },
+    {
+      "id": "sw_steel",
+      "code": "801040",
+      "name": "钢铁",
+      "kind": "industryRollup",
+      "flow1d": -0.14,
+      "flow5d": -1.33,
+      "flow20d": 0.21,
+      "aum": 11.0,
+      "etfCount": 1,
+      "increaseEtfCount1d": 0,
+      "decreaseEtfCount1d": 1,
+      "unchangedEtfCount1d": 0,
+      "dominantEtf": {
+        "code": "515210",
+        "name": "钢铁ETF国泰",
+        "flow1d": -0.14
+      },
+      "concentration1d": 100.0,
+      "leafGroups": [
+        "sw_steel"
+      ]
+    },
+    {
+      "id": "sw_home_appliances",
+      "code": "801110",
+      "name": "家用电器",
+      "kind": "industryRollup",
+      "flow1d": -0.17,
+      "flow5d": -0.49,
+      "flow20d": -1.2,
+      "aum": 12.7,
+      "etfCount": 11,
+      "increaseEtfCount1d": 1,
+      "decreaseEtfCount1d": 1,
+      "unchangedEtfCount1d": 9,
+      "dominantEtf": {
+        "code": "159996",
+        "name": "家电ETF国泰",
+        "flow1d": -0.2
+      },
+      "concentration1d": 87.0,
+      "leafGroups": [
+        "sw_home_appliances"
+      ]
+    },
+    {
+      "id": "sw_real_estate",
+      "code": "801180",
+      "name": "房地产",
+      "kind": "industryRollup",
+      "flow1d": -0.24,
+      "flow5d": -0.37,
+      "flow20d": -2.65,
+      "aum": 54.65,
+      "etfCount": 9,
+      "increaseEtfCount1d": 1,
+      "decreaseEtfCount1d": 3,
+      "unchangedEtfCount1d": 5,
+      "dominantEtf": {
+        "code": "159768",
+        "name": "房地产ETF银华",
+        "flow1d": -0.34
+      },
+      "concentration1d": 47.2,
+      "leafGroups": [
+        "sw_real_estate"
+      ]
+    },
+    {
+      "id": "sw_coal",
+      "code": "801950",
+      "name": "煤炭",
+      "kind": "industryRollup",
+      "flow1d": -0.37,
+      "flow5d": 4.09,
+      "flow20d": -13.75,
+      "aum": 141.1,
+      "etfCount": 1,
+      "increaseEtfCount1d": 0,
+      "decreaseEtfCount1d": 1,
+      "unchangedEtfCount1d": 0,
+      "dominantEtf": {
+        "code": "515220",
+        "name": "煤炭ETF国泰",
+        "flow1d": -0.37
+      },
+      "concentration1d": 100.0,
+      "leafGroups": [
+        "sw_coal"
+      ]
+    },
+    {
+      "id": "sw_basic_chemicals",
+      "code": "801030",
+      "name": "基础化工",
+      "kind": "industryRollup",
+      "flow1d": -0.58,
+      "flow5d": -16.36,
+      "flow20d": -10.27,
+      "aum": 270.97,
+      "etfCount": 16,
+      "increaseEtfCount1d": 3,
+      "decreaseEtfCount1d": 7,
+      "unchangedEtfCount1d": 6,
+      "dominantEtf": {
+        "code": "159870",
+        "name": "化工ETF鹏华",
+        "flow1d": -0.3
+      },
+      "concentration1d": 25.0,
+      "leafGroups": [
+        "sw_basic_chemicals"
+      ]
+    },
+    {
+      "id": "sw_petrochemical",
+      "code": "801960",
+      "name": "石油石化",
+      "kind": "industryRollup",
+      "flow1d": -0.67,
+      "flow5d": -2.53,
+      "flow20d": -3.32,
+      "aum": 112.13,
+      "etfCount": 23,
+      "increaseEtfCount1d": 0,
+      "decreaseEtfCount1d": 11,
+      "unchangedEtfCount1d": 12,
+      "dominantEtf": {
+        "code": "159930",
+        "name": "能源ETF汇添富",
+        "flow1d": -0.25
+      },
+      "concentration1d": 37.3,
+      "leafGroups": [
+        "sw_petrochemical"
+      ]
+    },
+    {
+      "id": "sw_auto",
+      "code": "801880",
+      "name": "汽车",
+      "kind": "industryRollup",
+      "flow1d": -0.76,
+      "flow5d": -3.05,
+      "flow20d": -2.78,
+      "aum": 81.24,
+      "etfCount": 23,
+      "increaseEtfCount1d": 1,
+      "decreaseEtfCount1d": 9,
+      "unchangedEtfCount1d": 13,
+      "dominantEtf": {
+        "code": "515030",
+        "name": "新能源车ETF华夏",
+        "flow1d": -0.38
+      },
+      "concentration1d": 48.7,
+      "leafGroups": [
+        "auto_nev",
+        "auto_smart",
+        "sw_auto"
+      ]
+    },
+    {
+      "id": "sw_defense",
+      "code": "801740",
+      "name": "国防军工",
+      "kind": "industryRollup",
+      "flow1d": -1.07,
+      "flow5d": -5.13,
+      "flow20d": -14.76,
+      "aum": 342.9,
+      "etfCount": 22,
+      "increaseEtfCount1d": 3,
+      "decreaseEtfCount1d": 9,
+      "unchangedEtfCount1d": 10,
+      "dominantEtf": {
+        "code": "512710",
+        "name": "军工龙头ETF富国",
+        "flow1d": -0.56
+      },
+      "concentration1d": 33.5,
+      "leafGroups": [
+        "sw_defense"
+      ]
+    },
+    {
+      "id": "sw_food_beverage",
+      "code": "801120",
+      "name": "食品饮料",
+      "kind": "industryRollup",
+      "flow1d": -1.74,
+      "flow5d": -6.97,
+      "flow20d": -3.25,
+      "aum": 499.3,
+      "etfCount": 27,
+      "increaseEtfCount1d": 3,
+      "decreaseEtfCount1d": 8,
+      "unchangedEtfCount1d": 16,
+      "dominantEtf": {
+        "code": "512690",
+        "name": "酒ETF鹏华",
+        "flow1d": -0.94
+      },
+      "concentration1d": 48.5,
+      "leafGroups": [
+        "food_liquor",
+        "sw_food_beverage"
+      ]
+    },
+    {
+      "id": "sw_media",
+      "code": "801760",
+      "name": "传媒",
+      "kind": "industryRollup",
+      "flow1d": -2.35,
+      "flow5d": -1.05,
+      "flow20d": 1.18,
+      "aum": 173.35,
+      "etfCount": 9,
+      "increaseEtfCount1d": 1,
+      "decreaseEtfCount1d": 6,
+      "unchangedEtfCount1d": 2,
+      "dominantEtf": {
+        "code": "512980",
+        "name": "传媒ETF广发",
+        "flow1d": -1.22
+      },
+      "concentration1d": 49.0,
+      "leafGroups": [
+        "media_game",
+        "sw_media"
+      ]
+    },
+    {
+      "id": "sw_machinery",
+      "code": "801890",
+      "name": "机械设备",
+      "kind": "industryRollup",
+      "flow1d": -3.73,
+      "flow5d": -8.5,
+      "flow20d": 15.34,
+      "aum": 669.6,
+      "etfCount": 37,
+      "increaseEtfCount1d": 3,
+      "decreaseEtfCount1d": 21,
+      "unchangedEtfCount1d": 13,
+      "dominantEtf": {
+        "code": "159530",
+        "name": "机器人ETF易方达",
+        "flow1d": -1.48
+      },
+      "concentration1d": 34.8,
+      "leafGroups": [
+        "mach_robot",
+        "sw_machinery"
+      ]
+    },
+    {
+      "id": "sw_nonferrous",
+      "code": "801050",
+      "name": "有色金属",
+      "kind": "industryRollup",
+      "flow1d": -4.22,
+      "flow5d": -1.01,
+      "flow20d": 76.07,
+      "aum": 1161.87,
+      "etfCount": 45,
+      "increaseEtfCount1d": 11,
+      "decreaseEtfCount1d": 27,
+      "unchangedEtfCount1d": 7,
+      "dominantEtf": {
+        "code": "517520",
+        "name": "黄金股ETF永赢",
+        "flow1d": -3.05
+      },
+      "concentration1d": 34.7,
+      "leafGroups": [
+        "metal_gold",
+        "metal_rare",
+        "sw_nonferrous"
+      ]
+    },
+    {
+      "id": "sw_power_equipment",
+      "code": "801730",
+      "name": "电力设备",
+      "kind": "industryRollup",
+      "flow1d": -5.04,
+      "flow5d": -14.43,
+      "flow20d": 27.02,
+      "aum": 853.03,
+      "etfCount": 61,
+      "increaseEtfCount1d": 13,
+      "decreaseEtfCount1d": 34,
+      "unchangedEtfCount1d": 14,
+      "dominantEtf": {
+        "code": "159326",
+        "name": "电网设备ETF华夏",
+        "flow1d": -2.22
+      },
+      "concentration1d": 37.4,
+      "leafGroups": [
+        "power_battery",
+        "power_pv",
+        "power_storage",
+        "sw_power_equipment"
+      ]
+    },
+    {
+      "id": "sw_electronics",
+      "code": "801080",
+      "name": "电子",
+      "kind": "industryRollup",
+      "flow1d": -5.65,
+      "flow5d": 62.07,
+      "flow20d": 193.98,
+      "aum": 3408.5,
+      "etfCount": 62,
+      "increaseEtfCount1d": 27,
+      "decreaseEtfCount1d": 14,
+      "unchangedEtfCount1d": 21,
+      "dominantEtf": {
+        "code": "159516",
+        "name": "半导体设备ETF国泰",
+        "flow1d": -6.58
+      },
+      "concentration1d": 30.4,
+      "leafGroups": [
+        "elec_chip",
+        "elec_consumer",
+        "elec_semiconductor",
+        "sw_electronics"
+      ]
+    },
+    {
+      "id": "sw_communications",
+      "code": "801770",
+      "name": "通信",
+      "kind": "industryRollup",
+      "flow1d": -7.39,
+      "flow5d": -24.01,
+      "flow20d": -184.59,
+      "aum": 964.7,
+      "etfCount": 17,
+      "increaseEtfCount1d": 1,
+      "decreaseEtfCount1d": 11,
+      "unchangedEtfCount1d": 5,
+      "dominantEtf": {
+        "code": "515880",
+        "name": "通信ETF国泰",
+        "flow1d": -4.31
+      },
+      "concentration1d": 51.7,
+      "leafGroups": [
+        "comm_satellite",
+        "sw_communications"
+      ]
+    }
+  ],
+  "themeGroups": [
+    {
+      "id": "fin_broker",
+      "code": "801790",
+      "name": "券商",
+      "kind": "industry",
+      "parent": "sw_nonbank_finance",
+      "flow1d": 14.7,
+      "flow5d": 8.36,
+      "flow20d": 15.6,
+      "flowIntensity1dPct": 0.87,
+      "flowIntensity5dPct": 0.49,
+      "flowIntensity20dPct": 0.93,
+      "flowIntensity1dBps": 87.3,
+      "flowIntensity5dBps": 49.5,
+      "flowIntensity20dBps": 92.7,
+      "return1d": -1.27,
+      "return5d": -0.82,
+      "return20d": -0.91,
+      "relativeReturn20d": -3.9,
+      "priceFlowState": "跑输但流入",
+      "breadth1d": 66.7,
+      "breadth5d": 8.3,
+      "increaseEtfCount1d": 19,
+      "decreaseEtfCount1d": 3,
+      "unchangedEtfCount1d": 2,
+      "increaseEtfCount5d": 13,
+      "decreaseEtfCount5d": 11,
+      "unchangedEtfCount5d": 0,
+      "aum": 1698.91,
+      "etfCount": 24,
+      "concentration1d": 63.5,
+      "representative": {
+        "code": "512880",
+        "name": "证券ETF国泰"
+      },
+      "dominantEtf": {
+        "code": "512880",
+        "name": "证券ETF国泰",
+        "flow1d": 10.03
+      }
+    },
+    {
+      "id": "elec_chip",
+      "code": "801080",
+      "name": "芯片",
+      "kind": "industry",
+      "parent": "sw_electronics",
+      "flow1d": 6.81,
+      "flow5d": 3.68,
+      "flow20d": -49.49,
+      "flowIntensity1dPct": 0.44,
+      "flowIntensity5dPct": 0.24,
+      "flowIntensity20dPct": -3.09,
+      "flowIntensity1dBps": 44.0,
+      "flowIntensity5dBps": 23.8,
+      "flowIntensity20dBps": -308.6,
+      "return1d": 0.92,
+      "return5d": -0.74,
+      "return20d": -1.39,
+      "relativeReturn20d": -4.38,
+      "priceFlowState": "跑输但流入",
+      "breadth1d": 50.0,
+      "breadth5d": 38.2,
+      "increaseEtfCount1d": 21,
+      "decreaseEtfCount1d": 4,
+      "unchangedEtfCount1d": 9,
+      "increaseEtfCount5d": 21,
+      "decreaseEtfCount5d": 8,
+      "unchangedEtfCount5d": 5,
+      "aum": 1554.13,
+      "etfCount": 34,
+      "concentration1d": 33.9,
+      "representative": {
+        "code": "159995",
+        "name": "芯片ETF华夏"
+      },
+      "dominantEtf": {
+        "code": "588200",
+        "name": "科创芯片ETF嘉实",
+        "flow1d": 2.56
+      }
+    },
+    {
+      "id": "pharma_innovative",
+      "code": "801150",
+      "name": "创新药",
+      "kind": "industry",
+      "parent": "sw_pharma_bio",
+      "flow1d": 2.91,
+      "flow5d": -15.16,
+      "flow20d": -37.16,
+      "flowIntensity1dPct": 0.49,
+      "flowIntensity5dPct": -2.48,
+      "flowIntensity20dPct": -5.87,
+      "flowIntensity1dBps": 49.0,
+      "flowIntensity5dBps": -247.9,
+      "flowIntensity20dBps": -586.6,
+      "return1d": -1.18,
+      "return5d": 0.88,
+      "return20d": 8.9,
+      "relativeReturn20d": 5.91,
+      "priceFlowState": "跑赢但流出",
+      "breadth1d": -4.3,
+      "breadth5d": -52.2,
+      "increaseEtfCount1d": 8,
+      "decreaseEtfCount1d": 9,
+      "unchangedEtfCount1d": 6,
+      "increaseEtfCount5d": 5,
+      "decreaseEtfCount5d": 17,
+      "unchangedEtfCount5d": 1,
+      "aum": 596.29,
+      "etfCount": 23,
+      "concentration1d": 32.8,
+      "representative": {
+        "code": "159992",
+        "name": "创新药ETF银华"
+      },
+      "dominantEtf": {
+        "code": "589720",
+        "name": "科创创新药ETF国泰",
+        "flow1d": 1.99
+      }
+    },
+    {
+      "id": "comp_software",
+      "code": "801750",
+      "name": "软件信创",
+      "kind": "industry",
+      "parent": "sw_computer",
+      "flow1d": 1.59,
+      "flow5d": 5.84,
+      "flow20d": 20.87,
+      "flowIntensity1dPct": 0.69,
+      "flowIntensity5dPct": 2.59,
+      "flowIntensity20dPct": 9.93,
+      "flowIntensity1dBps": 69.3,
+      "flowIntensity5dBps": 259.4,
+      "flowIntensity20dBps": 993.5,
+      "return1d": 0.28,
+      "return5d": -2.47,
+      "return20d": 8.37,
+      "relativeReturn20d": 5.38,
+      "priceFlowState": "跑赢且流入",
+      "breadth1d": -10.0,
+      "breadth5d": -6.7,
+      "increaseEtfCount1d": 7,
+      "decreaseEtfCount1d": 10,
+      "unchangedEtfCount1d": 13,
+      "increaseEtfCount5d": 11,
+      "decreaseEtfCount5d": 13,
+      "unchangedEtfCount5d": 6,
+      "aum": 230.94,
+      "etfCount": 30,
+      "concentration1d": 57.7,
+      "representative": {
+        "code": "159852",
+        "name": "软件ETF嘉实"
+      },
+      "dominantEtf": {
+        "code": "159852",
+        "name": "软件ETF嘉实",
+        "flow1d": 1.45
+      }
+    },
+    {
+      "id": "comp_ai",
+      "code": "801750",
+      "name": "AI算力",
+      "kind": "industry",
+      "parent": "sw_computer",
+      "flow1d": 0.81,
+      "flow5d": -7.64,
+      "flow20d": -23.58,
+      "flowIntensity1dPct": 0.1,
+      "flowIntensity5dPct": -0.97,
+      "flowIntensity20dPct": -2.94,
+      "flowIntensity1dBps": 10.4,
+      "flowIntensity5dBps": -97.2,
+      "flowIntensity20dBps": -294.0,
+      "return1d": 1.09,
+      "return5d": -0.96,
+      "return20d": 1.54,
+      "relativeReturn20d": -1.45,
+      "priceFlowState": "跑输且流出",
+      "breadth1d": 0.0,
+      "breadth5d": -10.6,
+      "increaseEtfCount1d": 14,
+      "decreaseEtfCount1d": 14,
+      "unchangedEtfCount1d": 19,
+      "increaseEtfCount5d": 14,
+      "decreaseEtfCount5d": 19,
+      "unchangedEtfCount5d": 14,
+      "aum": 778.42,
+      "etfCount": 47,
+      "concentration1d": 19.2,
+      "representative": {
+        "code": "159819",
+        "name": "人工智能ETF易方达"
+      },
+      "dominantEtf": {
+        "code": "159819",
+        "name": "人工智能ETF易方达",
+        "flow1d": 0.81
+      }
+    },
+    {
+      "id": "agri_farming",
+      "code": "801010",
+      "name": "养殖",
+      "kind": "industry",
+      "parent": "sw_agriculture",
+      "flow1d": 0.77,
+      "flow5d": 1.07,
+      "flow20d": 0.66,
+      "flowIntensity1dPct": 0.73,
+      "flowIntensity5dPct": 1.02,
+      "flowIntensity20dPct": 0.62,
+      "flowIntensity1dBps": 73.0,
+      "flowIntensity5dBps": 101.7,
+      "flowIntensity20dBps": 62.4,
+      "return1d": -1.48,
+      "return5d": 0.57,
+      "return20d": 0.95,
+      "relativeReturn20d": -2.04,
+      "priceFlowState": "跑输但流入",
+      "breadth1d": 23.1,
+      "breadth5d": -15.4,
+      "increaseEtfCount1d": 5,
+      "decreaseEtfCount1d": 2,
+      "unchangedEtfCount1d": 6,
+      "increaseEtfCount5d": 5,
+      "decreaseEtfCount5d": 7,
+      "unchangedEtfCount5d": 1,
+      "aum": 106.42,
+      "etfCount": 13,
+      "concentration1d": 66.0,
+      "representative": {
+        "code": "159865",
+        "name": "养殖ETF国泰"
+      },
+      "dominantEtf": {
+        "code": "159865",
+        "name": "养殖ETF国泰",
+        "flow1d": 0.57
+      }
+    },
+    {
+      "id": "comp_internet",
+      "code": "801750",
+      "name": "互联网",
+      "kind": "industry",
+      "parent": "sw_computer",
+      "flow1d": -0.02,
+      "flow5d": -0.07,
+      "flow20d": -0.44,
+      "flowIntensity1dPct": -0.18,
+      "flowIntensity5dPct": -0.53,
+      "flowIntensity20dPct": -3.34,
+      "flowIntensity1dBps": -18.4,
+      "flowIntensity5dBps": -53.2,
+      "flowIntensity20dBps": -334.3,
+      "return1d": -0.58,
+      "return5d": -2.83,
+      "return20d": 3.94,
+      "relativeReturn20d": 0.95,
+      "priceFlowState": "跑赢但流出",
+      "breadth1d": -14.3,
+      "breadth5d": -21.4,
+      "increaseEtfCount1d": 0,
+      "decreaseEtfCount1d": 2,
+      "unchangedEtfCount1d": 12,
+      "increaseEtfCount5d": 1,
+      "decreaseEtfCount5d": 4,
+      "unchangedEtfCount5d": 9,
+      "aum": 12.83,
+      "etfCount": 14,
+      "concentration1d": 60.1,
+      "representative": {
+        "code": "517050",
+        "name": "互联网ETF华泰柏瑞"
+      },
+      "dominantEtf": {
+        "code": "159895",
+        "name": "物联网ETF易方达",
+        "flow1d": -0.01
+      }
+    },
+    {
+      "id": "auto_smart",
+      "code": "801880",
+      "name": "智能驾驶",
+      "kind": "industry",
+      "parent": "sw_auto",
+      "flow1d": -0.04,
+      "flow5d": -0.73,
+      "flow20d": -1.15,
+      "flowIntensity1dPct": -0.33,
+      "flowIntensity5dPct": -5.29,
+      "flowIntensity20dPct": -8.1,
+      "flowIntensity1dBps": -32.8,
+      "flowIntensity5dBps": -529.0,
+      "flowIntensity20dBps": -809.6,
+      "return1d": 0.09,
+      "return5d": -1.19,
+      "return20d": 3.27,
+      "relativeReturn20d": 0.28,
+      "priceFlowState": "跑赢但流出",
+      "breadth1d": -16.7,
+      "breadth5d": -50.0,
+      "increaseEtfCount1d": 0,
+      "decreaseEtfCount1d": 1,
+      "unchangedEtfCount1d": 5,
+      "increaseEtfCount5d": 0,
+      "decreaseEtfCount5d": 3,
+      "unchangedEtfCount5d": 3,
+      "aum": 13.07,
+      "etfCount": 6,
+      "concentration1d": 100.0,
+      "representative": {
+        "code": "516520",
+        "name": "智能驾驶ETF华泰柏瑞"
+      },
+      "dominantEtf": {
+        "code": "516520",
+        "name": "智能驾驶ETF华泰柏瑞",
+        "flow1d": -0.04
+      }
+    },
+    {
+      "id": "pharma_device",
+      "code": "801150",
+      "name": "医疗器械",
+      "kind": "industry",
+      "parent": "sw_pharma_bio",
+      "flow1d": -0.24,
+      "flow5d": -1.71,
+      "flow20d": -3.24,
+      "flowIntensity1dPct": -0.41,
+      "flowIntensity5dPct": -2.84,
+      "flowIntensity20dPct": -5.24,
+      "flowIntensity1dBps": -40.6,
+      "flowIntensity5dBps": -283.8,
+      "flowIntensity20dBps": -524.3,
+      "return1d": -0.44,
+      "return5d": 0.45,
+      "return20d": 4.43,
+      "relativeReturn20d": 1.44,
+      "priceFlowState": "跑赢但流出",
+      "breadth1d": -77.8,
+      "breadth5d": -100.0,
+      "increaseEtfCount1d": 0,
+      "decreaseEtfCount1d": 7,
+      "unchangedEtfCount1d": 2,
+      "increaseEtfCount5d": 0,
+      "decreaseEtfCount5d": 9,
+      "unchangedEtfCount5d": 0,
+      "aum": 58.49,
+      "etfCount": 9,
+      "concentration1d": 37.7,
+      "representative": {
+        "code": "159883",
+        "name": "医疗器械ETF永赢"
+      },
+      "dominantEtf": {
+        "code": "159883",
+        "name": "医疗器械ETF永赢",
+        "flow1d": -0.09
+      }
+    },
+    {
+      "id": "pharma_tcm",
+      "code": "801150",
+      "name": "中药",
+      "kind": "industry",
+      "parent": "sw_pharma_bio",
+      "flow1d": -0.24,
+      "flow5d": -3.26,
+      "flow20d": -9.83,
+      "flowIntensity1dPct": -0.72,
+      "flowIntensity5dPct": -8.88,
+      "flowIntensity20dPct": -22.73,
+      "flowIntensity1dBps": -71.6,
+      "flowIntensity5dBps": -887.8,
+      "flowIntensity20dBps": -2273.0,
+      "return1d": -0.89,
+      "return5d": -0.6,
+      "return20d": 0.1,
+      "relativeReturn20d": -2.89,
+      "priceFlowState": "跑输且流出",
+      "breadth1d": -75.0,
+      "breadth5d": -75.0,
+      "increaseEtfCount1d": 0,
+      "decreaseEtfCount1d": 3,
+      "unchangedEtfCount1d": 1,
+      "increaseEtfCount5d": 0,
+      "decreaseEtfCount5d": 3,
+      "unchangedEtfCount5d": 1,
+      "aum": 33.41,
+      "etfCount": 4,
+      "concentration1d": 47.6,
+      "representative": {
+        "code": "560080",
+        "name": "中药ETF汇添富"
+      },
+      "dominantEtf": {
+        "code": "560080",
+        "name": "中药ETF汇添富",
+        "flow1d": -0.11
+      }
+    },
+    {
+      "id": "power_storage",
+      "code": "801730",
+      "name": "储能",
+      "kind": "industry",
+      "parent": "sw_power_equipment",
+      "flow1d": -0.35,
+      "flow5d": -0.53,
+      "flow20d": 1.42,
+      "flowIntensity1dPct": -0.55,
+      "flowIntensity5dPct": -0.84,
+      "flowIntensity20dPct": 2.31,
+      "flowIntensity1dBps": -54.8,
+      "flowIntensity5dBps": -84.0,
+      "flowIntensity20dBps": 231.0,
+      "return1d": -0.1,
+      "return5d": 1.98,
+      "return20d": 7.38,
+      "relativeReturn20d": 4.39,
+      "priceFlowState": "跑赢但流出",
+      "breadth1d": 0.0,
+      "breadth5d": 0.0,
+      "increaseEtfCount1d": 1,
+      "decreaseEtfCount1d": 1,
+      "unchangedEtfCount1d": 0,
+      "increaseEtfCount5d": 1,
+      "decreaseEtfCount5d": 1,
+      "unchangedEtfCount5d": 0,
+      "aum": 63.1,
+      "etfCount": 2,
+      "concentration1d": 91.8,
+      "representative": {
+        "code": "159566",
+        "name": "储能电池ETF易方达"
+      },
+      "dominantEtf": {
+        "code": "159566",
+        "name": "储能电池ETF易方达",
+        "flow1d": -0.38
+      }
+    },
+    {
+      "id": "elec_consumer",
+      "code": "801080",
+      "name": "消费电子",
+      "kind": "industry",
+      "parent": "sw_electronics",
+      "flow1d": -0.39,
+      "flow5d": 1.11,
+      "flow20d": -4.94,
+      "flowIntensity1dPct": -0.56,
+      "flowIntensity5dPct": 1.62,
+      "flowIntensity20dPct": -6.6,
+      "flowIntensity1dBps": -55.8,
+      "flowIntensity5dBps": 161.8,
+      "flowIntensity20dBps": -659.8,
+      "return1d": 0.92,
+      "return5d": -0.28,
+      "return20d": 1.43,
+      "relativeReturn20d": -1.56,
+      "priceFlowState": "跑输但流入",
+      "breadth1d": -10.0,
+      "breadth5d": 30.0,
+      "increaseEtfCount1d": 1,
+      "decreaseEtfCount1d": 2,
+      "unchangedEtfCount1d": 7,
+      "increaseEtfCount5d": 5,
+      "decreaseEtfCount5d": 2,
+      "unchangedEtfCount5d": 3,
+      "aum": 69.95,
+      "etfCount": 10,
+      "concentration1d": 93.4,
+      "representative": {
+        "code": "159732",
+        "name": "消费电子ETF华夏"
+      },
+      "dominantEtf": {
+        "code": "159732",
+        "name": "消费电子ETF华夏",
+        "flow1d": -0.4
+      }
+    },
+    {
+      "id": "power_pv",
+      "code": "801730",
+      "name": "光伏",
+      "kind": "industry",
+      "parent": "sw_power_equipment",
+      "flow1d": -0.5,
+      "flow5d": -1.95,
+      "flow20d": -8.01,
+      "flowIntensity1dPct": -0.44,
+      "flowIntensity5dPct": -1.7,
+      "flowIntensity20dPct": -6.64,
+      "flowIntensity1dBps": -44.2,
+      "flowIntensity5dBps": -170.2,
+      "flowIntensity20dBps": -663.9,
+      "return1d": 0.23,
+      "return5d": -0.12,
+      "return20d": 8.53,
+      "relativeReturn20d": 5.54,
+      "priceFlowState": "跑赢但流出",
+      "breadth1d": -37.5,
+      "breadth5d": -62.5,
+      "increaseEtfCount1d": 2,
+      "decreaseEtfCount1d": 8,
+      "unchangedEtfCount1d": 6,
+      "increaseEtfCount5d": 2,
+      "decreaseEtfCount5d": 12,
+      "unchangedEtfCount5d": 2,
+      "aum": 112.68,
+      "etfCount": 16,
+      "concentration1d": 73.7,
+      "representative": {
+        "code": "515790",
+        "name": "光伏ETF华泰柏瑞"
+      },
+      "dominantEtf": {
+        "code": "515790",
+        "name": "光伏ETF华泰柏瑞",
+        "flow1d": -0.43
+      }
+    },
+    {
+      "id": "power_battery",
+      "code": "801730",
+      "name": "锂电池",
+      "kind": "industry",
+      "parent": "sw_power_equipment",
+      "flow1d": -0.59,
+      "flow5d": -6.69,
+      "flow20d": -0.79,
+      "flowIntensity1dPct": -0.21,
+      "flowIntensity5dPct": -2.38,
+      "flowIntensity20dPct": -0.28,
+      "flowIntensity1dBps": -21.5,
+      "flowIntensity5dBps": -237.5,
+      "flowIntensity20dBps": -28.5,
+      "return1d": 0.51,
+      "return5d": 0.62,
+      "return20d": 6.64,
+      "relativeReturn20d": 3.65,
+      "priceFlowState": "跑赢但流出",
+      "breadth1d": -25.0,
+      "breadth5d": -80.0,
+      "increaseEtfCount1d": 6,
+      "decreaseEtfCount1d": 11,
+      "unchangedEtfCount1d": 3,
+      "increaseEtfCount5d": 1,
+      "decreaseEtfCount5d": 17,
+      "unchangedEtfCount5d": 2,
+      "aum": 275.14,
+      "etfCount": 20,
+      "concentration1d": 31.8,
+      "representative": {
+        "code": "159755",
+        "name": "电池ETF广发"
+      },
+      "dominantEtf": {
+        "code": "159796",
+        "name": "电池ETF汇添富",
+        "flow1d": -0.35
+      }
+    },
+    {
+      "id": "auto_nev",
+      "code": "801880",
+      "name": "新能源车",
+      "kind": "industry",
+      "parent": "sw_auto",
+      "flow1d": -0.61,
+      "flow5d": -2.25,
+      "flow20d": -1.68,
+      "flowIntensity1dPct": -1.05,
+      "flowIntensity5dPct": -3.74,
+      "flowIntensity20dPct": -2.83,
+      "flowIntensity1dBps": -104.8,
+      "flowIntensity5dBps": -374.4,
+      "flowIntensity20dBps": -282.8,
+      "return1d": 0.6,
+      "return5d": 0.54,
+      "return20d": 7.53,
+      "relativeReturn20d": 4.54,
+      "priceFlowState": "跑赢但流出",
+      "breadth1d": -62.5,
+      "breadth5d": -100.0,
+      "increaseEtfCount1d": 0,
+      "decreaseEtfCount1d": 5,
+      "unchangedEtfCount1d": 3,
+      "increaseEtfCount5d": 0,
+      "decreaseEtfCount5d": 8,
+      "unchangedEtfCount5d": 0,
+      "aum": 57.79,
+      "etfCount": 8,
+      "concentration1d": 62.7,
+      "representative": {
+        "code": "515030",
+        "name": "新能源车ETF华夏"
+      },
+      "dominantEtf": {
+        "code": "515030",
+        "name": "新能源车ETF华夏",
+        "flow1d": -0.38
+      }
+    },
+    {
+      "id": "metal_rare",
+      "code": "801050",
+      "name": "稀土",
+      "kind": "industry",
+      "parent": "sw_nonferrous",
+      "flow1d": -0.69,
+      "flow5d": -1.41,
+      "flow20d": 5.0,
+      "flowIntensity1dPct": -0.31,
+      "flowIntensity5dPct": -0.64,
+      "flowIntensity20dPct": 2.33,
+      "flowIntensity1dBps": -31.5,
+      "flowIntensity5dBps": -63.8,
+      "flowIntensity20dBps": 233.4,
+      "return1d": 2.78,
+      "return5d": -0.33,
+      "return20d": 13.89,
+      "relativeReturn20d": 10.9,
+      "priceFlowState": "跑赢但流出",
+      "breadth1d": -61.5,
+      "breadth5d": -23.1,
+      "increaseEtfCount1d": 2,
+      "decreaseEtfCount1d": 10,
+      "unchangedEtfCount1d": 1,
+      "increaseEtfCount5d": 5,
+      "decreaseEtfCount5d": 8,
+      "unchangedEtfCount5d": 0,
+      "aum": 219.38,
+      "etfCount": 13,
+      "concentration1d": 27.8,
+      "representative": {
+        "code": "516150",
+        "name": "稀土ETF嘉实"
+      },
+      "dominantEtf": {
+        "code": "159608",
+        "name": "稀有金属ETF广发",
+        "flow1d": -0.27
+      }
+    },
+    {
+      "id": "food_liquor",
+      "code": "801120",
+      "name": "白酒",
+      "kind": "industry",
+      "parent": "sw_food_beverage",
+      "flow1d": -0.94,
+      "flow5d": -4.42,
+      "flow20d": -3.99,
+      "flowIntensity1dPct": -0.65,
+      "flowIntensity5dPct": -2.97,
+      "flowIntensity20dPct": -2.69,
+      "flowIntensity1dBps": -64.8,
+      "flowIntensity5dBps": -296.7,
+      "flowIntensity20dBps": -269.0,
+      "return1d": -1.78,
+      "return5d": 1.38,
+      "return20d": 6.78,
+      "relativeReturn20d": 3.79,
+      "priceFlowState": "跑赢但流出",
+      "breadth1d": -100.0,
+      "breadth5d": -100.0,
+      "increaseEtfCount1d": 0,
+      "decreaseEtfCount1d": 1,
+      "unchangedEtfCount1d": 0,
+      "increaseEtfCount5d": 0,
+      "decreaseEtfCount5d": 1,
+      "unchangedEtfCount5d": 0,
+      "aum": 144.41,
+      "etfCount": 1,
+      "concentration1d": 100.0,
+      "representative": {
+        "code": "512690",
+        "name": "酒ETF鹏华"
+      },
+      "dominantEtf": {
+        "code": "512690",
+        "name": "酒ETF鹏华",
+        "flow1d": -0.94
+      }
+    },
+    {
+      "id": "comp_fintech",
+      "code": "801750",
+      "name": "金融科技",
+      "kind": "industry",
+      "parent": "sw_computer",
+      "flow1d": -1.05,
+      "flow5d": -1.89,
+      "flow20d": -3.43,
+      "flowIntensity1dPct": -1.05,
+      "flowIntensity5dPct": -1.87,
+      "flowIntensity20dPct": -3.34,
+      "flowIntensity1dBps": -104.9,
+      "flowIntensity5dBps": -186.5,
+      "flowIntensity20dBps": -334.4,
+      "return1d": -0.79,
+      "return5d": -2.79,
+      "return20d": 8.48,
+      "relativeReturn20d": 5.49,
+      "priceFlowState": "跑赢但流出",
+      "breadth1d": 25.0,
+      "breadth5d": -25.0,
+      "increaseEtfCount1d": 4,
+      "decreaseEtfCount1d": 2,
+      "unchangedEtfCount1d": 2,
+      "increaseEtfCount5d": 3,
+      "decreaseEtfCount5d": 5,
+      "unchangedEtfCount5d": 0,
+      "aum": 99.18,
+      "etfCount": 8,
+      "concentration1d": 90.3,
+      "representative": {
+        "code": "159851",
+        "name": "金融科技ETF华宝"
+      },
+      "dominantEtf": {
+        "code": "159851",
+        "name": "金融科技ETF华宝",
+        "flow1d": -1.16
+      }
+    },
+    {
+      "id": "media_game",
+      "code": "801760",
+      "name": "游戏",
+      "kind": "industry",
+      "parent": "sw_media",
+      "flow1d": -1.07,
+      "flow5d": 0.25,
+      "flow20d": -4.93,
+      "flowIntensity1dPct": -0.87,
+      "flowIntensity5dPct": 0.21,
+      "flowIntensity20dPct": -3.88,
+      "flowIntensity1dBps": -87.3,
+      "flowIntensity5dBps": 20.6,
+      "flowIntensity20dBps": -388.3,
+      "return1d": 2.05,
+      "return5d": 1.41,
+      "return20d": 8.11,
+      "relativeReturn20d": 5.12,
+      "priceFlowState": "跑赢且流入",
+      "breadth1d": -25.0,
+      "breadth5d": 50.0,
+      "increaseEtfCount1d": 1,
+      "decreaseEtfCount1d": 2,
+      "unchangedEtfCount1d": 1,
+      "increaseEtfCount5d": 3,
+      "decreaseEtfCount5d": 1,
+      "unchangedEtfCount5d": 0,
+      "aum": 121.96,
+      "etfCount": 4,
+      "concentration1d": 74.9,
+      "representative": {
+        "code": "159869",
+        "name": "游戏ETF华夏"
+      },
+      "dominantEtf": {
+        "code": "159869",
+        "name": "游戏ETF华夏",
+        "flow1d": -0.91
+      }
+    },
+    {
+      "id": "metal_gold",
+      "code": "801050",
+      "name": "黄金股",
+      "kind": "industry",
+      "parent": "sw_nonferrous",
+      "flow1d": -1.9,
+      "flow5d": 1.94,
+      "flow20d": 46.92,
+      "flowIntensity1dPct": -0.8,
+      "flowIntensity5dPct": 0.83,
+      "flowIntensity20dPct": 24.85,
+      "flowIntensity1dBps": -79.8,
+      "flowIntensity5dBps": 83.0,
+      "flowIntensity20dBps": 2485.0,
+      "return1d": 1.01,
+      "return5d": -5.26,
+      "return20d": 23.21,
+      "relativeReturn20d": 20.22,
+      "priceFlowState": "跑赢且流入",
+      "breadth1d": -50.0,
+      "breadth5d": 66.7,
+      "increaseEtfCount1d": 1,
+      "decreaseEtfCount1d": 4,
+      "unchangedEtfCount1d": 1,
+      "increaseEtfCount5d": 5,
+      "decreaseEtfCount5d": 1,
+      "unchangedEtfCount5d": 0,
+      "aum": 235.72,
+      "etfCount": 6,
+      "concentration1d": 67.8,
+      "representative": {
+        "code": "517520",
+        "name": "黄金股ETF永赢"
+      },
+      "dominantEtf": {
+        "code": "517520",
+        "name": "黄金股ETF永赢",
+        "flow1d": -3.05
+      }
+    },
+    {
+      "id": "comm_satellite",
+      "code": "801770",
+      "name": "卫星",
+      "kind": "industry",
+      "parent": "sw_communications",
+      "flow1d": -1.95,
+      "flow5d": -10.53,
+      "flow20d": -29.86,
+      "flowIntensity1dPct": -0.73,
+      "flowIntensity5dPct": -3.83,
+      "flowIntensity20dPct": -10.13,
+      "flowIntensity1dBps": -73.1,
+      "flowIntensity5dBps": -382.5,
+      "flowIntensity20dBps": -1013.4,
+      "return1d": 0.98,
+      "return5d": -0.76,
+      "return20d": 10.88,
+      "relativeReturn20d": 7.89,
+      "priceFlowState": "跑赢但流出",
+      "breadth1d": -100.0,
+      "breadth5d": -100.0,
+      "increaseEtfCount1d": 0,
+      "decreaseEtfCount1d": 6,
+      "unchangedEtfCount1d": 0,
+      "increaseEtfCount5d": 0,
+      "decreaseEtfCount5d": 6,
+      "unchangedEtfCount5d": 0,
+      "aum": 264.8,
+      "etfCount": 6,
+      "concentration1d": 65.8,
+      "representative": {
+        "code": "159206",
+        "name": "卫星ETF永赢"
+      },
+      "dominantEtf": {
+        "code": "159206",
+        "name": "卫星ETF永赢",
+        "flow1d": -1.28
+      }
+    },
+    {
+      "id": "mach_robot",
+      "code": "801890",
+      "name": "机器人",
+      "kind": "industry",
+      "parent": "sw_machinery",
+      "flow1d": -3.03,
+      "flow5d": -6.01,
+      "flow20d": 18.15,
+      "flowIntensity1dPct": -0.52,
+      "flowIntensity5dPct": -1.03,
+      "flowIntensity20dPct": 3.26,
+      "flowIntensity1dBps": -52.5,
+      "flowIntensity5dBps": -103.4,
+      "flowIntensity20dBps": 325.9,
+      "return1d": 0.2,
+      "return5d": -1.96,
+      "return20d": 3.52,
+      "relativeReturn20d": 0.53,
+      "priceFlowState": "跑赢但流出",
+      "breadth1d": -62.5,
+      "breadth5d": -50.0,
+      "increaseEtfCount1d": 2,
+      "decreaseEtfCount1d": 12,
+      "unchangedEtfCount1d": 2,
+      "increaseEtfCount5d": 4,
+      "decreaseEtfCount5d": 12,
+      "unchangedEtfCount5d": 0,
+      "aum": 575.13,
+      "etfCount": 16,
+      "concentration1d": 44.1,
+      "representative": {
+        "code": "562500",
+        "name": "机器人ETF华夏"
+      },
+      "dominantEtf": {
+        "code": "159530",
+        "name": "机器人ETF易方达",
+        "flow1d": -1.48
+      }
+    },
+    {
+      "id": "elec_semiconductor",
+      "code": "801080",
+      "name": "半导体",
+      "kind": "industry",
+      "parent": "sw_electronics",
+      "flow1d": -12.03,
+      "flow5d": 57.0,
+      "flow20d": 246.83,
+      "flowIntensity1dPct": -0.68,
+      "flowIntensity5dPct": 3.35,
+      "flowIntensity20dPct": 16.32,
+      "flowIntensity1dBps": -67.9,
+      "flowIntensity5dBps": 334.8,
+      "flowIntensity20dBps": 1632.0,
+      "return1d": 0.95,
+      "return5d": 0.54,
+      "return20d": 5.85,
+      "relativeReturn20d": 2.86,
+      "priceFlowState": "跑赢且流入",
+      "breadth1d": -6.7,
+      "breadth5d": 40.0,
+      "increaseEtfCount1d": 5,
+      "decreaseEtfCount1d": 6,
+      "unchangedEtfCount1d": 4,
+      "increaseEtfCount5d": 10,
+      "decreaseEtfCount5d": 4,
+      "unchangedEtfCount5d": 1,
+      "aum": 1759.28,
+      "etfCount": 15,
+      "concentration1d": 48.6,
+      "representative": {
+        "code": "159516",
+        "name": "半导体设备ETF国泰"
+      },
+      "dominantEtf": {
+        "code": "159516",
+        "name": "半导体设备ETF国泰",
+        "flow1d": -6.58
+      }
+    }
+  ]
 }

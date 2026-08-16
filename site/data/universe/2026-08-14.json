@@ -1,7 +1,7 @@
 {
   "schemaVersion": 5,
   "tradeDate": "2026-08-14",
-  "generatedAt": "2026-08-17T03:27:48+08:00",
+  "generatedAt": "2026-08-17T04:10:58+08:00",
   "universe": [
     {
       "code": "510010",
@@ -9845,7 +9845,7 @@
       "code": "588710",
       "name": "科创半导体设备ETF华泰柏瑞",
       "exchange": "SSE",
-      "shares": 3592295008.0,
+      "shares": 10656885000.0,
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
