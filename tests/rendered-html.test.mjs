@@ -26,9 +26,9 @@ test("dashboard contains the answer-first modules and two coordinate maps", asyn
   assert.match(page, /layoutBubbleLabels/);
   assert.match(page, /全部标签就近避让/);
   assert.match(page, /全部资金观察组证据表/);
-  assert.match(page, /不再设置跨行业主题组/);
+  assert.doesNotMatch(page, /不再设置跨行业主题组/);
   assert.doesNotMatch(page, /data-kind="theme"/);
-  assert.match(page, /等待历史或净值补齐/);
+  assert.doesNotMatch(page, /等待历史或净值补齐/);
   assert.doesNotMatch(page, /仅显示防碰撞标签/);
   assert.match(page, /当日流入领跑 \/ 流出领跑/);
   assert.match(page, /近5日.*流入领跑 \/ 流出领跑/);
