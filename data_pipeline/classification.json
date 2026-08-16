@@ -602,7 +602,7 @@
       "code": "801770",
       "name": "通信",
       "patterns": [
-        "通信|5G|光通信|电信|卫星"
+        "通信|5G|光通信|电信"
       ]
     },
     {
@@ -879,6 +879,16 @@
         "光模块",
         "光器件",
         "CPO"
+      ]
+    },
+    {
+      "id": "comm_satellite",
+      "parent": "sw_communications",
+      "code": "801770",
+      "name": "卫星",
+      "patterns": [
+        "卫星",
+        "北斗"
       ]
     },
     {
