@@ -1,0 +1,60 @@
+name: One-time corrected ETF snapshot rebuild
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/rebuild-after-system-audit.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: corrected-etf-rebuild
+  cancel-in-progress: true
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      TZ: Asia/Shanghai
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: data_pipeline/requirements.txt
+      - run: pip install -r data_pipeline/requirements.txt
+      - name: Run production unit tests
+        run: python -m unittest discover -s data_pipeline -p "test_*.py"
+      - name: Rebuild audited 2026-08-14 snapshot
+        run: python data_pipeline/update_daily_production.py --date "2026-08-14"
+      - name: Validate client bundle
+        run: npm ci && npm test
+      - name: Assert corrected source hierarchy and market scope
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path('site/data/latest.json').read_text('utf-8'))
+          etf=next(x for x in data['etfs'] if x['code']=='588710')
+          assert -1.5 < etf['flow1d'] < -1.0, etf
+          assert 1240 <= data['market']['etfCount'] <= 1260, data['market']
+          assert -50.5 < data['market']['flow1d'] < -45.0, data['market']
+          assert data.get('industryRollups'), 'missing SW2021 rollups'
+          assert '半导体' not in {x['name'] for x in data['industryRollups']}
+          assert data['status'] in {'verified','warning'}, data['status']
+          print('588710', etf['flow1d'])
+          print('market', data['market']['etfCount'], data['market']['flow1d'])
+          print(data['conclusion']['headline'])
+          PY
+      - name: Commit corrected snapshot
+        run: |
+          git config user.name "etf-flow-radar-bot"
+          git config user.email "etf-flow-radar-bot@users.noreply.github.com"
+          git add site/data
+          git diff --cached --quiet && exit 0
+          git commit -m "data: rebuild snapshot after full methodology audit"
+          git push
