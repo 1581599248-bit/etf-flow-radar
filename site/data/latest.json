@@ -4,25 +4,25 @@
   "tradeDate": "2026-08-14",
   "previousTradeDate": "2026-08-13",
   "windowStartDate": "2026-07-17",
-  "generatedAt": "2026-08-17T02:25:25+08:00",
+  "generatedAt": "2026-08-17T03:27:48+08:00",
   "publicationDate": "2026-08-17",
   "sourceMode": "REAL",
   "market": {
     "name": "A股股票ETF统计范围",
     "etfCount": 1213,
-    "flow1d": 175.75,
-    "flow5d": -265.88,
-    "flow20d": 1034.0,
-    "aum": 27580.75,
+    "flow1d": -46.42,
+    "flow5d": -491.06,
+    "flow20d": 786.02,
+    "aum": 27283.44,
     "breadth1d": -13.8,
     "increaseEtfCount1d": 231,
     "decreaseEtfCount1d": 398,
     "unchangedEtfCount1d": 584,
     "unchangedEtfPct1d": 48.15,
     "topInflowEtf": {
-      "code": "588710",
-      "name": "科创半导体设备ETF华泰柏瑞",
-      "flow1d": 222.17
+      "code": "512880",
+      "name": "证券ETF国泰",
+      "flow1d": 10.03
     },
     "topOutflowEtf": {
       "code": "510300",
@@ -31,13 +31,13 @@
     }
   },
   "conclusion": {
-    "headline": "本期统计的1213只A股股票ETF当日合计净流入175.8亿元；净流入231只、净流出398只。宽基中14个流出、8个流入；申万一级行业资金流入居前的是半导体，流出最多的是通信。",
+    "headline": "本期统计的1213只A股股票ETF当日合计净流出46.4亿元；净流入231只、净流出398只。宽基中14个流出、8个流入；申万一级行业资金流入居前的是券商，流出最多的是半导体。",
     "facts": [
       "宽基流出前三为沪深300-9.6亿、中证1000-9.3亿、创业板指-9.2亿；5日流出最大仍是中证1000。",
-      "申万一级行业净流入居前为半导体+211.4亿、券商+14.7亿；净流出最多为通信-5.5亿。",
-      "单只ETF大额变化：科创半导体设备ETF华泰柏瑞净流入+222.2亿元；沪深300ETF华泰柏瑞净流出-8.4亿元。"
+      "申万一级行业净流入居前为券商+14.7亿、芯片+6.8亿；净流出最多为半导体-10.8亿。",
+      "单只ETF大额变化：证券ETF国泰净流入+10.0亿元；沪深300ETF华泰柏瑞净流出-8.4亿元。"
     ],
-    "interpretation": "从份额数据看，宽基当日14/27个组净流出；风格组中红利低波当日变化相对靠前，指数增强流出较多。半导体同时录得1日和5日净流入，可继续观察资金延续性。",
+    "interpretation": "从份额数据看，宽基当日14/27个组净流出；风格组中红利低波当日变化相对靠前，指数增强流出较多。券商同时录得1日和5日净流入，可继续观察资金延续性。",
     "confidence": "A",
     "confidenceNote": "21个交易日份额完整，价格代理覆盖充分"
   },
@@ -1147,47 +1147,6 @@
         "code": "510300",
         "name": "沪深300ETF华泰柏瑞",
         "flow1d": -8.37
-      }
-    },
-    {
-      "id": "elec_semiconductor",
-      "code": "801080",
-      "name": "半导体",
-      "kind": "industry",
-      "parent": "sw_electronics",
-      "flow1d": 211.41,
-      "flow5d": 305.36,
-      "flow20d": 489.81,
-      "flowIntensity1dPct": 11.94,
-      "flowIntensity5dPct": 18.21,
-      "flowIntensity20dPct": 32.82,
-      "flowIntensity1dBps": 1193.9,
-      "flowIntensity5dBps": 1821.0,
-      "flowIntensity20dBps": 3282.1,
-      "return1d": 0.95,
-      "return5d": 0.54,
-      "return20d": 5.85,
-      "relativeReturn20d": 2.86,
-      "priceFlowState": "跑赢且流入",
-      "breadth1d": 6.7,
-      "breadth5d": 40.0,
-      "increaseEtfCount1d": 6,
-      "decreaseEtfCount1d": 5,
-      "unchangedEtfCount1d": 4,
-      "increaseEtfCount5d": 10,
-      "decreaseEtfCount5d": 4,
-      "unchangedEtfCount5d": 1,
-      "aum": 1982.18,
-      "etfCount": 15,
-      "concentration1d": 94.8,
-      "representative": {
-        "code": "159516",
-        "name": "半导体设备ETF国泰"
-      },
-      "dominantEtf": {
-        "code": "588710",
-        "name": "科创半导体设备ETF华泰柏瑞",
-        "flow1d": 222.17
       }
     },
     {
@@ -3159,6 +3118,47 @@
       }
     },
     {
+      "id": "elec_semiconductor",
+      "code": "801080",
+      "name": "半导体",
+      "kind": "industry",
+      "parent": "sw_electronics",
+      "flow1d": -10.76,
+      "flow5d": 80.18,
+      "flow20d": 241.83,
+      "flowIntensity1dPct": -0.63,
+      "flowIntensity5dPct": 5.0,
+      "flowIntensity20dPct": 16.76,
+      "flowIntensity1dBps": -63.5,
+      "flowIntensity5dBps": 499.6,
+      "flowIntensity20dBps": 1675.8,
+      "return1d": 0.95,
+      "return5d": 0.54,
+      "return20d": 5.85,
+      "relativeReturn20d": 2.86,
+      "priceFlowState": "跑赢且流入",
+      "breadth1d": 6.7,
+      "breadth5d": 40.0,
+      "increaseEtfCount1d": 6,
+      "decreaseEtfCount1d": 5,
+      "unchangedEtfCount1d": 4,
+      "increaseEtfCount5d": 10,
+      "decreaseEtfCount5d": 4,
+      "unchangedEtfCount5d": 1,
+      "aum": 1684.88,
+      "etfCount": 15,
+      "concentration1d": 53.6,
+      "representative": {
+        "code": "159516",
+        "name": "半导体设备ETF国泰"
+      },
+      "dominantEtf": {
+        "code": "159516",
+        "name": "半导体设备ETF国泰",
+        "flow1d": -6.58
+      }
+    },
+    {
       "id": "dividend_lowvol",
       "code": null,
       "name": "红利低波",
@@ -3611,20 +3611,6 @@
     }
   ],
   "etfs": [
-    {
-      "code": "588710",
-      "name": "科创半导体设备ETF华泰柏瑞",
-      "exchange": "SSE",
-      "groupId": "elec_semiconductor",
-      "groupName": "半导体",
-      "kind": "industry",
-      "aum": 335.14,
-      "flow1d": 222.17,
-      "flow5d": 226.7,
-      "flow20d": 260.98,
-      "referencePrice": 3.1448,
-      "referencePriceType": "AVG"
-    },
     {
       "code": "512880",
       "name": "证券ETF国泰",
@@ -16364,6 +16350,20 @@
       "flow20d": 0.05,
       "referencePrice": 1.2356,
       "referencePriceType": "AVG"
+    },
+    {
+      "code": "588710",
+      "name": "科创半导体设备ETF华泰柏瑞",
+      "exchange": "SSE",
+      "groupId": "elec_semiconductor",
+      "groupName": "半导体",
+      "kind": "industry",
+      "aum": 37.83,
+      "flow1d": 0.0,
+      "flow5d": 1.52,
+      "flow20d": 13.0,
+      "referencePrice": 1.0532,
+      "referencePriceType": "NAV"
     },
     {
       "code": "588720",
@@ -30437,14 +30437,14 @@
       "code": "588710",
       "name": "科创半导体设备ETF华泰柏瑞",
       "exchange": "SSE",
-      "shares": 10656885000.0,
+      "shares": 3592295008.0,
       "classificationStatus": "classified",
       "analysisStatus": "ready",
       "groupId": "elec_semiconductor",
       "groupName": "半导体",
       "kind": "industry",
-      "referencePrice": 3.1448,
-      "referencePriceType": "AVG"
+      "referencePrice": 1.0532,
+      "referencePriceType": "NAV"
     },
     {
       "code": "588720",
@@ -40617,11 +40617,43 @@
       "directionCountTotal": 1213,
       "groupEtfCountTotal": 1213,
       "uniqueAnalyzedEtfCount": 1213,
-      "groupFlow1d": 175.81,
-      "marketFlow1d": 175.75,
+      "groupFlow1d": -46.36,
+      "marketFlow1d": -46.42,
       "flowDifference": 0.06
     },
-    "issues": []
+    "issues": [
+      {
+        "severity": "info",
+        "check": "price_nav_guard",
+        "message": "1只ETF成交参考价与同日NAV偏离超过20%，已回退NAV。"
+      }
+    ],
+    "shareCrossCheck": {
+      "status": "usable",
+      "scale": 1.0,
+      "medianRelativeError": 0.000856,
+      "commonCount": 1552,
+      "repaired": [
+        {
+          "code": "588710",
+          "name": "科半导体",
+          "officialShares": 10656885000.0,
+          "secondaryShares": 3592295008.0,
+          "previousOfficialShares": 3592295000.0,
+          "officialJumpPct": 196.66
+        }
+      ]
+    },
+    "priceNavGuards": [
+      {
+        "code": "588710",
+        "name": "科创半导体设备ETF",
+        "tradedReference": 3.1448,
+        "nav": 1.0532,
+        "deviationPct": 198.6
+      }
+    ],
+    "corporateActions": []
   },
   "sources": [
     {
