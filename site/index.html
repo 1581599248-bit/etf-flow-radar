@@ -46,22 +46,22 @@
         <div class="quad-label q1"><b>跑赢基准 · 资金流入</b><span>20日相对强，5日份额增加</span></div><div class="quad-label q2"><b>跑输基准 · 资金流入</b><span>20日相对弱，5日份额增加</span></div>
         <div class="quad-label q3"><b>跑输基准 · 资金流出</b><span>20日相对弱，5日份额减少</span></div><div class="quad-label q4"><b>跑赢基准 · 资金流出</b><span>20日相对强，5日份额减少</span></div>
         <i class="axis axis-x"></i><i class="axis axis-y"></i>
-        ${plotted.map(r=>{const rate=flowRate(r),left=50+r.relativeReturn20d/xMax*45,top=50-rate/yMax*43,size=bubbleDiameter(r.aum,aMax),priority=Math.log1p(r.aum)+Math.abs(r.relativeReturn20d/xMax)*2+Math.abs(rate/yMax)*2;return `<button class="bubble ${tone(rate)}" data-id="${r.id}" data-label-priority="${priority}" style="left:${left}%;top:${top}%;width:${size}px;height:${size}px" title="${r.name}｜规模 ${r.aum.toFixed(1)}亿｜20日相对收益 ${pct(r.relativeReturn20d)}｜5日资金变化率 ${pct(rate)}"><span>${r.name}</span></button>`}).join("")}
+        ${plotted.map(r=>{const rate=flowRate(r),left=50+r.relativeReturn20d/xMax*45,top=50-rate/yMax*43,priority=Math.log1p(r.aum)+Math.abs(r.relativeReturn20d/xMax)*2+Math.abs(rate/yMax)*2;return `<button class="bubble ${tone(rate)}" data-id="${r.id}" data-label-priority="${priority}" style="left:${left}%;top:${top}%" title="${r.name}｜规模 ${r.aum.toFixed(1)}亿｜20日相对收益 ${pct(r.relativeReturn20d)}｜5日资金变化率 ${pct(rate)}"><span>${r.name}</span></button>`}).join("")}
         <span class="axis-title x-title">20日相对沪深300收益 →</span><span class="axis-title y-title">↑ 5日资金变化率（占5日前规模）</span>
       </div>
-      <div class="legend"><span><i class="red"></i>5日净流入</span><span><i class="green"></i>5日净流出</span><span class="legend-note">气泡面积按组内ETF参考规模线性编码（小规模组设11px显示下限）</span><span class="legend-note">全部标签就近避让，点击气泡查看明细</span></div>
+      <div class="legend"><span><i class="red"></i>5日净流入</span><span><i class="green"></i>5日净流出</span><span class="legend-note">全部标签就近避让，点击气泡查看明细</span></div>
     </article>`;
   }
 
   function layoutBubbleLabels(){
     document.querySelectorAll(".quadrant").forEach(plot=>{
       const bubbles=[...plot.querySelectorAll(".bubble")].sort((a,b)=>Number(b.dataset.labelPriority)-Number(a.dataset.labelPriority)),accepted=[],bounds=plot.getBoundingClientRect(),mobile=bounds.width<500,candidates=[];
-      const step=mobile?9:15,maxRadius=mobile?130:105;
-      for(let radius=14;radius<=maxRadius;radius+=step){for(let angle=-90;angle<270;angle+=mobile?20:30){const rad=angle*Math.PI/180;candidates.push({x:Math.cos(rad)*radius,y:Math.sin(rad)*radius,d:radius})}}
+      const step=mobile?10:12,maxRadius=mobile?380:320;
+      for(let radius=14;radius<=maxRadius;radius+=step){for(let angle=-90;angle<270;angle+=mobile?20:24){const rad=angle*Math.PI/180;candidates.push({x:Math.cos(rad)*radius,y:Math.sin(rad)*radius,d:radius})}}
       candidates.unshift({x:0,y:mobile?13:16,d:0},{x:0,y:mobile?-13:-16,d:0});
       candidates.sort((a,b)=>a.d-b.d);
       for(const bubble of bubbles){
-        const label=bubble.querySelector("span"),anchor=bubble.getBoundingClientRect();
+        const label=bubble,anchor=bubble.getBoundingClientRect();
         label.hidden=false;label.style.setProperty("--label-x","0px");label.style.setProperty("--label-y","0px");
         const measured=label.getBoundingClientRect(),w=measured.width,h=measured.height,cx=anchor.left+anchor.width/2,cy=anchor.top+anchor.height/2;
         let best=null;
