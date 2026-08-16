@@ -1,9 +1,9 @@
 """Independent reconciliation for the 2026-08-14 ETF flow snapshot.
 
-This script intentionally does not use the published snapshot as an input. It
-re-fetches exchange share counts and an independent historical NAV panel, then
-compares several market scopes and valuation conventions. The output is a
-compact audit log suitable for GitHub Actions.
+The audit deliberately avoids the current published snapshot and the current
+share-repair guard. It reads the pre-guard archived exchange universe for T and
+T-1, combines it with an independent historical NAV panel, detects corporate
+actions using the joint share/NAV discontinuity, and compares market scopes.
 """
 from __future__ import annotations
 
@@ -13,49 +13,52 @@ from datetime import date
 import akshare as ak
 import numpy as np
 import pandas as pd
+import requests
 
 import update_daily as base
 
 CUR = date(2026, 8, 14)
 PREV = date(2026, 8, 13)
+RAW_COMMIT = "d6cbb14dd70ad5ee27b0a47675a069c01803d9fe"
 FACTORS = (0.2, 0.25, 1 / 3, 0.5, 2.0, 3.0, 4.0, 5.0)
 
 
-def normalize_sse(day: date) -> pd.DataFrame:
-    raw = ak.fund_etf_scale_sse(date=day.strftime("%Y%m%d"))
-    out = raw[["基金代码", "基金简称", "基金份额"]].copy()
-    out.columns = ["code", "name", "shares"]
+def archived_shares(day: date) -> pd.DataFrame:
+    url = (
+        "https://raw.githubusercontent.com/1581599248-bit/etf-flow-radar/"
+        f"{RAW_COMMIT}/site/data/universe/{day.isoformat()}.json"
+    )
+    response = requests.get(url, timeout=(10, 45))
+    response.raise_for_status()
+    payload = response.json()
+    rows = payload.get("universe", [])
+    out = pd.DataFrame(rows)
+    required = {"code", "name", "shares", "exchange"}
+    if out.empty or not required.issubset(out.columns):
+        raise RuntimeError(f"archived universe missing required fields for {day}")
+    out = out[["code", "name", "shares", "exchange"]].copy()
     out["code"] = out["code"].astype(str).str.zfill(6)
     out["shares"] = pd.to_numeric(out["shares"], errors="coerce")
-    out["exchange"] = "SSE"
     return out.dropna(subset=["shares"]).drop_duplicates("code", keep="last")
 
 
-def normalize_szse(day: date) -> pd.DataFrame:
-    stamp = day.strftime("%Y%m%d")
-    raw = ak.fund_scale_daily_szse(start_date=stamp, end_date=stamp, symbol="ETF")
-    out = raw.iloc[:, :4].copy()
-    out.columns = ["trade_date", "code", "name", "shares"]
-    out["code"] = out["code"].astype(str).str.zfill(6)
-    out["shares"] = pd.to_numeric(out["shares"], errors="coerce")
-    out["exchange"] = "SZSE"
-    return out[["code", "name", "shares", "exchange"]].dropna(subset=["shares"]).drop_duplicates("code", keep="last")
-
-
-def shares(day: date) -> pd.DataFrame:
-    return pd.concat([normalize_sse(day), normalize_szse(day)], ignore_index=True)
-
-
 def ths_nav(day: date) -> pd.DataFrame:
-    raw = ak.fund_etf_category_ths(symbol="ETF", date=day.strftime("%Y%m%d"))
-    out = raw[["基金代码", "基金名称", "当前-单位净值", "前一日-单位净值", "基金类型", "查询日期"]].copy()
-    out.columns = ["code", "fund_name", "nav", "prev_nav", "fund_type", "query_date"]
-    out["code"] = out["code"].astype(str).str.zfill(6)
-    out["nav"] = pd.to_numeric(out["nav"], errors="coerce")
-    out["prev_nav"] = pd.to_numeric(out["prev_nav"], errors="coerce")
-    out["query_date"] = pd.to_datetime(out["query_date"], errors="coerce").dt.date
-    out = out[out["query_date"] == day]
-    return out.drop_duplicates("code", keep="last")
+    last_error: Exception | None = None
+    for _ in range(3):
+        try:
+            raw = ak.fund_etf_category_ths(symbol="ETF", date=day.strftime("%Y%m%d"))
+            out = raw[["基金代码", "基金名称", "当前-单位净值", "前一日-单位净值", "基金类型", "查询日期"]].copy()
+            out.columns = ["code", "fund_name", "nav", "prev_nav", "fund_type", "query_date"]
+            out["code"] = out["code"].astype(str).str.zfill(6)
+            out["nav"] = pd.to_numeric(out["nav"], errors="coerce")
+            out["prev_nav"] = pd.to_numeric(out["prev_nav"], errors="coerce")
+            out["query_date"] = pd.to_datetime(out["query_date"], errors="coerce").dt.date
+            out = out[out["query_date"] == day]
+            if not out.empty:
+                return out.drop_duplicates("code", keep="last")
+        except Exception as exc:
+            last_error = exc
+    raise RuntimeError(f"THS NAV audit source unavailable: {last_error}")
 
 
 def same_day_avg_prices(day: date, nav: pd.DataFrame) -> pd.DataFrame:
@@ -131,8 +134,8 @@ def summarize(label: str, frame: pd.DataFrame) -> None:
 
 
 def main() -> int:
-    cur = shares(CUR).rename(columns={"shares": "cur_shares"})
-    prev = shares(PREV)[["code", "shares"]].rename(columns={"shares": "prev_shares"})
+    cur = archived_shares(CUR).rename(columns={"shares": "cur_shares"})
+    prev = archived_shares(PREV)[["code", "shares"]].rename(columns={"shares": "prev_shares"})
     nav = ths_nav(CUR)
     px = same_day_avg_prices(CUR, nav)
     panel = cur.merge(prev, on="code", how="inner").merge(nav, on="code", how="left").merge(px, on="code", how="left")
