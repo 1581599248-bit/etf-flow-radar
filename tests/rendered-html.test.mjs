@@ -21,7 +21,7 @@ test("dashboard contains the answer-first modules and two coordinate maps", asyn
   assert.match(page, /导出高清 JPG/);
   assert.match(page, /全量ETF每日变更检查/);
   assert.match(page, /交易所完整ETF/);
-  assert.match(page, /气泡面积按组内ETF参考规模线性编码/);
+  assert.doesNotMatch(page, /气泡面积按组内ETF参考规模线性编码/);
   assert.match(page, /组内ETF参考规模/);
   assert.match(page, /layoutBubbleLabels/);
   assert.match(page, /全部标签就近避让/);
