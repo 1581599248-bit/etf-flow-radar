@@ -40,12 +40,12 @@ jobs:
       - run: pip install -r data_pipeline/requirements.txt
       - name: Run deterministic pipeline tests
         run: python -m unittest discover -s data_pipeline -p "test_*.py"
-      - name: Build verified snapshot
+      - name: Build guarded verified snapshot
         run: |
           if [ -n "${{ inputs.trade_date }}" ]; then
-            python data_pipeline/update_daily.py --date "${{ inputs.trade_date }}"
+            python data_pipeline/update_daily_guarded.py --date "${{ inputs.trade_date }}"
           else
-            python data_pipeline/update_daily.py
+            python data_pipeline/update_daily_guarded.py
           fi
       - name: Validate published schema and client bundle
         run: npm ci && npm test
@@ -55,6 +55,5 @@ jobs:
           git config user.email "etf-flow-radar-bot@users.noreply.github.com"
           git add site/data
           git diff --cached --quiet && exit 0
-          git commit -m "data: update verified ETF snapshot"
+          git commit -m "data: update guarded verified ETF snapshot"
           git push
-
