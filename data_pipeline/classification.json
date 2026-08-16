@@ -672,19 +672,27 @@
   ],
   "industryDetail": [
     {
+      "id": "elec_chip",
+      "parent": "sw_electronics",
+      "code": "801080",
+      "name": "芯片",
+      "patterns": [
+        "芯片",
+        "芯"
+      ]
+    },
+    {
       "id": "elec_semiconductor",
       "parent": "sw_electronics",
       "code": "801080",
-      "name": "半导体芯片",
+      "name": "半导体",
       "patterns": [
         "半导体",
-        "芯片",
+        "半导",
         "集成电路",
         "光刻",
         "封测",
-        "晶圆",
-        "半导",
-        "芯"
+        "晶圆"
       ]
     },
     {
