@@ -21,9 +21,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
                 "schemaVersion": 1,
                 "tradeDate": day.isoformat(),
                 "metric": "secondaryMarketMainOrderFlow",
-                "etfs": [
-                    {"code": "510300", "name": "沪深300ETF华泰柏瑞", "mainOrderFlow1d": -2.5, "amount": 10.0}
-                ],
+                "etfs": [{"code": "510300", "name": "沪深300ETF华泰柏瑞", "mainOrderFlow1d": -2.5, "amount": 10.0}],
             }
             (folder / f"{day.isoformat()}.json").write_text(json.dumps(payload, ensure_ascii=False), "utf-8")
             with patch.object(v2.base, "PUBLIC", public), patch.object(v2.guarded, "_get_spot") as live:
@@ -61,9 +59,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         day = date(2026, 8, 14)
         live_frame = pd.DataFrame({"代码": ["510300"], "数据日期": ["2026-08-17"]})
         with tempfile.TemporaryDirectory() as tmp:
-            with patch.object(v2.base, "PUBLIC", Path(tmp)), patch.object(
-                v2.guarded, "_get_spot", return_value=live_frame
-            ) as live:
+            with patch.object(v2.base, "PUBLIC", Path(tmp)), patch.object(v2.guarded, "_get_spot", return_value=live_frame) as live:
                 frame = v2._load_secondary_spot(day)
         live.assert_called_once()
         self.assertEqual(frame.iloc[0]["数据日期"], "2026-08-17")
@@ -75,9 +71,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
                 {"code": "510300", "name": "沪深300ETF华泰柏瑞"},
                 {"code": "513100", "name": "纳指ETF"},
             ],
-            "etfs": [
-                {"code": "510300", "name": "沪深300ETF华泰柏瑞"},
-            ],
+            "etfs": [{"code": "510300", "name": "沪深300ETF华泰柏瑞"}],
             "flowMetrics": {},
         }
         ths = pd.DataFrame([
@@ -97,59 +91,56 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertEqual(totals["stockEtfIncludingCrossBorder"]["netFlow1d"], 1.0)
         self.assertEqual(snapshot["etfs"][0]["secondaryTradeNetFlow1d"], 2.0)
 
-    def test_homepage_headline_uses_canonical_a_share_flow_even_when_trade_flow_exists(self):
-        snapshot = {
-            "market": {
-                "flow1d": -48.3,
-                "increaseEtfCount1d": 231,
-                "decreaseEtfCount1d": 409,
-                "unchangedEtfCount1d": 607,
-            },
-            "flowMetrics": {
-                "secondaryMarketTradeFlow": {
-                    "scopeTotals": {"aShareStockEtf": {"netFlow1d": 198.4}}
-                }
-            },
+    @staticmethod
+    def _groups():
+        return [
+            {"id": "hs300", "name": "沪深300", "kind": "broad", "flow1d": -3.0},
+            {"id": "csi500", "name": "中证500", "kind": "broad", "flow1d": 1.0},
+            {"id": "sw_media", "name": "传媒", "kind": "industry", "flow1d": 1.8},
+            {"id": "elec_chip", "name": "芯片", "kind": "industry", "parent": "sw_electronics", "flow1d": -14.4},
+            {"id": "elec_semiconductor", "name": "半导体", "kind": "industry", "parent": "sw_electronics", "flow1d": -23.4},
+        ]
+
+    @staticmethod
+    def _legacy_conclusion(obj):
+        obj["conclusion"] = {
+            "headline": "旧口径。宽基中1个流出、1个流入；申万一级行业资金流入居前的是传媒，流出最多的是电子。",
+            "facts": ["宽基事实", "申万一级行业旧事实", "单ETF事实"],
         }
 
-        def legacy_headline(obj):
-            obj["conclusion"] = {
-                "headline": "旧口径。宽基中5个流出、2个流入；申万一级行业资金流入居前。"
-            }
-
-        with patch.object(v2.production, "_regenerate_conclusion", side_effect=legacy_headline):
+    def test_homepage_headline_uses_requested_share_change_wording_and_visible_sector_layer(self):
+        snapshot = {
+            "market": {"flow1d": -48.3, "increaseEtfCount1d": 231, "decreaseEtfCount1d": 409, "unchangedEtfCount1d": 607},
+            "groups": self._groups(),
+            "flowMetrics": {"secondaryMarketTradeFlow": {"scopeTotals": {"aShareStockEtf": {"netFlow1d": 198.4}}}},
+        }
+        with patch.object(v2.production, "_regenerate_conclusion", side_effect=self._legacy_conclusion):
             v2._regenerate_v2_conclusion(snapshot)
         headline = snapshot["conclusion"]["headline"]
-        self.assertIn("A股ETF当日成交资金净流入198.4亿元", headline)
-        self.assertIn("A股股票ETF当日合计净流出48.3亿元", headline)
-        self.assertIn("231只份额增加、409只份额减少、607只不变", headline)
-        self.assertNotIn("暂无同日数据", headline)
-        self.assertNotIn("ETF份额较上一日", headline)
+        self.assertTrue(headline.startswith("A股ETF当日成交资金净流入198.4亿元；ETF份额较上一日净流出48.3亿元。"))
+        self.assertIn("申万一级和主题行业资金流入居前的是传媒，流出最多的是半导体。", headline)
+        self.assertNotIn("A股股票ETF当日合计", headline)
+        self.assertNotIn("流出最多的是电子", headline)
+        self.assertIn("净流出最多为半导体-23.4亿", snapshot["conclusion"]["facts"][1])
 
-    def test_homepage_headline_does_not_depend_on_secondary_trade_data(self):
+    def test_homepage_headline_keeps_primary_share_flow_when_secondary_is_missing(self):
         snapshot = {
-            "market": {
-                "flow1d": 12.6,
-                "increaseEtfCount1d": 300,
-                "decreaseEtfCount1d": 200,
-                "unchangedEtfCount1d": 700,
-            },
-            "flowMetrics": {
-                "secondaryMarketTradeFlow": {"status": "unavailable", "scopeTotals": {}}
-            },
+            "market": {"flow1d": 12.6, "increaseEtfCount1d": 300, "decreaseEtfCount1d": 200, "unchangedEtfCount1d": 700},
+            "groups": self._groups(),
+            "flowMetrics": {"secondaryMarketTradeFlow": {"status": "unavailable", "scopeTotals": {}}},
         }
-
-        def legacy_headline(obj):
-            obj["conclusion"] = {
-                "headline": "旧口径。宽基中3个流出、6个流入；申万一级行业资金流入居前。"
-            }
-
-        with patch.object(v2.production, "_regenerate_conclusion", side_effect=legacy_headline):
+        with patch.object(v2.production, "_regenerate_conclusion", side_effect=self._legacy_conclusion):
             v2._regenerate_v2_conclusion(snapshot)
         headline = snapshot["conclusion"]["headline"]
         self.assertIn("A股ETF当日成交资金暂无同日数据", headline)
-        self.assertIn("A股股票ETF当日合计净流入12.6亿元", headline)
+        self.assertIn("ETF份额较上一日净流入12.6亿元", headline)
+        self.assertIn("流出最多的是半导体", headline)
 
+    def test_visible_sector_groups_are_exactly_the_client_industry_layer(self):
+        snapshot = {"groups": self._groups() + [{"id": "growth", "name": "成长", "kind": "style", "flow1d": 2.0}]}
+        sectors = v2._visible_sector_groups(snapshot)
+        self.assertEqual({g["name"] for g in sectors}, {"传媒", "芯片", "半导体"})
+        self.assertEqual(min(sectors, key=lambda g: g["flow1d"])["name"], "半导体")
 
 
 if __name__ == "__main__":

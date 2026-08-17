@@ -44,6 +44,8 @@ jobs:
           else
             python data_pipeline/update_daily_v2.py
           fi
+      - name: Run external-send reconciliation audit
+        run: python data_pipeline/audit_snapshot_v6.py
       - name: Validate published schema and client bundle
         run: npm ci && npm test
       - name: Commit only a verified change

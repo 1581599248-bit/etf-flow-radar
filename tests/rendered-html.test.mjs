@@ -2,6 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
+const flowPhrase = (value) => value > 0 ? `净流入${value.toFixed(1)}亿元` : value < 0 ? `净流出${Math.abs(value).toFixed(1)}亿元` : "净额0.0亿元";
+
 test("dashboard source retains the answer-first research modules", async () => {
   const page = await readFile("site/index.html", "utf8");
   const css = await readFile("site/styles.css", "utf8");
@@ -20,7 +22,7 @@ test("dashboard source retains the answer-first research modules", async () => {
   assert.match(css, /\.e-row\[hidden\]\{display:none!important\}/);
 });
 
-test("schema v6 separates primary subscription flow, secondary order flow and market scopes", async () => {
+test("schema v6 separates primary subscription flow, secondary trading flow and reconciles every client layer", async () => {
   const snapshot = JSON.parse(await readFile("site/data/latest.json", "utf8"));
   assert.equal(snapshot.schemaVersion, 6);
   assert.equal(snapshot.sourceMode, "REAL");
@@ -33,19 +35,20 @@ test("schema v6 separates primary subscription flow, secondary order flow and ma
   const primary = snapshot.flowMetrics.primaryMarket;
   assert.equal(primary.metric, "primaryMarketNetSubscriptionEstimate");
   assert.equal(primary.valuation, "sameDayUnitNAV");
-  assert.deepEqual(
-    Object.keys(primary.scopeTotals).sort(),
-    ["aShareStockEtf", "allEtf", "stockEtfIncludingCrossBorder"].sort(),
-  );
+  assert.deepEqual(Object.keys(primary.scopeTotals).sort(), ["aShareStockEtf", "allEtf", "stockEtfIncludingCrossBorder"].sort());
   assert.equal(snapshot.market.metric, primary.metric);
   assert.equal(snapshot.market.valuation, primary.valuation);
   assert.equal(snapshot.market.scopeKey, "aShareStockEtf");
   assert.equal(snapshot.market.flow1d, primary.scopeTotals.aShareStockEtf.flow1d);
   assert.equal(snapshot.market.etfCount, primary.scopeTotals.aShareStockEtf.etfCount);
-  assert.equal(
-    snapshot.market.increaseEtfCount1d + snapshot.market.decreaseEtfCount1d + snapshot.market.unchangedEtfCount1d,
-    snapshot.market.etfCount,
-  );
+  assert.equal(snapshot.market.increaseEtfCount1d + snapshot.market.decreaseEtfCount1d + snapshot.market.unchangedEtfCount1d, snapshot.market.etfCount);
+
+  const assetKeys = ["aShareStockEtf", "crossBorderStockEtf", "bondEtf", "moneyEtf", "commodityEtf", "otherEtf"];
+  assert.deepEqual(Object.keys(primary.assetClassTotals).sort(), assetKeys.sort());
+  const assetFlow = Object.values(primary.assetClassTotals).reduce((sum, row) => sum + row.flow1d, 0);
+  assert.ok(Math.abs(assetFlow - primary.scopeTotals.allEtf.flow1d) <= 0.12);
+  assert.equal(primary.assetClassReconciliation.difference, 0);
+  assert.ok(Math.abs(primary.assetClassTotals.aShareStockEtf.flow1d + primary.assetClassTotals.crossBorderStockEtf.flow1d - primary.scopeTotals.stockEtfIncludingCrossBorder.flow1d) <= 0.12);
 
   const secondary = snapshot.flowMetrics.secondaryMarketOrderFlow;
   assert.equal(secondary.metric, "secondaryMarketMainOrderFlow");
@@ -81,17 +84,42 @@ test("schema v6 separates primary subscription flow, secondary order flow and ma
   assert.equal(reconMarketFlow, snapshot.market.flow1d);
   assert.ok(Number.isFinite(reconClassifiedFlow));
   assert.ok(Number.isFinite(marketRecon.ungroupedDifference));
+  assert.ok(snapshot.quality.classifiedCoverageOfMarketPct >= 95);
 
   assert.ok(Array.isArray(snapshot.industryRollups));
   assert.ok(snapshot.industryRollups.length > 0 && snapshot.industryRollups.length <= 31);
   assert.ok(snapshot.industryRollups.every((row) => row.kind === "industryRollup"));
   assert.ok(snapshot.industryRollups.some((row) => row.name === "电子"));
-  assert.ok(snapshot.industryRollups.some((row) => row.name === "非银金融"));
   assert.ok(!snapshot.industryRollups.some((row) => row.name === "半导体"));
+
+  const visibleSectors = snapshot.groups.filter((row) => row.kind === "industry");
+  const topSectorIn = [...visibleSectors].sort((a, b) => b.flow1d - a.flow1d)[0];
+  const topSectorOut = [...visibleSectors].sort((a, b) => a.flow1d - b.flow1d)[0];
+  const sectorRecon = snapshot.quality.clientSectorReconciliation;
+  assert.equal(sectorRecon.displayLayer, "mutually_exclusive_sw_level_and_theme_groups");
+  assert.equal(sectorRecon.topInflowGroup.name, topSectorIn.name);
+  assert.equal(sectorRecon.topOutflowGroup.name, topSectorOut.name);
+  assert.ok(Math.abs(sectorRecon.difference) <= 0.06);
+  assert.ok(Math.abs(sectorRecon.visibleGroupFlow1d - sectorRecon.industryRollupFlow1d) <= 0.06);
+
+  const expectedPrimary = `ETF份额较上一日${flowPhrase(snapshot.market.flow1d)}。`;
+  assert.match(snapshot.conclusion.headline, new RegExp(expectedPrimary.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.doesNotMatch(snapshot.conclusion.headline, /A股股票ETF当日合计/);
+  assert.match(snapshot.conclusion.headline, /申万一级和主题行业/);
+  assert.match(snapshot.conclusion.headline, new RegExp(`流出最多的是${topSectorOut.name}`));
+  assert.doesNotMatch(snapshot.conclusion.headline, /申万一级行业资金流入居前/);
+
+  const trade = snapshot.flowMetrics.secondaryMarketTradeFlow;
+  if (trade.status === "available") {
+    assert.equal(trade.tradeDate, snapshot.tradeDate);
+    const tradeValue = trade.scopeTotals.aShareStockEtf.netFlow1d;
+    assert.ok(snapshot.conclusion.headline.startsWith(`A股ETF当日成交资金${flowPhrase(tradeValue)}；`));
+  }
 
   assert.match(snapshot.methodology.identity, /禁止据此推断/);
   assert.match(snapshot.methodology.flow, /T日单位净值/);
-  assert.match(snapshot.methodology.metricSeparation, /两句独立口径|两个不同变量/);
+  assert.match(snapshot.methodology.metricSeparation, /ETF份额较上一日/);
+  assert.match(snapshot.methodology.sectorDisplay, /申万一级行业\+热门主题/);
   assert.match(snapshot.methodology.multiDay, /不是逐日净(?:申购|流入)额之和/);
   assert.match(snapshot.methodology.scope, /A股股票ETF/);
   assert.match(snapshot.methodology.scope, /股票ETF（含跨境）/);
@@ -100,15 +128,19 @@ test("schema v6 separates primary subscription flow, secondary order flow and ma
   assert.equal(daily.metric, primary.metric);
   assert.equal(daily.valuation, primary.valuation);
   assert.equal(daily.tradeDate, snapshot.tradeDate);
+  assert.equal(daily.marketScopes.aShareStockEtf.flow1d, snapshot.market.flow1d);
 });
 
-test("generated client keeps methodology changes without adding scope-comparison modules", async () => {
+test("generated client uses endpoint labels and the same industry/theme terminology as the headline", async () => {
   const page = await readFile("dist/index.html", "utf8");
   const snapshot = JSON.parse(await readFile("dist/data/latest.json", "utf8"));
   const blueprint = await readFile("render.yaml", "utf8");
   assert.match(page, /A股股票ETF一级市场净申赎/);
   assert.match(page, /5日端点资金变化/);
+  assert.match(page, /20日端点资金变化/);
+  assert.match(page, /申万一级和主题行业资金坐标/);
   assert.doesNotMatch(page, /5日累计资金变化/);
+  assert.doesNotMatch(page, /20日累计资金变化/);
   assert.doesNotMatch(page, /全部场内ETF · 一级市场/);
   assert.doesNotMatch(page, /股票ETF（含跨境）· 一级市场/);
   assert.doesNotMatch(page, /A股股票ETF · 二级市场主力资金/);
