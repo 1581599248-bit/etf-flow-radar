@@ -1,0 +1,106 @@
+name: Publish ETF report after close
+
+on:
+  workflow_run:
+    workflows:
+      - "Capture ETF order flow"
+    types:
+      - completed
+  schedule:
+    - cron: "30 9 * * 1-5"   # 17:30 Asia/Shanghai
+    - cron: "30 10 * * 1-5"  # 18:30 Asia/Shanghai
+    - cron: "0 12 * * 1-5"   # 20:00 Asia/Shanghai
+  # One-time bootstrap whenever this workflow itself is changed on main. This
+  # also lets us publish the most recently captured trade date after midnight.
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/postclose-etf-publish.yml"
+  workflow_dispatch:
+    inputs:
+      trade_date:
+        description: "Optional trade date (YYYY-MM-DD); otherwise use the latest captured order-flow trade date"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: postclose-etf-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      TZ: Asia/Shanghai
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: data_pipeline/requirements.txt
+      - run: pip install -r data_pipeline/requirements.txt
+
+      - name: Resolve latest captured trade date
+        id: trade
+        shell: bash
+        run: |
+          if [ -n "${{ inputs.trade_date }}" ]; then
+            TRADE_DATE="${{ inputs.trade_date }}"
+          else
+            TRADE_DATE=$(python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("site/data/order_flow/latest.json")
+          if not path.exists():
+              raise SystemExit("site/data/order_flow/latest.json is missing")
+          payload = json.loads(path.read_text("utf-8"))
+          trade_date = str(payload.get("tradeDate") or "").strip()
+          if not trade_date:
+              raise SystemExit("latest order-flow snapshot has no tradeDate")
+          print(trade_date)
+          PY
+          )
+          fi
+          echo "trade_date=${TRADE_DATE}" >> "$GITHUB_OUTPUT"
+          echo "Post-close publish target: ${TRADE_DATE}"
+
+      - name: Run deterministic pipeline tests
+        run: python -m unittest discover -s data_pipeline -p "test_*.py"
+
+      - name: Attempt full report as soon as end-of-day data is ready
+        id: build
+        continue-on-error: true
+        run: python data_pipeline/update_daily_v2.py --date "${{ steps.trade.outputs.trade_date }}"
+
+      - name: Validate published schema and client bundle
+        if: steps.build.outcome == 'success'
+        run: npm ci && npm test
+
+      - name: Commit verified full report immediately
+        if: steps.build.outcome == 'success'
+        run: |
+          git config user.name "etf-flow-radar-bot"
+          git config user.email "etf-flow-radar-bot@users.noreply.github.com"
+          git add site/data
+          if ! git diff --cached --quiet; then
+            git commit -m "data: publish ETF report after close"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Explain deferred publication
+        if: steps.build.outcome != 'success'
+        run: |
+          echo "Full report for ${{ steps.trade.outputs.trade_date }} is not publishable yet." >> "$GITHUB_STEP_SUMMARY"
+          echo "The captured trading-flow fact remains intact. Scheduled retries at 17:30, 18:30 and 20:00, plus the 05:00-08:00 morning workflow, will try again." >> "$GITHUB_STEP_SUMMARY"
