@@ -17,6 +17,7 @@ import update_daily_guarded as guarded
 import update_daily_production as production
 import flow_model_v2
 import flow_comparison_v2
+import flow_scope_breakdown_v2
 
 _ORIG_POSTPROCESS = production._postprocess_snapshot
 _ORIG_ATOMIC_PUBLISH = base.atomic_publish
@@ -31,6 +32,7 @@ def _v2_postprocess(snapshot: dict[str, Any], day: date) -> None:
     spot = guarded._get_spot()
     flow_model_v2.apply_flow_model(snapshot, day, production._LAST_WINDOW, ths, spot)
     flow_comparison_v2.add_primary_valuation_comparisons(snapshot)
+    flow_scope_breakdown_v2.add_asset_class_totals(snapshot)
 
     # Parent rollups must be rebuilt after leaf ETF flows switch to the canonical
     # NAV-valued primary-market metric.
@@ -63,7 +65,7 @@ def _v2_postprocess(snapshot: dict[str, Any], day: date) -> None:
         "flow": "一级市场净申购/赎回估算 =（T日交易所日终份额 − T-1日公司行动调整后的可比份额）× T日单位净值。单位净值是主展示估值口径；同一份额变化再乘成交均价的结果单独保留用于Wind/资讯口径对照，不再混入主字段。",
         "metricSeparation": "一级市场净申购/赎回与二级市场主力净流入是两个不同变量。二级市场主力资金仅在数据日期严格等于交易日时单独记录于 flowMetrics.secondaryMarketOrderFlow，绝不覆盖一级市场数据。",
         "multiDay": "5日/20日当前字段为端点份额变化×期末单位净值，字段明确标记 Endpoint；不是逐日净申购额之和。schema v6开始落盘每日单ETF一级市场flow1d，积累足够交易日后再生成真正5日/20日累计净申购额。",
-        "scope": "同时保存全部ETF、股票ETF（含跨境）和A股股票ETF三个一级市场口径。网站主口径仍是A股股票ETF；与Wind/Choice/iFinD或资讯报道对比时必须先匹配统计范围。",
+        "scope": "同时保存全部ETF、股票ETF（含跨境）和A股股票ETF三个一级市场比较口径，并额外保存A股股票、跨境、债券、货币、商品、其他六个互斥资产类别，使分类加总严格回到全部ETF。网站主口径仍是A股股票ETF；与Wind/Choice/iFinD或资讯报道对比时必须先匹配统计范围。",
         "valuation": "主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。二者是估值方法差异，不是两个独立资金事件。",
     })
     snapshot["methodology"]["coordinates"] = "横轴 = 20日相对沪深300收益率；纵轴 = 5日端点份额变化×期末NAV ÷ 5日前参考规模（%）。"
@@ -83,6 +85,7 @@ def _daily_flow_payload(snapshot: dict[str, Any]) -> dict[str, Any]:
         "metric": "primaryMarketNetSubscriptionEstimate",
         "valuation": "sameDayUnitNAV",
         "marketScopes": primary.get("scopeTotals", {}),
+        "assetClassTotals": primary.get("assetClassTotals", {}),
         "valuationComparisons": primary.get("valuationComparisons", {}),
         "etfs": [
             {
