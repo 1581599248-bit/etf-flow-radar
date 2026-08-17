@@ -1,16 +1,16 @@
 """ETF flow metric reconciliation for the 2026-08-17 review.
 
-The production GitHub runner is intermittently blocked by the SSE historical
-endpoint, so this audit reuses the immutable exchange-share files already
-archived by the project for 2026-08-13/14.  It does *not* read published market
-totals.  Exact-date THS NAV/fund type is fetched independently.
+The production GitHub runner is intermittently blocked by historical exchange
+endpoints, so this audit reuses immutable exchange-share files already archived
+for 2026-08-13/14. It does not read published market totals. Exact-date THS NAV
+and fund type are fetched independently.
 
-Two different variables are reconciled deliberately:
-1. primary-market net subscription/redemption proxy = comparable share change *
-   same-day NAV;
-2. secondary-market main-order flow = Eastmoney's 主力净流入-净额 from ETF
-   exchange trading.  This is an order-flow statistic and must never replace (1).
+Two variables are kept separate:
+1. primary-market net subscription/redemption = comparable share change * NAV;
+2. secondary-market main-order flow = an exchange-trading order-flow statistic.
 
+Historical secondary order flow is read only from an immutable same-day file. A
+current spot snapshot is never queried to reconstruct an old trading day.
 All monetary output is in 亿元.
 """
 from __future__ import annotations
@@ -81,31 +81,28 @@ def domestic_stock(row: pd.Series) -> bool:
 
 
 def secondary_order_flow(nav: pd.DataFrame, current: pd.DataFrame) -> None:
-    """Print Eastmoney secondary-market order flow when its date is exactly CUR."""
-    spot = base.retry("Eastmoney current ETF spot for order-flow audit", ak.fund_etf_spot_em, attempts=3)
-    spot.columns = [str(c).strip() for c in spot.columns]
-    required = {"代码", "名称", "主力净流入-净额", "数据日期"}
-    if not required.issubset(spot.columns):
-        print(f"SECONDARY unavailable missing={sorted(required-set(spot.columns))}")
+    path = ROOT / "site" / "data" / "order_flow" / f"{CUR.isoformat()}.json"
+    if not path.exists():
+        print(f"SECONDARY unavailable: no immutable same-day file for {CUR}")
         return
-    s = spot[["代码", "名称", "主力净流入-净额", "数据日期"]].copy()
-    s.columns = ["code", "spot_name", "main_order_flow_yuan", "data_date"]
+    payload = json.loads(path.read_text("utf-8"))
+    if payload.get("tradeDate") != CUR.isoformat() or payload.get("metric") != "secondaryMarketMainOrderFlow":
+        print(f"SECONDARY unavailable: invalid archived order-flow metadata for {CUR}")
+        return
+    s = pd.DataFrame(payload.get("etfs", []))
+    if s.empty or not {"code", "mainOrderFlow1d"}.issubset(s.columns):
+        print(f"SECONDARY unavailable: archived order-flow rows invalid for {CUR}")
+        return
     s["code"] = s["code"].astype(str).str.zfill(6)
-    s["data_date"] = pd.to_datetime(s["data_date"], errors="coerce").dt.date
-    s["main_order_flow_yuan"] = pd.to_numeric(s["main_order_flow_yuan"], errors="coerce")
-    exact = s[s["data_date"] == CUR].dropna(subset=["main_order_flow_yuan"]).drop_duplicates("code", keep="last")
-    if exact.empty:
-        dates = sorted({str(x) for x in s["data_date"].dropna().unique()})
-        print(f"SECONDARY unavailable exact_date={CUR} available_dates={dates[-3:]}")
-        return
+    s["secondary_order_flow"] = pd.to_numeric(s["mainOrderFlow1d"], errors="coerce")
     names = current[["code", "name"]].merge(nav[["code", "fund_name", "fund_type"]], on="code", how="left")
-    x = exact.merge(names, on="code", how="inner")
+    x = s.dropna(subset=["secondary_order_flow"]).merge(names, on="code", how="inner")
     all_stock = x[x["fund_type"].astype(str).str.strip().eq("股票型")].copy()
     domestic = x[x.apply(domestic_stock, axis=1)].copy()
     print(
-        f"SECONDARY {CUR} exact_count={len(exact)} all_etf_main_order={exact['main_order_flow_yuan'].sum()/1e8:+.2f}亿 "
-        f"stock_including_crossborder_count={len(all_stock)} stock_main_order={all_stock['main_order_flow_yuan'].sum()/1e8:+.2f}亿 "
-        f"domestic_stock_count={len(domestic)} domestic_main_order={domestic['main_order_flow_yuan'].sum()/1e8:+.2f}亿"
+        f"SECONDARY {CUR} exact_count={len(x)} all_etf_main_order={x['secondary_order_flow'].sum():+.2f}亿 "
+        f"stock_including_crossborder_count={len(all_stock)} stock_main_order={all_stock['secondary_order_flow'].sum():+.2f}亿 "
+        f"domestic_stock_count={len(domestic)} domestic_main_order={domestic['secondary_order_flow'].sum():+.2f}亿"
     )
 
 
