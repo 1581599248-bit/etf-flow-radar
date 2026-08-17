@@ -1,19 +1,17 @@
-"""ETF primary-market scope reconciliation for the 2026-08-17 review.
+"""ETF flow metric reconciliation for the 2026-08-17 review.
 
 The production GitHub runner is intermittently blocked by the SSE historical
-endpoint, so this audit intentionally reuses the immutable exchange-share files
-already archived by the project for 2026-08-13/14.  It does *not* read the
-published market totals.  Exact-date THS NAV/fund type is fetched independently.
+endpoint, so this audit reuses the immutable exchange-share files already
+archived by the project for 2026-08-13/14.  It does *not* read published market
+totals.  Exact-date THS NAV/fund type is fetched independently.
 
-The objective is to separate three metrics that public articles often call
-"ETF资金流" without the same scope:
-1. all exchange-listed ETFs with usable NAV;
-2. all stock ETFs (including cross-border stock ETFs);
-3. domestic A-share stock ETFs only.
+Two different variables are reconciled deliberately:
+1. primary-market net subscription/redemption proxy = comparable share change *
+   same-day NAV;
+2. secondary-market main-order flow = Eastmoney's 主力净流入-净额 from ETF
+   exchange trading.  This is an order-flow statistic and must never replace (1).
 
-Primary-market flow is valued as comparable share change * same-day NAV.  A
-separate traded-average estimate can remain useful for Wind-style comparison,
-but NAV is the canonical reproducible field for the data model.
+All monetary output is in 亿元.
 """
 from __future__ import annotations
 
@@ -82,6 +80,35 @@ def domestic_stock(row: pd.Series) -> bool:
     return not bool(base.EXCLUDE.search(text))
 
 
+def secondary_order_flow(nav: pd.DataFrame, current: pd.DataFrame) -> None:
+    """Print Eastmoney secondary-market order flow when its date is exactly CUR."""
+    spot = base.retry("Eastmoney current ETF spot for order-flow audit", ak.fund_etf_spot_em, attempts=3)
+    spot.columns = [str(c).strip() for c in spot.columns]
+    required = {"代码", "名称", "主力净流入-净额", "数据日期"}
+    if not required.issubset(spot.columns):
+        print(f"SECONDARY unavailable missing={sorted(required-set(spot.columns))}")
+        return
+    s = spot[["代码", "名称", "主力净流入-净额", "数据日期"]].copy()
+    s.columns = ["code", "spot_name", "main_order_flow_yuan", "data_date"]
+    s["code"] = s["code"].astype(str).str.zfill(6)
+    s["data_date"] = pd.to_datetime(s["data_date"], errors="coerce").dt.date
+    s["main_order_flow_yuan"] = pd.to_numeric(s["main_order_flow_yuan"], errors="coerce")
+    exact = s[s["data_date"] == CUR].dropna(subset=["main_order_flow_yuan"]).drop_duplicates("code", keep="last")
+    if exact.empty:
+        dates = sorted({str(x) for x in s["data_date"].dropna().unique()})
+        print(f"SECONDARY unavailable exact_date={CUR} available_dates={dates[-3:]}")
+        return
+    names = current[["code", "name"]].merge(nav[["code", "fund_name", "fund_type"]], on="code", how="left")
+    x = exact.merge(names, on="code", how="inner")
+    all_stock = x[x["fund_type"].astype(str).str.strip().eq("股票型")].copy()
+    domestic = x[x.apply(domestic_stock, axis=1)].copy()
+    print(
+        f"SECONDARY {CUR} exact_count={len(exact)} all_etf_main_order={exact['main_order_flow_yuan'].sum()/1e8:+.2f}亿 "
+        f"stock_including_crossborder_count={len(all_stock)} stock_main_order={all_stock['main_order_flow_yuan'].sum()/1e8:+.2f}亿 "
+        f"domestic_stock_count={len(domestic)} domestic_main_order={domestic['main_order_flow_yuan'].sum()/1e8:+.2f}亿"
+    )
+
+
 def main() -> int:
     cur = archived_shares(CUR).rename(columns={"shares": "cur_shares"})
     prev = archived_shares(PREV)[["code", "shares"]].rename(columns={"shares": "prev_shares"})
@@ -100,7 +127,7 @@ def main() -> int:
     domestic = usable[usable.apply(domestic_stock, axis=1)].copy()
 
     print(
-        f"SCOPE {CUR} exchange={len(cur)} matched={len(p)} usable_nav={len(usable)} "
+        f"PRIMARY {CUR} exchange={len(cur)} matched={len(p)} usable_nav={len(usable)} "
         f"all_etf_nav={usable['flow_nav'].sum():+.2f}亿 "
         f"stock_including_crossborder_count={len(stock)} stock_nav={stock['flow_nav'].sum():+.2f}亿 "
         f"domestic_stock_count={len(domestic)} domestic_stock_nav={domestic['flow_nav'].sum():+.2f}亿"
@@ -116,9 +143,10 @@ def main() -> int:
             f"  {r.code} {r.name} factor={r.factor:g} shares={r.prev_shares:.0f}->{r.cur_shares:.0f} "
             f"nav={r.prev_nav:.4f}->{r.nav:.4f} flow_nav={r.flow_nav:+.2f}亿"
         )
-
     for r in usable[usable["code"].isin(WATCH)].sort_values("code")[["code", "name", "delta", "nav", "flow_nav"]].itertuples(index=False):
         print(f"ETF {r.code} {r.name}: delta={r.delta/1e8:+.2f}亿份 nav={r.nav:.4f} flow_nav={r.flow_nav:+.2f}亿")
+
+    secondary_order_flow(nav, cur.rename(columns={"cur_shares": "shares"}))
     return 0
 
 
