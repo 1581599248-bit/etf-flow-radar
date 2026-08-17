@@ -49,7 +49,6 @@ class FlowModelV2Tests(unittest.TestCase):
                 {"code": "510300", "shares": 1_000_000_000 + i * 5_000_000},
                 {"code": "513100", "shares": 950_000_000 - i * 2_500_000},
             ])))
-        # Pin T values to the snapshot exactly.
         rows[-1] = (end, pd.DataFrame([
             {"code": "510300", "shares": 1_100_000_000},
             {"code": "513100", "shares": 900_000_000},
@@ -60,7 +59,6 @@ class FlowModelV2Tests(unittest.TestCase):
         snapshot = self._snapshot()
         model.apply_flow_model(snapshot, date(2026, 8, 14), self._window(), self._ths(), None)
         etf = snapshot["etfs"][0]
-        # T-1 = 1.095bn; delta=5m. Canonical = 5m*5.0/1e8 = 0.25亿元.
         self.assertEqual(etf["flow1d"], 0.25)
         self.assertEqual(etf["primaryFlow1d"], 0.25)
         self.assertEqual(etf["flow1dAvgPriceEstimate"], 0.24)
@@ -74,6 +72,14 @@ class FlowModelV2Tests(unittest.TestCase):
         self.assertEqual(scopes["aShareStockEtf"]["etfCount"], 1)
         self.assertEqual(scopes["stockEtfIncludingCrossBorder"]["etfCount"], 2)
         self.assertEqual(snapshot["market"]["etfCount"], 1)
+
+    def test_asset_scope_keeps_money_separate_from_bond(self):
+        self.assertEqual(model._asset_scope("货币ETF", "华宝现金添益ETF", "货币型"), "moneyEtf")
+        self.assertEqual(model._asset_scope("添富快线ETF", "汇添富收益快线货币ETF", "其他"), "moneyEtf")
+        self.assertEqual(model._asset_scope("国债ETF", "国泰上证5年期国债ETF", "债券型"), "bondEtf")
+        self.assertEqual(model._asset_scope("黄金ETF", "华安黄金易ETF", "其他"), "commodityEtf")
+        self.assertEqual(model._asset_scope("纳指ETF", "国泰纳斯达克100ETF", "股票型"), "crossBorderStockEtf")
+        self.assertEqual(model._asset_scope("沪深300ETF", "华泰柏瑞沪深300ETF", "股票型"), "aShareStockEtf")
 
     def test_secondary_order_flow_never_overwrites_primary_and_requires_exact_date(self):
         snapshot = self._snapshot()
@@ -104,8 +110,6 @@ class FlowModelV2Tests(unittest.TestCase):
                       "flow1d": 0.0, "flow5d": 0.0, "flow20d": 0.0, "aum": 0.0}],
             "groups": [], "quality": {},
         }
-        # Corporate-action layer has already restated the previous 3.592295bn
-        # shares into current units: 3.592295bn * 3 = 10.776885bn.
         prev_comparable = 10_776_885_000
         window = [
             (date(2026, 8, 13), pd.DataFrame([{"code": "588710", "shares": prev_comparable}])),
