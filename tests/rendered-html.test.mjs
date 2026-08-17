@@ -99,16 +99,16 @@ test("schema v6 separates primary subscription flow, secondary order flow and ma
   assert.equal(daily.tradeDate, snapshot.tradeDate);
 });
 
-test("generated client makes the metric distinction visible", async () => {
+test("generated client keeps methodology changes without adding scope-comparison modules", async () => {
   const page = await readFile("dist/index.html", "utf8");
   const snapshot = JSON.parse(await readFile("dist/data/latest.json", "utf8"));
   const blueprint = await readFile("render.yaml", "utf8");
   assert.match(page, /A股股票ETF一级市场净申赎/);
-  assert.match(page, /股票ETF（含跨境）· 一级市场/);
-  assert.match(page, /A股股票ETF · 二级市场主力资金/);
-  assert.match(page, /成交订单流，不等于申购赎回/);
   assert.match(page, /5日端点资金变化/);
   assert.doesNotMatch(page, /5日累计资金变化/);
+  assert.doesNotMatch(page, /全部场内ETF · 一级市场/);
+  assert.doesNotMatch(page, /股票ETF（含跨境）· 一级市场/);
+  assert.doesNotMatch(page, /A股股票ETF · 二级市场主力资金/);
   assert.equal(snapshot.schemaVersion, 6);
   assert.match(blueprint, /buildCommand: npm ci && npm run build/);
   assert.match(blueprint, /staticPublishPath: \.\/dist/);
