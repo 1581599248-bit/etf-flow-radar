@@ -1,42 +1,50 @@
-"""Cross-date benchmark of the ETF primary-market flow convention.
+"""ETF primary-market scope reconciliation for the 2026-08-17 review.
 
-This script is deliberately separate from the published snapshot.  It rebuilds
-several historical dates from exchange end-of-day shares and an exact-date NAV /
-fund-type panel, then prints totals and selected single-ETF flows that can be
-compared with public Wind / Choice / iFinD reports.
+The production GitHub runner is intermittently blocked by the SSE historical
+endpoint, so this audit intentionally reuses the immutable exchange-share files
+already archived by the project for 2026-08-13/14.  It does *not* read the
+published market totals.  Exact-date THS NAV/fund type is fetched independently.
 
-Public benchmark references used during the 2026-08-17 methodology review:
-- 2026-07-13 Choice: domestic stock ETF about +597.04 bn CNY.
-- 2026-07-14 Choice/iFinD: stock ETF about +185.71/+191.56 bn CNY.
-- 2026-07-17 Wind: stock ETF incl. cross-border about +758.67 bn CNY.
-- 2026-07-30 iFinD: stock ETF about +404.92 bn CNY.
-- 2026-07-31 iFinD: stock ETF about -243.75 bn CNY; Wind stock ETF incl.
-  cross-border about -250.50 bn CNY.
+The objective is to separate three metrics that public articles often call
+"ETF资金流" without the same scope:
+1. all exchange-listed ETFs with usable NAV;
+2. all stock ETFs (including cross-border stock ETFs);
+3. domestic A-share stock ETFs only.
 
-All printed monetary values are亿元, not CNY bn despite the historical variable
-name used elsewhere in the project.
+Primary-market flow is valued as comparable share change * same-day NAV.  A
+separate traded-average estimate can remain useful for Wind-style comparison,
+but NAV is the canonical reproducible field for the data model.
 """
 from __future__ import annotations
 
+import json
 import math
-from datetime import date, timedelta
+from datetime import date
+from pathlib import Path
 
 import akshare as ak
 import pandas as pd
 
 import update_daily as base
-import update_daily_resilient as resilient
 
-DATES = [
-    date(2026, 7, 13),
-    date(2026, 7, 14),
-    date(2026, 7, 17),
-    date(2026, 7, 30),
-    date(2026, 7, 31),
-    date(2026, 8, 14),
-]
+CUR = date(2026, 8, 14)
+PREV = date(2026, 8, 13)
 FACTORS = (0.2, 0.25, 1/3, 0.5, 2.0, 3.0, 4.0, 5.0)
 WATCH = {"510300", "510500", "512100", "159915", "588000", "588170", "515880", "588710"}
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def archived_shares(day: date) -> pd.DataFrame:
+    path = ROOT / "site" / "data" / "universe" / f"{day.isoformat()}.json"
+    payload = json.loads(path.read_text("utf-8"))
+    out = pd.DataFrame(payload["universe"])
+    required = {"code", "name", "shares", "exchange"}
+    if out.empty or not required.issubset(out.columns):
+        raise RuntimeError(f"archived exchange universe invalid for {day}")
+    out = out[["code", "name", "shares", "exchange"]].copy()
+    out["code"] = out["code"].astype(str).str.zfill(6)
+    out["shares"] = pd.to_numeric(out["shares"], errors="coerce")
+    return out.dropna(subset=["shares"]).drop_duplicates("code", keep="last")
 
 
 def exact_nav(day: date) -> pd.DataFrame:
@@ -52,21 +60,6 @@ def exact_nav(day: date) -> pd.DataFrame:
     out["prev_nav"] = pd.to_numeric(out["prev_nav"], errors="coerce")
     out["query_date"] = pd.to_datetime(out["query_date"], errors="coerce").dt.date
     return out[out["query_date"] == day].drop_duplicates("code", keep="last")
-
-
-def previous_session(day: date) -> tuple[date, pd.DataFrame]:
-    candidate = day - timedelta(days=1)
-    while True:
-        if candidate.weekday() <= 4:
-            try:
-                frame = base.fetch_exchange_shares(candidate)
-                if len(frame) >= base.MIN_MARKET_ETFS:
-                    return candidate, frame
-            except Exception:
-                pass
-        candidate -= timedelta(days=1)
-        if (day - candidate).days > 10:
-            raise RuntimeError(f"cannot resolve previous session before {day}")
 
 
 def split_factor(prev_shares: float, cur_shares: float, prev_nav: float, nav: float) -> float | None:
@@ -89,11 +82,10 @@ def domestic_stock(row: pd.Series) -> bool:
     return not bool(base.EXCLUDE.search(text))
 
 
-def run_day(day: date) -> None:
-    cur = base.fetch_exchange_shares(day).rename(columns={"shares": "cur_shares"})
-    prev_day, prev0 = previous_session(day)
-    prev = prev0[["code", "shares"]].rename(columns={"shares": "prev_shares"})
-    nav = exact_nav(day)
+def main() -> int:
+    cur = archived_shares(CUR).rename(columns={"shares": "cur_shares"})
+    prev = archived_shares(PREV)[["code", "shares"]].rename(columns={"shares": "prev_shares"})
+    nav = exact_nav(CUR)
     p = cur.merge(prev, on="code", how="inner").merge(nav, on="code", how="left")
     p["factor"] = [
         split_factor(float(a), float(b), float(c), float(d))
@@ -103,32 +95,30 @@ def run_day(day: date) -> None:
     p["prev_adj"] = p["prev_shares"] * p["factor"].fillna(1.0)
     p["delta"] = p["cur_shares"] - p["prev_adj"]
     p["flow_nav"] = p["delta"] * p["nav"] / 1e8
-
     usable = p[p["nav"].notna() & (p["nav"] > 0)].copy()
-    all_stock = usable[usable["fund_type"].astype(str).str.strip().eq("股票型")].copy()
+    stock = usable[usable["fund_type"].astype(str).str.strip().eq("股票型")].copy()
     domestic = usable[usable.apply(domestic_stock, axis=1)].copy()
 
     print(
-        f"BENCH {day} prev={prev_day} exchange={len(cur)} matched={len(p)} "
-        f"all_stock_count={len(all_stock)} all_stock_nav={all_stock['flow_nav'].sum():+.2f}亿 "
-        f"domestic_count={len(domestic)} domestic_nav={domestic['flow_nav'].sum():+.2f}亿"
+        f"SCOPE {CUR} exchange={len(cur)} matched={len(p)} usable_nav={len(usable)} "
+        f"all_etf_nav={usable['flow_nav'].sum():+.2f}亿 "
+        f"stock_including_crossborder_count={len(stock)} stock_nav={stock['flow_nav'].sum():+.2f}亿 "
+        f"domestic_stock_count={len(domestic)} domestic_stock_nav={domestic['flow_nav'].sum():+.2f}亿"
     )
+    print("FUND_TYPE_TOTALS")
+    for fund_type, group in usable.groupby(usable["fund_type"].astype(str).str.strip()):
+        print(f"  {fund_type}: count={len(group)} flow_nav={group['flow_nav'].sum():+.2f}亿")
+
     actions = p[p["factor"].notna()]
+    print(f"CORPORATE_ACTIONS count={len(actions)}")
     for r in actions[["code", "name", "factor", "prev_shares", "cur_shares", "prev_nav", "nav", "flow_nav"]].itertuples(index=False):
         print(
-            f"  ACTION {r.code} {r.name} factor={r.factor:g} "
-            f"shares={r.prev_shares:.0f}->{r.cur_shares:.0f} nav={r.prev_nav:.4f}->{r.nav:.4f} "
-            f"flow_nav={r.flow_nav:+.2f}亿"
+            f"  {r.code} {r.name} factor={r.factor:g} shares={r.prev_shares:.0f}->{r.cur_shares:.0f} "
+            f"nav={r.prev_nav:.4f}->{r.nav:.4f} flow_nav={r.flow_nav:+.2f}亿"
         )
-    watched = usable[usable["code"].isin(WATCH)].sort_values("code")
-    for r in watched[["code", "name", "delta", "nav", "flow_nav"]].itertuples(index=False):
-        print(f"  ETF {r.code} {r.name}: delta={r.delta/1e8:+.2f}亿份 nav={r.nav:.4f} flow_nav={r.flow_nav:+.2f}亿")
 
-
-def main() -> int:
-    resilient.install_resilient_sources()
-    for day in DATES:
-        run_day(day)
+    for r in usable[usable["code"].isin(WATCH)].sort_values("code")[["code", "name", "delta", "nav", "flow_nav"]].itertuples(index=False):
+        print(f"ETF {r.code} {r.name}: delta={r.delta/1e8:+.2f}亿份 nav={r.nav:.4f} flow_nav={r.flow_nav:+.2f}亿")
     return 0
 
 
