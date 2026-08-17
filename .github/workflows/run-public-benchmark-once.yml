@@ -12,19 +12,9 @@ permissions:
 jobs:
   benchmark:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    env:
-      TZ: Asia/Shanghai
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: data_pipeline/requirements.txt
-      - run: pip install -r data_pipeline/requirements.txt
-      - name: Run known public 2026-07-31 benchmark
-        run: python data_pipeline/benchmark_known_public_20260731.py
       - name: Audit current published group reconciliation
         run: |
           python - <<'PY'
