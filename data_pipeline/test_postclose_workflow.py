@@ -6,22 +6,28 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class PostCloseWorkflowTests(unittest.TestCase):
-    def test_postclose_capture_retries_and_attempts_full_publish(self):
-        text = (ROOT / ".github" / "workflows" / "capture-etf-order-flow.yml").read_text("utf-8")
+    def test_postclose_publisher_runs_after_capture_and_retries_later(self):
+        text = (ROOT / ".github" / "workflows" / "postclose-etf-publish.yml").read_text("utf-8")
+        self.assertIn('"Capture ETF order flow"', text)
+        self.assertIn("workflow_run", text)
         for cron in (
-            '"35 7 * * 1-5"',
-            '"5 8 * * 1-5"',
-            '"35 8 * * 1-5"',
             '"30 9 * * 1-5"',
             '"30 10 * * 1-5"',
             '"0 12 * * 1-5"',
         ):
             self.assertIn(cron, text)
         self.assertIn("Resolve latest captured trade date", text)
+        self.assertIn("site/data/order_flow/latest.json", text)
         self.assertIn("Attempt full report as soon as end-of-day data is ready", text)
         self.assertIn('python data_pipeline/update_daily_v2.py --date "${{ steps.trade.outputs.trade_date }}"', text)
         self.assertIn("continue-on-error: true", text)
         self.assertIn("Commit verified full report immediately", text)
+
+    def test_capture_workflow_still_persists_order_flow_independently(self):
+        text = (ROOT / ".github" / "workflows" / "capture-etf-order-flow.yml").read_text("utf-8")
+        self.assertIn("Capture same-day secondary-market ETF order flow", text)
+        self.assertIn("git add site/data/order_flow", text)
+        self.assertIn("data: capture same-day ETF secondary order flow", text)
 
     def test_morning_fallback_is_still_present(self):
         text = (ROOT / ".github" / "workflows" / "daily-etf-data.yml").read_text("utf-8")
