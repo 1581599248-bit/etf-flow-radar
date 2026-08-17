@@ -1,5 +1,5 @@
 name: Publish ETF report after close
-# Publisher schema: v2; changes to this file bootstrap the latest captured trade date.
+# Publisher schema: v3; changes to this file bootstrap the latest captured trade date.
 
 on:
   workflow_run:
@@ -29,7 +29,9 @@ permissions:
   contents: write
 
 concurrency:
-  group: postclose-etf-publish
+  # v2 intentionally separates current runs from legacy executions that were
+  # launched before cancel-in-progress was enabled and may still occupy the old group.
+  group: postclose-etf-publish-v2
   # A new retry should replace a stale provider call instead of waiting behind it.
   cancel-in-progress: true
 
