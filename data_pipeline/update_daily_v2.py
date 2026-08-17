@@ -12,6 +12,8 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+import pandas as pd
+
 import update_daily as base
 import update_daily_guarded as guarded
 import update_daily_production as production
@@ -23,13 +25,37 @@ _ORIG_POSTPROCESS = production._postprocess_snapshot
 _ORIG_ATOMIC_PUBLISH = base.atomic_publish
 
 
+def _load_secondary_spot(day: date) -> pd.DataFrame:
+    """Prefer the immutable post-close snapshot for the target trade date.
+
+    Current ETF spot endpoints roll forward with the natural date, so an
+    overnight rebuild must not infer Friday order flow from a Monday snapshot.
+    The dedicated post-close collector persists the exact trading-day values.
+    """
+    path = base.PUBLIC / "order_flow" / f"{day.isoformat()}.json"
+    if path.exists():
+        payload = json.loads(path.read_text("utf-8"))
+        if payload.get("tradeDate") == day.isoformat() and payload.get("metric") == "secondaryMarketMainOrderFlow":
+            rows = payload.get("etfs", [])
+            if rows:
+                frame = pd.DataFrame(rows)
+                frame["代码"] = frame["code"].astype(str).str.zfill(6)
+                frame["名称"] = frame["name"].astype(str)
+                frame["主力净流入-净额"] = pd.to_numeric(frame["mainOrderFlow1d"], errors="coerce") * 1e8
+                frame["数据日期"] = day.isoformat()
+                return frame[["代码", "名称", "主力净流入-净额", "数据日期"]]
+    # Fallback is deliberately safe: flow_model_v2 accepts this snapshot only if
+    # its own provider date exactly matches `day`; otherwise it records unavailable.
+    return guarded._get_spot()
+
+
 def _v2_postprocess(snapshot: dict[str, Any], day: date) -> None:
     # Preserve mature quality gates, SW parent mapping and issue collection first.
     _ORIG_POSTPROCESS(snapshot, day)
 
     # Then replace every client-facing flow number with the explicit v2 model.
     ths = production._get_ths_day(day)
-    spot = guarded._get_spot()
+    spot = _load_secondary_spot(day)
     flow_model_v2.apply_flow_model(snapshot, day, production._LAST_WINDOW, ths, spot)
     flow_comparison_v2.add_primary_valuation_comparisons(snapshot)
     flow_scope_breakdown_v2.add_asset_class_totals(snapshot)
@@ -63,7 +89,7 @@ def _v2_postprocess(snapshot: dict[str, Any], day: date) -> None:
     snapshot["schemaVersion"] = 6
     snapshot.setdefault("methodology", {}).update({
         "flow": "一级市场净申购/赎回估算 =（T日交易所日终份额 − T-1日公司行动调整后的可比份额）× T日单位净值。单位净值是主展示估值口径；同一份额变化再乘成交均价的结果单独保留用于Wind/资讯口径对照，不再混入主字段。",
-        "metricSeparation": "一级市场净申购/赎回与二级市场主力净流入是两个不同变量。二级市场主力资金仅在数据日期严格等于交易日时单独记录于 flowMetrics.secondaryMarketOrderFlow，绝不覆盖一级市场数据。",
+        "metricSeparation": "一级市场净申购/赎回与二级市场主力净流入是两个不同变量。二级市场主力资金由收盘后轻量任务在交易日当天留存，并单独记录于 flowMetrics.secondaryMarketOrderFlow，绝不覆盖一级市场数据；如果没有同日留存，历史回放直接标记 unavailable。",
         "multiDay": "5日/20日当前字段为端点份额变化×期末单位净值，字段明确标记 Endpoint；不是逐日净申购额之和。schema v6开始落盘每日单ETF一级市场flow1d，积累足够交易日后再生成真正5日/20日累计净申购额。",
         "scope": "同时保存全部ETF、股票ETF（含跨境）和A股股票ETF三个一级市场比较口径，并额外保存A股股票、跨境、债券、货币、商品、其他六个互斥资产类别，使分类加总严格回到全部ETF。网站主口径仍是A股股票ETF；与Wind/Choice/iFinD或资讯报道对比时必须先匹配统计范围。",
         "valuation": "主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。二者是估值方法差异，不是两个独立资金事件。",
