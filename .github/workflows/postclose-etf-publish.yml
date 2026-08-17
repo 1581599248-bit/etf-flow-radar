@@ -1,5 +1,5 @@
 name: Publish ETF report after close
-# Publisher schema: v4; changes to this file bootstrap the latest captured trade date.
+# Publisher schema: v5; changes to this file bootstrap the latest captured trade date.
 
 on:
   workflow_run:
@@ -11,8 +11,6 @@ on:
     - cron: "30 9 * * 1-5"   # 17:30 Asia/Shanghai
     - cron: "30 10 * * 1-5"  # 18:30 Asia/Shanghai
     - cron: "0 12 * * 1-5"   # 20:00 Asia/Shanghai
-  # One-time bootstrap whenever this workflow itself is changed on main. This
-  # also lets us publish the most recently captured trade date after midnight.
   push:
     branches:
       - main
@@ -29,10 +27,7 @@ permissions:
   contents: write
 
 concurrency:
-  # v2 intentionally separates current runs from legacy executions that were
-  # launched before cancel-in-progress was enabled and may still occupy the old group.
   group: postclose-etf-publish-v2
-  # A new retry should replace a stale provider call instead of waiting behind it.
   cancel-in-progress: true
 
 jobs:
@@ -85,9 +80,11 @@ jobs:
       - name: Attempt full report as soon as end-of-day data is ready
         id: build
         continue-on-error: true
-        # Provider calls normally finish in a few minutes. Bound a stale call so
-        # the next scheduled retry can actually run.
         run: timeout 12m python data_pipeline/update_daily_v2.py --date "${{ steps.trade.outputs.trade_date }}"
+
+      - name: Run external-send reconciliation audit
+        if: steps.build.outcome == 'success'
+        run: python data_pipeline/audit_snapshot_v6.py
 
       - name: Validate published schema and client bundle
         if: steps.build.outcome == 'success'

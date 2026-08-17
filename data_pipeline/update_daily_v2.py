@@ -57,16 +57,11 @@ def _load_secondary_spot(day: date) -> pd.DataFrame:
                     ] if c in frame.columns
                 ]
                 return frame[keep]
-    # Live spot is accepted downstream only if its own provider date equals day.
     return guarded._get_spot()
 
 
 def _same_day_trade_rows(spot: pd.DataFrame | None, day: date) -> pd.DataFrame:
-    """Return same-day per-ETF all-trade net flow in yuan.
-
-    New persisted facts already contain the value. For a live same-day fallback,
-    split turnover by the provider's outer/inner active-trade volume ratio.
-    """
+    """Return same-day per-ETF all-trade net flow in yuan."""
     columns = ["code", "trade_net_yuan", "trade_in_yuan", "trade_out_yuan"]
     if spot is None or spot.empty:
         return pd.DataFrame(columns=columns)
@@ -79,7 +74,6 @@ def _same_day_trade_rows(spot: pd.DataFrame | None, day: date) -> pd.DataFrame:
     source = source[source["data_date"] == day].copy()
     if source.empty:
         return pd.DataFrame(columns=columns)
-
     if "当日交易净额" in source.columns:
         source["trade_net_yuan"] = pd.to_numeric(source["当日交易净额"], errors="coerce")
         source["trade_in_yuan"] = pd.to_numeric(source.get("当日交易流入"), errors="coerce")
@@ -95,14 +89,11 @@ def _same_day_trade_rows(spot: pd.DataFrame | None, day: date) -> pd.DataFrame:
         source["trade_net_yuan"] = source["trade_in_yuan"] - source["trade_out_yuan"]
     else:
         return pd.DataFrame(columns=columns)
-
     return source[columns].dropna(subset=["trade_net_yuan"]).drop_duplicates("code", keep="last")
 
 
-def _add_trade_net_flow(
-    snapshot: dict[str, Any], day: date, ths: pd.DataFrame, spot: pd.DataFrame | None
-) -> None:
-    """Add a separate secondary-market trading statistic without changing the canonical share-flow model."""
+def _add_trade_net_flow(snapshot: dict[str, Any], day: date, ths: pd.DataFrame, spot: pd.DataFrame | None) -> None:
+    """Add a separate secondary-market trading statistic without changing primary flow."""
     target = {
         "metric": "secondaryMarketTradeNetFlowEstimate",
         "displayName": "当日成交资金净流入/净流出",
@@ -117,7 +108,6 @@ def _add_trade_net_flow(
         target["reason"] = "no same-day all-trade direction snapshot"
         snapshot.setdefault("flowMetrics", {})["secondaryMarketTradeFlow"] = target
         return
-
     universe = pd.DataFrame(snapshot.get("universe", []))
     if universe.empty or not {"code", "name"}.issubset(universe.columns):
         target["reason"] = "snapshot universe missing code/name"
@@ -125,15 +115,8 @@ def _add_trade_net_flow(
         return
     frame = universe[["code", "name"]].copy()
     frame["code"] = frame["code"].astype(str).str.zfill(6)
-    frame = frame.drop_duplicates("code", keep="last").merge(
-        ths[["code", "fund_name", "fund_type"]], on="code", how="left"
-    )
-    frame["scope"] = frame.apply(
-        lambda row: flow_model_v2._asset_scope(
-            str(row["name"]), str(row.get("fund_name", "")), str(row.get("fund_type", ""))
-        ),
-        axis=1,
-    )
+    frame = frame.drop_duplicates("code", keep="last").merge(ths[["code", "fund_name", "fund_type"]], on="code", how="left")
+    frame["scope"] = frame.apply(lambda row: flow_model_v2._asset_scope(str(row["name"]), str(row.get("fund_name", "")), str(row.get("fund_type", ""))), axis=1)
     joined = frame[["code", "scope"]].merge(exact, on="code", how="inner")
     if joined.empty:
         target["reason"] = "same-day trading rows do not overlap the ETF universe"
@@ -149,19 +132,12 @@ def _add_trade_net_flow(
             "inflow1d": round(float(inflow.sum()) / 1e8, 2) if inflow.notna().any() else None,
             "outflow1d": round(float(outflow.sum()) / 1e8, 2) if outflow.notna().any() else None,
         }
-
-    target.update({
-        "status": "available",
-        "scopeTotals": {
-            "allEtf": total(joined),
-            "stockEtfIncludingCrossBorder": total(
-                joined[joined["scope"].isin(["aShareStockEtf", "crossBorderStockEtf"])]
-            ),
-            "aShareStockEtf": total(joined[joined["scope"].eq("aShareStockEtf")]),
-        },
-    })
+    target.update({"status": "available", "scopeTotals": {
+        "allEtf": total(joined),
+        "stockEtfIncludingCrossBorder": total(joined[joined["scope"].isin(["aShareStockEtf", "crossBorderStockEtf"])]),
+        "aShareStockEtf": total(joined[joined["scope"].eq("aShareStockEtf")]),
+    }})
     snapshot.setdefault("flowMetrics", {})["secondaryMarketTradeFlow"] = target
-
     trade_map = dict(zip(joined["code"], joined["trade_net_yuan"] / 1e8))
     for item in snapshot.get("etfs", []):
         value = trade_map.get(str(item.get("code", "")).zfill(6))
@@ -176,103 +152,94 @@ def _flow_phrase(value: float) -> str:
     return "净额0.0亿元"
 
 
+def _visible_sector_groups(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
+    """Mutually-exclusive SW-level/theme groups actually rendered to clients."""
+    return [g for g in snapshot.get("groups", []) if g.get("kind") == "industry"]
+
+
 def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
-    """Build both homepage flow sentences without mixing their meanings.
-
-    Sentence 1 is the same-day secondary-market ETF trading-flow estimate when
-    that same-day fact was captured. Sentence 2 is always the canonical A-share
-    stock ETF T-day primary-market net subscription/redemption estimate:
-    (T shares - comparable T-1 shares) * T NAV.  Missing secondary-market data
-    must never suppress or replace the canonical T-day flow.
-    """
+    """Build the client headline from one consistent visible classification layer."""
     production._regenerate_conclusion(snapshot)
-    old = str(snapshot.get("conclusion", {}).get("headline") or "")
-    tail = ""
-    if "宽基中" in old:
-        tail = "宽基中" + old.split("宽基中", 1)[1]
-
     market = snapshot["market"]
     primary_value = market.get("flow1d")
     if not isinstance(primary_value, (int, float)):
         raise ValueError("A-share stock ETF market.flow1d is required for the homepage headline")
-
-    trade_scope = (
-        snapshot.get("flowMetrics", {})
-        .get("secondaryMarketTradeFlow", {})
-        .get("scopeTotals", {})
-        .get("aShareStockEtf", {})
-    )
+    trade_scope = snapshot.get("flowMetrics", {}).get("secondaryMarketTradeFlow", {}).get("scopeTotals", {}).get("aShareStockEtf", {})
     trade_value = trade_scope.get("netFlow1d")
-    if isinstance(trade_value, (int, float)):
-        first = f"A股ETF当日成交资金{_flow_phrase(float(trade_value))}；"
-    else:
-        first = "A股ETF当日成交资金暂无同日数据；"
+    first = f"A股ETF当日成交资金{_flow_phrase(float(trade_value))}；" if isinstance(trade_value, (int, float)) else "A股ETF当日成交资金暂无同日数据；"
+    second = f"ETF份额较上一日{_flow_phrase(float(primary_value))}。"
 
-    second = (
-        f"A股股票ETF当日合计{_flow_phrase(float(primary_value))}；"
-        f"{market.get('increaseEtfCount1d', 0)}只份额增加、"
-        f"{market.get('decreaseEtfCount1d', 0)}只份额减少、"
-        f"{market.get('unchangedEtfCount1d', 0)}只不变。"
-    )
+    groups = snapshot.get("groups", [])
+    broad = [g for g in groups if g.get("kind") == "broad"]
+    broad_in_count = sum(float(g.get("flow1d", 0) or 0) > 0 for g in broad)
+    broad_out_count = sum(float(g.get("flow1d", 0) or 0) < 0 for g in broad)
+    sectors = _visible_sector_groups(snapshot)
+    tail = f"宽基中{broad_out_count}个流出、{broad_in_count}个流入。"
+    if sectors:
+        sector_in = sorted(sectors, key=lambda g: float(g.get("flow1d", 0) or 0), reverse=True)
+        sector_out = sorted(sectors, key=lambda g: float(g.get("flow1d", 0) or 0))
+        sector_headline = (f"申万一级和主题行业资金流入居前的是{sector_in[0]['name']}，流出最多的是{sector_out[0]['name']}。" if float(sector_in[0].get("flow1d", 0) or 0) > 0 else f"申万一级和主题行业当日均未录得净流入，流出最多的是{sector_out[0]['name']}。")
+        tail = f"宽基中{broad_out_count}个流出、{broad_in_count}个流入；{sector_headline}"
+        positive = [g for g in sector_in if float(g.get("flow1d", 0) or 0) > 0]
+        sector_fact = ("申万一级和主题行业净流入居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in positive[:2]) + f"；净流出最多为{sector_out[0]['name']}{float(sector_out[0]['flow1d']):+.1f}亿。" if positive else f"申万一级和主题行业当日均未录得净流入；流出最多为{sector_out[0]['name']}{float(sector_out[0]['flow1d']):+.1f}亿。")
+        facts = list(snapshot.setdefault("conclusion", {}).get("facts") or [])
+        if len(facts) >= 2:
+            facts[1] = sector_fact
+        elif facts:
+            facts.append(sector_fact)
+        else:
+            facts = [sector_fact]
+        snapshot["conclusion"]["facts"] = facts
     snapshot.setdefault("conclusion", {})["headline"] = first + second + tail
 
-def apply_v2_semantics(
-    snapshot: dict[str, Any],
-    day: date,
-    share_window: list[tuple[date, pd.DataFrame]],
-    ths: pd.DataFrame,
-    spot: pd.DataFrame | None,
-) -> None:
+
+def apply_v2_semantics(snapshot: dict[str, Any], day: date, share_window: list[tuple[date, pd.DataFrame]], ths: pd.DataFrame, spot: pd.DataFrame | None) -> None:
     """Apply every client-facing schema-v6 flow rule exactly once."""
     legacy_classified_count = snapshot.get("quality", {}).get("classifiedEtfCount")
-
     flow_model_v2.apply_flow_model(snapshot, day, share_window, ths, spot)
     flow_comparison_v2.add_primary_valuation_comparisons(snapshot)
     flow_scope_breakdown_v2.add_asset_class_totals(snapshot)
     _add_trade_net_flow(snapshot, day, ths, spot)
-
     primary = snapshot.setdefault("flowMetrics", {}).setdefault("primaryMarket", {})
     primary["displayName"] = "ETF当日净申购/赎回估算"
     primary["definition"] = "（T日交易所日终份额－T-1日公司行动调整后的可比份额）×T日单位净值。"
-
     rollups = production._build_industry_rollups(snapshot)
     snapshot["industryRollups"] = rollups
-    snapshot["themeGroups"] = [
-        g for g in snapshot.get("groups", []) if g.get("kind") == "industry" and g.get("parent")
-    ]
+    snapshot["themeGroups"] = [g for g in snapshot.get("groups", []) if g.get("kind") == "industry" and g.get("parent")]
 
     market = snapshot["market"]
     classified_flow = round(sum(float(g.get("flow1d", 0) or 0) for g in snapshot.get("groups", [])), 2)
+    visible_sectors = _visible_sector_groups(snapshot)
+    visible_sector_flow = round(sum(float(g.get("flow1d", 0) or 0) for g in visible_sectors), 2)
+    rollup_sector_flow = round(sum(float(g.get("flow1d", 0) or 0) for g in rollups), 2)
+    sector_in = max(visible_sectors, key=lambda g: float(g.get("flow1d", 0) or 0)) if visible_sectors else None
+    sector_out = min(visible_sectors, key=lambda g: float(g.get("flow1d", 0) or 0)) if visible_sectors else None
     quality = snapshot.setdefault("quality", {})
     quality.update({
-        "industryRollupCount": len(rollups),
-        "themeGroupCount": len(snapshot["themeGroups"]),
-        "legacyClassifiedEtfCountBeforeV6": legacy_classified_count,
-        "classifiedEtfCount": len(snapshot.get("etfs", [])),
-        "marketScopeEtfCount": market.get("etfCount"),
-        "marketScope5dCount": market.get("etfCount5d"),
-        "marketScope20dCount": market.get("etfCount20d"),
+        "industryRollupCount": len(rollups), "themeGroupCount": len(snapshot["themeGroups"]),
+        "legacyClassifiedEtfCountBeforeV6": legacy_classified_count, "classifiedEtfCount": len(snapshot.get("etfs", [])),
+        "marketScopeEtfCount": market.get("etfCount"), "marketScope5dCount": market.get("etfCount5d"), "marketScope20dCount": market.get("etfCount20d"),
         "marketScopeSource": "同花顺精确交易日基金类型/NAV + 沪深交易所日终份额",
-        "classifiedCoverageOfMarketPct": round(
-            len(snapshot.get("etfs", [])) / max(int(market.get("etfCount") or 1), 1) * 100, 2
-        ),
-        "marketScopeReconciliation": {
-            "aShareEquityShareFlow1d": market.get("flow1d"),
-            "classifiedGroupShareFlow1d": classified_flow,
-            "ungroupedDifference": round(float(market.get("flow1d") or 0) - classified_flow, 2),
+        "classifiedCoverageOfMarketPct": round(len(snapshot.get("etfs", [])) / max(int(market.get("etfCount") or 1), 1) * 100, 2),
+        "marketScopeReconciliation": {"aShareEquityShareFlow1d": market.get("flow1d"), "classifiedGroupShareFlow1d": classified_flow, "ungroupedDifference": round(float(market.get("flow1d") or 0) - classified_flow, 2)},
+        "clientSectorReconciliation": {
+            "visibleGroupCount": len(visible_sectors), "visibleGroupFlow1d": visible_sector_flow,
+            "industryRollupFlow1d": rollup_sector_flow, "difference": round(visible_sector_flow - rollup_sector_flow, 2),
+            "topInflowGroup": None if sector_in is None else {"id": sector_in.get("id"), "name": sector_in.get("name"), "flow1d": sector_in.get("flow1d")},
+            "topOutflowGroup": None if sector_out is None else {"id": sector_out.get("id"), "name": sector_out.get("name"), "flow1d": sector_out.get("flow1d")},
+            "displayLayer": "mutually_exclusive_sw_level_and_theme_groups",
         },
     })
-
     snapshot["schemaVersion"] = 6
     snapshot.setdefault("methodology", {}).update({
         "flow": "ETF当日净流入/净流出估算 =（T日交易所日终份额 − T-1日公司行动调整后的可比份额）× T日单位净值。T-1只作为T日份额变化的基准；该结果就是T日净申购/赎回的资金估算，不是再与上一日资金流做一次比较。",
-        "metricSeparation": "首页保留两句独立口径：第一句展示A股ETF同日二级市场成交资金净额（仅在同日成交额+外盘/内盘快照成功落盘时给出数值）；第二句固定展示A股股票ETF当日净申购/赎回估算（交易所T日/T-1可比份额变化×T日NAV）。第一句缺失或数值变化均不得覆盖第二句。",
+        "metricSeparation": "首页保留两句独立口径：第一句展示A股ETF同日二级市场成交资金净额（仅在同日成交额+外盘/内盘快照成功落盘时给出数值）；第二句以“ETF份额较上一日净流入/净流出”展示A股股票ETF当日净申购/赎回估算，金额严格等于交易所T日与T-1可比份额变化×T日NAV。第一句缺失或数值变化均不得覆盖第二句。",
         "multiDay": "5日/20日当前字段为端点份额变化×期末单位净值，字段明确标记 Endpoint；不是逐日净流入额之和。schema v6开始落盘每日单ETF份额flow1d，积累足够交易日后再生成真正5日/20日累计净流入额。",
         "scope": "首页主指标固定使用A股股票ETF范围，不含跨境股票ETF、债券ETF、货币ETF和商品ETF；同时保留全部ETF、股票ETF（含跨境）和六类资产范围用于审计与对照。",
         "valuation": "ETF当日净流入/净流出主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。",
+        "sectorDisplay": "客户端行业结论、排名与行业资金坐标统一使用互斥的“申万一级行业+热门主题”展示层；industryRollups仅用于把热门主题回卷到申万一级行业做审计，不参与客户端最大流入/流出排名。",
         "coordinates": "横轴 = 20日相对沪深300收益率；纵轴 = 5日端点份额变化×期末NAV ÷ 5日前参考规模（%）。",
     })
-
     _regenerate_v2_conclusion(snapshot)
 
 
@@ -285,28 +252,11 @@ def _v2_postprocess(snapshot: dict[str, Any], day: date) -> None:
 def daily_flow_payload(snapshot: dict[str, Any]) -> dict[str, Any]:
     primary = snapshot.get("flowMetrics", {}).get("primaryMarket", {})
     return {
-        "schemaVersion": 1,
-        "tradeDate": snapshot["tradeDate"],
-        "generatedAt": snapshot["generatedAt"],
-        "metric": "primaryMarketNetSubscriptionEstimate",
-        "valuation": "sameDayUnitNAV",
-        "marketScopes": primary.get("scopeTotals", {}),
-        "assetClassTotals": primary.get("assetClassTotals", {}),
+        "schemaVersion": 1, "tradeDate": snapshot["tradeDate"], "generatedAt": snapshot["generatedAt"],
+        "metric": "primaryMarketNetSubscriptionEstimate", "valuation": "sameDayUnitNAV",
+        "marketScopes": primary.get("scopeTotals", {}), "assetClassTotals": primary.get("assetClassTotals", {}),
         "valuationComparisons": primary.get("valuationComparisons", {}),
-        "etfs": [
-            {
-                "code": item.get("code"),
-                "name": item.get("name"),
-                "groupId": item.get("groupId"),
-                "shares": item.get("shares"),
-                "previousComparableShares": item.get("previousComparableShares"),
-                "shareDelta1d": item.get("shareDelta1d"),
-                "nav": item.get("nav"),
-                "flow1d": item.get("flow1d"),
-                "flow1dAvgPriceEstimate": item.get("flow1dAvgPriceEstimate"),
-            }
-            for item in snapshot.get("etfs", [])
-        ],
+        "etfs": [{"code": item.get("code"), "name": item.get("name"), "groupId": item.get("groupId"), "shares": item.get("shares"), "previousComparableShares": item.get("previousComparableShares"), "shareDelta1d": item.get("shareDelta1d"), "nav": item.get("nav"), "flow1d": item.get("flow1d"), "flow1dAvgPriceEstimate": item.get("flow1dAvgPriceEstimate")} for item in snapshot.get("etfs", [])],
     }
 
 
