@@ -19,8 +19,9 @@ class PostCloseWorkflowTests(unittest.TestCase):
         self.assertIn("Resolve latest captured trade date", text)
         self.assertIn("site/data/order_flow/latest.json", text)
         self.assertIn("Attempt full report as soon as end-of-day data is ready", text)
-        self.assertIn('python data_pipeline/update_daily_v2.py --date "${{ steps.trade.outputs.trade_date }}"', text)
+        self.assertIn('timeout 12m python data_pipeline/update_daily_v2.py --date "${{ steps.trade.outputs.trade_date }}"', text)
         self.assertIn("continue-on-error: true", text)
+        self.assertIn("cancel-in-progress: true", text)
         self.assertIn("Commit verified full report immediately", text)
 
     def test_capture_workflow_still_persists_order_flow_independently(self):
