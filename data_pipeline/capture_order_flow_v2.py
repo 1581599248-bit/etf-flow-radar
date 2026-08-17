@@ -1,10 +1,4 @@
-"""Persist same-day ETF secondary-market order flow before the date rolls.
-
-The overnight primary-market job cannot reconstruct historical order-flow fields
-from a current spot snapshot. This lightweight collector therefore runs shortly
-after the A-share close and writes an immutable per-trade-date fact file. It is
-strictly separate from ETF creation/redemption data.
-"""
+"""Persist same-day ETF trading-flow facts before the provider date rolls."""
 from __future__ import annotations
 
 import argparse
@@ -35,50 +29,59 @@ def _is_exchange_session(day: date) -> bool:
 def build_snapshot(day: date) -> dict:
     if not _is_exchange_session(day):
         raise ValueError(f"{day.isoformat()} is not an exchange trading session")
-    spot = base.retry("Eastmoney ETF same-day order flow", ak.fund_etf_spot_em, attempts=3)
+    spot = base.retry("Eastmoney ETF same-day trading flow", ak.fund_etf_spot_em, attempts=3)
     spot.columns = [str(c).strip() for c in spot.columns]
-    required = {"代码", "名称", "主力净流入-净额", "成交额", "数据日期"}
+    required = {"代码", "名称", "主力净流入-净额", "成交额", "外盘", "内盘", "数据日期"}
     if not required.issubset(spot.columns):
         raise ValueError(f"ETF spot schema changed; missing={sorted(required-set(spot.columns))}")
 
-    frame = spot[["代码", "名称", "主力净流入-净额", "成交额", "数据日期"]].copy()
-    frame.columns = ["code", "name", "main_order_flow_yuan", "amount_yuan", "data_date"]
+    frame = spot[["代码", "名称", "主力净流入-净额", "成交额", "外盘", "内盘", "数据日期"]].copy()
+    frame.columns = ["code", "name", "main_yuan", "amount_yuan", "outer", "inner", "data_date"]
     frame["code"] = frame["code"].astype(str).str.zfill(6)
     frame["data_date"] = pd.to_datetime(frame["data_date"], errors="coerce").dt.date
-    frame["main_order_flow_yuan"] = pd.to_numeric(frame["main_order_flow_yuan"], errors="coerce")
-    frame["amount_yuan"] = pd.to_numeric(frame["amount_yuan"], errors="coerce")
-    frame = frame[frame["data_date"] == day].dropna(subset=["main_order_flow_yuan", "amount_yuan"])
+    for col in ("main_yuan", "amount_yuan", "outer", "inner"):
+        frame[col] = pd.to_numeric(frame[col], errors="coerce")
+    frame = frame[frame["data_date"] == day].dropna(subset=["main_yuan", "amount_yuan", "outer", "inner"])
     frame = frame.drop_duplicates("code", keep="last")
+
+    directional = frame["outer"] + frame["inner"]
+    frame = frame[directional > 0].copy()
+    directional = frame["outer"] + frame["inner"]
+    frame["trade_in_yuan"] = frame["amount_yuan"] * frame["outer"] / directional
+    frame["trade_out_yuan"] = frame["amount_yuan"] * frame["inner"] / directional
+    frame["trade_net_yuan"] = frame["trade_in_yuan"] - frame["trade_out_yuan"]
+
     if len(frame) < MIN_ROWS:
-        raise ValueError(f"same-day ETF order-flow coverage too low: {len(frame)}")
+        raise ValueError(f"same-day ETF trading-flow coverage too low: {len(frame)}")
     if int((frame["amount_yuan"] > 0).sum()) < MIN_ROWS:
         raise ValueError("same-day ETF trading amounts are not populated")
 
     return {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "tradeDate": day.isoformat(),
         "generatedAt": datetime.now(CN).isoformat(timespec="seconds"),
-        "metric": "secondaryMarketMainOrderFlow",
-        "source": "Eastmoney fund_etf_spot_em 主力净流入-净额",
-        "definition": "ETF二级市场成交中的主力订单净流入；不是ETF申购/赎回。",
+        "metric": "secondaryMarketETFTradingFlow",
+        "source": "Eastmoney fund_etf_spot_em 成交额 + 外盘/内盘",
+        "definition": "当日交易资金净额按外盘/内盘主动成交量占比拆分成交额后，以主动买入金额减主动卖出金额计算；与ETF份额变化分开。",
         "etfCount": int(len(frame)),
-        "totalMainOrderFlow1d": round(float(frame["main_order_flow_yuan"].sum()) / 1e8, 2),
-        "etfs": [
-            {
-                "code": str(r.code),
-                "name": str(r.name),
-                "mainOrderFlow1d": round(float(r.main_order_flow_yuan) / 1e8, 4),
-                "amount": round(float(r.amount_yuan) / 1e8, 4),
-            }
-            for r in frame.itertuples(index=False)
-        ],
+        "totalTradeInflow1d": round(float(frame["trade_in_yuan"].sum()) / 1e8, 2),
+        "totalTradeOutflow1d": round(float(frame["trade_out_yuan"].sum()) / 1e8, 2),
+        "totalTradeNetFlow1d": round(float(frame["trade_net_yuan"].sum()) / 1e8, 2),
+        "totalMainOrderFlow1d": round(float(frame["main_yuan"].sum()) / 1e8, 2),
+        "etfs": [{
+            "code": str(r.code), "name": str(r.name),
+            "tradeInflow1d": round(float(r.trade_in_yuan) / 1e8, 4),
+            "tradeOutflow1d": round(float(r.trade_out_yuan) / 1e8, 4),
+            "tradeNetFlow1d": round(float(r.trade_net_yuan) / 1e8, 4),
+            "mainOrderFlow1d": round(float(r.main_yuan) / 1e8, 4),
+            "amount": round(float(r.amount_yuan) / 1e8, 4),
+        } for r in frame.itertuples(index=False)],
     }
 
 
 def publish(snapshot: dict) -> Path:
     OUT.mkdir(parents=True, exist_ok=True)
-    day = snapshot["tradeDate"]
-    target = OUT / f"{day}.json"
+    target = OUT / f"{snapshot['tradeDate']}.json"
     text = json.dumps(snapshot, ensure_ascii=False, indent=2)
     target.write_text(text, "utf-8")
     (OUT / "latest.json").write_text(text, "utf-8")
@@ -93,18 +96,21 @@ def main() -> int:
     target = OUT / f"{day.isoformat()}.json"
     if target.exists():
         existing = json.loads(target.read_text("utf-8"))
-        if existing.get("metric") == "secondaryMarketMainOrderFlow" and int(existing.get("etfCount", 0)) >= MIN_ROWS:
-            print(f"order-flow snapshot already exists: {target}")
+        if existing.get("metric") == "secondaryMarketETFTradingFlow" and int(existing.get("etfCount", 0)) >= MIN_ROWS:
+            print(f"trading-flow snapshot already exists: {target}")
+            return 0
+        if existing.get("metric") == "secondaryMarketMainOrderFlow" and day != datetime.now(CN).date():
+            print(f"legacy order-flow snapshot retained: {target}")
             return 0
     try:
         snapshot = build_snapshot(day)
     except ValueError as exc:
         if "not an exchange trading session" in str(exc):
-            print(f"order-flow capture skipped: {exc}")
+            print(f"trading-flow capture skipped: {exc}")
             return 0
         raise
     path = publish(snapshot)
-    print(f"captured {snapshot['etfCount']} ETF order-flow rows: {path}")
+    print(f"captured {snapshot['etfCount']} ETF trading-flow rows: {path}")
     return 0
 
 
