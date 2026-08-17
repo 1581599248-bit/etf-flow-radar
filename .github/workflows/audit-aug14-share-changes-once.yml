@@ -1,0 +1,46 @@
+name: One-time audit 2026-08-14 ETF share changes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/audit-aug14-share-changes-once.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit every 2026-08-14 A-share stock ETF share change
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('site/data/latest.json').read_text('utf-8'))
+          u=[x for x in d.get('universe',[]) if x.get('assetScope')=='aShareStockEtf' and x.get('primaryFlow1d') is not None]
+          print('COUNT',len(u))
+          inc=[x for x in u if float(x.get('shareDelta1d') or 0)>0]
+          dec=[x for x in u if float(x.get('shareDelta1d') or 0)<0]
+          zero=[x for x in u if float(x.get('shareDelta1d') or 0)==0]
+          pos=sum(float(x.get('primaryFlow1d') or 0) for x in inc)
+          neg=sum(float(x.get('primaryFlow1d') or 0) for x in dec)
+          net=sum(float(x.get('primaryFlow1d') or 0) for x in u)
+          print('COUNTS increase decrease unchanged',len(inc),len(dec),len(zero))
+          print('GROSS_INFLOW',round(pos,2),'GROSS_OUTFLOW',round(neg,2),'NET',round(net,2))
+          print('SUM_SHARE_DELTA_BILLION_SHARES',round(sum(float(x.get('shareDelta1d') or 0) for x in u)/1e8,2))
+          print('\nTOP_50_OUTFLOW')
+          for x in sorted(dec,key=lambda x:float(x.get('primaryFlow1d') or 0))[:50]:
+              print(x.get('code'),x.get('name'),'shares',x.get('shares'),'prev',x.get('previousComparableShares'),'delta亿份',round(float(x.get('shareDelta1d') or 0)/1e8,4),'nav',x.get('nav'),'flow亿',x.get('primaryFlow1d'))
+          print('\nTOP_50_INFLOW')
+          for x in sorted(inc,key=lambda x:float(x.get('primaryFlow1d') or 0),reverse=True)[:50]:
+              print(x.get('code'),x.get('name'),'shares',x.get('shares'),'prev',x.get('previousComparableShares'),'delta亿份',round(float(x.get('shareDelta1d') or 0)/1e8,4),'nav',x.get('nav'),'flow亿',x.get('primaryFlow1d'))
+          print('\nLARGEST_AUM_UNCHANGED')
+          # estimate AUM from shares * NAV for unchanged rows
+          for x in sorted(zero,key=lambda x:(float(x.get('shares') or 0)*float(x.get('nav') or 0)),reverse=True)[:50]:
+              aum=float(x.get('shares') or 0)*float(x.get('nav') or 0)/1e8
+              print(x.get('code'),x.get('name'),'aum亿',round(aum,2),'shares',x.get('shares'),'nav',x.get('nav'))
+          PY
