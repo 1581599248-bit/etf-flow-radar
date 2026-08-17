@@ -92,7 +92,7 @@ test("schema v6 separates primary subscription flow, secondary order flow and ma
   assert.match(snapshot.methodology.identity, /禁止据此推断/);
   assert.match(snapshot.methodology.flow, /T日单位净值/);
   assert.match(snapshot.methodology.metricSeparation, /两句独立口径|两个不同变量/);
-  assert.match(snapshot.methodology.multiDay, /不是逐日净申购额之和/);
+  assert.match(snapshot.methodology.multiDay, /不是逐日净(?:申购|流入)额之和/);
   assert.match(snapshot.methodology.scope, /A股股票ETF/);
   assert.match(snapshot.methodology.scope, /股票ETF（含跨境）/);
 
