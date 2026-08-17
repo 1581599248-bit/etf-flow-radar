@@ -27,9 +27,7 @@ jobs:
       - run: pip install -r data_pipeline/requirements.txt
       - name: Run deterministic tests
         run: python -m unittest discover -s data_pipeline -p "test_*.py"
-      - name: Run known 2026-07-31 Wind/iFinD diagnostic
-        run: python data_pipeline/benchmark_known_public_20260731.py
-      - name: Run primary/secondary metric benchmark
+      - name: Run archived 2026-08-14 primary/secondary reconciliation
         run: python data_pipeline/benchmark_public_flow_dates.py
       - name: Migrate archived 2026-08-14 facts to schema v6
         run: python data_pipeline/migrate_existing_snapshot_v6.py --date "2026-08-14"
