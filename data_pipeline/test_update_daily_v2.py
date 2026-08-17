@@ -97,7 +97,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertEqual(totals["stockEtfIncludingCrossBorder"]["netFlow1d"], 1.0)
         self.assertEqual(snapshot["etfs"][0]["secondaryTradeNetFlow1d"], 2.0)
 
-    def test_dual_headline_is_plain_language_and_has_no_primary_market_wording(self):
+    def test_homepage_headline_uses_canonical_a_share_flow_even_when_trade_flow_exists(self):
         snapshot = {
             "market": {
                 "flow1d": -48.3,
@@ -120,10 +120,36 @@ class UpdateDailyV2Tests(unittest.TestCase):
         with patch.object(v2.production, "_regenerate_conclusion", side_effect=legacy_headline):
             v2._regenerate_v2_conclusion(snapshot)
         headline = snapshot["conclusion"]["headline"]
-        self.assertIn("A股ETF当日成交资金净流入198.4亿元", headline)
-        self.assertIn("ETF份额较上一日净流出48.3亿元", headline)
+        self.assertIn("A股股票ETF当日合计净流出48.3亿元", headline)
         self.assertIn("231只份额增加、409只份额减少、607只不变", headline)
-        self.assertNotIn("一级市场", headline)
+        self.assertNotIn("成交资金净流入198.4亿元", headline)
+        self.assertNotIn("暂无同日数据", headline)
+        self.assertNotIn("ETF份额较上一日", headline)
+
+    def test_homepage_headline_does_not_depend_on_secondary_trade_data(self):
+        snapshot = {
+            "market": {
+                "flow1d": 12.6,
+                "increaseEtfCount1d": 300,
+                "decreaseEtfCount1d": 200,
+                "unchangedEtfCount1d": 700,
+            },
+            "flowMetrics": {
+                "secondaryMarketTradeFlow": {"status": "unavailable", "scopeTotals": {}}
+            },
+        }
+
+        def legacy_headline(obj):
+            obj["conclusion"] = {
+                "headline": "旧口径。宽基中3个流出、6个流入；申万一级行业资金流入居前。"
+            }
+
+        with patch.object(v2.production, "_regenerate_conclusion", side_effect=legacy_headline):
+            v2._regenerate_v2_conclusion(snapshot)
+        headline = snapshot["conclusion"]["headline"]
+        self.assertIn("A股股票ETF当日合计净流入12.6亿元", headline)
+        self.assertNotIn("暂无同日数据", headline)
+
 
 
 if __name__ == "__main__":
