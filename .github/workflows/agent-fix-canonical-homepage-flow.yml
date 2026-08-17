@@ -1,0 +1,119 @@
+name: Validate canonical homepage ETF flow fix
+
+on:
+  push:
+    branches:
+      - agent/fix-canonical-homepage-flow
+
+permissions:
+  contents: write
+
+concurrency:
+  group: agent-fix-canonical-homepage-flow
+  cancel-in-progress: true
+
+jobs:
+  fix-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: data_pipeline/requirements.txt
+
+      - name: Patch production generator and regression tests
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("data_pipeline/update_daily_v2.py")
+          text = path.read_text("utf-8")
+
+          text = text.replace(
+              '    """Add the user\'s first-layer metric without changing the share-flow model."""',
+              '    """Add a separate secondary-market trading statistic without changing the canonical share-flow model."""',
+          )
+
+          start = text.index("def _regenerate_v2_conclusion")
+          end = text.index("\ndef apply_v2_semantics", start)
+          new_block = '''def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:\n    """Build the homepage headline from the canonical A-share ETF T-day flow.\n\n    ``market.flow1d`` is already the T-day primary-market net subscription /\n    redemption estimate: (T shares - comparable T-1 shares) * T NAV.  The T-1\n    observation is only the baseline used to measure today's share change.\n    Secondary-market trading/order-flow metrics are independent diagnostics and\n    must never replace this homepage headline or make it unavailable.\n    """\n    production._regenerate_conclusion(snapshot)\n    old = str(snapshot.get("conclusion", {}).get("headline") or "")\n    tail = ""\n    if "宽基中" in old:\n        tail = "宽基中" + old.split("宽基中", 1)[1]\n\n    market = snapshot["market"]\n    primary_value = market.get("flow1d")\n    if not isinstance(primary_value, (int, float)):\n        raise ValueError("A-share stock ETF market.flow1d is required for the homepage headline")\n\n    first = (\n        f"A股股票ETF当日合计{_flow_phrase(float(primary_value))}；"\n        f"{market.get('increaseEtfCount1d', 0)}只份额增加、"\n        f"{market.get('decreaseEtfCount1d', 0)}只份额减少、"\n        f"{market.get('unchangedEtfCount1d', 0)}只不变。"\n    )\n    snapshot.setdefault("conclusion", {})["headline"] = first + tail\n\n'''
+          text = text[:start] + new_block + text[end + 1:]
+
+          replacements = {
+              'primary["displayName"] = "ETF份额较上一日净流入/净流出"':
+                  'primary["displayName"] = "ETF当日净申购/赎回估算"',
+              '"flow": "ETF份额较上一日净流入/净流出 =（T日交易所日终份额 − T-1日公司行动调整后的可比份额）× T日单位净值。T-1只作为计算T日份额变化的基准；该结果就是T日份额资金变化。",':
+                  '"flow": "ETF当日净流入/净流出估算 =（T日交易所日终份额 − T-1日公司行动调整后的可比份额）× T日单位净值。T-1只作为T日份额变化的基准；该结果就是T日净申购/赎回的资金估算，不是再与上一日资金流做一次比较。",',
+              '"metricSeparation": "网站同时展示两套独立口径：当日成交资金净流入/净流出按同日成交额和外盘/内盘主动成交方向估算，只显示买卖差额；ETF份额较上一日净流入/净流出按日终份额变化×T日NAV计算。原主力净流入字段仅作辅助，不再作为首页第一层指标。",':
+                  '"metricSeparation": "首页主结论只使用A股股票ETF当日净申购/赎回估算（交易所日终份额变化×T日NAV）。二级市场成交方向和主力净额属于独立辅助统计；无论其是否有同日数据，都不得覆盖或阻断首页主结论。",',
+              '"scope": "首页两套指标都固定使用A股股票ETF范围，不含跨境股票ETF、债券ETF、货币ETF和商品ETF；同时保留全部ETF、股票ETF（含跨境）和六类资产范围用于审计与对照。",':
+                  '"scope": "首页主指标固定使用A股股票ETF范围，不含跨境股票ETF、债券ETF、货币ETF和商品ETF；同时保留全部ETF、股票ETF（含跨境）和六类资产范围用于审计与对照。",',
+              '"valuation": "ETF份额较上一日净流入/净流出主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。",':
+                  '"valuation": "ETF当日净流入/净流出主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。",',
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f"expected production text not found: {old[:80]}")
+              text = text.replace(old, new, 1)
+          path.write_text(text, "utf-8")
+
+          test_path = Path("data_pipeline/test_update_daily_v2.py")
+          tests = test_path.read_text("utf-8")
+          tstart = tests.index("    def test_dual_headline_is_plain_language_and_has_no_primary_market_wording")
+          tend = tests.index("\n\n\nif __name__", tstart)
+          new_tests = '''    def test_homepage_headline_uses_canonical_a_share_flow_even_when_trade_flow_exists(self):\n        snapshot = {\n            "market": {\n                "flow1d": -48.3,\n                "increaseEtfCount1d": 231,\n                "decreaseEtfCount1d": 409,\n                "unchangedEtfCount1d": 607,\n            },\n            "flowMetrics": {\n                "secondaryMarketTradeFlow": {\n                    "scopeTotals": {"aShareStockEtf": {"netFlow1d": 198.4}}\n                }\n            },\n        }\n\n        def legacy_headline(obj):\n            obj["conclusion"] = {\n                "headline": "旧口径。宽基中5个流出、2个流入；申万一级行业资金流入居前。"\n            }\n\n        with patch.object(v2.production, "_regenerate_conclusion", side_effect=legacy_headline):\n            v2._regenerate_v2_conclusion(snapshot)\n        headline = snapshot["conclusion"]["headline"]\n        self.assertIn("A股股票ETF当日合计净流出48.3亿元", headline)\n        self.assertIn("231只份额增加、409只份额减少、607只不变", headline)\n        self.assertNotIn("成交资金净流入198.4亿元", headline)\n        self.assertNotIn("暂无同日数据", headline)\n        self.assertNotIn("ETF份额较上一日", headline)\n\n    def test_homepage_headline_does_not_depend_on_secondary_trade_data(self):\n        snapshot = {\n            "market": {\n                "flow1d": 12.6,\n                "increaseEtfCount1d": 300,\n                "decreaseEtfCount1d": 200,\n                "unchangedEtfCount1d": 700,\n            },\n            "flowMetrics": {\n                "secondaryMarketTradeFlow": {"status": "unavailable", "scopeTotals": {}}\n            },\n        }\n\n        def legacy_headline(obj):\n            obj["conclusion"] = {\n                "headline": "旧口径。宽基中3个流出、6个流入；申万一级行业资金流入居前。"\n            }\n\n        with patch.object(v2.production, "_regenerate_conclusion", side_effect=legacy_headline):\n            v2._regenerate_v2_conclusion(snapshot)\n        headline = snapshot["conclusion"]["headline"]\n        self.assertIn("A股股票ETF当日合计净流入12.6亿元", headline)\n        self.assertNotIn("暂无同日数据", headline)\n'''
+          tests = tests[:tstart] + new_tests + tests[tend:]
+          test_path.write_text(tests, "utf-8")
+          PY
+
+      - run: pip install -r data_pipeline/requirements.txt
+
+      - name: Run deterministic pipeline tests
+        run: python -m unittest discover -s data_pipeline -p "test_*.py"
+
+      - name: Regenerate stored headline through production code
+        env:
+          PYTHONPATH: data_pipeline
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import update_daily_v2 as v2
+
+          paths = [Path("site/data/latest.json")]
+          latest = json.loads(paths[0].read_text("utf-8"))
+          trade_date = latest.get("tradeDate")
+          if trade_date:
+              history = Path("site/data/history") / f"{trade_date}.json"
+              if history.exists():
+                  paths.append(history)
+
+          for path in paths:
+              data = json.loads(path.read_text("utf-8"))
+              before = str(data.get("conclusion", {}).get("headline") or "")
+              v2._regenerate_v2_conclusion(data)
+              after = data["conclusion"]["headline"]
+              if "A股股票ETF当日合计" not in after:
+                  raise SystemExit(f"canonical headline not generated for {path}")
+              if "A股ETF当日成交资金" in after or "ETF份额较上一日" in after:
+                  raise SystemExit(f"legacy headline wording survived in {path}")
+              path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", "utf-8")
+              print(f"{path}: {before}")
+              print(f"{path}: -> {after}")
+          PY
+
+      - name: Validate client bundle
+        run: npm ci && npm test && npm run build
+
+      - name: Commit verified production fix
+        run: |
+          rm .github/workflows/agent-fix-canonical-homepage-flow.yml
+          git config user.name "etf-flow-radar-bot"
+          git config user.email "etf-flow-radar-bot@users.noreply.github.com"
+          git add data_pipeline/update_daily_v2.py data_pipeline/test_update_daily_v2.py site/data/latest.json site/data/history .github/workflows/agent-fix-canonical-homepage-flow.yml
+          git diff --cached --quiet && exit 0
+          git commit -m "fix: make canonical A-share ETF flow the homepage headline"
+          git push
