@@ -12,64 +12,31 @@ permissions:
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: data_pipeline/requirements.txt
-      - run: pip install -r data_pipeline/requirements.txt
-      - name: Audit every 2026-08-14 A-share stock ETF share change and cross-check current shares
+      - name: Summarize every 2026-08-14 A-share stock ETF share change
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-          import pandas as pd
-          import akshare as ak
-
           d=json.loads(Path('site/data/latest.json').read_text('utf-8'))
           u=[x for x in d.get('universe',[]) if x.get('assetScope')=='aShareStockEtf' and x.get('primaryFlow1d') is not None]
           inc=[x for x in u if float(x.get('shareDelta1d') or 0)>0]
           dec=[x for x in u if float(x.get('shareDelta1d') or 0)<0]
           zero=[x for x in u if float(x.get('shareDelta1d') or 0)==0]
-          pos=sum(float(x.get('primaryFlow1d') or 0) for x in inc)
-          neg=sum(float(x.get('primaryFlow1d') or 0) for x in dec)
-          net=sum(float(x.get('primaryFlow1d') or 0) for x in u)
-          print('COUNT',len(u))
-          print('COUNTS increase decrease unchanged',len(inc),len(dec),len(zero))
-          print('GROSS_INFLOW',round(pos,2),'GROSS_OUTFLOW',round(neg,2),'NET',round(net,2))
-          print('SUM_SHARE_DELTA_BILLION_SHARES',round(sum(float(x.get('shareDelta1d') or 0) for x in u)/1e8,2))
-
-          print('\nTOP_30_OUTFLOW')
-          for x in sorted(dec,key=lambda x:float(x.get('primaryFlow1d') or 0))[:30]:
-              print(x.get('code'),x.get('name'),'delta亿份',round(float(x.get('shareDelta1d') or 0)/1e8,4),'nav',x.get('nav'),'flow亿',x.get('primaryFlow1d'))
-          print('\nTOP_30_INFLOW')
-          for x in sorted(inc,key=lambda x:float(x.get('primaryFlow1d') or 0),reverse=True)[:30]:
-              print(x.get('code'),x.get('name'),'delta亿份',round(float(x.get('shareDelta1d') or 0)/1e8,4),'nav',x.get('nav'),'flow亿',x.get('primaryFlow1d'))
-
-          print('\nINDEPENDENT_CURRENT_SHARE_CROSSCHECK')
-          spot=ak.fund_etf_spot_em()
-          spot.columns=[str(c).strip() for c in spot.columns]
-          print('SPOT_COLUMNS',spot.columns.tolist())
-          if {'代码','最新份额','数据日期'} <= set(spot.columns):
-              s=spot[['代码','最新份额','数据日期']].copy()
-              s['code']=s['代码'].astype(str).str.zfill(6)
-              s['spot_shares']=pd.to_numeric(s['最新份额'],errors='coerce')
-              s['date']=pd.to_datetime(s['数据日期'],errors='coerce').dt.date.astype(str)
-              s=s.dropna(subset=['spot_shares']).drop_duplicates('code',keep='last')
-              print('SPOT_DATES',s['date'].value_counts().head(5).to_dict())
-              ex=pd.DataFrame([{'code':x['code'],'name':x['name'],'exchange_shares':float(x['shares']),'delta':float(x.get('shareDelta1d') or 0)} for x in u])
-              j=ex.merge(s[['code','spot_shares','date']],on='code',how='inner')
-              j['rel_diff']=(j['spot_shares']-j['exchange_shares']).abs()/j['exchange_shares'].clip(lower=1)
-              print('COMMON',len(j),'MEDIAN_REL_DIFF',float(j['rel_diff'].median()),'P95_REL_DIFF',float(j['rel_diff'].quantile(.95)))
-              print('WITHIN_0.1PCT',int((j['rel_diff']<=.001).sum()),'GT_1PCT',int((j['rel_diff']>.01).sum()),'GT_5PCT',int((j['rel_diff']>.05).sum()))
-              z=j[j['delta']==0]
-              print('UNCHANGED_COMMON',len(z),'UNCHANGED_WITHIN_0.1PCT',int((z['rel_diff']<=.001).sum()),'UNCHANGED_GT_1PCT',int((z['rel_diff']>.01).sum()))
-              print('TOP_SHARE_DISCREPANCIES')
-              for r in j.sort_values('rel_diff',ascending=False).head(30).itertuples(index=False):
-                  print(r.code,r.name,'exchange',r.exchange_shares,'spot',r.spot_shares,'date',r.date,'rel_diff_pct',round(r.rel_diff*100,3),'delta亿份',round(r.delta/1e8,4))
-          else:
-              print('CROSSCHECK_UNAVAILABLE missing required fields')
+          inc_sh=sum(float(x.get('shareDelta1d') or 0) for x in inc)/1e8
+          dec_sh=sum(float(x.get('shareDelta1d') or 0) for x in dec)/1e8
+          net_sh=inc_sh+dec_sh
+          inc_flow=sum(float(x.get('primaryFlow1d') or 0) for x in inc)
+          dec_flow=sum(float(x.get('primaryFlow1d') or 0) for x in dec)
+          print('COUNT',len(u),'INCREASE',len(inc),'DECREASE',len(dec),'UNCHANGED',len(zero))
+          print('SHARES_GROSS_INCREASE_BN',round(inc_sh,2),'SHARES_GROSS_DECREASE_BN',round(dec_sh,2),'SHARES_NET_BN',round(net_sh,2))
+          print('VALUE_GROSS_INFLOW_YI',round(inc_flow,2),'VALUE_GROSS_OUTFLOW_YI',round(dec_flow,2),'VALUE_NET_YI',round(inc_flow+dec_flow,2))
+          print('\nTOP_SHARE_DECREASES')
+          for x in sorted(dec,key=lambda x:float(x.get('shareDelta1d') or 0))[:30]:
+              print(x.get('code'),x.get('name'),'delta亿份',round(float(x.get('shareDelta1d') or 0)/1e8,3),'flow亿',x.get('primaryFlow1d'))
+          print('\nTOP_SHARE_INCREASES')
+          for x in sorted(inc,key=lambda x:float(x.get('shareDelta1d') or 0),reverse=True)[:30]:
+              print(x.get('code'),x.get('name'),'delta亿份',round(float(x.get('shareDelta1d') or 0)/1e8,3),'flow亿',x.get('primaryFlow1d'))
           PY
