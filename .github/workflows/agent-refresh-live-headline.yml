@@ -1,0 +1,95 @@
+name: Refresh live ETF headline snapshot
+
+on:
+  push:
+    branches:
+      - agent/refresh-live-headline
+
+permissions:
+  contents: write
+
+concurrency:
+  group: agent-refresh-live-headline
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Refresh stored client headline
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          def phrase(value):
+              try:
+                  n = float(value)
+              except (TypeError, ValueError):
+                  n = 0.0
+              if n > 0:
+                  return f"净流入{n:.1f}亿元"
+              if n < 0:
+                  return f"净流出{abs(n):.1f}亿元"
+              return "净额0.0亿元"
+
+          def refresh(path: Path):
+              data = json.loads(path.read_text("utf-8"))
+              market = data.get("market") or {}
+              share_value = market.get("flow1d", 0)
+              trade_value = (
+                  ((data.get("flowMetrics") or {}).get("secondaryMarketTradeFlow") or {})
+                  .get("scopeTotals", {})
+                  .get("aShareStockEtf", {})
+                  .get("netFlow1d")
+              )
+              if isinstance(trade_value, (int, float)):
+                  first = f"A股ETF当日成交资金{phrase(trade_value)}；"
+              else:
+                  first = "A股ETF当日成交资金暂无同日数据；"
+              first += (
+                  f"ETF份额较上一日{phrase(share_value)}，"
+                  f"{market.get('increaseEtfCount1d', 0)}只份额增加、"
+                  f"{market.get('decreaseEtfCount1d', 0)}只份额减少、"
+                  f"{market.get('unchangedEtfCount1d', 0)}只不变。"
+              )
+              old = str((data.get("conclusion") or {}).get("headline") or "")
+              tail = ""
+              if "宽基中" in old:
+                  tail = "宽基中" + old.split("宽基中", 1)[1]
+              data.setdefault("conclusion", {})["headline"] = first + tail
+              path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", "utf-8")
+              print(f"{path}: {old}")
+              print(f"{path}: -> {data['conclusion']['headline']}")
+              return data.get("tradeDate")
+
+          latest = Path("site/data/latest.json")
+          trade_date = refresh(latest)
+          if trade_date:
+              history = Path("site/data/history") / f"{trade_date}.json"
+              if history.exists():
+                  refresh(history)
+          PY
+
+      - run: npm ci
+      - name: Frontend regression tests
+        run: npm test
+      - name: Static build
+        run: npm run build
+
+      - name: Commit verified live snapshot refresh
+        run: |
+          rm .github/workflows/agent-refresh-live-headline.yml
+          git config user.name "etf-flow-radar-bot"
+          git config user.email "etf-flow-radar-bot@users.noreply.github.com"
+          git add site/data/latest.json site/data/history .github/workflows/agent-refresh-live-headline.yml
+          git diff --cached --quiet && exit 0
+          git commit -m "data: refresh live ETF headline wording"
+          git push
