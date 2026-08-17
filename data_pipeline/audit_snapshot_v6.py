@@ -106,6 +106,20 @@ def audit(snapshot_path: Path) -> list[str]:
 
     etfs = snapshot.get("etfs", [])
     groups = snapshot.get("groups", [])
+    non_a_share = [
+        row for row in etfs if str(row.get("assetScope") or "") != "aShareStockEtf"
+    ]
+    if non_a_share:
+        sample = [(row.get("code"), row.get("name"), row.get("assetScope")) for row in non_a_share[:5]]
+        raise AssertionError(f"non-A-share ETFs leaked into client groups: {sample}")
+    scope_guard = quality.get("classifiedAshareScopeEnforcement", {})
+    if int(scope_guard.get("afterCount") or -1) != len(etfs):
+        raise AssertionError("classified A-share scope guard count does not match snapshot.etfs")
+    excluded_by_scope = scope_guard.get("excludedByScope", {}) or {}
+    if "aShareStockEtf" in excluded_by_scope:
+        raise AssertionError("A-share ETF was incorrectly excluded by the group-scope guard")
+    checks.append("client groups contain domestic A-share stock ETFs only")
+
     by_group: dict[str, list[dict[str, Any]]] = {}
     for row in etfs:
         gid = str(row.get("groupId") or "")
@@ -120,6 +134,12 @@ def audit(snapshot_path: Path) -> list[str]:
         _close(group.get("flow1d"), member_flow, f"group {gid} vs member ETFs")
         if int(group.get("etfCount") or 0) != len(members):
             raise AssertionError(f"group {gid} ETF count mismatch")
+        member_codes = {str(row.get("code", "")).zfill(6) for row in members}
+        representative = str((group.get("representative") or {}).get("code") or "").zfill(6)
+        if representative not in member_codes:
+            raise AssertionError(
+                f"group {gid} return representative is outside its A-share member set: {representative}"
+            )
     classified_flow = round(sum(_num(g.get("flow1d"), f"group {g.get('id')} flow") for g in groups), 2)
     market_recon = quality.get("marketScopeReconciliation", {})
     stored_classified = market_recon.get("classifiedGroupShareFlow1d", market_recon.get("classifiedGroupPrimaryFlow1d"))
@@ -129,7 +149,7 @@ def audit(snapshot_path: Path) -> list[str]:
         market_recon.get("ungroupedDifference"),
         "unclassified market difference",
     )
-    checks.append("visible groups vs member ETFs")
+    checks.append("visible groups, representatives and member ETFs reconcile")
 
     visible_sectors = [g for g in groups if g.get("kind") == "industry"]
     if not visible_sectors:
