@@ -6,7 +6,7 @@ const css = await readFile(new URL("../site/styles.css", import.meta.url), "utf8
 const htmlToImage = await readFile(new URL("../node_modules/html-to-image/dist/html-to-image.js", import.meta.url), "utf8");
 
 // Normalize client wording to the schema-v6 metric contract without changing the
-// established visual layout.  Primary-market net subscription/redemption is the
+// established visual layout. Primary-market net subscription/redemption is the
 // main research metric; secondary-market main-order flow is a separate field.
 const textReplacements = [
   ["A股股票ETF当日资金变化", "A股股票ETF一级市场净申赎"],
@@ -25,16 +25,18 @@ const textReplacements = [
 ];
 for (const [from, to] of textReplacements) page = page.replaceAll(from, to);
 
-const metricHelper = String.raw`
-  function metricScopeStrip(data){
-    const primary=data.flowMetrics?.primaryMarket?.scopeTotals||{},secondary=data.flowMetrics?.secondaryMarketOrderFlow||{};
-    if(!Object.keys(primary).length)return "";
-    const card=(title,row,note)=>`<article><span>${title}</span><strong class="${tone(row?.flow1d)}">${money(row?.flow1d)}</strong><small>${note}${row?.etfCount!=null?` · ${row.etfCount}只`:""}</small></article>`;
-    const secondaryRow=secondary.status==="available"?secondary.scopeTotals?.aShareStockEtf:null;
-    const secondaryText=secondary.status==="available"?money(secondaryRow?.flow1d):"未留存同日快照";
-    return `<section class="market-strip metric-scope-strip">${card("全部场内ETF · 一级市场",primary.allEtf,"份额变化 × 同日NAV")}${card("股票ETF（含跨境）· 一级市场",primary.stockEtfIncludingCrossBorder,"便于对照Wind/Choice范围")}${card("A股股票ETF · 一级市场",primary.aShareStockEtf,"本站主研究口径")}<article><span>A股股票ETF · 二级市场主力资金</span><strong class="${secondary.status==="available"?tone(secondaryRow?.flow1d):"flat"}">${secondaryText}</strong><small>${secondary.status==="available"?"成交订单流，不等于申购赎回":`数据源日期${secondary.providerDate||"—"}，未强行回填`}</small></article></section>`;
-  }
-`;
+const metricHelper = [
+  "",
+  "  function metricScopeStrip(data){",
+  "    const primary=data.flowMetrics?.primaryMarket?.scopeTotals||{},secondary=data.flowMetrics?.secondaryMarketOrderFlow||{};",
+  "    if(!Object.keys(primary).length)return \"\";",
+  '    const card=(title,row,note)=>`<article><span>${title}</span><strong class="${tone(row?.flow1d)}">${money(row?.flow1d)}</strong><small>${note}${row?.etfCount!=null?` · ${row.etfCount}只`:""}</small></article>`;',
+  "    const secondaryRow=secondary.status===\"available\"?secondary.scopeTotals?.aShareStockEtf:null;",
+  "    const secondaryText=secondary.status===\"available\"?money(secondaryRow?.flow1d):\"未留存同日快照\";",
+  '    return `<section class="market-strip metric-scope-strip">${card("全部场内ETF · 一级市场",primary.allEtf,"份额变化 × 同日NAV")}${card("股票ETF（含跨境）· 一级市场",primary.stockEtfIncludingCrossBorder,"便于对照Wind/Choice范围")}${card("A股股票ETF · 一级市场",primary.aShareStockEtf,"本站主研究口径")}<article><span>A股股票ETF · 二级市场主力资金</span><strong class="${secondary.status==="available"?tone(secondaryRow?.flow1d):"flat"}">${secondaryText}</strong><small>${secondary.status==="available"?"成交订单流，不等于申购赎回":`数据源日期${secondary.providerDate||"—"}，未强行回填`}</small></article></section>`;',
+  "  }",
+  "",
+].join("\n");
 page = page.replace("\n  function render(data){", `${metricHelper}\n  function render(data){`);
 page = page.replace(
   "\n      <section id=\"broad\" class=\"panel\">",
