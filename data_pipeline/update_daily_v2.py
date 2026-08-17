@@ -177,13 +177,13 @@ def _flow_phrase(value: float) -> str:
 
 
 def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
-    """Build the homepage headline from the canonical A-share ETF T-day flow.
+    """Build both homepage flow sentences without mixing their meanings.
 
-    ``market.flow1d`` is already the T-day primary-market net subscription /
-    redemption estimate: (T shares - comparable T-1 shares) * T NAV.  The T-1
-    observation is only the baseline used to measure today's share change.
-    Secondary-market trading/order-flow metrics are independent diagnostics and
-    must never replace this homepage headline or make it unavailable.
+    Sentence 1 is the same-day secondary-market ETF trading-flow estimate when
+    that same-day fact was captured. Sentence 2 is always the canonical A-share
+    stock ETF T-day primary-market net subscription/redemption estimate:
+    (T shares - comparable T-1 shares) * T NAV.  Missing secondary-market data
+    must never suppress or replace the canonical T-day flow.
     """
     production._regenerate_conclusion(snapshot)
     old = str(snapshot.get("conclusion", {}).get("headline") or "")
@@ -196,13 +196,25 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
     if not isinstance(primary_value, (int, float)):
         raise ValueError("A-share stock ETF market.flow1d is required for the homepage headline")
 
-    first = (
+    trade_scope = (
+        snapshot.get("flowMetrics", {})
+        .get("secondaryMarketTradeFlow", {})
+        .get("scopeTotals", {})
+        .get("aShareStockEtf", {})
+    )
+    trade_value = trade_scope.get("netFlow1d")
+    if isinstance(trade_value, (int, float)):
+        first = f"A股ETF当日成交资金{_flow_phrase(float(trade_value))}；"
+    else:
+        first = "A股ETF当日成交资金暂无同日数据；"
+
+    second = (
         f"A股股票ETF当日合计{_flow_phrase(float(primary_value))}；"
         f"{market.get('increaseEtfCount1d', 0)}只份额增加、"
         f"{market.get('decreaseEtfCount1d', 0)}只份额减少、"
         f"{market.get('unchangedEtfCount1d', 0)}只不变。"
     )
-    snapshot.setdefault("conclusion", {})["headline"] = first + tail
+    snapshot.setdefault("conclusion", {})["headline"] = first + second + tail
 
 def apply_v2_semantics(
     snapshot: dict[str, Any],
@@ -254,7 +266,7 @@ def apply_v2_semantics(
     snapshot["schemaVersion"] = 6
     snapshot.setdefault("methodology", {}).update({
         "flow": "ETF当日净流入/净流出估算 =（T日交易所日终份额 − T-1日公司行动调整后的可比份额）× T日单位净值。T-1只作为T日份额变化的基准；该结果就是T日净申购/赎回的资金估算，不是再与上一日资金流做一次比较。",
-        "metricSeparation": "首页主结论只使用A股股票ETF当日净申购/赎回估算（交易所日终份额变化×T日NAV）。二级市场成交方向和主力净额属于独立辅助统计；无论其是否有同日数据，都不得覆盖或阻断首页主结论。",
+        "metricSeparation": "首页保留两句独立口径：第一句展示A股ETF同日二级市场成交资金净额（仅在同日成交额+外盘/内盘快照成功落盘时给出数值）；第二句固定展示A股股票ETF当日净申购/赎回估算（交易所T日/T-1可比份额变化×T日NAV）。第一句缺失或数值变化均不得覆盖第二句。",
         "multiDay": "5日/20日当前字段为端点份额变化×期末单位净值，字段明确标记 Endpoint；不是逐日净流入额之和。schema v6开始落盘每日单ETF份额flow1d，积累足够交易日后再生成真正5日/20日累计净流入额。",
         "scope": "首页主指标固定使用A股股票ETF范围，不含跨境股票ETF、债券ETF、货币ETF和商品ETF；同时保留全部ETF、股票ETF（含跨境）和六类资产范围用于审计与对照。",
         "valuation": "ETF当日净流入/净流出主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。",
