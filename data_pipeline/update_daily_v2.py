@@ -1,9 +1,10 @@
 """Single production entrypoint for ETF Flow Radar schema v6.
 
-This entrypoint keeps the battle-tested exchange/NAV transport and corporate-
-action guards, then applies ``flow_model_v2`` as the *only* client-facing flow
-semantics layer. New code and documentation should invoke this file rather than
-calling the older intermediate wrappers directly.
+Transport and guard layers remain in the older modules. This file is the single
+public production entrypoint and the single client-facing schema layer. Archived
+rebuilds can call ``apply_v2_semantics`` with validated local share data, so a
+methodology-only JSON migration does not need to redownload historical exchange
+files.
 """
 from __future__ import annotations
 
@@ -26,12 +27,6 @@ _ORIG_ATOMIC_PUBLISH = base.atomic_publish
 
 
 def _load_secondary_spot(day: date) -> pd.DataFrame:
-    """Prefer the immutable post-close snapshot for the target trade date.
-
-    Current ETF spot endpoints roll forward with the natural date, so an
-    overnight rebuild must not infer Friday order flow from a Monday snapshot.
-    The dedicated post-close collector persists the exact trading-day values.
-    """
     path = base.PUBLIC / "order_flow" / f"{day.isoformat()}.json"
     if path.exists():
         payload = json.loads(path.read_text("utf-8"))
@@ -44,24 +39,22 @@ def _load_secondary_spot(day: date) -> pd.DataFrame:
                 frame["主力净流入-净额"] = pd.to_numeric(frame["mainOrderFlow1d"], errors="coerce") * 1e8
                 frame["数据日期"] = day.isoformat()
                 return frame[["代码", "名称", "主力净流入-净额", "数据日期"]]
-    # Fallback is deliberately safe: flow_model_v2 accepts this snapshot only if
-    # its own provider date exactly matches `day`; otherwise it records unavailable.
+    # Live spot is accepted downstream only if its own provider date equals day.
     return guarded._get_spot()
 
 
-def _v2_postprocess(snapshot: dict[str, Any], day: date) -> None:
-    # Preserve mature quality gates, SW parent mapping and issue collection first.
-    _ORIG_POSTPROCESS(snapshot, day)
-
-    # Then replace every client-facing flow number with the explicit v2 model.
-    ths = production._get_ths_day(day)
-    spot = _load_secondary_spot(day)
-    flow_model_v2.apply_flow_model(snapshot, day, production._LAST_WINDOW, ths, spot)
+def apply_v2_semantics(
+    snapshot: dict[str, Any],
+    day: date,
+    share_window: list[tuple[date, pd.DataFrame]],
+    ths: pd.DataFrame,
+    spot: pd.DataFrame | None,
+) -> None:
+    """Apply every client-facing schema-v6 flow rule exactly once."""
+    flow_model_v2.apply_flow_model(snapshot, day, share_window, ths, spot)
     flow_comparison_v2.add_primary_valuation_comparisons(snapshot)
     flow_scope_breakdown_v2.add_asset_class_totals(snapshot)
 
-    # Parent rollups must be rebuilt after leaf ETF flows switch to the canonical
-    # NAV-valued primary-market metric.
     rollups = production._build_industry_rollups(snapshot)
     snapshot["industryRollups"] = rollups
     snapshot["themeGroups"] = [
@@ -78,7 +71,9 @@ def _v2_postprocess(snapshot: dict[str, Any], day: date) -> None:
         "marketScope5dCount": market.get("etfCount5d"),
         "marketScope20dCount": market.get("etfCount20d"),
         "marketScopeSource": "同花顺精确交易日基金类型/NAV + 沪深交易所日终份额",
-        "classifiedCoverageOfMarketPct": round(len(snapshot.get("etfs", [])) / max(int(market.get("etfCount") or 1), 1) * 100, 2),
+        "classifiedCoverageOfMarketPct": round(
+            len(snapshot.get("etfs", [])) / max(int(market.get("etfCount") or 1), 1) * 100, 2
+        ),
         "marketScopeReconciliation": {
             "aShareEquityPrimaryFlow1d": market.get("flow1d"),
             "classifiedGroupPrimaryFlow1d": classified_flow,
@@ -93,16 +88,26 @@ def _v2_postprocess(snapshot: dict[str, Any], day: date) -> None:
         "multiDay": "5日/20日当前字段为端点份额变化×期末单位净值，字段明确标记 Endpoint；不是逐日净申购额之和。schema v6开始落盘每日单ETF一级市场flow1d，积累足够交易日后再生成真正5日/20日累计净申购额。",
         "scope": "同时保存全部ETF、股票ETF（含跨境）和A股股票ETF三个一级市场比较口径，并额外保存A股股票、跨境、债券、货币、商品、其他六个互斥资产类别，使分类加总严格回到全部ETF。网站主口径仍是A股股票ETF；与Wind/Choice/iFinD或资讯报道对比时必须先匹配统计范围。",
         "valuation": "主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。二者是估值方法差异，不是两个独立资金事件。",
+        "coordinates": "横轴 = 20日相对沪深300收益率；纵轴 = 5日端点份额变化×期末NAV ÷ 5日前参考规模（%）。",
     })
-    snapshot["methodology"]["coordinates"] = "横轴 = 20日相对沪深300收益率；纵轴 = 5日端点份额变化×期末NAV ÷ 5日前参考规模（%）。"
 
     production._regenerate_conclusion(snapshot)
     headline = snapshot.get("conclusion", {}).get("headline")
     if isinstance(headline, str) and "当日合计" in headline:
-        snapshot["conclusion"]["headline"] = headline.replace("当日合计", "当日一级市场净申购/赎回估算合计", 1)
+        snapshot["conclusion"]["headline"] = headline.replace(
+            "当日合计", "当日一级市场净申购/赎回估算合计", 1
+        )
 
 
-def _daily_flow_payload(snapshot: dict[str, Any]) -> dict[str, Any]:
+def _v2_postprocess(snapshot: dict[str, Any], day: date) -> None:
+    # The mature production layer still performs quality gates and parent mapping;
+    # v6 then replaces every client-facing flow field in one pass.
+    _ORIG_POSTPROCESS(snapshot, day)
+    ths = production._get_ths_day(day)
+    apply_v2_semantics(snapshot, day, production._LAST_WINDOW, ths, _load_secondary_spot(day))
+
+
+def daily_flow_payload(snapshot: dict[str, Any]) -> dict[str, Any]:
     primary = snapshot.get("flowMetrics", {}).get("primaryMarket", {})
     return {
         "schemaVersion": 1,
@@ -134,8 +139,7 @@ def _v2_atomic_publish(snapshot: dict[str, Any]) -> Path:
     path = _ORIG_ATOMIC_PUBLISH(snapshot)
     daily_dir = base.PUBLIC / "daily"
     daily_dir.mkdir(parents=True, exist_ok=True)
-    payload = _daily_flow_payload(snapshot)
-    text = json.dumps(payload, ensure_ascii=False, indent=2)
+    text = json.dumps(daily_flow_payload(snapshot), ensure_ascii=False, indent=2)
     (daily_dir / f'{snapshot["tradeDate"]}.json').write_text(text, "utf-8")
     (daily_dir / "latest.json").write_text(text, "utf-8")
     return path
