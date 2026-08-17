@@ -1,0 +1,68 @@
+name: One-time ETF schema v6 migration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/migrate-etf-schema-v6-once.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: migrate-etf-schema-v6-once
+  cancel-in-progress: true
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      TZ: Asia/Shanghai
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: data_pipeline/requirements.txt
+      - run: pip install -r data_pipeline/requirements.txt
+      - name: Run deterministic tests
+        run: python -m unittest discover -s data_pipeline -p "test_*.py"
+      - name: Reconcile archived 2026-08-14 primary flows
+        run: python data_pipeline/benchmark_public_flow_dates.py
+      - name: Migrate latest snapshot to schema v6 without historical SSE refetch
+        run: python data_pipeline/migrate_existing_snapshot_v6.py --date "2026-08-14"
+      - name: Validate client bundle
+        run: npm ci && npm test
+      - name: Assert v6 data contract
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path('site/data/latest.json').read_text('utf-8'))
+          assert data['schemaVersion'] == 6
+          assert data['market']['metric'] == 'primaryMarketNetSubscriptionEstimate'
+          assert data['market']['valuation'] == 'sameDayUnitNAV'
+          primary=data['flowMetrics']['primaryMarket']
+          assert abs(primary['assetClassReconciliation']['difference']) <= 0.02
+          assert {'allEtf','stockEtfIncludingCrossBorder','aShareStockEtf'} <= set(primary['scopeTotals'])
+          assert {'aShareStockEtf','crossBorderStockEtf','bondEtf','moneyEtf','commodityEtf','otherEtf'} <= set(primary['assetClassTotals'])
+          etf=next(x for x in data['etfs'] if x['code']=='588710')
+          assert -1.5 < etf['flow1d'] < -1.0, etf
+          assert data['quality']['classifiedEtfCount'] == len(data['etfs'])
+          assert Path('site/data/daily/2026-08-14.json').exists()
+          print('market', data['market'])
+          print('scopes', primary['scopeTotals'])
+          print('asset classes', primary['assetClassTotals'])
+          print('valuations', primary['valuationComparisons'])
+          print('secondary', data['flowMetrics']['secondaryMarketOrderFlow'])
+          PY
+      - name: Commit migrated v6 data
+        run: |
+          git config user.name "etf-flow-radar-bot"
+          git config user.email "etf-flow-radar-bot@users.noreply.github.com"
+          git add site/data
+          git diff --cached --quiet && exit 0
+          git commit -m "data: migrate ETF snapshot to schema v6"
+          git push
