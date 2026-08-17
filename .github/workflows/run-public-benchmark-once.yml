@@ -25,3 +25,21 @@ jobs:
       - run: pip install -r data_pipeline/requirements.txt
       - name: Run known public 2026-07-31 benchmark
         run: python data_pipeline/benchmark_known_public_20260731.py
+      - name: Audit current published group reconciliation
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('site/data/latest.json').read_text('utf-8'))
+          print('MARKET', d['market'])
+          print('ETF_RECORDS', len(d.get('etfs', [])), 'UNIVERSE', len(d.get('universe', [])))
+          print('QUALITY_RECON', d.get('quality', {}).get('marketScopeReconciliation'))
+          print('CLASSIFIED_COVERAGE', d.get('quality', {}).get('classifiedCoverageOfMarketPct'))
+          broad=[g for g in d.get('groups', []) if g.get('kind')=='broad']
+          print('BROAD_COUNT', len(broad), 'FLOW_SUM', round(sum(float(g.get('flow1d') or 0) for g in broad),2))
+          print('BROAD', [(g.get('name'),g.get('flow1d'),g.get('etfCount')) for g in broad])
+          rolls=d.get('industryRollups', [])
+          print('INDUSTRY_ROLLUP_COUNT',len(rolls),'FLOW_SUM',round(sum(float(g.get('flow1d') or 0) for g in rolls),2))
+          print('INDUSTRY_TOP_IN', sorted([(g.get('name'),g.get('flow1d')) for g in rolls], key=lambda x: x[1] or 0, reverse=True)[:5])
+          print('INDUSTRY_TOP_OUT', sorted([(g.get('name'),g.get('flow1d')) for g in rolls], key=lambda x: x[1] or 0)[:5])
+          PY
