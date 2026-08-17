@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "tradeDate": "2026-08-17",
-  "generatedAt": "2026-08-18T02:18:05+08:00",
+  "generatedAt": "2026-08-18T02:33:36+08:00",
   "metric": "primaryMarketNetSubscriptionEstimate",
   "valuation": "sameDayUnitNAV",
   "marketScopes": {
@@ -627,17 +627,6 @@
       "nav": 1.7667,
       "flow1d": -1.2,
       "flow1dAvgPriceEstimate": -1.18
-    },
-    {
-      "code": "515450",
-      "name": "红利低波50ETF南方",
-      "groupId": "dividend",
-      "shares": 14161835000.0,
-      "previousComparableShares": 14079335000.0,
-      "shareDelta1d": 82500000.0,
-      "nav": 1.3873,
-      "flow1d": 1.14,
-      "flow1dAvgPriceEstimate": 1.14
     },
     {
       "code": "560780",
@@ -1311,17 +1300,6 @@
       "flow1dAvgPriceEstimate": 0.46
     },
     {
-      "code": "517380",
-      "name": "创新药ETF天弘",
-      "groupId": "pharma_innovative",
-      "shares": 3126326300.0,
-      "previousComparableShares": 3074326300.0,
-      "shareDelta1d": 52000000.0,
-      "nav": 0.889,
-      "flow1d": 0.46,
-      "flow1dAvgPriceEstimate": 0.46
-    },
-    {
       "code": "516310",
       "name": "银行ETF易方达",
       "groupId": "sw_banks",
@@ -1784,17 +1762,6 @@
       "flow1dAvgPriceEstimate": -0.3
     },
     {
-      "code": "560390",
-      "name": "电网设备ETF易方达",
-      "groupId": "sw_power_equipment",
-      "shares": 2039258000.0,
-      "previousComparableShares": 2071258000.0,
-      "shareDelta1d": -32000000.0,
-      "nav": 0.9239,
-      "flow1d": -0.3,
-      "flow1dAvgPriceEstimate": -0.29
-    },
-    {
       "code": "562890",
       "name": "A50ETF嘉实",
       "groupId": "csi_a50",
@@ -2233,17 +2200,6 @@
       "nav": 1.1232,
       "flow1d": -0.2,
       "flow1dAvgPriceEstimate": -0.2
-    },
-    {
-      "code": "561380",
-      "name": "电网设备ETF国泰",
-      "groupId": "sw_power_equipment",
-      "shares": 6893534000.0,
-      "previousComparableShares": 6918534000.0,
-      "shareDelta1d": -25000000.0,
-      "nav": 0.7816,
-      "flow1d": -0.2,
-      "flow1dAvgPriceEstimate": -0.19
     },
     {
       "code": "159139",
@@ -2939,17 +2895,6 @@
       "flow1dAvgPriceEstimate": -0.12
     },
     {
-      "code": "159622",
-      "name": "创新药ETF东财",
-      "groupId": "pharma_innovative",
-      "shares": 1200603238.0,
-      "previousComparableShares": 1210603238.0,
-      "shareDelta1d": -10000000.0,
-      "nav": 1.2143,
-      "flow1d": -0.12,
-      "flow1dAvgPriceEstimate": -0.12
-    },
-    {
       "code": "159697",
       "name": "石油ETF鹏华",
       "groupId": "sw_petrochemical",
@@ -3280,17 +3225,6 @@
       "flow1dAvgPriceEstimate": -0.1
     },
     {
-      "code": "159320",
-      "name": "电网设备ETF广发",
-      "groupId": "sw_power_equipment",
-      "shares": 1784235519.0,
-      "previousComparableShares": 1799235519.0,
-      "shareDelta1d": -15000000.0,
-      "nav": 0.6588,
-      "flow1d": -0.1,
-      "flow1dAvgPriceEstimate": -0.1
-    },
-    {
       "code": "159638",
       "name": "高端装备ETF嘉实",
       "groupId": "sw_machinery",
@@ -3544,17 +3478,6 @@
       "flow1dAvgPriceEstimate": -0.09
     },
     {
-      "code": "159748",
-      "name": "创新药ETF富国",
-      "groupId": "pharma_innovative",
-      "shares": 1577692128.0,
-      "previousComparableShares": 1587692128.0,
-      "shareDelta1d": -10000000.0,
-      "nav": 0.8621,
-      "flow1d": -0.09,
-      "flow1dAvgPriceEstimate": -0.09
-    },
-    {
       "code": "512020",
       "name": "A500ETF鹏华",
       "groupId": "csi_a500",
@@ -3617,17 +3540,6 @@
       "previousComparableShares": 6176709500.0,
       "shareDelta1d": -6000000.0,
       "nav": 1.3812,
-      "flow1d": -0.08,
-      "flow1dAvgPriceEstimate": -0.08
-    },
-    {
-      "code": "517130",
-      "name": "云计算ETF嘉实",
-      "groupId": "comp_ai",
-      "shares": 183654000.0,
-      "previousComparableShares": 191154000.0,
-      "shareDelta1d": -7500000.0,
-      "nav": 1.0184,
       "flow1d": -0.08,
       "flow1dAvgPriceEstimate": -0.08
     },
@@ -5612,28 +5524,6 @@
       "flow1dAvgPriceEstimate": 0.03
     },
     {
-      "code": "517110",
-      "name": "创新药ETF国泰",
-      "groupId": "pharma_innovative",
-      "shares": 1434098500.0,
-      "previousComparableShares": 1438098500.0,
-      "shareDelta1d": -4000000.0,
-      "nav": 0.8119,
-      "flow1d": -0.03,
-      "flow1dAvgPriceEstimate": -0.03
-    },
-    {
-      "code": "517120",
-      "name": "创新药ETF华泰柏瑞",
-      "groupId": "pharma_innovative",
-      "shares": 602966400.0,
-      "previousComparableShares": 606966400.0,
-      "shareDelta1d": -4000000.0,
-      "nav": 0.7776,
-      "flow1d": -0.03,
-      "flow1dAvgPriceEstimate": -0.03
-    },
-    {
       "code": "560080",
       "name": "中药ETF汇添富",
       "groupId": "pharma_tcm",
@@ -6129,17 +6019,6 @@
       "flow1dAvgPriceEstimate": -0.03
     },
     {
-      "code": "159273",
-      "name": "云计算ETF汇添富",
-      "groupId": "comp_ai",
-      "shares": 691777501.0,
-      "previousComparableShares": 693777501.0,
-      "shareDelta1d": -2000000.0,
-      "nav": 1.5024,
-      "flow1d": -0.03,
-      "flow1dAvgPriceEstimate": -0.03
-    },
-    {
       "code": "159305",
       "name": "储能电池ETF广发",
       "groupId": "power_storage",
@@ -6444,28 +6323,6 @@
       "previousComparableShares": 186582200.0,
       "shareDelta1d": -3900000.0,
       "nav": 0.5277,
-      "flow1d": -0.02,
-      "flow1dAvgPriceEstimate": -0.02
-    },
-    {
-      "code": "517390",
-      "name": "云计算ETF天弘",
-      "groupId": "comp_ai",
-      "shares": 134112600.0,
-      "previousComparableShares": 135112600.0,
-      "shareDelta1d": -1000000.0,
-      "nav": 2.0526,
-      "flow1d": -0.02,
-      "flow1dAvgPriceEstimate": -0.02
-    },
-    {
-      "code": "517800",
-      "name": "人工智能50ETF方正富邦",
-      "groupId": "comp_ai",
-      "shares": 205539700.0,
-      "previousComparableShares": 207539700.0,
-      "shareDelta1d": -2000000.0,
-      "nav": 1.054,
       "flow1d": -0.02,
       "flow1dAvgPriceEstimate": -0.02
     },
@@ -8835,17 +8692,6 @@
       "flow1dAvgPriceEstimate": 0.0
     },
     {
-      "code": "513310",
-      "name": "中韩半导体ETF华泰柏瑞",
-      "groupId": "elec_chip",
-      "shares": 2394427000.0,
-      "previousComparableShares": 2394427000.0,
-      "shareDelta1d": 0.0,
-      "nav": 4.5582,
-      "flow1d": 0.0,
-      "flow1dAvgPriceEstimate": 0.0
-    },
-    {
       "code": "515090",
       "name": "可持续发展ETF博时",
       "groupId": "esg",
@@ -9429,17 +9275,6 @@
       "flow1dAvgPriceEstimate": 0.0
     },
     {
-      "code": "517050",
-      "name": "互联网ETF华泰柏瑞",
-      "groupId": "comp_internet",
-      "shares": 347605000.0,
-      "previousComparableShares": 347605000.0,
-      "shareDelta1d": 0.0,
-      "nav": 0.6925,
-      "flow1d": 0.0,
-      "flow1dAvgPriceEstimate": 0.0
-    },
-    {
       "code": "517090",
       "name": "央企共赢ETF国泰",
       "groupId": "soe",
@@ -9473,17 +9308,6 @@
       "flow1dAvgPriceEstimate": 0.0
     },
     {
-      "code": "517200",
-      "name": "互联网ETF嘉实",
-      "groupId": "comp_internet",
-      "shares": 139782000.0,
-      "previousComparableShares": 139782000.0,
-      "shareDelta1d": 0.0,
-      "nav": 0.6111,
-      "flow1d": 0.0,
-      "flow1dAvgPriceEstimate": 0.0
-    },
-    {
       "code": "517330",
       "name": "长江保护ETF易方达",
       "groupId": "region",
@@ -9491,39 +9315,6 @@
       "previousComparableShares": 1806169000.0,
       "shareDelta1d": 0.0,
       "nav": 1.0046,
-      "flow1d": 0.0,
-      "flow1dAvgPriceEstimate": 0.0
-    },
-    {
-      "code": "517770",
-      "name": "游戏传媒ETF浦银",
-      "groupId": "media_game",
-      "shares": 162947800.0,
-      "previousComparableShares": 162947800.0,
-      "shareDelta1d": 0.0,
-      "nav": 0.9156,
-      "flow1d": 0.0,
-      "flow1dAvgPriceEstimate": 0.0
-    },
-    {
-      "code": "517850",
-      "name": "张江ETF汇添富",
-      "groupId": "region",
-      "shares": 38185200.0,
-      "previousComparableShares": 38185200.0,
-      "shareDelta1d": 0.0,
-      "nav": 1.3977,
-      "flow1d": 0.0,
-      "flow1dAvgPriceEstimate": 0.0
-    },
-    {
-      "code": "517880",
-      "name": "品牌消费ETF华泰柏瑞",
-      "groupId": "sw_food_beverage",
-      "shares": 53337100.0,
-      "previousComparableShares": 53337100.0,
-      "shareDelta1d": 0.0,
-      "nav": 0.7617,
       "flow1d": 0.0,
       "flow1dAvgPriceEstimate": 0.0
     },
@@ -12267,17 +12058,6 @@
       "flow1dAvgPriceEstimate": 0.0
     },
     {
-      "code": "159550",
-      "name": "互联网ETF东财",
-      "groupId": "comp_internet",
-      "shares": 201828785.0,
-      "previousComparableShares": 201828785.0,
-      "shareDelta1d": 0.0,
-      "nav": 0.832,
-      "flow1d": 0.0,
-      "flow1dAvgPriceEstimate": 0.0
-    },
-    {
       "code": "159553",
       "name": "中证2000增强ETF海富通",
       "groupId": "enhanced",
@@ -12839,17 +12619,6 @@
       "flow1dAvgPriceEstimate": 0.0
     },
     {
-      "code": "159729",
-      "name": "互联网ETF汇添富",
-      "groupId": "comp_internet",
-      "shares": 64960633.0,
-      "previousComparableShares": 64960633.0,
-      "shareDelta1d": 0.0,
-      "nav": 0.7209,
-      "flow1d": 0.0,
-      "flow1dAvgPriceEstimate": 0.0
-    },
-    {
       "code": "159730",
       "name": "家电ETF博时",
       "groupId": "sw_home_appliances",
@@ -12857,17 +12626,6 @@
       "previousComparableShares": 42571340.0,
       "shareDelta1d": 0.0,
       "nav": 1.026,
-      "flow1d": 0.0,
-      "flow1dAvgPriceEstimate": 0.0
-    },
-    {
-      "code": "159738",
-      "name": "云计算ETF华泰柏瑞",
-      "groupId": "comp_ai",
-      "shares": 134992667.0,
-      "previousComparableShares": 134992667.0,
-      "shareDelta1d": 0.0,
-      "nav": 2.1711,
       "flow1d": 0.0,
       "flow1dAvgPriceEstimate": 0.0
     },
@@ -12956,17 +12714,6 @@
       "previousComparableShares": 31083347.0,
       "shareDelta1d": 0.0,
       "nav": 1.1367,
-      "flow1d": 0.0,
-      "flow1dAvgPriceEstimate": 0.0
-    },
-    {
-      "code": "159793",
-      "name": "线上消费ETF平安",
-      "groupId": "sw_retail",
-      "shares": 43758908.0,
-      "previousComparableShares": 43758908.0,
-      "shareDelta1d": 0.0,
-      "nav": 0.8187,
       "flow1d": 0.0,
       "flow1dAvgPriceEstimate": 0.0
     },
@@ -13462,28 +13209,6 @@
       "previousComparableShares": 64885872.0,
       "shareDelta1d": 0.0,
       "nav": 1.3173,
-      "flow1d": 0.0,
-      "flow1dAvgPriceEstimate": 0.0
-    },
-    {
-      "code": "159980",
-      "name": "有色ETF大成",
-      "groupId": "sw_nonferrous",
-      "shares": 2975824777.0,
-      "previousComparableShares": 2975824777.0,
-      "shareDelta1d": 0.0,
-      "nav": 2.1655,
-      "flow1d": 0.0,
-      "flow1dAvgPriceEstimate": 0.0
-    },
-    {
-      "code": "159981",
-      "name": "能源化工ETF建信",
-      "groupId": "sw_petrochemical",
-      "shares": 1734536957.0,
-      "previousComparableShares": 1734536957.0,
-      "shareDelta1d": 0.0,
-      "nav": 1.5382,
       "flow1d": 0.0,
       "flow1dAvgPriceEstimate": 0.0
     },
