@@ -23,6 +23,8 @@ jobs:
       - run: pip install -r data_pipeline/requirements.txt
       - name: Run deterministic tests
         run: python -m unittest discover -s data_pipeline -p "test_*.py"
+      - name: Run known 2026-07-31 Wind/iFinD diagnostic
+        run: python data_pipeline/benchmark_known_public_20260731.py
       - name: Run primary/secondary metric benchmark
         run: python data_pipeline/benchmark_public_flow_dates.py
       - name: Rebuild 2026-08-14 with schema v6
@@ -36,13 +38,18 @@ jobs:
           assert data['schemaVersion'] == 6
           assert data['market']['metric'] == 'primaryMarketNetSubscriptionEstimate'
           assert data['market']['valuation'] == 'sameDayUnitNAV'
-          assert {'allEtf','stockEtfIncludingCrossBorder','aShareStockEtf'} <= set(data['flowMetrics']['primaryMarket']['scopeTotals'])
+          primary=data['flowMetrics']['primaryMarket']
+          assert {'allEtf','stockEtfIncludingCrossBorder','aShareStockEtf'} <= set(primary['scopeTotals'])
+          comp=primary['valuationComparisons']['alternatives']['sameDayAverageTradedPrice']['scopeTotals']
+          assert {'allEtf','stockEtfIncludingCrossBorder','aShareStockEtf'} <= set(comp)
+          assert primary['valuationComparisons']['samplePolicy'] == 'same_etfs_as_canonical_nav_metric'
           assert data['quality']['flowModelVersion'] == 2
           etf=next(x for x in data['etfs'] if x['code']=='588710')
           assert -1.5 < etf['flow1d'] < -1.0, etf
           assert etf['flowValuation'] == 'sameDayUnitNAV'
           assert Path('site/data/daily/2026-08-14.json').exists()
           print('market', data['market'])
+          print('valuation comparisons', primary['valuationComparisons'])
           print('secondary', data['flowMetrics']['secondaryMarketOrderFlow'])
           print('588710', etf)
           PY
