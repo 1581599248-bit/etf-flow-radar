@@ -21,5 +21,30 @@ jobs:
           cache: pip
           cache-dependency-path: data_pipeline/requirements.txt
       - run: pip install -r data_pipeline/requirements.txt
-      - name: Run cross-date public benchmark
+      - name: Run deterministic tests
+        run: python -m unittest discover -s data_pipeline -p "test_*.py"
+      - name: Run primary/secondary metric benchmark
         run: python data_pipeline/benchmark_public_flow_dates.py
+      - name: Rebuild 2026-08-14 with schema v6
+        run: python data_pipeline/update_daily_v2.py --date "2026-08-14"
+      - name: Inspect schema v6 contract
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path('site/data/latest.json').read_text('utf-8'))
+          assert data['schemaVersion'] == 6
+          assert data['market']['metric'] == 'primaryMarketNetSubscriptionEstimate'
+          assert data['market']['valuation'] == 'sameDayUnitNAV'
+          assert {'allEtf','stockEtfIncludingCrossBorder','aShareStockEtf'} <= set(data['flowMetrics']['primaryMarket']['scopeTotals'])
+          assert data['quality']['flowModelVersion'] == 2
+          etf=next(x for x in data['etfs'] if x['code']=='588710')
+          assert -1.5 < etf['flow1d'] < -1.0, etf
+          assert etf['flowValuation'] == 'sameDayUnitNAV'
+          assert Path('site/data/daily/2026-08-14.json').exists()
+          print('market', data['market'])
+          print('secondary', data['flowMetrics']['secondaryMarketOrderFlow'])
+          print('588710', etf)
+          PY
+      - name: Validate client bundle
+        run: npm ci && npm test
