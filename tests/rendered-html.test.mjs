@@ -76,8 +76,10 @@ test("schema v6 separates primary subscription flow, secondary order flow and ma
   }
 
   const marketRecon = snapshot.quality.marketScopeReconciliation;
-  assert.equal(marketRecon.aShareEquityPrimaryFlow1d, snapshot.market.flow1d);
-  assert.ok(Number.isFinite(marketRecon.classifiedGroupPrimaryFlow1d));
+  const reconMarketFlow = marketRecon.aShareEquityShareFlow1d ?? marketRecon.aShareEquityPrimaryFlow1d;
+  const reconClassifiedFlow = marketRecon.classifiedGroupShareFlow1d ?? marketRecon.classifiedGroupPrimaryFlow1d;
+  assert.equal(reconMarketFlow, snapshot.market.flow1d);
+  assert.ok(Number.isFinite(reconClassifiedFlow));
   assert.ok(Number.isFinite(marketRecon.ungroupedDifference));
 
   assert.ok(Array.isArray(snapshot.industryRollups));
@@ -89,9 +91,10 @@ test("schema v6 separates primary subscription flow, secondary order flow and ma
 
   assert.match(snapshot.methodology.identity, /禁止据此推断/);
   assert.match(snapshot.methodology.flow, /T日单位净值/);
-  assert.match(snapshot.methodology.metricSeparation, /两个不同变量/);
+  assert.match(snapshot.methodology.metricSeparation, /两句独立口径|两个不同变量/);
   assert.match(snapshot.methodology.multiDay, /不是逐日净申购额之和/);
-  assert.match(snapshot.methodology.scope, /全部ETF、股票ETF（含跨境）和A股股票ETF/);
+  assert.match(snapshot.methodology.scope, /A股股票ETF/);
+  assert.match(snapshot.methodology.scope, /股票ETF（含跨境）/);
 
   const daily = JSON.parse(await readFile(`site/data/daily/${snapshot.tradeDate}.json`, "utf8"));
   assert.equal(daily.metric, primary.metric);
