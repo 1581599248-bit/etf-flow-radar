@@ -7,6 +7,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: public-etf-flow-benchmark
+  cancel-in-progress: true
+
 jobs:
   benchmark:
     runs-on: ubuntu-latest
@@ -40,6 +44,8 @@ jobs:
           assert data['market']['valuation'] == 'sameDayUnitNAV'
           primary=data['flowMetrics']['primaryMarket']
           assert {'allEtf','stockEtfIncludingCrossBorder','aShareStockEtf'} <= set(primary['scopeTotals'])
+          assert {'aShareStockEtf','crossBorderStockEtf','bondEtf','moneyEtf','commodityEtf','otherEtf'} <= set(primary['assetClassTotals'])
+          assert abs(primary['assetClassReconciliation']['difference']) <= 0.02
           comp=primary['valuationComparisons']['alternatives']['sameDayAverageTradedPrice']['scopeTotals']
           assert {'allEtf','stockEtfIncludingCrossBorder','aShareStockEtf'} <= set(comp)
           assert primary['valuationComparisons']['samplePolicy'] == 'same_etfs_as_canonical_nav_metric'
@@ -49,6 +55,7 @@ jobs:
           assert etf['flowValuation'] == 'sameDayUnitNAV'
           assert Path('site/data/daily/2026-08-14.json').exists()
           print('market', data['market'])
+          print('asset classes', primary['assetClassTotals'])
           print('valuation comparisons', primary['valuationComparisons'])
           print('secondary', data['flowMetrics']['secondaryMarketOrderFlow'])
           print('588710', etf)
