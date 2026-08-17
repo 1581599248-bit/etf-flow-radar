@@ -2,9 +2,8 @@
 
 Public iFinD summaries commonly split all-ETF flow into domestic stock, cross-
 border, bond, money, commodity and other buckets. These totals are derived from
-the same canonical primary-market per-ETF facts so they reconcile to the all-ETF
-total. Reconciliation is performed on unrounded per-ETF values; bucket amounts
-are rounded only for display.
+the same canonical share delta and NAV facts as the all-ETF total. Reconciliation
+is performed before display rounding.
 """
 from __future__ import annotations
 
@@ -22,8 +21,13 @@ _LABELS = {
 
 
 def _row_flow(row: dict[str, Any]) -> float | None:
-    value = row.get("primaryFlow1d")
-    return float(value) if isinstance(value, (int, float)) else None
+    # Do not sum the 2-decimal ETF display amount: across ~1,500 ETFs that creates
+    # a visible rounding residual. Rebuild from the canonical share delta and NAV.
+    delta = row.get("shareDelta1d")
+    nav = row.get("nav")
+    if isinstance(delta, (int, float)) and isinstance(nav, (int, float)) and nav > 0:
+        return float(delta) * float(nav) / 1e8
+    return None
 
 
 def add_asset_class_totals(snapshot: dict[str, Any]) -> None:
