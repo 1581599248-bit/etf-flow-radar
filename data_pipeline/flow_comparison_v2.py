@@ -20,6 +20,7 @@ def add_primary_valuation_comparisons(snapshot: dict[str, Any]) -> None:
     }
     comparison: dict[str, Any] = {
         "canonical": "sameDayUnitNAV",
+        "samplePolicy": "same_etfs_as_canonical_nav_metric",
         "alternatives": {
             "sameDayAverageTradedPrice": {
                 "definition": "公司行动调整后的同一份额变化 × 当日成交均价/参考交易价；用于对照采用成交均价的Wind/资讯口径。",
@@ -33,8 +34,13 @@ def add_primary_valuation_comparisons(snapshot: dict[str, Any]) -> None:
         for row in rows:
             if not predicate(row):
                 continue
+            # The comparison must use exactly the canonical NAV-valid sample;
+            # otherwise the difference would mix valuation and coverage effects.
+            canonical = row.get("primaryFlow1d")
             delta = row.get("shareDelta1d")
             price = row.get("referencePrice")
+            if not isinstance(canonical, (int, float)):
+                continue
             if not isinstance(delta, (int, float)) or not isinstance(price, (int, float)) or price <= 0:
                 continue
             values.append(float(delta) * float(price) / 1e8)
