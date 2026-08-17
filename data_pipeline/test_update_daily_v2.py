@@ -120,8 +120,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
         with patch.object(v2.production, "_regenerate_conclusion", side_effect=legacy_headline):
             v2._regenerate_v2_conclusion(snapshot)
         headline = snapshot["conclusion"]["headline"]
-        self.assertIn("A股ETF当日交易净流入198.4亿元", headline)
-        self.assertIn("ETF份额净流出48.3亿元", headline)
+        self.assertIn("A股ETF当日成交资金净流入198.4亿元", headline)
+        self.assertIn("ETF份额较上一日净流出48.3亿元", headline)
         self.assertIn("231只份额增加、409只份额减少、607只不变", headline)
         self.assertNotIn("一级市场", headline)
 
