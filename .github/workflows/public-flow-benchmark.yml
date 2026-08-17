@@ -31,8 +31,8 @@ jobs:
         run: python data_pipeline/benchmark_known_public_20260731.py
       - name: Run primary/secondary metric benchmark
         run: python data_pipeline/benchmark_public_flow_dates.py
-      - name: Rebuild 2026-08-14 with schema v6
-        run: python data_pipeline/update_daily_v2.py --date "2026-08-14"
+      - name: Migrate archived 2026-08-14 facts to schema v6
+        run: python data_pipeline/migrate_existing_snapshot_v6.py --date "2026-08-14"
       - name: Inspect schema v6 contract
         run: |
           python - <<'PY'
@@ -50,6 +50,7 @@ jobs:
           assert {'allEtf','stockEtfIncludingCrossBorder','aShareStockEtf'} <= set(comp)
           assert primary['valuationComparisons']['samplePolicy'] == 'same_etfs_as_canonical_nav_metric'
           assert data['quality']['flowModelVersion'] == 2
+          assert data['quality']['schemaMigration']['historicalNetworkFetch'] is False
           etf=next(x for x in data['etfs'] if x['code']=='588710')
           assert -1.5 < etf['flow1d'] < -1.0, etf
           assert etf['flowValuation'] == 'sameDayUnitNAV'
