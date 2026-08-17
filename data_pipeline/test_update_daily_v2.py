@@ -120,9 +120,9 @@ class UpdateDailyV2Tests(unittest.TestCase):
         with patch.object(v2.production, "_regenerate_conclusion", side_effect=legacy_headline):
             v2._regenerate_v2_conclusion(snapshot)
         headline = snapshot["conclusion"]["headline"]
+        self.assertIn("A股ETF当日成交资金净流入198.4亿元", headline)
         self.assertIn("A股股票ETF当日合计净流出48.3亿元", headline)
         self.assertIn("231只份额增加、409只份额减少、607只不变", headline)
-        self.assertNotIn("成交资金净流入198.4亿元", headline)
         self.assertNotIn("暂无同日数据", headline)
         self.assertNotIn("ETF份额较上一日", headline)
 
@@ -147,8 +147,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
         with patch.object(v2.production, "_regenerate_conclusion", side_effect=legacy_headline):
             v2._regenerate_v2_conclusion(snapshot)
         headline = snapshot["conclusion"]["headline"]
+        self.assertIn("A股ETF当日成交资金暂无同日数据", headline)
         self.assertIn("A股股票ETF当日合计净流入12.6亿元", headline)
-        self.assertNotIn("暂无同日数据", headline)
 
 
 
