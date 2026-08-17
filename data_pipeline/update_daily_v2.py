@@ -51,6 +51,8 @@ def apply_v2_semantics(
     spot: pd.DataFrame | None,
 ) -> None:
     """Apply every client-facing schema-v6 flow rule exactly once."""
+    legacy_classified_count = snapshot.get("quality", {}).get("classifiedEtfCount")
+
     flow_model_v2.apply_flow_model(snapshot, day, share_window, ths, spot)
     flow_comparison_v2.add_primary_valuation_comparisons(snapshot)
     flow_scope_breakdown_v2.add_asset_class_totals(snapshot)
@@ -67,6 +69,11 @@ def apply_v2_semantics(
     quality.update({
         "industryRollupCount": len(rollups),
         "themeGroupCount": len(snapshot["themeGroups"]),
+        # schema v6 only publishes classified ETF rows that have the canonical
+        # one-day NAV-valued primary-market fact. Keep the legacy pre-v6 count as
+        # audit context rather than letting metadata disagree with the array.
+        "legacyClassifiedEtfCountBeforeV6": legacy_classified_count,
+        "classifiedEtfCount": len(snapshot.get("etfs", [])),
         "marketScopeEtfCount": market.get("etfCount"),
         "marketScope5dCount": market.get("etfCount5d"),
         "marketScope20dCount": market.get("etfCount20d"),
