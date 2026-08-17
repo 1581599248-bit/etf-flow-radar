@@ -4,7 +4,7 @@
   "tradeDate": "2026-08-17",
   "previousTradeDate": "2026-08-14",
   "windowStartDate": "2026-07-20",
-  "generatedAt": "2026-08-18T01:48:42+08:00",
+  "generatedAt": "2026-08-18T02:18:05+08:00",
   "publicationDate": "2026-08-18",
   "sourceMode": "REAL",
   "market": {
@@ -40,10 +40,10 @@
     "multiDayMethod": "endpoint_share_change_times_current_nav"
   },
   "conclusion": {
-    "headline": "A股ETF当日成交资金净流入94.5亿元；A股股票ETF当日合计净流出185.7亿元；202只份额增加、590只份额减少、456只不变。宽基中18个流出、6个流入；申万一级行业资金流入居前的是传媒，流出最多的是电子。",
+    "headline": "A股ETF当日成交资金净流入94.5亿元；ETF份额较上一日净流出185.7亿元。宽基中18个流出、6个流入；申万一级和主题行业资金流入居前的是游戏，流出最多的是半导体。",
     "facts": [
       "宽基流出前三为科创50-47.8亿、沪深300-31.6亿、创业板指-16.4亿；5日端点变化流出最大为沪深300。",
-      "申万一级行业净流入居前为传媒+1.8亿、有色金属+1.5亿；净流出最多为电子-37.7亿。",
+      "申万一级和主题行业净流入居前为游戏+2.3亿、创新药+1.3亿；净流出最多为半导体-23.4亿。",
       "单只ETF大额变化：中证500ETF南方净流入+4.1亿元；科创50ETF华夏净流出-34.6亿元。"
     ],
     "interpretation": "从份额数据看，宽基当日18/27个组净流出；风格组中成长当日变化相对靠前，指数增强流出较多。红利低波的1日与5日端点份额变化均为净流入，可继续观察延续性。",
@@ -72696,7 +72696,7 @@
     "shareCrossCheck": {
       "status": "usable",
       "scale": 1.0,
-      "medianRelativeError": 0.004131,
+      "medianRelativeError": 0.004785,
       "commonCount": 1553,
       "repaired": [],
       "disagreements": [],
@@ -72776,7 +72776,24 @@
     "primaryMarketScopeCount": 1248,
     "secondaryOrderFlowStatus": "available",
     "metricSeparation": "primary_market_subscription_vs_secondary_market_order_flow",
-    "legacyClassifiedEtfCountBeforeV6": 1214
+    "legacyClassifiedEtfCountBeforeV6": 1214,
+    "clientSectorReconciliation": {
+      "visibleGroupCount": 49,
+      "visibleGroupFlow1d": -58.1,
+      "industryRollupFlow1d": -58.1,
+      "difference": 0.0,
+      "topInflowGroup": {
+        "id": "media_game",
+        "name": "游戏",
+        "flow1d": 2.34
+      },
+      "topOutflowGroup": {
+        "id": "elec_semiconductor",
+        "name": "半导体",
+        "flow1d": -23.35
+      },
+      "displayLayer": "mutually_exclusive_sw_level_and_theme_groups"
+    }
   },
   "sources": [
     {
@@ -72815,8 +72832,9 @@
     "scope": "首页主指标固定使用A股股票ETF范围，不含跨境股票ETF、债券ETF、货币ETF和商品ETF；同时保留全部ETF、股票ETF（含跨境）和六类资产范围用于审计与对照。",
     "multiDay": "5日/20日当前字段为端点份额变化×期末单位净值，字段明确标记 Endpoint；不是逐日净流入额之和。schema v6开始落盘每日单ETF份额flow1d，积累足够交易日后再生成真正5日/20日累计净流入额。",
     "aum": "页面规模为参考规模；市场总规模优先按同日NAV×份额估算，分组参考规模沿用当前参考价口径并明确标注为参考值。",
-    "metricSeparation": "首页保留两句独立口径：第一句展示A股ETF同日二级市场成交资金净额（仅在同日成交额+外盘/内盘快照成功落盘时给出数值）；第二句固定展示A股股票ETF当日净申购/赎回估算（交易所T日/T-1可比份额变化×T日NAV）。第一句缺失或数值变化均不得覆盖第二句。",
-    "valuation": "ETF当日净流入/净流出主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。"
+    "metricSeparation": "首页保留两句独立口径：第一句展示A股ETF同日二级市场成交资金净额（仅在同日成交额+外盘/内盘快照成功落盘时给出数值）；第二句以“ETF份额较上一日净流入/净流出”展示A股股票ETF当日净申购/赎回估算，金额严格等于交易所T日与T-1可比份额变化×T日NAV。第一句缺失或数值变化均不得覆盖第二句。",
+    "valuation": "ETF当日净流入/净流出主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。",
+    "sectorDisplay": "客户端行业结论、排名与行业资金坐标统一使用互斥的“申万一级行业+热门主题”展示层；industryRollups仅用于把热门主题回卷到申万一级行业做审计，不参与客户端最大流入/流出排名。"
   },
   "industryRollups": [
     {
