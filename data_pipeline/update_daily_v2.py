@@ -2,7 +2,7 @@
 
 This entrypoint keeps the battle-tested exchange/NAV transport and corporate-
 action guards, then applies ``flow_model_v2`` as the *only* client-facing flow
-semantics layer.  New code and documentation should invoke this file rather than
+semantics layer. New code and documentation should invoke this file rather than
 calling the older intermediate wrappers directly.
 """
 from __future__ import annotations
@@ -16,6 +16,7 @@ import update_daily as base
 import update_daily_guarded as guarded
 import update_daily_production as production
 import flow_model_v2
+import flow_comparison_v2
 
 _ORIG_POSTPROCESS = production._postprocess_snapshot
 _ORIG_ATOMIC_PUBLISH = base.atomic_publish
@@ -29,6 +30,7 @@ def _v2_postprocess(snapshot: dict[str, Any], day: date) -> None:
     ths = production._get_ths_day(day)
     spot = guarded._get_spot()
     flow_model_v2.apply_flow_model(snapshot, day, production._LAST_WINDOW, ths, spot)
+    flow_comparison_v2.add_primary_valuation_comparisons(snapshot)
 
     # Parent rollups must be rebuilt after leaf ETF flows switch to the canonical
     # NAV-valued primary-market metric.
@@ -58,11 +60,11 @@ def _v2_postprocess(snapshot: dict[str, Any], day: date) -> None:
 
     snapshot["schemaVersion"] = 6
     snapshot.setdefault("methodology", {}).update({
-        "flow": "一级市场净申购/赎回估算 =（T日交易所日终份额 − T-1日公司行动调整后的可比份额）× T日单位净值。单位净值是主展示估值口径；同日成交均价仅保留为对照估算，不再混入主口径。",
+        "flow": "一级市场净申购/赎回估算 =（T日交易所日终份额 − T-1日公司行动调整后的可比份额）× T日单位净值。单位净值是主展示估值口径；同一份额变化再乘成交均价的结果单独保留用于Wind/资讯口径对照，不再混入主字段。",
         "metricSeparation": "一级市场净申购/赎回与二级市场主力净流入是两个不同变量。二级市场主力资金仅在数据日期严格等于交易日时单独记录于 flowMetrics.secondaryMarketOrderFlow，绝不覆盖一级市场数据。",
         "multiDay": "5日/20日当前字段为端点份额变化×期末单位净值，字段明确标记 Endpoint；不是逐日净申购额之和。schema v6开始落盘每日单ETF一级市场flow1d，积累足够交易日后再生成真正5日/20日累计净申购额。",
         "scope": "同时保存全部ETF、股票ETF（含跨境）和A股股票ETF三个一级市场口径。网站主口径仍是A股股票ETF；与Wind/Choice/iFinD或资讯报道对比时必须先匹配统计范围。",
-        "valuation": "主口径使用同日单位净值，便于复现公开净申购份额×单位净值口径；成交均价口径作为 comparison estimate 单独保留。",
+        "valuation": "主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。二者是估值方法差异，不是两个独立资金事件。",
     })
     snapshot["methodology"]["coordinates"] = "横轴 = 20日相对沪深300收益率；纵轴 = 5日端点份额变化×期末NAV ÷ 5日前参考规模（%）。"
 
@@ -73,13 +75,15 @@ def _v2_postprocess(snapshot: dict[str, Any], day: date) -> None:
 
 
 def _daily_flow_payload(snapshot: dict[str, Any]) -> dict[str, Any]:
+    primary = snapshot.get("flowMetrics", {}).get("primaryMarket", {})
     return {
         "schemaVersion": 1,
         "tradeDate": snapshot["tradeDate"],
         "generatedAt": snapshot["generatedAt"],
         "metric": "primaryMarketNetSubscriptionEstimate",
         "valuation": "sameDayUnitNAV",
-        "marketScopes": snapshot.get("flowMetrics", {}).get("primaryMarket", {}).get("scopeTotals", {}),
+        "marketScopes": primary.get("scopeTotals", {}),
+        "valuationComparisons": primary.get("valuationComparisons", {}),
         "etfs": [
             {
                 "code": item.get("code"),
@@ -90,6 +94,7 @@ def _daily_flow_payload(snapshot: dict[str, Any]) -> dict[str, Any]:
                 "shareDelta1d": item.get("shareDelta1d"),
                 "nav": item.get("nav"),
                 "flow1d": item.get("flow1d"),
+                "flow1dAvgPriceEstimate": item.get("flow1dAvgPriceEstimate"),
             }
             for item in snapshot.get("etfs", [])
         ],
