@@ -96,7 +96,13 @@ def main() -> int:
         if existing.get("metric") == "secondaryMarketMainOrderFlow" and int(existing.get("etfCount", 0)) >= MIN_ROWS:
             print(f"order-flow snapshot already exists: {target}")
             return 0
-    snapshot = build_snapshot(day)
+    try:
+        snapshot = build_snapshot(day)
+    except ValueError as exc:
+        if "not an exchange trading session" in str(exc):
+            print(f"order-flow capture skipped: {exc}")
+            return 0
+        raise
     path = publish(snapshot)
     print(f"captured {snapshot['etfCount']} ETF order-flow rows: {path}")
     return 0
