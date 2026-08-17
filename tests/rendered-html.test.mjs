@@ -60,7 +60,10 @@ test("schema v6 separates primary subscription flow, secondary trading flow and 
   assert.ok(snapshot.universeAudit);
   assert.ok(snapshot.universe.every((row) => "assetScope" in row));
   assert.equal(new Set(snapshot.etfs.map((row) => row.code)).size, snapshot.quality.classifiedEtfCount);
+  assert.equal(snapshot.quality.classifiedAshareScopeEnforcement.afterCount, snapshot.etfs.length);
+  assert.ok(!Object.hasOwn(snapshot.quality.classifiedAshareScopeEnforcement.excludedByScope, "aShareStockEtf"));
   for (const row of snapshot.etfs) {
+    assert.equal(row.assetScope, "aShareStockEtf");
     assert.equal(row.flowMetric, "primaryMarketNetSubscriptionEstimate");
     assert.equal(row.flowValuation, "sameDayUnitNAV");
     assert.equal(typeof row.shareDelta1d, "number");
@@ -70,12 +73,18 @@ test("schema v6 separates primary subscription flow, secondary trading flow and 
   assert.ok(snapshot.groups.some((row) => row.kind === "broad"));
   assert.ok(snapshot.groups.some((row) => row.kind === "style"));
   assert.ok(snapshot.groups.some((row) => row.kind === "industry"));
+  const memberCodesByGroup = new Map();
+  for (const row of snapshot.etfs) {
+    if (!memberCodesByGroup.has(row.groupId)) memberCodesByGroup.set(row.groupId, new Set());
+    memberCodesByGroup.get(row.groupId).add(row.code);
+  }
   for (const row of snapshot.groups) {
     assert.equal(typeof row.flow1d, "number");
     assert.equal(typeof row.flow5d, "number");
     assert.equal(typeof row.flow20d, "number");
     assert.equal(row.flow5dMetric, "endpointShareChangeTimesCurrentNAV");
     assert.equal(row.flow20dMetric, "endpointShareChangeTimesCurrentNAV");
+    assert.ok(memberCodesByGroup.get(row.id)?.has(row.representative.code));
   }
 
   const marketRecon = snapshot.quality.marketScopeReconciliation;
