@@ -1,5 +1,5 @@
 name: Publish ETF report after close
-# Publisher schema: v1; changes to this file bootstrap the latest captured trade date.
+# Publisher schema: v2; changes to this file bootstrap the latest captured trade date.
 
 on:
   workflow_run:
@@ -30,13 +30,14 @@ permissions:
 
 concurrency:
   group: postclose-etf-publish
-  cancel-in-progress: false
+  # A new retry should replace a stale provider call instead of waiting behind it.
+  cancel-in-progress: true
 
 jobs:
   publish:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 25
     env:
       TZ: Asia/Shanghai
     steps:
@@ -82,7 +83,9 @@ jobs:
       - name: Attempt full report as soon as end-of-day data is ready
         id: build
         continue-on-error: true
-        run: python data_pipeline/update_daily_v2.py --date "${{ steps.trade.outputs.trade_date }}"
+        # Provider calls normally finish in a few minutes. Bound a stale call so
+        # the next scheduled retry can actually run.
+        run: timeout 12m python data_pipeline/update_daily_v2.py --date "${{ steps.trade.outputs.trade_date }}"
 
       - name: Validate published schema and client bundle
         if: steps.build.outcome == 'success'
