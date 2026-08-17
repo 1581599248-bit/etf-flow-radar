@@ -1,9 +1,10 @@
 """Build mutually exclusive ETF asset-class totals for schema v6.
 
 Public iFinD summaries commonly split all-ETF flow into domestic stock, cross-
-border, bond, money, commodity and other buckets.  These totals are derived from
-the same canonical primary-market per-ETF facts so they reconcile exactly to the
-all-ETF total rather than being separately fetched headline numbers.
+border, bond, money, commodity and other buckets. These totals are derived from
+the same canonical primary-market per-ETF facts so they reconcile to the all-ETF
+total. Reconciliation is performed on unrounded per-ETF values; bucket amounts
+are rounded only for display.
 """
 from __future__ import annotations
 
@@ -46,13 +47,14 @@ def add_asset_class_totals(snapshot: dict[str, Any]) -> None:
         else:
             counts[scope]["unchanged"] += 1
 
+    raw_totals = {key: sum(values) for key, values in buckets.items()}
     totals: dict[str, dict[str, Any]] = {}
     for key, label in _LABELS.items():
         values = buckets[key]
         totals[key] = {
             "name": label,
             "etfCount": len(values),
-            "flow1d": round(sum(values), 2) if values else 0.0,
+            "flow1d": round(raw_totals[key], 2) if values else 0.0,
             "increaseEtfCount1d": counts[key]["increase"],
             "decreaseEtfCount1d": counts[key]["decrease"],
             "unchangedEtfCount1d": counts[key]["unchanged"],
@@ -60,7 +62,7 @@ def add_asset_class_totals(snapshot: dict[str, Any]) -> None:
 
     primary = snapshot.setdefault("flowMetrics", {}).setdefault("primaryMarket", {})
     primary["assetClassTotals"] = totals
-    all_total = round(sum(row["flow1d"] for row in totals.values()), 2)
+    all_total = round(sum(raw_totals.values()), 2)
     canonical_all = primary.get("scopeTotals", {}).get("allEtf", {}).get("flow1d")
     primary["assetClassReconciliation"] = {
         "sumOfMutuallyExclusiveAssetClasses": all_total,
