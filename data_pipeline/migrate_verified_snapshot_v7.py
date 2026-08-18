@@ -13,10 +13,12 @@ Hard safety boundary
 - No network access.
 - No new ETF shares, NAVs, prices or primary one-day flows are invented.
 - The original tradeDate and generatedAt are preserved.
+- Broad names are remapped only to equally broad research themes, never to a
+  narrower official-industry claim.
 - Monetary aggregates are rebuilt from persisted share deltas × NAV in yuan,
   never by adding display-rounded per-ETF amounts.
 - True 5d/20d cumulative flow is not backfilled from legacy endpoint fields.
-- The migrated output must pass audit_snapshot_v7.py before workflows commit it.
+- The migrated output must pass all v7 audits before workflows commit it.
 """
 from __future__ import annotations
 
@@ -29,6 +31,7 @@ from zoneinfo import ZoneInfo
 
 import contract_finalizer_v7 as finalizer
 import precision_contract_v7 as precision
+import research_taxonomy_v7 as taxonomy
 import system_contract_v7 as contract
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -64,6 +67,7 @@ def migrate(snapshot: dict) -> dict:
 
     # Apply only operations that can be derived from facts already persisted in
     # the verified snapshot. No exchange/NAV refetch is needed or allowed.
+    taxonomy.apply(snapshot)
     contract.canonicalize_directions_and_totals(snapshot)
     contract.sanitize_classification(snapshot)
     contract.harmonize_secondary_metrics(snapshot)
@@ -97,13 +101,13 @@ def migrate(snapshot: dict) -> dict:
         "preservedGeneratedAt": original_generated_at,
         "networkAccess": False,
         "newMarketFactsCollected": False,
+        "broadResearchTaxonomyApplied": True,
         "precisionAggregationApplied": True,
         "trueMultiDayCumulativeBackfilled": False,
     }
 
-    # Hard invariants: the migration may change grouping breadth after removing
-    # ambiguous names, but it must not change the canonical A-share market 1d
-    # amount or market scope count.
+    # Hard invariants: research grouping may change, but it must not change the
+    # canonical A-share market one-day amount or market scope count.
     migrated_flow = snapshot.get("market", {}).get("flow1d")
     migrated_count = snapshot.get("market", {}).get("etfCount")
     migrated_primary = (
