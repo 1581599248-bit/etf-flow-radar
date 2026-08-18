@@ -147,3 +147,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+# Operational note: changes to this file intentionally retrigger the post-close publisher.
