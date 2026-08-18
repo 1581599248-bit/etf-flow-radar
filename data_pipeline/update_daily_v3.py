@@ -61,6 +61,7 @@ def _apply_contract(
 def _daily_payload(snapshot: dict[str, Any]) -> dict[str, Any]:
     payload = _ORIG_DAILY_PAYLOAD(snapshot)
     payload["dataContractVersion"] = contract.CONTRACT_VERSION
+    payload["classificationRuleDigest"] = snapshot.get("classificationRuleDigest")
     payload["directionToleranceShares"] = contract.DIRECTION_EPS_SHARES
     payload["methodology"] = {
         "flow": snapshot.get("methodology", {}).get("flow"),
