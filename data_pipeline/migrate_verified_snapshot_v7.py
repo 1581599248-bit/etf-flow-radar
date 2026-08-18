@@ -13,6 +13,8 @@ Hard safety boundary
 - No network access.
 - No new ETF shares, NAVs, prices or primary one-day flows are invented.
 - The original tradeDate and generatedAt are preserved.
+- Monetary aggregates are rebuilt from persisted share deltas × NAV in yuan,
+  never by adding display-rounded per-ETF amounts.
 - True 5d/20d cumulative flow is not backfilled from legacy endpoint fields.
 - The migrated output must pass audit_snapshot_v7.py before workflows commit it.
 """
@@ -26,6 +28,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import contract_finalizer_v7 as finalizer
+import precision_contract_v7 as precision
 import system_contract_v7 as contract
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -67,6 +70,7 @@ def migrate(snapshot: dict) -> dict:
     contract.rebuild_client_reconciliation(snapshot)
     contract.rebuild_conclusion(snapshot)
     contract.apply_wording_and_provenance(snapshot)
+    precision.apply(snapshot)
 
     # A bootstrap migration deliberately has no same-contract daily history.
     # The finalizer therefore publishes endpoint fields separately and leaves
@@ -93,6 +97,7 @@ def migrate(snapshot: dict) -> dict:
         "preservedGeneratedAt": original_generated_at,
         "networkAccess": False,
         "newMarketFactsCollected": False,
+        "precisionAggregationApplied": True,
         "trueMultiDayCumulativeBackfilled": False,
     }
 
@@ -113,8 +118,9 @@ def migrate(snapshot: dict) -> dict:
     if migrated_flow != migrated_primary:
         raise AssertionError(f"bootstrap migration market/primary mismatch: {migrated_flow} vs {migrated_primary}")
     if original_market_flow is not None and original_primary is not None:
-        # Old v6 market and primary totals should already agree; preserve that
-        # economic fact to two-decimal published precision.
+        # Old v6 scope totals were already computed from unrounded formula facts.
+        # Rebuilding from persisted deltas×NAV must reproduce the same published
+        # two-decimal aggregate or the migration is rejected.
         if round(float(migrated_flow), 2) != round(float(original_market_flow), 2):
             raise AssertionError(f"bootstrap migration changed A-share 1d flow: {original_market_flow} -> {migrated_flow}")
 
