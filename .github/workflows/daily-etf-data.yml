@@ -48,6 +48,8 @@ jobs:
         run: python data_pipeline/audit_snapshot_v7.py
       - name: Run monetary precision audit
         run: python data_pipeline/audit_precision_v7.py
+      - name: Run cumulative precision audit
+        run: python data_pipeline/audit_cumulative_precision_v7.py
       - name: Validate published data contract and client bundle
         run: npm ci && npm test
       - name: Commit only a verified change
