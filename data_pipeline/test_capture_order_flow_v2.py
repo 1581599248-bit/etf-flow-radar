@@ -4,11 +4,11 @@ from unittest.mock import patch
 
 import pandas as pd
 
-import capture_order_flow_v2 as capture
+import capture_order_flow_v3 as capture
 
 
-class CaptureOrderFlowV2Tests(unittest.TestCase):
-    def test_trade_net_is_turnover_split_by_outer_inner_direction(self):
+class CaptureOrderFlowCompatibilityTests(unittest.TestCase):
+    def test_aggressor_imbalance_is_turnover_split_by_outer_inner_direction(self):
         day = date(2026, 8, 17)
         rows = 500
         spot = pd.DataFrame({
@@ -25,12 +25,14 @@ class CaptureOrderFlowV2Tests(unittest.TestCase):
         ):
             payload = capture.build_snapshot(day)
 
-        self.assertEqual(payload["metric"], "secondaryMarketETFTradingFlow")
+        self.assertEqual(payload["metric"], "secondaryMarketAggressorImbalanceEstimate")
         self.assertEqual(payload["etfCount"], rows)
-        self.assertEqual(payload["etfs"][0]["tradeInflow1d"], 0.6)
-        self.assertEqual(payload["etfs"][0]["tradeOutflow1d"], 0.4)
-        self.assertEqual(payload["etfs"][0]["tradeNetFlow1d"], 0.2)
-        self.assertEqual(payload["totalTradeNetFlow1d"], 100.0)
+        self.assertEqual(payload["etfs"][0]["buyInitiatedEstimate1d"], 0.6)
+        self.assertEqual(payload["etfs"][0]["sellInitiatedEstimate1d"], 0.4)
+        self.assertEqual(payload["etfs"][0]["aggressorImbalance1d"], 0.2)
+        self.assertEqual(payload["totalAggressorImbalance1d"], 100.0)
+        self.assertIn("不代表市场净新增资金", payload["definition"])
+        self.assertIn("不是ETF一级市场净申购/赎回", payload["definition"])
 
 
 if __name__ == "__main__":
