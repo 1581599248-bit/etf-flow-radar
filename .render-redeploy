@@ -1,0 +1,2 @@
+2026-08-18T23:12:00+08:00
+Reason: redeploy the restored schema-v6 site after rollback. No UI, module, format, or data logic changes.
