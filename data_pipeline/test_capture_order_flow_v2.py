@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pandas as pd
 
-import capture_order_flow_v2 as capture
+import capture_order_flow_v3 as capture
 
 
 class CaptureOrderFlowCompatibilityTests(unittest.TestCase):
