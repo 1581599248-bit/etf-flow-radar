@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+import json
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
+import audit_snapshot_v7 as audit_v7
 import migrate_verified_snapshot_v7 as migration
 
 
@@ -149,6 +153,27 @@ class BootstrapMigrationTests(unittest.TestCase):
         residual = migrated["quality"]["bootstrapAggregatePrecision"]["scopeFlowRoundingResiduals"]["aShareStockEtf"]
         self.assertEqual(residual, 0.01)
         self.assertTrue(migrated["quality"]["contractMigration"]["preservedVerifiedAggregatePrecision"])
+
+    def test_current_repository_snapshot_is_bootstrap_compatible_and_auditable(self):
+        root = Path(__file__).resolve().parents[1]
+        source_path = root / "site" / "data" / "latest.json"
+        original = json.loads(source_path.read_text("utf-8"))
+        original_trade_date = original.get("tradeDate")
+        original_market_flow = original.get("market", {}).get("flow1d")
+        original_market_count = original.get("market", {}).get("etfCount")
+
+        migrated = migration.migrate(original)
+        self.assertEqual(migrated.get("dataContractVersion"), migration.contract.CONTRACT_VERSION)
+        self.assertEqual(migrated.get("schemaVersion"), migration.CLIENT_SNAPSHOT_SCHEMA_VERSION)
+        self.assertEqual(migrated.get("tradeDate"), original_trade_date)
+        self.assertEqual(migrated.get("market", {}).get("flow1d"), original_market_flow)
+        self.assertEqual(migrated.get("market", {}).get("etfCount"), original_market_count)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            migrated_path = Path(tmp) / "latest.json"
+            migrated_path.write_text(json.dumps(migrated, ensure_ascii=False), "utf-8")
+            checks = audit_v7.audit(migrated_path)
+        self.assertGreaterEqual(len(checks), 10)
 
     def test_unverified_or_non_real_snapshot_is_rejected(self):
         for key, value in (("sourceMode", "MOCK"), ("status", "failed")):
