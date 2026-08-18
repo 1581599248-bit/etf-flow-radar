@@ -105,8 +105,37 @@ jobs:
             git push origin HEAD:main
           fi
 
-      - name: Explain deferred publication
+      - name: Restore repository data before bootstrap fallback
+        if: steps.build.outcome != 'success'
+        run: git restore --source=HEAD --staged --worktree -- site/data
+
+      - name: Bootstrap the last verified snapshot to Data Contract 7.0
+        if: steps.build.outcome != 'success'
+        run: python data_pipeline/migrate_verified_snapshot_v7.py
+
+      - name: Audit bootstrapped verified snapshot
+        if: steps.build.outcome != 'success'
+        run: python data_pipeline/audit_snapshot_v7.py
+
+      - name: Validate bootstrapped client bundle
+        if: steps.build.outcome != 'success'
+        run: npm ci && npm test
+
+      - name: Commit bootstrap migration if needed
         if: steps.build.outcome != 'success'
         run: |
-          echo "Full report for ${{ steps.trade.outputs.trade_date }} is not publishable yet." >> "$GITHUB_STEP_SUMMARY"
-          echo "The captured secondary-trading fact remains intact. Scheduled retries at 17:30, 18:30 and 20:00, plus the 05:00-08:00 morning workflow, will try again." >> "$GITHUB_STEP_SUMMARY"
+          git config user.name "etf-flow-radar-bot"
+          git config user.email "etf-flow-radar-bot@users.noreply.github.com"
+          git add site/data/latest.json site/data/history
+          if ! git diff --cached --quiet; then
+            git commit -m "data: migrate last verified snapshot to Contract 7.0"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Explain deferred fresh-data publication
+        if: steps.build.outcome != 'success'
+        run: |
+          echo "Fresh full report for ${{ steps.trade.outputs.trade_date }} is not publishable yet." >> "$GITHUB_STEP_SUMMARY"
+          echo "The last already-verified snapshot was safely migrated to Data Contract 7.0 without changing its trade date or canonical one-day market facts." >> "$GITHUB_STEP_SUMMARY"
+          echo "Scheduled retries at 17:30, 18:30 and 20:00, plus the 05:00-08:00 morning workflow, will continue trying to replace it with fresh verified data." >> "$GITHUB_STEP_SUMMARY"

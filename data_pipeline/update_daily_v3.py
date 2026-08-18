@@ -17,6 +17,9 @@ import system_contract_v7 as contract
 import update_daily as base
 import update_daily_v2 as v2
 
+CLIENT_SNAPSHOT_SCHEMA_VERSION = 7
+DAILY_FACT_SCHEMA_VERSION = 2
+
 _ORIG_APPLY = v2.apply_v2_semantics
 _ORIG_DAILY_PAYLOAD = v2.daily_flow_payload
 _ORIG_LOAD_SECONDARY_SPOT = v2._load_secondary_spot
@@ -56,10 +59,19 @@ def _apply_contract(
     _ORIG_APPLY(snapshot, day, share_window, ths, spot)
     contract.apply_system_contract(snapshot, day, share_window)
     finalizer.finalize(snapshot)
+    # The base fact engine remains schema-v6 internally, but the published
+    # client snapshot has materially different Contract-7 fields and therefore
+    # has its own unambiguous public schema version.
+    snapshot["schemaVersion"] = CLIENT_SNAPSHOT_SCHEMA_VERSION
+    snapshot.setdefault("quality", {})["clientSnapshotSchemaVersion"] = CLIENT_SNAPSHOT_SCHEMA_VERSION
 
 
 def _daily_payload(snapshot: dict[str, Any]) -> dict[str, Any]:
     payload = _ORIG_DAILY_PAYLOAD(snapshot)
+    # Daily fact files are a different resource type from the full client
+    # snapshot, so they carry their own file-schema version while sharing the
+    # same economic Data Contract 7.0.
+    payload["schemaVersion"] = DAILY_FACT_SCHEMA_VERSION
     payload["dataContractVersion"] = contract.CONTRACT_VERSION
     payload["classificationRuleDigest"] = snapshot.get("classificationRuleDigest")
     payload["directionToleranceShares"] = contract.DIRECTION_EPS_SHARES

@@ -27,6 +27,27 @@ class PostCloseWorkflowTests(unittest.TestCase):
         self.assertNotIn("update_daily_v2.py --date", text)
         self.assertNotIn("audit_snapshot_v6.py", text)
 
+    def test_postclose_failure_bootstraps_only_the_last_verified_snapshot(self):
+        text = (ROOT / ".github" / "workflows" / "postclose-etf-publish.yml").read_text("utf-8")
+        self.assertIn("Restore repository data before bootstrap fallback", text)
+        self.assertIn("git restore --source=HEAD --staged --worktree -- site/data", text)
+        self.assertIn("Bootstrap the last verified snapshot to Data Contract 7.0", text)
+        self.assertIn("python data_pipeline/migrate_verified_snapshot_v7.py", text)
+        self.assertIn("Audit bootstrapped verified snapshot", text)
+        self.assertIn("Validate bootstrapped client bundle", text)
+        self.assertIn("data: migrate last verified snapshot to Contract 7.0", text)
+        self.assertIn("without changing its trade date or canonical one-day market facts", text)
+        # A failed/partial fresh build is never allowed to become the migration input.
+        self.assertLess(
+            text.index("git restore --source=HEAD --staged --worktree -- site/data"),
+            text.index("python data_pipeline/migrate_verified_snapshot_v7.py"),
+        )
+        # The migrated fallback must pass the same external-send audit before commit.
+        self.assertLess(
+            text.index("python data_pipeline/migrate_verified_snapshot_v7.py"),
+            text.rindex("python data_pipeline/audit_snapshot_v7.py"),
+        )
+
     def test_capture_workflow_persists_secondary_trading_facts_independently(self):
         text = (ROOT / ".github" / "workflows" / "capture-etf-order-flow.yml").read_text("utf-8")
         self.assertIn("Capture same-day ETF secondary-market aggressor statistics", text)
