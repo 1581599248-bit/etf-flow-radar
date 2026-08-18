@@ -11,6 +11,10 @@ on:
     - cron: "30 9 * * 1-5"   # 17:30 Asia/Shanghai
     - cron: "30 10 * * 1-5"  # 18:30 Asia/Shanghai
     - cron: "0 12 * * 1-5"   # 20:00 Asia/Shanghai
+    - cron: "0 14 * * 1-5"   # 22:00 Asia/Shanghai
+    - cron: "0 16 * * 1-5"   # 00:00 Asia/Shanghai, following calendar day
+    - cron: "0 18 * * 1-5"   # 02:00 Asia/Shanghai, following calendar day
+    - cron: "0 20 * * 1-5"   # 04:00 Asia/Shanghai, following calendar day
   push:
     branches:
       - main
@@ -106,4 +110,4 @@ jobs:
         if: steps.build.outcome != 'success'
         run: |
           echo "Full report for ${{ steps.trade.outputs.trade_date }} is not publishable yet." >> "$GITHUB_STEP_SUMMARY"
-          echo "The captured trading-flow fact remains intact. Scheduled retries at 17:30, 18:30 and 20:00, plus the 05:00-08:00 morning workflow, will try again." >> "$GITHUB_STEP_SUMMARY"
+          echo "The captured trading-flow fact remains intact. Scheduled retries at 17:30, 18:30, 20:00, 22:00, 00:00, 02:00 and 04:00, plus the 05:00-08:00 morning workflow, will try again." >> "$GITHUB_STEP_SUMMARY"
