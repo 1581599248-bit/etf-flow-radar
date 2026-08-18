@@ -31,10 +31,11 @@ import system_contract_v7 as contract
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT = ROOT / "site" / "data" / "latest.json"
 CN = ZoneInfo("Asia/Shanghai")
+CLIENT_SNAPSHOT_SCHEMA_VERSION = 7
 
 
 def migrate(snapshot: dict) -> dict:
-    if snapshot.get("dataContractVersion") == contract.CONTRACT_VERSION:
+    if snapshot.get("dataContractVersion") == contract.CONTRACT_VERSION and snapshot.get("schemaVersion") == CLIENT_SNAPSHOT_SCHEMA_VERSION:
         return snapshot
     if snapshot.get("sourceMode") != "REAL":
         raise ValueError("legacy snapshot is not REAL-source data")
@@ -75,6 +76,8 @@ def migrate(snapshot: dict) -> dict:
         "bootstrapMigration": True,
     }
     finalizer.finalize(snapshot)
+    snapshot["schemaVersion"] = CLIENT_SNAPSHOT_SCHEMA_VERSION
+    snapshot["quality"]["clientSnapshotSchemaVersion"] = CLIENT_SNAPSHOT_SCHEMA_VERSION
 
     # Never make a migrated snapshot look like newly collected market data.
     snapshot["tradeDate"] = original_trade_date
@@ -83,6 +86,7 @@ def migrate(snapshot: dict) -> dict:
     snapshot["quality"]["contractMigration"] = {
         "fromSchemaVersion": original.get("schemaVersion"),
         "fromDataContractVersion": original.get("dataContractVersion"),
+        "toSchemaVersion": CLIENT_SNAPSHOT_SCHEMA_VERSION,
         "toDataContractVersion": contract.CONTRACT_VERSION,
         "mode": "offline_semantic_migration_of_previously_verified_snapshot",
         "preservedTradeDate": original_trade_date,
@@ -123,8 +127,8 @@ def main() -> int:
     args = parser.parse_args()
     path = Path(args.snapshot)
     snapshot = json.loads(path.read_text("utf-8"))
-    if snapshot.get("dataContractVersion") == contract.CONTRACT_VERSION:
-        print(f"snapshot already uses Data Contract {contract.CONTRACT_VERSION}: {path}")
+    if snapshot.get("dataContractVersion") == contract.CONTRACT_VERSION and snapshot.get("schemaVersion") == CLIENT_SNAPSHOT_SCHEMA_VERSION:
+        print(f"snapshot already uses Data Contract {contract.CONTRACT_VERSION} / schema {CLIENT_SNAPSHOT_SCHEMA_VERSION}: {path}")
         return 0
     migrated = migrate(snapshot)
     text = json.dumps(migrated, ensure_ascii=False, indent=2)
@@ -135,8 +139,8 @@ def main() -> int:
     if history.exists():
         history.write_text(text, "utf-8")
     print(
-        f"migrated verified snapshot {trade_date} to Data Contract {contract.CONTRACT_VERSION}; "
-        "no new market facts were collected"
+        f"migrated verified snapshot {trade_date} to Data Contract {contract.CONTRACT_VERSION} / "
+        f"schema {CLIENT_SNAPSHOT_SCHEMA_VERSION}; no new market facts were collected"
     )
     return 0
 
