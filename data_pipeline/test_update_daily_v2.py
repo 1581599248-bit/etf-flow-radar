@@ -108,71 +108,81 @@ class UpdateDailyV2Tests(unittest.TestCase):
             "facts": ["宽基事实", "申万一级行业旧事实", "单ETF事实"],
         }
 
-    def test_market_flow_headline_covers_all_direction_combinations(self):
+    def test_strength_thresholds_use_relative_market_scale(self):
+        self.assertEqual(v2._trade_strength(19.9, 2000.0), "balanced")
+        self.assertEqual(v2._trade_strength(20.0, 2000.0), "small")
+        self.assertEqual(v2._trade_strength(60.0, 2000.0), "clear")
+        self.assertEqual(v2._trade_strength(120.0, 2000.0), "large")
+        self.assertEqual(v2._primary_strength(9.9, 20000.0), "flat")
+        self.assertEqual(v2._primary_strength(10.0, 20000.0), "small")
+        self.assertEqual(v2._primary_strength(40.0, 20000.0), "clear")
+        self.assertEqual(v2._primary_strength(100.0, 20000.0), "large")
+
+    def test_market_flow_headline_covers_strength_direction_and_divergence(self):
         cases = [
             (
-                94.5, -185.7,
-                "A股ETF盘中买盘偏强，主动买入净额94.5亿元；但ETF份额对应资金净流出185.7亿元，显示短线承接较强，但整体资金仍以撤出为主。",
+                94.5, -185.7, 2500.0, 27455.95,
+                "A股ETF盘中买盘偏强，主动买入净额94.5亿元；但ETF份额对应资金大幅净流出185.7亿元，显示短线仍有较强承接，但整体资金仍在明显撤出。",
             ),
             (
-                94.5, 185.7,
-                "A股ETF盘中买盘偏强，主动买入净额94.5亿元；ETF份额对应资金净流入185.7亿元，显示短线承接与整体资金方向一致，资金流入意愿较强。",
+                20.0, 20.0, 2000.0, 20000.0,
+                "A股ETF盘中买盘小幅偏强，主动买入净额20.0亿元；ETF份额对应资金小幅净流入20.0亿元，显示短线买盘与整体资金方向一致，整体资金小幅流入。",
             ),
             (
-                94.5, 0.0,
-                "A股ETF盘中买盘偏强，主动买入净额94.5亿元；ETF份额对应资金基本持平，显示短线承接偏强，但整体资金暂无明显增减。",
+                150.0, 120.0, 2000.0, 20000.0,
+                "A股ETF盘中买盘明显占优，主动买入净额150.0亿元；ETF份额对应资金大幅净流入120.0亿元，显示短线买盘与整体资金方向一致，整体资金仍在明显流入。",
             ),
             (
-                -94.5, 185.7,
-                "A股ETF盘中卖盘偏强，主动卖出净额94.5亿元；但ETF份额对应资金净流入185.7亿元，显示短线抛压较强，但整体资金仍以流入为主。",
+                -150.0, -120.0, 2000.0, 20000.0,
+                "A股ETF盘中卖盘明显占优，主动卖出净额150.0亿元；ETF份额对应资金大幅净流出120.0亿元，显示短线卖盘与整体资金方向一致，整体资金仍在明显撤出。",
             ),
             (
-                -94.5, -185.7,
-                "A股ETF盘中卖盘偏强，主动卖出净额94.5亿元；ETF份额对应资金净流出185.7亿元，显示短线抛压与整体资金方向一致，整体资金撤出意愿较强。",
+                -80.0, 80.0, 2000.0, 20000.0,
+                "A股ETF盘中卖盘偏强，主动卖出净额80.0亿元；但ETF份额对应资金明显净流入80.0亿元，显示短线仍有较强抛压，但整体资金仍在明显流入。",
             ),
             (
-                -94.5, 0.0,
-                "A股ETF盘中卖盘偏强，主动卖出净额94.5亿元；ETF份额对应资金基本持平，显示短线抛压偏强，但整体资金暂无明显增减。",
+                10.0, -120.0, 2000.0, 20000.0,
+                "A股ETF盘中买卖力量基本均衡；ETF份额对应资金大幅净流出120.0亿元，显示短线交易相对平稳，但整体资金仍在明显撤出。",
             ),
             (
-                0.0, 185.7,
-                "A股ETF盘中买卖力量基本均衡；ETF份额对应资金净流入185.7亿元，显示短线交易相对平稳，但整体资金仍以流入为主。",
+                80.0, 5.0, 2000.0, 20000.0,
+                "A股ETF盘中买盘偏强，主动买入净额80.0亿元；ETF份额对应资金基本持平，显示短线仍有较强承接，但整体资金暂无明显增减。",
             ),
             (
-                0.0, -185.7,
-                "A股ETF盘中买卖力量基本均衡；ETF份额对应资金净流出185.7亿元，显示短线交易相对平稳，但整体资金仍以撤出为主。",
-            ),
-            (
-                0.0, 0.0,
-                "A股ETF盘中买卖力量基本均衡；ETF份额对应资金基本持平，显示短线交易与整体资金均无明显方向。",
-            ),
-            (
-                None, 185.7,
-                "A股ETF盘中主动买卖数据暂缺；ETF份额对应资金净流入185.7亿元，整体资金以流入为主。",
-            ),
-            (
-                None, -185.7,
-                "A股ETF盘中主动买卖数据暂缺；ETF份额对应资金净流出185.7亿元，整体资金以撤出为主。",
-            ),
-            (
-                None, 0.0,
-                "A股ETF盘中主动买卖数据暂缺；ETF份额对应资金基本持平，整体资金暂无明显增减。",
+                None, -120.0, None, 20000.0,
+                "A股ETF盘中主动买卖数据暂缺；ETF份额对应资金大幅净流出120.0亿元，整体资金仍在明显撤出。",
             ),
         ]
-        for trade_value, primary_value, expected in cases:
+        for trade_value, primary_value, turnover, aum, expected in cases:
             with self.subTest(trade_value=trade_value, primary_value=primary_value):
-                self.assertEqual(v2._market_flow_headline(trade_value, primary_value), expected)
+                self.assertEqual(v2._market_flow_headline(trade_value, primary_value, turnover, aum), expected)
 
-    def test_homepage_headline_uses_requested_share_change_wording_and_visible_sector_layer(self):
+    def test_homepage_headline_uses_strength_copy_and_visible_sector_layer(self):
         snapshot = {
-            "market": {"flow1d": -48.3, "increaseEtfCount1d": 231, "decreaseEtfCount1d": 409, "unchangedEtfCount1d": 607},
+            "market": {
+                "flow1d": -48.3,
+                "aum": 5000.0,
+                "increaseEtfCount1d": 231,
+                "decreaseEtfCount1d": 409,
+                "unchangedEtfCount1d": 607,
+            },
             "groups": self._groups(),
-            "flowMetrics": {"secondaryMarketTradeFlow": {"scopeTotals": {"aShareStockEtf": {"netFlow1d": 198.4}}}},
+            "flowMetrics": {
+                "secondaryMarketTradeFlow": {
+                    "scopeTotals": {
+                        "aShareStockEtf": {
+                            "netFlow1d": 198.4,
+                            "inflow1d": 2599.2,
+                            "outflow1d": 2400.8,
+                        }
+                    }
+                }
+            },
         }
         with patch.object(v2.production, "_regenerate_conclusion", side_effect=self._legacy_conclusion):
             v2._regenerate_v2_conclusion(snapshot)
         headline = snapshot["conclusion"]["headline"]
-        self.assertTrue(headline.startswith("A股ETF盘中买盘偏强，主动买入净额198.4亿元；但ETF份额对应资金净流出48.3亿元，显示短线承接较强，但整体资金仍以撤出为主。"))
+        self.assertTrue(headline.startswith("A股ETF盘中买盘偏强，主动买入净额198.4亿元；但ETF份额对应资金大幅净流出48.3亿元，显示短线仍有较强承接，但整体资金仍在明显撤出。"))
         self.assertIn("申万一级和主题行业资金流入居前的是传媒，流出最多的是半导体。", headline)
         self.assertNotIn("A股股票ETF当日合计", headline)
         self.assertNotIn("流出最多的是电子", headline)
@@ -180,7 +190,13 @@ class UpdateDailyV2Tests(unittest.TestCase):
 
     def test_homepage_headline_keeps_primary_share_flow_when_secondary_is_missing(self):
         snapshot = {
-            "market": {"flow1d": 12.6, "increaseEtfCount1d": 300, "decreaseEtfCount1d": 200, "unchangedEtfCount1d": 700},
+            "market": {
+                "flow1d": 12.6,
+                "aum": 2000.0,
+                "increaseEtfCount1d": 300,
+                "decreaseEtfCount1d": 200,
+                "unchangedEtfCount1d": 700,
+            },
             "groups": self._groups(),
             "flowMetrics": {"secondaryMarketTradeFlow": {"status": "unavailable", "scopeTotals": {}}},
         }
@@ -188,7 +204,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
             v2._regenerate_v2_conclusion(snapshot)
         headline = snapshot["conclusion"]["headline"]
         self.assertIn("A股ETF盘中主动买卖数据暂缺", headline)
-        self.assertIn("ETF份额对应资金净流入12.6亿元", headline)
+        self.assertIn("ETF份额对应资金大幅净流入12.6亿元", headline)
+        self.assertIn("整体资金仍在明显流入", headline)
         self.assertIn("流出最多的是半导体", headline)
 
     def test_visible_sector_groups_are_exactly_the_client_industry_layer(self):
