@@ -1,8 +1,8 @@
 """Production entrypoint with the unified ETF system contract.
 
 The validated schema-v6 collectors and corporate-action logic remain the base
-engine. This wrapper adds the unified v7 research-taxonomy, semantic, precision
-and finalization layers before anything is written to site/data.
+engine. This wrapper adds the unified v7 research-taxonomy, semantic, precision,
+finalization and exact-yuan cumulative layers before anything is published.
 """
 from __future__ import annotations
 
@@ -14,6 +14,7 @@ import pandas as pd
 
 import contract_finalizer_v7 as finalizer
 import precision_contract_v7 as precision
+import precision_cumulative_v7 as precision_cumulative
 import research_taxonomy_v7 as taxonomy
 import system_contract_v7 as contract
 import update_daily as base
@@ -59,28 +60,27 @@ def _apply_contract(
     spot: pd.DataFrame | None,
 ) -> None:
     _ORIG_APPLY(snapshot, day, share_window, ths, spot)
-    # Before the legacy name-rule audit, redirect broad names such as 消费、
-    # 新材料、新能源、高端制造 to equally broad research themes instead of
-    # falsely forcing them into a narrower SW-style industry.
+    # Redirect broad names such as 消费、新材料、新能源、高端制造 to equally
+    # broad research themes instead of falsely forcing them into a narrower
+    # SW-style industry.
     taxonomy.apply(snapshot)
     contract.apply_system_contract(snapshot, day, share_window)
-    # Restore monetary totals from formula facts because the schema-v6 display
-    # layer stores individual ETF amounts rounded to 0.01亿元. Aggregates must
-    # never be the sum of those display-rounded values.
+    # Restore one-day monetary totals from formula facts. The schema-v6 display
+    # layer rounds individual ETF values to 0.01亿元; aggregates must never be
+    # the sum of those display-rounded amounts.
     precision.apply(snapshot)
     finalizer.finalize(snapshot)
-    # The base fact engine remains schema-v6 internally, but the published
-    # client snapshot has materially different Contract-7 fields and therefore
-    # has its own unambiguous public schema version.
+    # Override the legacy/schematic multi-day layer with exact-yuan daily sums.
+    # The required daily files must all use Contract 7.0 and exact-yuan facts.
+    precision_cumulative.apply(snapshot)
     snapshot["schemaVersion"] = CLIENT_SNAPSHOT_SCHEMA_VERSION
     snapshot.setdefault("quality", {})["clientSnapshotSchemaVersion"] = CLIENT_SNAPSHOT_SCHEMA_VERSION
 
 
 def _daily_payload(snapshot: dict[str, Any]) -> dict[str, Any]:
     payload = _ORIG_DAILY_PAYLOAD(snapshot)
-    # Daily fact files are a different resource type from the full client
-    # snapshot, so they carry their own file-schema version while sharing the
-    # same economic Data Contract 7.0.
+    # Daily fact files are a separate resource schema, but share the same
+    # economic Data Contract 7.0.
     payload["schemaVersion"] = DAILY_FACT_SCHEMA_VERSION
     payload["dataContractVersion"] = contract.CONTRACT_VERSION
     payload["classificationRuleDigest"] = snapshot.get("classificationRuleDigest")
