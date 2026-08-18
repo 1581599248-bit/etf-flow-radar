@@ -1,10 +1,10 @@
 name: Publish ETF report after close
-# Publisher schema: v6; changes to this file bootstrap the latest captured trade date.
+# Production contract: unified v7 semantics on top of the validated exchange-share engine.
 
 on:
   workflow_run:
     workflows:
-      - "Capture ETF order flow"
+      - "Capture ETF secondary trading facts"
     types:
       - completed
   schedule:
@@ -15,11 +15,14 @@ on:
     branches:
       - main
     paths:
+      - "data_pipeline/**"
+      - "site/index.html"
+      - "scripts/build-site.mjs"
       - ".github/workflows/postclose-etf-publish.yml"
   workflow_dispatch:
     inputs:
       trade_date:
-        description: "Optional trade date (YYYY-MM-DD); otherwise use the latest captured order-flow trade date"
+        description: "Optional trade date (YYYY-MM-DD); otherwise use the latest captured secondary-trading trade date"
         required: false
         type: string
 
@@ -27,7 +30,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: postclose-etf-publish-v2
+  group: postclose-etf-publish-unified
   cancel-in-progress: true
 
 jobs:
@@ -66,7 +69,7 @@ jobs:
           payload = json.loads(path.read_text("utf-8"))
           trade_date = str(payload.get("tradeDate") or "").strip()
           if not trade_date:
-              raise SystemExit("latest order-flow snapshot has no tradeDate")
+              raise SystemExit("latest secondary-trading snapshot has no tradeDate")
           print(trade_date)
           PY
           )
@@ -77,16 +80,24 @@ jobs:
       - name: Run deterministic pipeline tests
         run: python -m unittest discover -s data_pipeline -p "test_*.py"
 
-      - name: Attempt full report as soon as end-of-day data is ready
+      - name: Attempt unified full report as soon as end-of-day data is ready
         id: build
         continue-on-error: true
-        run: timeout 12m python data_pipeline/update_daily_v2.py --date "${{ steps.trade.outputs.trade_date }}"
+        run: timeout 12m python data_pipeline/update_daily_v3.py --date "${{ steps.trade.outputs.trade_date }}"
 
-      - name: Run external-send reconciliation audit
+      - name: Run unified external-send audit
         if: steps.build.outcome == 'success'
-        run: python data_pipeline/audit_snapshot_v6.py
+        run: python data_pipeline/audit_snapshot_v7.py
 
-      - name: Validate published schema and client bundle
+      - name: Run monetary precision audit
+        if: steps.build.outcome == 'success'
+        run: python data_pipeline/audit_precision_v7.py
+
+      - name: Run cumulative precision audit
+        if: steps.build.outcome == 'success'
+        run: python data_pipeline/audit_cumulative_precision_v7.py
+
+      - name: Validate client bundle
         if: steps.build.outcome == 'success'
         run: npm ci && npm test
 
@@ -97,13 +108,50 @@ jobs:
           git config user.email "etf-flow-radar-bot@users.noreply.github.com"
           git add site/data
           if ! git diff --cached --quiet; then
-            git commit -m "data: publish ETF report after close"
+            git commit -m "data: publish unified ETF report"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
 
-      - name: Explain deferred publication
+      - name: Restore repository data before bootstrap fallback
+        if: steps.build.outcome != 'success'
+        run: git restore --source=HEAD --staged --worktree -- site/data
+
+      - name: Bootstrap the last verified snapshot to Data Contract 7.0
+        if: steps.build.outcome != 'success'
+        run: python data_pipeline/migrate_verified_snapshot_v7.py
+
+      - name: Audit bootstrapped verified snapshot
+        if: steps.build.outcome != 'success'
+        run: python data_pipeline/audit_snapshot_v7.py
+
+      - name: Audit bootstrapped monetary precision
+        if: steps.build.outcome != 'success'
+        run: python data_pipeline/audit_precision_v7.py
+
+      - name: Audit bootstrapped cumulative precision
+        if: steps.build.outcome != 'success'
+        run: python data_pipeline/audit_cumulative_precision_v7.py
+
+      - name: Validate bootstrapped client bundle
+        if: steps.build.outcome != 'success'
+        run: npm ci && npm test
+
+      - name: Commit bootstrap migration if needed
         if: steps.build.outcome != 'success'
         run: |
-          echo "Full report for ${{ steps.trade.outputs.trade_date }} is not publishable yet." >> "$GITHUB_STEP_SUMMARY"
-          echo "The captured trading-flow fact remains intact. Scheduled retries at 17:30, 18:30 and 20:00, plus the 05:00-08:00 morning workflow, will try again." >> "$GITHUB_STEP_SUMMARY"
+          git config user.name "etf-flow-radar-bot"
+          git config user.email "etf-flow-radar-bot@users.noreply.github.com"
+          git add site/data/latest.json site/data/history
+          if ! git diff --cached --quiet; then
+            git commit -m "data: migrate last verified snapshot to Contract 7.0"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Explain deferred fresh-data publication
+        if: steps.build.outcome != 'success'
+        run: |
+          echo "Fresh full report for ${{ steps.trade.outputs.trade_date }} is not publishable yet." >> "$GITHUB_STEP_SUMMARY"
+          echo "The last already-verified snapshot was safely migrated to Data Contract 7.0 without changing its trade date or canonical one-day market facts." >> "$GITHUB_STEP_SUMMARY"
+          echo "Scheduled retries at 17:30, 18:30 and 20:00, plus the 05:00-08:00 morning workflow, will continue trying to replace it with fresh verified data." >> "$GITHUB_STEP_SUMMARY"

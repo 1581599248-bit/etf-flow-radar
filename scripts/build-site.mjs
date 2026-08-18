@@ -1,28 +1,11 @@
 import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 
+// The source page is the only wording contract. The build step must never
+// rewrite financial definitions, labels or methodology text.
 const out = new URL("../dist/", import.meta.url);
-let page = await readFile(new URL("../site/index.html", import.meta.url), "utf8");
+const page = await readFile(new URL("../site/index.html", import.meta.url), "utf8");
 const css = await readFile(new URL("../site/styles.css", import.meta.url), "utf8");
 const htmlToImage = await readFile(new URL("../node_modules/html-to-image/dist/html-to-image.js", import.meta.url), "utf8");
-
-const textReplacements = [
-  ["A股股票ETF当日资金变化", "A股股票ETF一级市场净申赎"],
-  ["5日累计资金变化", "5日端点资金变化"],
-  ["20日累计资金变化", "20日端点资金变化"],
-  ["5日累计", "5日端点变化"],
-  ["1日资金变化", "1日净申赎估算"],
-  ["近5日资金方向", "5日端点资金方向"],
-  ["近5日净流入", "5日端点净流入"],
-  ["近5日净流出", "5日端点净流出"],
-  ["资金为组内ETF近5日净流入/流出", "资金为组内ETF的5日端点份额变化估算"],
-  ["先看今天，再用5日和20日辨别一次性申赎还是持续切换", "1日看一级市场净申赎，5日和20日为端点份额变化，用于观察持续性"],
-  ["申万一级与主流行业资金坐标", "申万一级和主题行业资金坐标"],
-  ["申万行业分类标准2021版；31个一级行业中，本期${industryParentCount}个行业存在可分析ETF，共${industryEtfs}只", "申万一级行业与热门主题采用互斥展示；本期覆盖${industryParentCount}个申万一级父行业，共${industryEtfs}只ETF"],
-  ["参考规模 = 日终总份额 × 当日成交均价（成交额÷成交量），资金变化 = 份额变化 × 当日成交均价；成交均价缺失时依次回退当日收盘价、单位净值。", "参考规模 = 日终份额 × 同日单位净值；1日主口径 = 公司行动调整后的份额变化 × 同日单位净值。成交均价只作为Wind类口径对照估算，不与主口径混用。"],
-  ["北京时间0:15、0:30、1:00、5:00、6:00、7:00和8:00", "北京时间5:00、6:00、7:00和8:00"],
-  ["北京时间0:15、0:30、1:00、5:00、6:00、7:00、8:00", "北京时间5:00、6:00、7:00、8:00"],
-];
-for (const [from, to] of textReplacements) page = page.replaceAll(from, to);
 
 await rm(out, { recursive: true, force: true });
 await mkdir(out, { recursive: true });

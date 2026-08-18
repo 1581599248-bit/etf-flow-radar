@@ -18,7 +18,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: daily-etf-data
+  group: daily-etf-data-unified
   cancel-in-progress: true
 
 jobs:
@@ -37,16 +37,20 @@ jobs:
       - run: pip install -r data_pipeline/requirements.txt
       - name: Run deterministic pipeline tests
         run: python -m unittest discover -s data_pipeline -p "test_*.py"
-      - name: Build schema-v6 production snapshot
+      - name: Build unified production snapshot
         run: |
           if [ -n "${{ inputs.trade_date }}" ]; then
-            python data_pipeline/update_daily_v2.py --date "${{ inputs.trade_date }}"
+            python data_pipeline/update_daily_v3.py --date "${{ inputs.trade_date }}"
           else
-            python data_pipeline/update_daily_v2.py
+            python data_pipeline/update_daily_v3.py
           fi
-      - name: Run external-send reconciliation audit
-        run: python data_pipeline/audit_snapshot_v6.py
-      - name: Validate published schema and client bundle
+      - name: Run unified external-send audit
+        run: python data_pipeline/audit_snapshot_v7.py
+      - name: Run monetary precision audit
+        run: python data_pipeline/audit_precision_v7.py
+      - name: Run cumulative precision audit
+        run: python data_pipeline/audit_cumulative_precision_v7.py
+      - name: Validate published data contract and client bundle
         run: npm ci && npm test
       - name: Commit only a verified change
         run: |
@@ -54,5 +58,5 @@ jobs:
           git config user.email "etf-flow-radar-bot@users.noreply.github.com"
           git add site/data
           git diff --cached --quiet && exit 0
-          git commit -m "data: update schema-v6 ETF flow snapshot"
+          git commit -m "data: update unified ETF flow snapshot"
           git push

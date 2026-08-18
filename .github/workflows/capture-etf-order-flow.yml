@@ -1,4 +1,4 @@
-name: Capture ETF order flow
+name: Capture ETF secondary trading facts
 
 on:
   schedule:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       trade_date:
-        description: "Optional trade date (YYYY-MM-DD); historical dates only work when provider still exposes that date"
+        description: "Optional trade date (YYYY-MM-DD); historical dates only work when the provider still exposes that date"
         required: false
         type: string
 
@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: capture-etf-order-flow
+  group: capture-etf-secondary-trading
   cancel-in-progress: true
 
 jobs:
@@ -33,18 +33,18 @@ jobs:
           cache: pip
           cache-dependency-path: data_pipeline/requirements.txt
       - run: pip install -r data_pipeline/requirements.txt
-      - name: Capture same-day secondary-market ETF order flow
+      - name: Capture same-day ETF secondary-market aggressor statistics
         run: |
           if [ -n "${{ inputs.trade_date }}" ]; then
-            python data_pipeline/capture_order_flow_v2.py --date "${{ inputs.trade_date }}"
+            python data_pipeline/capture_order_flow_v3.py --date "${{ inputs.trade_date }}"
           else
-            python data_pipeline/capture_order_flow_v2.py
+            python data_pipeline/capture_order_flow_v3.py
           fi
-      - name: Commit immutable order-flow fact file
+      - name: Commit immutable secondary-trading fact file
         run: |
           git config user.name "etf-flow-radar-bot"
           git config user.email "etf-flow-radar-bot@users.noreply.github.com"
           git add site/data/order_flow
           git diff --cached --quiet && exit 0
-          git commit -m "data: capture same-day ETF secondary order flow"
+          git commit -m "data: capture same-day ETF secondary trading facts"
           git push
