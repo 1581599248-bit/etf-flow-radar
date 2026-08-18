@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import json
 import math
-from pathlib import Path
 from typing import Any
 
 import system_contract_v7 as contract
@@ -151,9 +150,6 @@ def apply(snapshot: dict[str, Any]) -> None:
                 classified_ok = False
                 failure_reason = f"{stamp} classification rule digest differs"
             if classified_ok:
-                # A code/group absent on a historical day contributes zero to
-                # that day for the current cumulative series. The daily file is
-                # an immutable fact for the whole research universe on that date.
                 for code in etf_accum:
                     etf_accum[code] += float(etf_map.get(code, 0.0))
                 for gid in group_accum:
@@ -207,7 +203,8 @@ def apply(snapshot: dict[str, Any]) -> None:
         "twentyDayField": "flow20dCumulative",
         "fiveDayYuanField": "flow5dCumulativeYuanEstimate",
         "twentyDayYuanField": "flow20dCumulativeYuanEstimate",
-        "method": "sumUnroundedDailyPrimaryFlowYuanThenRound",
+        "method": "sumOfSameContractVerifiedDailyPrimaryFlows",
+        "aggregation": "sumUnroundedDailyPrimaryFlowYuanThenRound",
         "availability": "all required official sessions must expose Contract-7 exact-yuan daily facts; group/ETF history must also share the current classification digest",
     }
     quality["precisionCumulativeFlow"] = precision_status
