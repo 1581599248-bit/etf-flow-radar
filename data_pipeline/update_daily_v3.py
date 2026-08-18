@@ -1,8 +1,8 @@
 """Production entrypoint with the unified ETF system contract.
 
 The validated schema-v6 collectors and corporate-action logic remain the base
-engine. This wrapper adds the unified v7 semantic, precision and finalization
-layers before anything is written to site/data.
+engine. This wrapper adds the unified v7 research-taxonomy, semantic, precision
+and finalization layers before anything is written to site/data.
 """
 from __future__ import annotations
 
@@ -14,6 +14,7 @@ import pandas as pd
 
 import contract_finalizer_v7 as finalizer
 import precision_contract_v7 as precision
+import research_taxonomy_v7 as taxonomy
 import system_contract_v7 as contract
 import update_daily as base
 import update_daily_v2 as v2
@@ -58,6 +59,10 @@ def _apply_contract(
     spot: pd.DataFrame | None,
 ) -> None:
     _ORIG_APPLY(snapshot, day, share_window, ths, spot)
+    # Before the legacy name-rule audit, redirect broad names such as 消费、
+    # 新材料、新能源、高端制造 to equally broad research themes instead of
+    # falsely forcing them into a narrower SW-style industry.
+    taxonomy.apply(snapshot)
     contract.apply_system_contract(snapshot, day, share_window)
     # Restore monetary totals from formula facts because the schema-v6 display
     # layer stores individual ETF amounts rounded to 0.01亿元. Aggregates must
@@ -89,12 +94,14 @@ def _daily_payload(snapshot: dict[str, Any]) -> dict[str, Any]:
         row["flowMetric"] = "primaryMarketNetSubscriptionEstimate"
         row["flowValuation"] = "sameDayUnitNAV"
         row["classificationMethod"] = item.get("classificationMethod")
+        row["taxonomyRuleId"] = item.get("taxonomyRuleId")
 
     payload["methodology"] = {
         "flow": snapshot.get("methodology", {}).get("flow"),
         "classification": snapshot.get("methodology", {}).get("classification"),
         "multiDay": snapshot.get("methodology", {}).get("multiDay"),
         "aggregation": "所有金额汇总先在人民币元层面使用未取整公式值求和，最后一步才换算为亿元并四舍五入。",
+        "taxonomy": "宽泛ETF名称使用同等宽泛的研究主题，不强制映射为更窄的申万式行业。",
     }
     return payload
 
