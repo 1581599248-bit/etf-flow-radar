@@ -1,0 +1,61 @@
+name: Refresh latest ETF headline once
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/refresh-latest-headline.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-headline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Replace only the persisted 2026-08-17 headline
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("site/data/latest.json")
+          payload = json.loads(path.read_text("utf-8"))
+          assert payload.get("tradeDate") == "2026-08-17", payload.get("tradeDate")
+
+          old = "A股ETF当日成交资金净流入94.5亿元；ETF份额较上一日净流出185.7亿元。宽基中18个流出、6个流入；申万一级和主题行业资金流入居前的是游戏，流出最多的是半导体。"
+          new = "A股ETF盘中买盘偏强，主动买入净额94.5亿元；但ETF份额对应资金大幅净流出185.7亿元，显示短线仍有较强承接，但整体资金仍在明显撤出。宽基中18个流出、6个流入；申万一级和主题行业资金流入居前的是游戏，流出最多的是半导体。"
+
+          actual = payload.get("conclusion", {}).get("headline")
+          if actual == new:
+              print("headline already refreshed")
+          else:
+              assert actual == old, actual
+              payload["conclusion"]["headline"] = new
+              path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", "utf-8")
+              print("headline refreshed")
+          PY
+
+      - name: Commit only latest.json
+        shell: bash
+        run: |
+          git config user.name "etf-flow-radar-bot"
+          git config user.email "etf-flow-radar-bot@users.noreply.github.com"
+          git add site/data/latest.json
+          if git diff --cached --quiet; then
+            echo "No change needed"
+            exit 0
+          fi
+          CHANGED=$(git diff --cached --name-only)
+          test "$CHANGED" = "site/data/latest.json"
+          git commit -m "data: refresh ETF headline wording"
+          git pull --rebase origin main
+          git push origin HEAD:main
