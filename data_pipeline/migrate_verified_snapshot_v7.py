@@ -258,3 +258,4 @@ if __name__ == "__main__":
 
 # Operational note: changes to this file intentionally retrigger the post-close publisher.
 # Contents-API trigger: force one clean push event after the recovery fix landed.
+# Recovery trigger: classification-claim audit is now covered by the real-snapshot CI test.
