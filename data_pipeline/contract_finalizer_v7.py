@@ -16,6 +16,7 @@ import system_contract_v7 as contract
 import update_daily as base
 
 CLASSIFICATION_PATH = Path(__file__).with_name("classification.json")
+GROUP_CLASSIFICATION_CLAIM = "研究分组，不代表基金管理人或指数公司官方分类"
 
 
 def _finite(value: Any) -> bool:
@@ -279,8 +280,15 @@ def _normalize_research_rollups(snapshot: dict[str, Any]) -> None:
         for row in old:
             row["classificationClaim"] = "研究汇总，不代表指数公司或申万官方ETF分类"
         snapshot["industryResearchRollups"] = old
+
+    # themeGroups may currently contain the same dictionary objects as groups.
+    # Apply the theme-specific wording first, then enforce the authoritative
+    # client-group wording on groups. This guarantees the audited groups are
+    # explicit research buckets even when an older snapshot used aliased lists.
     for row in snapshot.get("themeGroups", []):
         row["classificationClaim"] = "主题研究分组，不代表指数公司官方分类"
+    for row in snapshot.get("groups", []):
+        row["classificationClaim"] = GROUP_CLASSIFICATION_CLAIM
 
     reconciliation = snapshot.get("quality", {}).get("clientSectorReconciliation")
     if isinstance(reconciliation, dict):
