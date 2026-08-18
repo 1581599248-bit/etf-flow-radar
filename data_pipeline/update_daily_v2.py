@@ -152,6 +152,38 @@ def _flow_phrase(value: float) -> str:
     return "净额0.0亿元"
 
 
+def _market_flow_headline(trade_value: float | None, primary_value: float) -> str:
+    """Translate trading pressure and share-based fund flow into plain-language client copy."""
+    if trade_value is None:
+        if primary_value > 0:
+            return f"A股ETF盘中主动买卖数据暂缺；ETF份额对应资金净流入{primary_value:.1f}亿元，整体资金以流入为主。"
+        if primary_value < 0:
+            return f"A股ETF盘中主动买卖数据暂缺；ETF份额对应资金净流出{abs(primary_value):.1f}亿元，整体资金以撤出为主。"
+        return "A股ETF盘中主动买卖数据暂缺；ETF份额对应资金基本持平，整体资金暂无明显增减。"
+
+    if trade_value > 0:
+        trade_text = f"A股ETF盘中买盘偏强，主动买入净额{trade_value:.1f}亿元"
+        if primary_value > 0:
+            return trade_text + f"；ETF份额对应资金净流入{primary_value:.1f}亿元，显示短线承接与整体资金方向一致，资金流入意愿较强。"
+        if primary_value < 0:
+            return trade_text + f"；但ETF份额对应资金净流出{abs(primary_value):.1f}亿元，显示短线承接较强，但整体资金仍以撤出为主。"
+        return trade_text + "；ETF份额对应资金基本持平，显示短线承接偏强，但整体资金暂无明显增减。"
+
+    if trade_value < 0:
+        trade_text = f"A股ETF盘中卖盘偏强，主动卖出净额{abs(trade_value):.1f}亿元"
+        if primary_value > 0:
+            return trade_text + f"；但ETF份额对应资金净流入{primary_value:.1f}亿元，显示短线抛压较强，但整体资金仍以流入为主。"
+        if primary_value < 0:
+            return trade_text + f"；ETF份额对应资金净流出{abs(primary_value):.1f}亿元，显示短线抛压与整体资金方向一致，整体资金撤出意愿较强。"
+        return trade_text + "；ETF份额对应资金基本持平，显示短线抛压偏强，但整体资金暂无明显增减。"
+
+    if primary_value > 0:
+        return f"A股ETF盘中买卖力量基本均衡；ETF份额对应资金净流入{primary_value:.1f}亿元，显示短线交易相对平稳，但整体资金仍以流入为主。"
+    if primary_value < 0:
+        return f"A股ETF盘中买卖力量基本均衡；ETF份额对应资金净流出{abs(primary_value):.1f}亿元，显示短线交易相对平稳，但整体资金仍以撤出为主。"
+    return "A股ETF盘中买卖力量基本均衡；ETF份额对应资金基本持平，显示短线交易与整体资金均无明显方向。"
+
+
 def _visible_sector_groups(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
     """Mutually-exclusive SW-level/theme groups actually rendered to clients."""
     return [g for g in snapshot.get("groups", []) if g.get("kind") == "industry"]
@@ -165,9 +197,9 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
     if not isinstance(primary_value, (int, float)):
         raise ValueError("A-share stock ETF market.flow1d is required for the homepage headline")
     trade_scope = snapshot.get("flowMetrics", {}).get("secondaryMarketTradeFlow", {}).get("scopeTotals", {}).get("aShareStockEtf", {})
-    trade_value = trade_scope.get("netFlow1d")
-    first = f"A股ETF当日成交资金{_flow_phrase(float(trade_value))}；" if isinstance(trade_value, (int, float)) else "A股ETF当日成交资金暂无同日数据；"
-    second = f"ETF份额较上一日{_flow_phrase(float(primary_value))}。"
+    raw_trade_value = trade_scope.get("netFlow1d")
+    trade_value = float(raw_trade_value) if isinstance(raw_trade_value, (int, float)) and pd.notna(raw_trade_value) else None
+    flow_headline = _market_flow_headline(trade_value, float(primary_value))
 
     groups = snapshot.get("groups", [])
     broad = [g for g in groups if g.get("kind") == "broad"]
@@ -190,7 +222,7 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
         else:
             facts = [sector_fact]
         snapshot["conclusion"]["facts"] = facts
-    snapshot.setdefault("conclusion", {})["headline"] = first + second + tail
+    snapshot.setdefault("conclusion", {})["headline"] = flow_headline + tail
 
 
 def apply_v2_semantics(snapshot: dict[str, Any], day: date, share_window: list[tuple[date, pd.DataFrame]], ths: pd.DataFrame, spot: pd.DataFrame | None) -> None:
@@ -233,7 +265,7 @@ def apply_v2_semantics(snapshot: dict[str, Any], day: date, share_window: list[t
     snapshot["schemaVersion"] = 6
     snapshot.setdefault("methodology", {}).update({
         "flow": "ETF当日净流入/净流出估算 =（T日交易所日终份额 − T-1日公司行动调整后的可比份额）× T日单位净值。T-1只作为T日份额变化的基准；该结果就是T日净申购/赎回的资金估算，不是再与上一日资金流做一次比较。",
-        "metricSeparation": "首页保留两句独立口径：第一句展示A股ETF同日二级市场成交资金净额（仅在同日成交额+外盘/内盘快照成功落盘时给出数值）；第二句以“ETF份额较上一日净流入/净流出”展示A股股票ETF当日净申购/赎回估算，金额严格等于交易所T日与T-1可比份额变化×T日NAV。第一句缺失或数值变化均不得覆盖第二句。",
+        "metricSeparation": "首页结论把两类数据翻译成易懂话术：盘中买盘/卖盘强弱来自同日成交额与外盘/内盘估算的主动买卖净额；ETF份额对应资金来自交易所T日与T-1可比份额变化×T日NAV。系统根据两者正负、持平或盘中数据缺失自动生成一致、背离或均衡文案；盘中主动买卖净额不得解释为ETF新增资金。",
         "multiDay": "5日/20日当前字段为端点份额变化×期末单位净值，字段明确标记 Endpoint；不是逐日净流入额之和。schema v6开始落盘每日单ETF份额flow1d，积累足够交易日后再生成真正5日/20日累计净流入额。",
         "scope": "首页主指标固定使用A股股票ETF范围，不含跨境股票ETF、债券ETF、货币ETF和商品ETF；同时保留全部ETF、股票ETF（含跨境）和六类资产范围用于审计与对照。",
         "valuation": "ETF当日净流入/净流出主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。",
