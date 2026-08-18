@@ -1,8 +1,8 @@
 """Production entrypoint with the unified ETF system contract.
 
 The validated schema-v6 collectors and corporate-action logic remain the base
-engine. This wrapper adds the unified v7 contract and a final deterministic
-normalization before anything is written to site/data.
+engine. This wrapper adds the unified v7 semantic, precision and finalization
+layers before anything is written to site/data.
 """
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ from typing import Any
 import pandas as pd
 
 import contract_finalizer_v7 as finalizer
+import precision_contract_v7 as precision
 import system_contract_v7 as contract
 import update_daily as base
 import update_daily_v2 as v2
@@ -58,6 +59,10 @@ def _apply_contract(
 ) -> None:
     _ORIG_APPLY(snapshot, day, share_window, ths, spot)
     contract.apply_system_contract(snapshot, day, share_window)
+    # Restore monetary totals from formula facts because the schema-v6 display
+    # layer stores individual ETF amounts rounded to 0.01亿元. Aggregates must
+    # never be the sum of those display-rounded values.
+    precision.apply(snapshot)
     finalizer.finalize(snapshot)
     # The base fact engine remains schema-v6 internally, but the published
     # client snapshot has materially different Contract-7 fields and therefore
@@ -75,10 +80,21 @@ def _daily_payload(snapshot: dict[str, Any]) -> dict[str, Any]:
     payload["dataContractVersion"] = contract.CONTRACT_VERSION
     payload["classificationRuleDigest"] = snapshot.get("classificationRuleDigest")
     payload["directionToleranceShares"] = contract.DIRECTION_EPS_SHARES
+    payload["aggregationMethod1d"] = "sum_unrounded_share_delta_times_same_day_nav_then_round"
+
+    current = {str(item.get("code", "")).zfill(6): item for item in snapshot.get("etfs", [])}
+    for row in payload.get("etfs", []):
+        item = current.get(str(row.get("code", "")).zfill(6), {})
+        row["primaryFlow1dYuanEstimate"] = item.get("primaryFlow1dYuanEstimate")
+        row["flowMetric"] = "primaryMarketNetSubscriptionEstimate"
+        row["flowValuation"] = "sameDayUnitNAV"
+        row["classificationMethod"] = item.get("classificationMethod")
+
     payload["methodology"] = {
         "flow": snapshot.get("methodology", {}).get("flow"),
         "classification": snapshot.get("methodology", {}).get("classification"),
         "multiDay": snapshot.get("methodology", {}).get("multiDay"),
+        "aggregation": "所有金额汇总先在人民币元层面使用未取整公式值求和，最后一步才换算为亿元并四舍五入。",
     }
     return payload
 
