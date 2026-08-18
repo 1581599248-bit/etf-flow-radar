@@ -1,6 +1,5 @@
 name: Publish ETF report after close
 # Publisher schema: v6; changes to this file bootstrap the latest captured trade date.
-# Recovery trigger: rerun the original v6 publisher after restoring the last working website.
 
 on:
   workflow_run:
