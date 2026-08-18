@@ -307,7 +307,7 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
         else:
             facts = [sector_fact]
         snapshot["conclusion"]["facts"] = facts
-    snapshot.setdefault("conclusion", {})["headline"] = flow_headline + tail
+    snapshot.setdefault("conclusion", {})["headline"] = flow_headline + "\n" + tail
 
 
 def apply_v2_semantics(snapshot: dict[str, Any], day: date, share_window: list[tuple[date, pd.DataFrame]], ths: pd.DataFrame, spot: pd.DataFrame | None) -> None:
