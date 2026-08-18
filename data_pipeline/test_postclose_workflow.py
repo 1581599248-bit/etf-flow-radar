@@ -27,25 +27,42 @@ class PostCloseWorkflowTests(unittest.TestCase):
         self.assertNotIn("update_daily_v2.py --date", text)
         self.assertNotIn("audit_snapshot_v6.py", text)
 
-    def test_postclose_failure_bootstraps_only_the_last_verified_snapshot(self):
+    def test_contract_bootstrap_is_published_before_broad_regression_suite(self):
         text = (ROOT / ".github" / "workflows" / "postclose-etf-publish.yml").read_text("utf-8")
-        self.assertIn("Restore repository data before bootstrap fallback", text)
-        self.assertIn("git restore --source=HEAD --staged --worktree -- site/data", text)
-        self.assertIn("Bootstrap the last verified snapshot to Data Contract 7.0", text)
+        self.assertIn("Bootstrap last verified snapshot to Data Contract 7.0", text)
         self.assertIn("python data_pipeline/migrate_verified_snapshot_v7.py", text)
         self.assertIn("Audit bootstrapped verified snapshot", text)
         self.assertIn("Validate bootstrapped client bundle", text)
+        self.assertIn("Publish bootstrapped snapshot before broader regression tests", text)
         self.assertIn("data: migrate last verified snapshot to Contract 7.0", text)
+        self.assertIn("Run deterministic pipeline tests before fresh rebuild", text)
         self.assertIn("without changing its trade date or canonical one-day market facts", text)
-        # A failed/partial fresh build is never allowed to become the migration input.
+
+        migration = text.index("python data_pipeline/migrate_verified_snapshot_v7.py")
+        audit = text.index("python data_pipeline/audit_snapshot_v7.py", migration)
+        publish = text.index("Publish bootstrapped snapshot before broader regression tests")
+        broad_tests = text.index("Run deterministic pipeline tests before fresh rebuild")
+        fresh_build = text.index("Attempt unified full report as soon as end-of-day data is ready")
+
+        # Availability recovery must be fully validated and published before a
+        # stale/unrelated regression test can prevent the workflow from moving on.
+        self.assertLess(migration, audit)
+        self.assertLess(audit, publish)
+        self.assertLess(publish, broad_tests)
+        self.assertLess(broad_tests, fresh_build)
+
+    def test_fresh_build_failure_cannot_replace_the_bootstrapped_repository_snapshot(self):
+        text = (ROOT / ".github" / "workflows" / "postclose-etf-publish.yml").read_text("utf-8")
+        self.assertIn("continue-on-error: true", text)
+        self.assertIn("Explain deferred fresh-data publication", text)
+        self.assertIn("The last already-verified snapshot remains available under Data Contract 7.0", text)
         self.assertLess(
-            text.index("git restore --source=HEAD --staged --worktree -- site/data"),
-            text.index("python data_pipeline/migrate_verified_snapshot_v7.py"),
+            text.index("Publish bootstrapped snapshot before broader regression tests"),
+            text.index("Attempt unified full report as soon as end-of-day data is ready"),
         )
-        # The migrated fallback must pass the same external-send audit before commit.
         self.assertLess(
-            text.index("python data_pipeline/migrate_verified_snapshot_v7.py"),
-            text.rindex("python data_pipeline/audit_snapshot_v7.py"),
+            text.index("Attempt unified full report as soon as end-of-day data is ready"),
+            text.index("Commit verified full report immediately"),
         )
 
     def test_capture_workflow_persists_secondary_trading_facts_independently(self):
