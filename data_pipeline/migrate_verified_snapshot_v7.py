@@ -31,6 +31,7 @@ from zoneinfo import ZoneInfo
 
 import contract_finalizer_v7 as finalizer
 import precision_contract_v7 as precision
+import precision_cumulative_v7 as precision_cumulative
 import research_taxonomy_v7 as taxonomy
 import system_contract_v7 as contract
 
@@ -76,14 +77,15 @@ def migrate(snapshot: dict) -> dict:
     contract.apply_wording_and_provenance(snapshot)
     precision.apply(snapshot)
 
-    # A bootstrap migration deliberately has no same-contract daily history.
-    # The finalizer therefore publishes endpoint fields separately and leaves
-    # true 5d/20d cumulative values unavailable until Contract 7.0 facts accrue.
+    # A bootstrap migration deliberately has no Contract-7 exact-yuan history.
+    # Endpoint facts remain available, but true 5d/20d cumulative amounts stay
+    # unavailable until enough immutable v7 daily fact files have accrued.
     snapshot.setdefault("quality", {})["cumulativeFlowHistory"] = {
         "officialSessionDates": [str(original_trade_date)],
         "bootstrapMigration": True,
     }
     finalizer.finalize(snapshot)
+    precision_cumulative.apply(snapshot)
     snapshot["schemaVersion"] = CLIENT_SNAPSHOT_SCHEMA_VERSION
     snapshot["quality"]["clientSnapshotSchemaVersion"] = CLIENT_SNAPSHOT_SCHEMA_VERSION
 
@@ -103,6 +105,7 @@ def migrate(snapshot: dict) -> dict:
         "newMarketFactsCollected": False,
         "broadResearchTaxonomyApplied": True,
         "precisionAggregationApplied": True,
+        "exactYuanCumulativeContractApplied": True,
         "trueMultiDayCumulativeBackfilled": False,
     }
 
@@ -122,9 +125,6 @@ def migrate(snapshot: dict) -> dict:
     if migrated_flow != migrated_primary:
         raise AssertionError(f"bootstrap migration market/primary mismatch: {migrated_flow} vs {migrated_primary}")
     if original_market_flow is not None and original_primary is not None:
-        # Old v6 scope totals were already computed from unrounded formula facts.
-        # Rebuilding from persisted deltas×NAV must reproduce the same published
-        # two-decimal aggregate or the migration is rejected.
         if round(float(migrated_flow), 2) != round(float(original_market_flow), 2):
             raise AssertionError(f"bootstrap migration changed A-share 1d flow: {original_market_flow} -> {migrated_flow}")
 
