@@ -93,6 +93,10 @@ jobs:
         if: steps.build.outcome == 'success'
         run: python data_pipeline/audit_precision_v7.py
 
+      - name: Run cumulative precision audit
+        if: steps.build.outcome == 'success'
+        run: python data_pipeline/audit_cumulative_precision_v7.py
+
       - name: Validate client bundle
         if: steps.build.outcome == 'success'
         run: npm ci && npm test
@@ -124,6 +128,10 @@ jobs:
       - name: Audit bootstrapped monetary precision
         if: steps.build.outcome != 'success'
         run: python data_pipeline/audit_precision_v7.py
+
+      - name: Audit bootstrapped cumulative precision
+        if: steps.build.outcome != 'success'
+        run: python data_pipeline/audit_cumulative_precision_v7.py
 
       - name: Validate bootstrapped client bundle
         if: steps.build.outcome != 'success'
