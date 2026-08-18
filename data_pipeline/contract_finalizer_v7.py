@@ -1,7 +1,8 @@
 """Final deterministic normalization after the unified v7 contract.
 
-This module prevents legacy helper fields from re-introducing imprecise
-breadth, stale representative-ETF returns or mixed-contract cumulative data.
+The finalizer removes legacy ambiguous fields as well as reconciling endpoint
+breadth, representatives and same-contract cumulative history. A Contract 7.0
+snapshot must be safe to consume directly from JSON, not only through the UI.
 """
 from __future__ import annotations
 
@@ -48,8 +49,7 @@ def _state(relative_return: Any, endpoint_intensity: Any) -> str:
 
 
 def _classification_digest() -> str:
-    raw = CLASSIFICATION_PATH.read_bytes()
-    return hashlib.sha256(raw).hexdigest()
+    return hashlib.sha256(CLASSIFICATION_PATH.read_bytes()).hexdigest()
 
 
 def _load_daily(stamp: str) -> dict[str, Any] | None:
@@ -79,6 +79,14 @@ def _daily_group_map(payload: dict[str, Any]) -> dict[str, float]:
     return output
 
 
+def _daily_etf_map(payload: dict[str, Any]) -> dict[str, float]:
+    return {
+        str(row.get("code", "")).zfill(6): float(row["flow1d"])
+        for row in payload.get("etfs", [])
+        if _finite(row.get("flow1d"))
+    }
+
+
 def _enforce_strict_cumulative(snapshot: dict[str, Any], digest: str) -> None:
     """Never add daily facts created under different semantic/classification contracts."""
     quality = snapshot.setdefault("quality", {})
@@ -88,28 +96,36 @@ def _enforce_strict_cumulative(snapshot: dict[str, Any], digest: str) -> None:
         str(group.get("id")): float(group.get("flow1d") or 0)
         for group in snapshot.get("groups", [])
     }
+    current_etf_map = {
+        str(row.get("code", "")).zfill(6): float(row.get("flow1d") or 0)
+        for row in snapshot.get("etfs", [])
+        if _finite(row.get("flow1d"))
+    }
     market = snapshot.setdefault("market", {})
 
     for horizon in (5, 20):
         dates = official_dates[-horizon:] if len(official_dates) >= horizon else []
         market_values: list[float] = []
         group_accum = {gid: 0.0 for gid in current_group_map}
+        etf_accum = {code: 0.0 for code in current_etf_map}
         market_ok = bool(dates)
-        group_ok = bool(dates)
+        comparable_group_history = bool(dates)
 
         for stamp in dates:
             if stamp == current_date:
                 market_value = market.get("flow1d")
                 group_map = current_group_map
+                etf_map = current_etf_map
                 daily_digest = digest
             else:
                 payload = _load_daily(stamp)
                 if payload is None:
                     market_ok = False
-                    group_ok = False
+                    comparable_group_history = False
                     break
                 market_value = payload.get("marketScopes", {}).get("aShareStockEtf", {}).get("flow1d")
                 group_map = _daily_group_map(payload)
+                etf_map = _daily_etf_map(payload)
                 daily_digest = str(payload.get("classificationRuleDigest") or "")
 
             if not _finite(market_value):
@@ -118,12 +134,15 @@ def _enforce_strict_cumulative(snapshot: dict[str, Any], digest: str) -> None:
                 market_values.append(float(market_value))
 
             if daily_digest != digest:
-                group_ok = False
-            if group_ok:
+                comparable_group_history = False
+            if comparable_group_history:
                 for gid in group_accum:
                     group_accum[gid] += float(group_map.get(gid, 0.0))
+                for code in etf_accum:
+                    etf_accum[code] += float(etf_map.get(code, 0.0))
 
         market_available = market_ok and len(market_values) == horizon
+        comparable_available = market_available and comparable_group_history
         market[f"flow{horizon}dCumulative"] = round(sum(market_values), 2) if market_available else None
         market[f"flow{horizon}d"] = market[f"flow{horizon}dCumulative"]
         market[f"flow{horizon}dCumulativeStatus"] = (
@@ -133,17 +152,43 @@ def _enforce_strict_cumulative(snapshot: dict[str, Any], digest: str) -> None:
 
         for group in snapshot.get("groups", []):
             gid = str(group.get("id") or "")
-            if market_available and group_ok:
+            if comparable_available:
                 group[f"flow{horizon}d"] = round(group_accum.get(gid, 0.0), 2)
-                group[f"flow{horizon}dMetric"] = "sumOfSameContractVerifiedDailyPrimaryFlows"
+                group[f"flow{horizon}dMetric"] = "sumOfSameContractSameClassificationVerifiedDailyPrimaryFlows"
                 group[f"flow{horizon}dCumulativeStatus"] = "available"
                 group[f"flow{horizon}dCumulativeSourceDates"] = dates
             else:
                 group[f"flow{horizon}d"] = None
-                group[f"flow{horizon}dMetric"] = "unavailableUntilSameContractVerifiedDailyHistory"
-                group[f"flow{horizon}dCumulativeStatus"] = "insufficient_same_contract_daily_history"
+                group[f"flow{horizon}dMetric"] = "unavailableUntilSameContractSameClassificationDailyHistory"
+                group[f"flow{horizon}dCumulativeStatus"] = "insufficient_same_contract_or_classification_history"
                 group[f"flow{horizon}dCumulativeSourceDates"] = []
 
+        for row in snapshot.get("etfs", []):
+            code = str(row.get("code", "")).zfill(6)
+            # Remove the old ambiguous field whose v6 meaning was endpoint flow.
+            row.pop(f"flow{horizon}d", None)
+            row[f"flow{horizon}dCumulative"] = round(etf_accum.get(code, 0.0), 2) if comparable_available else None
+            row[f"flow{horizon}dCumulativeStatus"] = (
+                "available" if comparable_available else "insufficient_same_contract_or_classification_history"
+            )
+
+    market["multiDayMethod"] = "sum_of_same_contract_verified_daily_primary_flows"
+    market["endpointMethod"] = "endpoint_share_change_times_current_nav"
+    primary = snapshot.setdefault("flowMetrics", {}).setdefault("primaryMarket", {})
+    primary["multiDay"] = {
+        "cumulative": {
+            "fiveDayField": "flow5dCumulative",
+            "twentyDayField": "flow20dCumulative",
+            "method": "sumOfSameContractVerifiedDailyPrimaryFlows",
+            "availability": "all required official sessions must exist under Data Contract 7.0",
+        },
+        "endpoint": {
+            "fiveDayField": "flow5dEndpoint",
+            "twentyDayField": "flow20dEndpoint",
+            "method": "endpointShareChangeTimesCurrentNAV",
+            "warning": "endpoint change is not a sum of daily primary-market flows",
+        },
+    }
     quality["cumulativeFlowHistory"] = {
         **(quality.get("cumulativeFlowHistory") or {}),
         "requiredDataContractVersion": contract.CONTRACT_VERSION,
@@ -170,8 +215,6 @@ def _repair_representatives(snapshot: dict[str, Any], members: dict[str, list[di
             "code": str(replacement.get("code", "")).zfill(6),
             "name": str(replacement.get("name") or ""),
         }
-        # Return values belong to the previous representative and cannot be
-        # silently carried over. A later production refresh may repopulate them.
         for field in ("return1d", "return5d", "return20d", "relativeReturn20d"):
             group[field] = None
         repaired.append({
@@ -182,10 +225,76 @@ def _repair_representatives(snapshot: dict[str, Any], members: dict[str, list[di
     snapshot.setdefault("quality", {})["classificationRepresentativeRepairs"] = repaired
 
 
+def _normalize_ambiguous_universe(snapshot: dict[str, Any]) -> None:
+    for row in snapshot.get("universe", []):
+        if row.get("classificationStatus") != "ambiguous":
+            continue
+        if row.get("groupId"):
+            row["candidateGroupId"] = row.get("groupId")
+        if row.get("groupName"):
+            row["candidateGroupName"] = row.get("groupName")
+        for field in ("groupId", "groupName", "kind"):
+            row.pop(field, None)
+
+
+def _normalize_secondary_schema(snapshot: dict[str, Any]) -> None:
+    metrics = snapshot.setdefault("flowMetrics", {})
+
+    trade = metrics.pop("secondaryMarketTradeFlow", None)
+    if isinstance(trade, dict):
+        for scope in trade.get("scopeTotals", {}).values():
+            if "netFlow1d" in scope:
+                scope["aggressorImbalance1d"] = scope.pop("netFlow1d")
+            if "inflow1d" in scope:
+                scope["buyInitiatedEstimate1d"] = scope.pop("inflow1d")
+            if "outflow1d" in scope:
+                scope["sellInitiatedEstimate1d"] = scope.pop("outflow1d")
+        metrics["secondaryMarketAggressorImbalance"] = trade
+
+    vendor = metrics.pop("secondaryMarketOrderFlow", None)
+    if isinstance(vendor, dict):
+        for scope in vendor.get("scopeTotals", {}).values():
+            if "flow1d" in scope:
+                scope["vendorMainOrderNet1d"] = scope.pop("flow1d")
+        metrics["secondaryMarketVendorMainOrder"] = vendor
+
+    for row in snapshot.get("etfs", []):
+        if "secondaryTradeNetFlow1d" in row:
+            row["secondaryAggressorImbalance1d"] = row.pop("secondaryTradeNetFlow1d")
+        if "secondaryMainOrderFlow1d" in row:
+            row["secondaryVendorMainOrderNet1d"] = row.pop("secondaryMainOrderFlow1d")
+
+    quality = snapshot.setdefault("quality", {})
+    quality["metricSeparation"] = "primary_market_subscription_vs_secondary_trading_statistics"
+    quality.pop("secondaryOrderFlowStatus", None)
+    aggressor = metrics.get("secondaryMarketAggressorImbalance") or {}
+    vendor_metric = metrics.get("secondaryMarketVendorMainOrder") or {}
+    quality["secondaryAggressorImbalanceStatus"] = aggressor.get("status", "unavailable")
+    quality["secondaryVendorMainOrderStatus"] = vendor_metric.get("status", "unavailable")
+
+
+def _normalize_research_rollups(snapshot: dict[str, Any]) -> None:
+    old = snapshot.pop("industryRollups", None)
+    if isinstance(old, list):
+        for row in old:
+            row["classificationClaim"] = "研究汇总，不代表指数公司或申万官方ETF分类"
+        snapshot["industryResearchRollups"] = old
+    for row in snapshot.get("themeGroups", []):
+        row["classificationClaim"] = "主题研究分组，不代表指数公司官方分类"
+
+    reconciliation = snapshot.get("quality", {}).get("clientSectorReconciliation")
+    if isinstance(reconciliation, dict):
+        if "industryRollupFlow1d" in reconciliation:
+            reconciliation["industryResearchRollupFlow1d"] = reconciliation.pop("industryRollupFlow1d")
+        reconciliation["displayLayer"] = "conservative_industry_and_theme_research_groups"
+
+
 def finalize(snapshot: dict[str, Any]) -> None:
     digest = _classification_digest()
     snapshot["classificationRuleDigest"] = digest
     snapshot.setdefault("quality", {})["classificationRuleDigest"] = digest
+
+    _normalize_ambiguous_universe(snapshot)
 
     members: dict[str, list[dict[str, Any]]] = {}
     for row in snapshot.get("etfs", []):
@@ -220,7 +329,8 @@ def finalize(snapshot: dict[str, Any]) -> None:
             group[f"increaseEtfCount{horizon}dEndpoint"] = increase
             group[f"decreaseEtfCount{horizon}dEndpoint"] = decrease
             group[f"unchangedEtfCount{horizon}dEndpoint"] = unchanged
-            # Legacy aliases remain only as exact mirrors for existing UI code.
+            # Legacy aliases are exact mirrors for the existing frontend helper;
+            # the explicit Endpoint fields are the authoritative names.
             group[f"increaseEtfCount{horizon}d"] = increase
             group[f"decreaseEtfCount{horizon}d"] = decrease
             group[f"unchangedEtfCount{horizon}d"] = unchanged
@@ -231,11 +341,22 @@ def finalize(snapshot: dict[str, Any]) -> None:
             if endpoint_values:
                 group[endpoint_key] = round(sum(endpoint_values), 2)
 
-        intensity = group.get("flowIntensity5dEndpointPct", group.get("flowIntensity5dPct"))
+        if "flowIntensity5dPct" in group and "flowIntensity5dEndpointPct" not in group:
+            group["flowIntensity5dEndpointPct"] = group["flowIntensity5dPct"]
+        group.pop("flowIntensity5dPct", None)
+        group.pop("flowIntensity5dBps", None)
+        if "flowIntensity20dPct" in group and "flowIntensity20dEndpointPct" not in group:
+            group["flowIntensity20dEndpointPct"] = group["flowIntensity20dPct"]
+        group.pop("flowIntensity20dPct", None)
+        group.pop("flowIntensity20dBps", None)
+
+        intensity = group.get("flowIntensity5dEndpointPct")
         group["priceFlowState"] = _state(group.get("relativeReturn20d"), intensity)
         group["priceFlowStateMetric"] = "representativeEtfRelativeReturn20d_vs_endpointShareChangeIntensity5d"
 
     _enforce_strict_cumulative(snapshot, digest)
+    _normalize_secondary_schema(snapshot)
+    _normalize_research_rollups(snapshot)
 
     quality = snapshot.setdefault("quality", {})
     quality["endpointDirectionToleranceShares"] = contract.DIRECTION_EPS_SHARES
