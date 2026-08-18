@@ -1,4 +1,3 @@
-# Redeploy marker: restore the verified schema-v6 site after rollback; no UI/module changes.
 services:
   - type: web
     name: etf-flow-radar-cn
