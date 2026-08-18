@@ -1,5 +1,5 @@
 name: Publish ETF report after close
-# Publisher schema: v6; changes to this file bootstrap the latest captured trade date.
+# Publisher schema: v6; changes to this file bootstrap the latest captured trade date. Headline refresh: strength-aware copy.
 
 on:
   workflow_run:
