@@ -1,8 +1,8 @@
 """Production entrypoint with the unified ETF system contract.
 
 The validated schema-v6 collectors and corporate-action logic remain the base
-engine.  This wrapper adds system_contract_v7 as the final, mandatory semantic
-and reconciliation layer before anything is written to site/data.
+engine. This wrapper adds the unified v7 contract and a final deterministic
+normalization before anything is written to site/data.
 """
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ from typing import Any
 
 import pandas as pd
 
+import contract_finalizer_v7 as finalizer
 import system_contract_v7 as contract
 import update_daily as base
 import update_daily_v2 as v2
@@ -54,6 +55,7 @@ def _apply_contract(
 ) -> None:
     _ORIG_APPLY(snapshot, day, share_window, ths, spot)
     contract.apply_system_contract(snapshot, day, share_window)
+    finalizer.finalize(snapshot)
 
 
 def _daily_payload(snapshot: dict[str, Any]) -> dict[str, Any]:
