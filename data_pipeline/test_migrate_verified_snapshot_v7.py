@@ -127,6 +127,29 @@ class BootstrapMigrationTests(unittest.TestCase):
         self.assertNotIn("groupId", ambiguous)
         self.assertNotIn("510150", {row["code"] for row in migrated["etfs"]})
 
+    def test_migration_preserves_pre_row_rounding_verified_aggregate(self):
+        old = self.legacy_snapshot()
+        # schema v6 aggregates were calculated from unrounded per-ETF values,
+        # then individual JSON rows were rounded to 0.01亿元. Simulate the
+        # resulting 0.01亿元 residual while leaving persisted ETF rows unchanged.
+        old["market"]["flow1d"] = 1.01
+        primary = old["flowMetrics"]["primaryMarket"]
+        for key in ("allEtf", "stockEtfIncludingCrossBorder", "aShareStockEtf"):
+            primary["scopeTotals"][key]["flow1d"] = 1.01
+        primary["assetClassTotals"]["aShareStockEtf"]["flow1d"] = 1.01
+
+        with patch.object(migration.contract.production, "_build_industry_rollups", return_value=[]):
+            migrated = migration.migrate(old)
+
+        self.assertEqual(migrated["market"]["flow1d"], 1.01)
+        self.assertEqual(
+            migrated["flowMetrics"]["primaryMarket"]["scopeTotals"]["aShareStockEtf"]["flow1d"],
+            1.01,
+        )
+        residual = migrated["quality"]["bootstrapAggregatePrecision"]["scopeFlowRoundingResiduals"]["aShareStockEtf"]
+        self.assertEqual(residual, 0.01)
+        self.assertTrue(migrated["quality"]["contractMigration"]["preservedVerifiedAggregatePrecision"])
+
     def test_unverified_or_non_real_snapshot_is_rejected(self):
         for key, value in (("sourceMode", "MOCK"), ("status", "failed")):
             snapshot = self.legacy_snapshot()

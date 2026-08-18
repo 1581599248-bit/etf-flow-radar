@@ -27,7 +27,7 @@ class PostCloseWorkflowTests(unittest.TestCase):
         self.assertNotIn("update_daily_v2.py --date", text)
         self.assertNotIn("audit_snapshot_v6.py", text)
 
-    def test_contract_bootstrap_is_published_before_broad_regression_suite(self):
+    def test_contract_bootstrap_is_published_before_any_fresh_data_dependency(self):
         text = (ROOT / ".github" / "workflows" / "postclose-etf-publish.yml").read_text("utf-8")
         self.assertIn("Bootstrap last verified snapshot to Data Contract 7.0", text)
         self.assertIn("python data_pipeline/migrate_verified_snapshot_v7.py", text)
@@ -42,14 +42,16 @@ class PostCloseWorkflowTests(unittest.TestCase):
         audit = text.index("python data_pipeline/audit_snapshot_v7.py", migration)
         publish = text.index("Publish bootstrapped snapshot before broader regression tests")
         broad_tests = text.index("Run deterministic pipeline tests before fresh rebuild")
+        resolve = text.index("Resolve latest captured trade date")
         fresh_build = text.index("Attempt unified full report as soon as end-of-day data is ready")
 
-        # Availability recovery must be fully validated and published before a
-        # stale/unrelated regression test can prevent the workflow from moving on.
+        # Availability recovery must be independent of today's secondary file,
+        # broad regression suite and fresh upstream collection.
         self.assertLess(migration, audit)
         self.assertLess(audit, publish)
         self.assertLess(publish, broad_tests)
-        self.assertLess(broad_tests, fresh_build)
+        self.assertLess(broad_tests, resolve)
+        self.assertLess(resolve, fresh_build)
 
     def test_fresh_build_failure_cannot_replace_the_bootstrapped_repository_snapshot(self):
         text = (ROOT / ".github" / "workflows" / "postclose-etf-publish.yml").read_text("utf-8")
@@ -73,7 +75,7 @@ class PostCloseWorkflowTests(unittest.TestCase):
         self.assertIn("data: capture same-day ETF secondary trading facts", text)
         self.assertNotIn("secondary-market ETF order flow", text)
 
-    def test_morning_fallback_uses_the_same_unified_pipeline(self):
+    def test_morning_fallback_uses_the_same_bootstrap_first_contract(self):
         text = (ROOT / ".github" / "workflows" / "daily-etf-data.yml").read_text("utf-8")
         for cron in (
             '"0 21 * * 1-5"',
@@ -84,7 +86,22 @@ class PostCloseWorkflowTests(unittest.TestCase):
             self.assertIn(cron, text)
         self.assertIn("python data_pipeline/update_daily_v3.py", text)
         self.assertIn("python data_pipeline/audit_snapshot_v7.py", text)
+        self.assertIn("python data_pipeline/migrate_verified_snapshot_v7.py", text)
+        self.assertIn("Publish bootstrapped snapshot before fresh rebuild", text)
+        self.assertIn("Run deterministic pipeline tests before fresh rebuild", text)
+        self.assertIn("continue-on-error: true", text)
+        self.assertIn("Explain deferred fresh-data publication", text)
         self.assertNotIn("python data_pipeline/update_daily_v2.py", text)
+
+        bootstrap = text.index("python data_pipeline/migrate_verified_snapshot_v7.py")
+        audit = text.index("python data_pipeline/audit_snapshot_v7.py", bootstrap)
+        publish = text.index("Publish bootstrapped snapshot before fresh rebuild")
+        tests = text.index("Run deterministic pipeline tests before fresh rebuild")
+        fresh = text.index("Build unified production snapshot")
+        self.assertLess(bootstrap, audit)
+        self.assertLess(audit, publish)
+        self.assertLess(publish, tests)
+        self.assertLess(tests, fresh)
 
 
 if __name__ == "__main__":

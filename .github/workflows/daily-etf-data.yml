@@ -29,30 +29,74 @@ jobs:
       TZ: Asia/Shanghai
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: data_pipeline/requirements.txt
       - run: pip install -r data_pipeline/requirements.txt
-      - name: Run deterministic pipeline tests
+
+      # Morning retries have the same availability contract as post-close:
+      # first keep the last already-verified REAL snapshot readable by the
+      # current client, then attempt to replace it with fresher market facts.
+      - name: Bootstrap last verified snapshot to Data Contract 7.0
+        run: python data_pipeline/migrate_verified_snapshot_v7.py
+
+      - name: Audit bootstrapped verified snapshot
+        run: python data_pipeline/audit_snapshot_v7.py
+
+      - name: Validate bootstrapped client bundle
+        run: npm ci && npm test
+
+      - name: Publish bootstrapped snapshot before fresh rebuild
+        run: |
+          git config user.name "etf-flow-radar-bot"
+          git config user.email "etf-flow-radar-bot@users.noreply.github.com"
+          git add site/data/latest.json site/data/history
+          if ! git diff --cached --quiet; then
+            git commit -m "data: migrate last verified snapshot to Contract 7.0"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Run deterministic pipeline tests before fresh rebuild
         run: python -m unittest discover -s data_pipeline -p "test_*.py"
+
       - name: Build unified production snapshot
+        id: build
+        continue-on-error: true
         run: |
           if [ -n "${{ inputs.trade_date }}" ]; then
             python data_pipeline/update_daily_v3.py --date "${{ inputs.trade_date }}"
           else
             python data_pipeline/update_daily_v3.py
           fi
+
       - name: Run unified external-send audit
+        if: steps.build.outcome == 'success'
         run: python data_pipeline/audit_snapshot_v7.py
-      - name: Validate published data contract and client bundle
-        run: npm ci && npm test
-      - name: Commit only a verified change
+
+      - name: Validate fresh published data contract and client bundle
+        if: steps.build.outcome == 'success'
+        run: npm test
+
+      - name: Commit only a verified fresh change
+        if: steps.build.outcome == 'success'
         run: |
           git config user.name "etf-flow-radar-bot"
           git config user.email "etf-flow-radar-bot@users.noreply.github.com"
           git add site/data
-          git diff --cached --quiet && exit 0
-          git commit -m "data: update unified ETF flow snapshot"
-          git push
+          if ! git diff --cached --quiet; then
+            git commit -m "data: update unified ETF flow snapshot"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Explain deferred fresh-data publication
+        if: steps.build.outcome != 'success'
+        run: |
+          echo "Fresh ETF snapshot is not publishable yet." >> "$GITHUB_STEP_SUMMARY"
+          echo "The last already-verified snapshot remains available under Data Contract 7.0; no failed or partial fresh build is published." >> "$GITHUB_STEP_SUMMARY"

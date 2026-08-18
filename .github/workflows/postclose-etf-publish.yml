@@ -1,7 +1,8 @@
 name: Publish ETF report after close
 # Production contract: unified v7 semantics on top of the validated exchange-share engine.
 # Availability rule: publish the last verified snapshot under the current client contract first;
-# only then let broader regression tests and fresh-data collection decide whether a newer date can replace it.
+# only then let regression tests, secondary-trading date resolution and fresh-data collection
+# decide whether a newer trade date can replace it.
 
 on:
   workflow_run:
@@ -54,6 +55,38 @@ jobs:
           cache-dependency-path: data_pipeline/requirements.txt
       - run: pip install -r data_pipeline/requirements.txt
 
+      # Availability recovery must not depend on today's secondary-market file,
+      # a fresh upstream API call or the broad regression suite. If the client
+      # contract changed, first make the last already-verified REAL snapshot
+      # consumable under that contract without changing its market facts.
+      - name: Bootstrap last verified snapshot to Data Contract 7.0
+        run: python data_pipeline/migrate_verified_snapshot_v7.py
+
+      - name: Audit bootstrapped verified snapshot
+        run: python data_pipeline/audit_snapshot_v7.py
+
+      - name: Validate bootstrapped client bundle
+        run: npm ci && npm test
+
+      - name: Publish bootstrapped snapshot before broader regression tests
+        run: |
+          git config user.name "etf-flow-radar-bot"
+          git config user.email "etf-flow-radar-bot@users.noreply.github.com"
+          git add site/data/latest.json site/data/history
+          if ! git diff --cached --quiet; then
+            git commit -m "data: migrate last verified snapshot to Contract 7.0"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      # A regression failure may block a NEW snapshot, but must not blank an
+      # already verified snapshot that has just been migrated to the client contract.
+      - name: Run deterministic pipeline tests before fresh rebuild
+        run: python -m unittest discover -s data_pipeline -p "test_*.py"
+
+      # Fresh-date resolution deliberately occurs only after the availability
+      # fallback is safe. Missing/corrupt secondary trading data therefore cannot
+      # prevent the last verified primary-market report from remaining visible.
       - name: Resolve latest captured trade date
         id: trade
         shell: bash
@@ -78,36 +111,6 @@ jobs:
           fi
           echo "trade_date=${TRADE_DATE}" >> "$GITHUB_OUTPUT"
           echo "Post-close publish target: ${TRADE_DATE}"
-
-      # Availability recovery is deliberately independent of the broad Python
-      # regression suite. A stale or unrelated developer test may block a new
-      # report, but it must never leave a previously verified snapshot blank
-      # merely because the client contract was upgraded.
-      - name: Bootstrap last verified snapshot to Data Contract 7.0
-        run: python data_pipeline/migrate_verified_snapshot_v7.py
-
-      - name: Audit bootstrapped verified snapshot
-        run: python data_pipeline/audit_snapshot_v7.py
-
-      - name: Validate bootstrapped client bundle
-        run: npm ci && npm test
-
-      - name: Publish bootstrapped snapshot before broader regression tests
-        run: |
-          git config user.name "etf-flow-radar-bot"
-          git config user.email "etf-flow-radar-bot@users.noreply.github.com"
-          git add site/data/latest.json site/data/history
-          if ! git diff --cached --quiet; then
-            git commit -m "data: migrate last verified snapshot to Contract 7.0"
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
-
-      # Broader regression failures are allowed to stop a NEW market snapshot,
-      # but by this point the current client already has a verified Contract 7
-      # fallback and therefore must not be blanked by a deployment mismatch.
-      - name: Run deterministic pipeline tests before fresh rebuild
-        run: python -m unittest discover -s data_pipeline -p "test_*.py"
 
       - name: Attempt unified full report as soon as end-of-day data is ready
         id: build
