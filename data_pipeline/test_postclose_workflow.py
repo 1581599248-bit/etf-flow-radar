@@ -22,6 +22,7 @@ class PostCloseWorkflowTests(unittest.TestCase):
         self.assertIn('timeout 12m python data_pipeline/update_daily_v3.py --date "${{ steps.trade.outputs.trade_date }}"', text)
         self.assertIn("python data_pipeline/audit_snapshot_v7.py", text)
         self.assertIn("python data_pipeline/audit_precision_v7.py", text)
+        self.assertIn("python data_pipeline/audit_cumulative_precision_v7.py", text)
         self.assertIn("continue-on-error: true", text)
         self.assertIn("cancel-in-progress: true", text)
         self.assertIn("Commit verified full report immediately", text)
@@ -36,7 +37,9 @@ class PostCloseWorkflowTests(unittest.TestCase):
         self.assertIn("python data_pipeline/migrate_verified_snapshot_v7.py", text)
         self.assertIn("Audit bootstrapped verified snapshot", text)
         self.assertIn("Audit bootstrapped monetary precision", text)
+        self.assertIn("Audit bootstrapped cumulative precision", text)
         self.assertIn("python data_pipeline/audit_precision_v7.py", text)
+        self.assertIn("python data_pipeline/audit_cumulative_precision_v7.py", text)
         self.assertIn("Validate bootstrapped client bundle", text)
         self.assertIn("data: migrate last verified snapshot to Contract 7.0", text)
         self.assertIn("without changing its trade date or canonical one-day market facts", text)
@@ -45,14 +48,17 @@ class PostCloseWorkflowTests(unittest.TestCase):
             text.index("git restore --source=HEAD --staged --worktree -- site/data"),
             text.index("python data_pipeline/migrate_verified_snapshot_v7.py"),
         )
-        # The migrated fallback must pass both semantic and precision audits before commit.
+        # The migrated fallback must pass semantic, one-day precision and
+        # cumulative precision audits before commit.
         migrate_at = text.index("python data_pipeline/migrate_verified_snapshot_v7.py")
         semantic_at = text.rindex("python data_pipeline/audit_snapshot_v7.py")
         precision_at = text.rindex("python data_pipeline/audit_precision_v7.py")
+        cumulative_at = text.rindex("python data_pipeline/audit_cumulative_precision_v7.py")
         commit_at = text.index("Commit bootstrap migration if needed")
         self.assertLess(migrate_at, semantic_at)
         self.assertLess(semantic_at, precision_at)
-        self.assertLess(precision_at, commit_at)
+        self.assertLess(precision_at, cumulative_at)
+        self.assertLess(cumulative_at, commit_at)
 
     def test_capture_workflow_persists_secondary_trading_facts_independently(self):
         text = (ROOT / ".github" / "workflows" / "capture-etf-order-flow.yml").read_text("utf-8")
@@ -74,6 +80,7 @@ class PostCloseWorkflowTests(unittest.TestCase):
         self.assertIn("python data_pipeline/update_daily_v3.py", text)
         self.assertIn("python data_pipeline/audit_snapshot_v7.py", text)
         self.assertIn("python data_pipeline/audit_precision_v7.py", text)
+        self.assertIn("python data_pipeline/audit_cumulative_precision_v7.py", text)
         self.assertNotIn("python data_pipeline/update_daily_v2.py", text)
 
 
