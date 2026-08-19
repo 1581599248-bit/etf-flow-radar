@@ -1,0 +1,74 @@
+name: Diagnose ETF publication 2026-08-18
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/diag-20260818.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      TZ: Asia/Shanghai
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: data_pipeline/requirements.txt
+      - run: pip install -r data_pipeline/requirements.txt
+      - name: Diagnose exact 2026-08-18 publication chain
+        shell: bash
+        run: |
+          set +e
+          python -m unittest discover -s data_pipeline -p "test_*.py" > /tmp/tests.log 2>&1
+          TESTS=$?
+          timeout 15m python data_pipeline/update_daily_v2.py --date 2026-08-18 > /tmp/build.log 2>&1
+          BUILD=$?
+          AUDIT=99
+          NPM=99
+          if [ "$BUILD" = "0" ]; then
+            python data_pipeline/audit_snapshot_v6.py > /tmp/audit.log 2>&1
+            AUDIT=$?
+            npm ci > /tmp/npmci.log 2>&1
+            if [ "$AUDIT" = "0" ]; then
+              npm test > /tmp/npmtest.log 2>&1
+              NPM=$?
+            fi
+          fi
+          set -e
+          mkdir -p diagnostics
+          {
+            echo "timestamp=$(date -Iseconds)"
+            echo "tests_exit=$TESTS"
+            echo "build_exit=$BUILD"
+            echo "audit_exit=$AUDIT"
+            echo "npm_test_exit=$NPM"
+            echo "=== TESTS ==="
+            tail -n 180 /tmp/tests.log 2>/dev/null || true
+            echo "=== BUILD ==="
+            tail -n 260 /tmp/build.log 2>/dev/null || true
+            echo "=== AUDIT ==="
+            tail -n 180 /tmp/audit.log 2>/dev/null || true
+            echo "=== NPM TEST ==="
+            tail -n 180 /tmp/npmtest.log 2>/dev/null || true
+          } > diagnostics/2026-08-18-publish.txt
+      - name: Commit diagnostic only
+        shell: bash
+        run: |
+          git config user.name "etf-flow-radar-bot"
+          git config user.email "etf-flow-radar-bot@users.noreply.github.com"
+          git add diagnostics/2026-08-18-publish.txt
+          git diff --cached --quiet && exit 0
+          git commit -m "diag: record 2026-08-18 publication trace"
+          git pull --rebase origin main
+          git push origin HEAD:main
