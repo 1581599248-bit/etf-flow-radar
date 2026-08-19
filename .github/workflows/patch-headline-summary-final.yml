@@ -1,0 +1,65 @@
+name: Apply final ETF headline summary placement
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/patch-headline-summary-final.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r data_pipeline/requirements.txt
+      - name: Patch headline only; move broad counts into existing fact card
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('data_pipeline/update_daily_v2.py')
+          s=p.read_text('utf-8')
+          s=s.replace('return "A股ETF盘中买卖力量基本均衡"','return "A股股票ETF盘中买卖力量基本均衡"')
+          s=s.replace('return f"A股ETF盘中{label}，主动买入净额{trade_value:.1f}亿元"','return f"A股股票ETF盘中{label}，主动买入净额{trade_value:.1f}亿元"')
+          s=s.replace('return f"A股ETF盘中{label}，主动卖出净额{abs(trade_value):.1f}亿元"','return f"A股股票ETF盘中{label}，主动卖出净额{abs(trade_value):.1f}亿元"')
+          s=s.replace('return f"A股ETF盘中主动买卖数据暂缺；{primary_text}，{motion_text}。"','return f"A股股票ETF盘中主动买卖数据暂缺；{primary_text}，{motion_text}。"')
+          old='snapshot.setdefault("conclusion", {})["headline"] = flow_headline + "\\n" + tail'
+          new='''facts = list(snapshot.setdefault("conclusion", {}).get("facts") or [])
+    broad_fact = f"宽基中{broad_out_count}个流出、{broad_in_count}个流入。"
+    if facts:
+        facts[0] = broad_fact + facts[0]
+    else:
+        facts = [broad_fact]
+    snapshot["conclusion"]["facts"] = facts
+    snapshot.setdefault("conclusion", {})["headline"] = flow_headline'''
+          assert old in s, 'headline target missing'
+          s=s.replace(old,new,1)
+          p.write_text(s,'utf-8')
+
+          # Keep deterministic headline tests aligned with the client wording/placement.
+          t=Path('data_pipeline/test_update_daily_v2.py')
+          x=t.read_text('utf-8')
+          x=x.replace('A股ETF盘中','A股股票ETF盘中')
+          # Existing test used startswith, so removing the tail does not weaken the flow-copy assertion.
+          t.write_text(x,'utf-8')
+          PY
+      - name: Run tests
+        run: python -m unittest discover -s data_pipeline -p "test_*.py"
+      - name: Commit narrow change
+        run: |
+          git config user.name "etf-flow-radar-bot"
+          git config user.email "etf-flow-radar-bot@users.noreply.github.com"
+          git add data_pipeline/update_daily_v2.py data_pipeline/test_update_daily_v2.py
+          git diff --cached --quiet && exit 0
+          git commit -m "fix: keep ETF market view in headline only"
+          git pull --rebase origin main
+          git push origin HEAD:main
