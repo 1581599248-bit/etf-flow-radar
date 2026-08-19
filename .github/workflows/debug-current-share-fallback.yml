@@ -1,0 +1,98 @@
+name: Inspect current ETF share fallback
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/debug-current-share-fallback.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r data_pipeline/requirements.txt
+      - name: Inspect Eastmoney latest-share timestamp and compare with 2026-08-17 official snapshot
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, math
+          from collections import Counter
+          from datetime import datetime
+          from pathlib import Path
+          import pandas as pd
+          import akshare as ak
+
+          spot = ak.fund_etf_spot_em().copy()
+          spot.columns = [str(c).strip() for c in spot.columns]
+          required = {'代码','名称','最新份额','数据日期','更新时间'}
+          missing = required - set(spot.columns)
+          if missing:
+              raise SystemExit(f'missing spot columns: {sorted(missing)}')
+          spot['代码'] = spot['代码'].astype(str).str.zfill(6)
+          spot['最新份额'] = pd.to_numeric(spot['最新份额'], errors='coerce')
+          spot['数据日期'] = spot['数据日期'].astype(str)
+          spot['更新时间'] = spot['更新时间'].astype(str)
+          sse = spot[spot['代码'].str.startswith('5')].dropna(subset=['最新份额']).copy()
+
+          prev = json.loads(Path('site/data/history/2026-08-17.json').read_text('utf-8'))
+          prev_rows = pd.DataFrame(prev.get('etfs', []))
+          prev_rows['code'] = prev_rows['code'].astype(str).str.zfill(6)
+          prev_rows['shares'] = pd.to_numeric(prev_rows['shares'], errors='coerce')
+          prev_sse = prev_rows[prev_rows['code'].str.startswith('5')][['code','shares']].dropna()
+          merged = prev_sse.merge(sse[['代码','最新份额','名称','数据日期','更新时间']], left_on='code', right_on='代码', how='inner')
+
+          candidates = [1.0,100.0,10000.0,1_000_000.0,100_000_000.0]
+          best = None
+          for scale in candidates:
+              rel = ((merged['最新份额']*scale)/merged['shares']-1).abs().replace([math.inf,-math.inf], pd.NA).dropna()
+              med = float(rel.median()) if len(rel) else None
+              if med is not None and (best is None or med < best[1]):
+                  best=(scale,med)
+          scale = best[0] if best else None
+          if scale:
+              merged['scaled_latest_shares'] = merged['最新份额']*scale
+              merged['change_vs_aug17_pct'] = (merged['scaled_latest_shares']/merged['shares']-1)*100
+          date_counts = Counter(sse['数据日期'])
+          update_prefix_counts = Counter(x[:10] for x in sse['更新时间'])
+          abs_changes = merged['change_vs_aug17_pct'].abs() if 'change_vs_aug17_pct' in merged else pd.Series(dtype=float)
+          out = {
+              'capturedAt': datetime.now().astimezone().isoformat(),
+              'akshareVersion': getattr(ak,'__version__','unknown'),
+              'spotCount': int(len(spot)),
+              'sseSpotShareCount': int(len(sse)),
+              'spotDataDateCounts': dict(date_counts),
+              'spotUpdateDateCounts': dict(update_prefix_counts),
+              'previousOfficialSseCount': int(len(prev_sse)),
+              'overlapCount': int(len(merged)),
+              'inferredScale': scale,
+              'medianRelativeDifferenceVsAug17': None if best is None else best[1],
+              'pctWithin1PctVsAug17': None if abs_changes.empty else float((abs_changes<=1).mean()*100),
+              'pctWithin5PctVsAug17': None if abs_changes.empty else float((abs_changes<=5).mean()*100),
+              'largestChangesVsAug17': [] if abs_changes.empty else merged.loc[abs_changes.nlargest(20).index, ['code','名称','shares','scaled_latest_shares','change_vs_aug17_pct','数据日期','更新时间']].to_dict('records'),
+              'samples': sse[['代码','名称','最新份额','数据日期','更新时间']].head(20).to_dict('records'),
+          }
+          Path('diagnostics').mkdir(exist_ok=True)
+          Path('diagnostics/current-share-fallback.json').write_text(json.dumps(out,ensure_ascii=False,indent=2), 'utf-8')
+          print(json.dumps(out,ensure_ascii=False,indent=2))
+          PY
+      - name: Commit diagnostic
+        run: |
+          git config user.name "etf-flow-radar-bot"
+          git config user.email "etf-flow-radar-bot@users.noreply.github.com"
+          git add diagnostics/current-share-fallback.json
+          git diff --cached --quiet && exit 0
+          git commit -m "diag: inspect current ETF share fallback"
+          git pull --rebase origin main
+          git push origin HEAD:main
