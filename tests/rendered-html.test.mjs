@@ -137,7 +137,8 @@ test("schema v6 separates primary subscription flow, secondary trading flow and 
 
   assert.match(snapshot.methodology.identity, /禁止据此推断/);
   assert.match(snapshot.methodology.flow, /T日单位净值/);
-  assert.match(snapshot.methodology.metricSeparation, /ETF份额较上一日/);
+  assert.match(snapshot.methodology.metricSeparation, /主动买卖净额/);
+  assert.match(snapshot.methodology.metricSeparation, /ETF份额对应资金/);
   assert.match(snapshot.methodology.sectorDisplay, /申万一级行业\+热门主题/);
   assert.match(snapshot.methodology.multiDay, /不是逐日净(?:申购|流入)额之和/);
   assert.match(snapshot.methodology.scope, /A股股票ETF/);
