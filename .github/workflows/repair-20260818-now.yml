@@ -1,5 +1,5 @@
 name: Repair 2026-08-18 ETF report now
-# One-shot repair after persistent official-share cache and SSE throttling fix.
+# Final one-shot repair after shared cache, SSE throttling and publisher serialization.
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: postclose-etf-publish-v2
+  group: etf-full-publish-v2
   cancel-in-progress: true
 
 jobs:
@@ -31,7 +31,7 @@ jobs:
           cache: pip
           cache-dependency-path: data_pipeline/requirements.txt
       - name: Restore verified official-share cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: .cache/exchange_shares
           key: etf-exchange-shares-v1-repair-${{ github.run_id }}
@@ -54,6 +54,12 @@ jobs:
             cat /tmp/repair.log
           } > diagnostics/repair-20260818.txt
           echo "code=$code" >> "$GITHUB_OUTPUT"
+      - name: Save verified official-share cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/exchange_shares
+          key: etf-exchange-shares-v1-repair-${{ github.run_id }}
       - name: Audit successful build
         if: steps.build.outputs.code == '0'
         run: |
@@ -70,7 +76,7 @@ jobs:
             git add site/data
             msg="data: repair and publish 2026-08-18 ETF report"
           else
-            msg="diag: capture cached 2026-08-18 publish failure"
+            msg="diag: capture serialized cached 2026-08-18 publish failure"
           fi
           git diff --cached --quiet && exit 0
           git commit -m "$msg"
