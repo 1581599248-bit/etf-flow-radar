@@ -9,12 +9,17 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import re
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SNAPSHOT = ROOT / "site" / "data" / "latest.json"
 TOL = 0.06
+
+# Headline strength thresholds live in the pipeline; importing keeps this audit
+# aligned with the client-facing copy instead of duplicating constants.
+from update_daily_v2 import _trade_strength  # noqa: E402
 
 
 def _num(value: Any, label: str) -> float:
@@ -27,14 +32,6 @@ def _close(left: Any, right: Any, label: str, tol: float = TOL) -> None:
     a, b = _num(left, f"{label}.left"), _num(right, f"{label}.right")
     if abs(a - b) > tol:
         raise AssertionError(f"{label} mismatch: {a} vs {b} (tol={tol})")
-
-
-def _flow_phrase(value: float) -> str:
-    if value > 0:
-        return f"净流入{value:.1f}亿元"
-    if value < 0:
-        return f"净流出{abs(value):.1f}亿元"
-    return "净额0.0亿元"
 
 
 def audit(snapshot_path: Path) -> list[str]:
@@ -177,9 +174,17 @@ def audit(snapshot_path: Path) -> list[str]:
 
     headline = str(snapshot.get("conclusion", {}).get("headline") or "")
     primary_value = _num(market.get("flow1d"), "market flow for headline")
-    expected_primary = f"ETF份额较上一日{_flow_phrase(primary_value)}。"
-    if expected_primary not in headline:
-        raise AssertionError(f"headline primary phrase mismatch; expected {expected_primary!r}")
+    # 措辞形容词（小幅/明显/大幅）随强度阈值调优可能变化，审计只对账数字与方向，
+    # 措辞本身以 update_daily_v2 的生成为准。
+    if primary_value == 0:
+        primary_pattern = r"ETF份额对应资金(?:基本持平|净额0\.0亿元)"
+    else:
+        primary_direction = "流入" if primary_value > 0 else "流出"
+        primary_pattern = (
+            rf"ETF份额对应资金(?:小幅|明显|大幅)?净{primary_direction}{abs(primary_value):.1f}亿元"
+        )
+    if not re.search(primary_pattern, headline):
+        raise AssertionError(f"headline primary phrase mismatch; expected /{primary_pattern}/")
     if "A股股票ETF当日合计" in headline:
         raise AssertionError("legacy primary headline wording leaked into client output")
     top_in = max(visible_sectors, key=lambda g: _num(g.get("flow1d"), "sector inflow rank"))
@@ -196,11 +201,29 @@ def audit(snapshot_path: Path) -> list[str]:
     if trade_metric.get("status") == "available":
         if trade_metric.get("tradeDate") != trade_date:
             raise AssertionError("secondary trading-flow date differs from snapshot trade date")
-        trade_value = _num(trade_metric.get("scopeTotals", {}).get("aShareStockEtf", {}).get("netFlow1d"), "A-share secondary trade flow")
-        expected_trade = f"A股ETF当日成交资金{_flow_phrase(trade_value)}；"
-        if not headline.startswith(expected_trade):
-            raise AssertionError(f"headline secondary flow mismatch; expected prefix {expected_trade!r}")
-    elif not headline.startswith("A股ETF当日成交资金暂无同日数据；"):
+        trade_scope = trade_metric.get("scopeTotals", {}).get("aShareStockEtf", {})
+        trade_value = _num(trade_scope.get("netFlow1d"), "A-share secondary trade flow")
+        raw_inflow = trade_scope.get("inflow1d")
+        raw_outflow = trade_scope.get("outflow1d")
+        trade_turnover = None
+        if (
+            isinstance(raw_inflow, (int, float))
+            and isinstance(raw_outflow, (int, float))
+            and math.isfinite(float(raw_inflow))
+            and math.isfinite(float(raw_outflow))
+        ):
+            trade_turnover = float(raw_inflow) + float(raw_outflow)
+        if _trade_strength(trade_value, trade_turnover) == "balanced":
+            trade_pattern = r"^A股ETF盘中买卖力量基本均衡；"
+        else:
+            trade_direction = "买入" if trade_value > 0 else "卖出"
+            trade_pattern = (
+                rf"^A股ETF盘中(?:买|卖)盘(?:小幅偏强|偏强|明显占优)，"
+                rf"主动{trade_direction}净额{abs(trade_value):.1f}亿元；"
+            )
+        if not re.search(trade_pattern, headline):
+            raise AssertionError(f"headline secondary flow mismatch; expected /{trade_pattern}/")
+    elif not headline.startswith("A股ETF盘中主动买卖数据暂缺；"):
         raise AssertionError("unavailable secondary flow is not labelled as unavailable")
     checks.append("client headline uses the same displayed data layer")
 

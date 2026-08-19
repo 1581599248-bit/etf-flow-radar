@@ -2,7 +2,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const flowPhrase = (value) => value > 0 ? `净流入${value.toFixed(1)}亿元` : value < 0 ? `净流出${Math.abs(value).toFixed(1)}亿元` : "净额0.0亿元";
+// 校验原则：文案中的数字与方向必须能对回快照数据；
+// 强度形容词（小幅/明显/大幅/偏强/明显占优）随阈值调优可能变化，不写死。
+const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 test("dashboard source retains the answer-first research modules", async () => {
   const page = await readFile("site/index.html", "utf8");
@@ -111,8 +113,11 @@ test("schema v6 separates primary subscription flow, secondary trading flow and 
   assert.ok(Math.abs(sectorRecon.difference) <= 0.06);
   assert.ok(Math.abs(sectorRecon.visibleGroupFlow1d - sectorRecon.industryRollupFlow1d) <= 0.06);
 
-  const expectedPrimary = `ETF份额较上一日${flowPhrase(snapshot.market.flow1d)}。`;
-  assert.match(snapshot.conclusion.headline, new RegExp(expectedPrimary.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  const primaryValue = snapshot.market.flow1d;
+  const primaryPattern = primaryValue === 0
+    ? /ETF份额对应资金(?:基本持平|净额0\.0亿元)/
+    : new RegExp(`ETF份额对应资金(?:小幅|明显|大幅)?净${primaryValue > 0 ? "流入" : "流出"}${escapeRegExp(Math.abs(primaryValue).toFixed(1))}亿元`);
+  assert.match(snapshot.conclusion.headline, primaryPattern);
   assert.doesNotMatch(snapshot.conclusion.headline, /A股股票ETF当日合计/);
   assert.match(snapshot.conclusion.headline, /申万一级和主题行业/);
   assert.match(snapshot.conclusion.headline, new RegExp(`流出最多的是${topSectorOut.name}`));
@@ -122,7 +127,12 @@ test("schema v6 separates primary subscription flow, secondary trading flow and 
   if (trade.status === "available") {
     assert.equal(trade.tradeDate, snapshot.tradeDate);
     const tradeValue = trade.scopeTotals.aShareStockEtf.netFlow1d;
-    assert.ok(snapshot.conclusion.headline.startsWith(`A股ETF当日成交资金${flowPhrase(tradeValue)}；`));
+    const tradePattern = new RegExp(
+      `^A股ETF盘中(?:买卖力量基本均衡|(?:买|卖)盘(?:小幅偏强|偏强|明显占优)，主动${tradeValue > 0 ? "买入" : "卖出"}净额${escapeRegExp(Math.abs(tradeValue).toFixed(1))}亿元)；`
+    );
+    assert.match(snapshot.conclusion.headline, tradePattern);
+  } else {
+    assert.ok(snapshot.conclusion.headline.startsWith("A股ETF盘中主动买卖数据暂缺；"));
   }
 
   assert.match(snapshot.methodology.identity, /禁止据此推断/);
