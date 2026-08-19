@@ -17,6 +17,7 @@ import pandas as pd
 
 import update_daily as base
 import update_daily_guarded as guarded
+import historical_nav_fallback
 
 _ORIG_FETCH_SSE_SHARES = base.fetch_sse_shares
 
@@ -105,6 +106,9 @@ def resilient_fetch_sse_shares(day: date) -> pd.DataFrame:
 def install_resilient_sources() -> None:
     base.fetch_sse_shares = resilient_fetch_sse_shares
     guarded.install_guards()
+    # The guarded source is a same-day realtime feed.  Keep it first, but make
+    # historical rebuilds recoverable after that feed's publication window.
+    base.fetch_reference_prices = historical_nav_fallback.fetch_reference_prices
 
 
 def main() -> int:
