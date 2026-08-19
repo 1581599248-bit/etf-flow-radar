@@ -1,5 +1,5 @@
 name: Publish ETF report after close
-# Publisher schema: v6.  Exchange-share history is cached between runs so each
+# Publisher schema: v6. Exchange-share history is cached between runs so each
 # new report normally fetches only dates that have not already been verified.
 
 on:
@@ -32,7 +32,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: postclose-etf-publish-v2
+  group: etf-full-publish-v2
   cancel-in-progress: true
 
 jobs:
@@ -53,7 +53,7 @@ jobs:
           cache: pip
           cache-dependency-path: data_pipeline/requirements.txt
       - name: Restore verified official-share cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: .cache/exchange_shares
           key: etf-exchange-shares-v1-${{ github.run_id }}
@@ -95,7 +95,14 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          timeout 18m python data_pipeline/update_daily_v2.py --date "${{ steps.trade.outputs.trade_date }}" 2>&1 | tee /tmp/etf-publish.log
+          timeout 20m python data_pipeline/update_daily_v2.py --date "${{ steps.trade.outputs.trade_date }}" 2>&1 | tee /tmp/etf-publish.log
+
+      - name: Save verified official-share cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/exchange_shares
+          key: etf-exchange-shares-v1-${{ github.run_id }}
 
       - name: Run external-send reconciliation audit
         if: steps.build.outcome == 'success'
@@ -122,7 +129,7 @@ jobs:
         shell: bash
         run: |
           echo "Full report for ${{ steps.trade.outputs.trade_date }} is not publishable yet." >> "$GITHUB_STEP_SUMMARY"
-          echo "The captured trading-flow fact remains intact. Verified exchange-share dates fetched in this run are retained in the Actions cache for the next retry." >> "$GITHUB_STEP_SUMMARY"
+          echo "The captured trading-flow fact remains intact. Verified exchange-share dates fetched in this run are retained in the shared Actions cache for the next retry." >> "$GITHUB_STEP_SUMMARY"
           echo '```text' >> "$GITHUB_STEP_SUMMARY"
           tail -n 80 /tmp/etf-publish.log >> "$GITHUB_STEP_SUMMARY" || true
           echo '```' >> "$GITHUB_STEP_SUMMARY"
