@@ -41,7 +41,8 @@ def _ths_exact_date_nav(day: date) -> pd.DataFrame:
     ].drop_duplicates("code", keep="last")
     if out.empty:
         raise ValueError(f"THS exact-date NAV fallback has no rows for {day.isoformat()}")
-    out["reference_price_type"] = "NAV_THS_EXACT_DATE"
+    # Preserve the existing public schema: the valuation type is still NAV.
+    out["reference_price_type"] = "NAV"
     return out[["code", "price_name", "reference_price", "reference_price_type"]]
 
 
