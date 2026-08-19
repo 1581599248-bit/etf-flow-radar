@@ -12,6 +12,8 @@ on:
       - main
     paths:
       - ".github/workflows/daily-etf-data.yml"
+      - "data_pipeline/update_daily_resilient.py"
+      - "data_pipeline/update_daily_v2.py"
   workflow_dispatch:
     inputs:
       trade_date:
