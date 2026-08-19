@@ -1,4 +1,5 @@
 name: Repair 2026-08-18 ETF report now
+# Explicit retrigger after SSE transport repair.
 
 on:
   push:
