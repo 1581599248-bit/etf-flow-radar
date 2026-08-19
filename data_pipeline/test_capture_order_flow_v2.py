@@ -19,6 +19,8 @@ class CaptureOrderFlowV2Tests(unittest.TestCase):
             "外盘": [60.0] * rows,
             "内盘": [40.0] * rows,
             "数据日期": [day.isoformat()] * rows,
+            "最新份额": [1_000_000_000.0 + i for i in range(rows)],
+            "更新时间": [f"{day.isoformat()} 15:35:00+08:00"] * rows,
         })
         with patch.object(capture, "_is_exchange_session", return_value=True), patch.object(
             capture.base, "retry", return_value=spot
@@ -31,6 +33,11 @@ class CaptureOrderFlowV2Tests(unittest.TestCase):
         self.assertEqual(payload["etfs"][0]["tradeOutflow1d"], 0.4)
         self.assertEqual(payload["etfs"][0]["tradeNetFlow1d"], 0.2)
         self.assertEqual(payload["totalTradeNetFlow1d"], 100.0)
+        self.assertEqual(payload["shareObservation"]["status"], "available")
+        self.assertEqual(payload["shareObservation"]["rowCount"], rows)
+        self.assertEqual(payload["etfs"][0]["latestShares"], 1_000_000_000.0)
+        self.assertEqual(payload["etfs"][0]["shareDataDate"], day.isoformat())
+        self.assertIn("15:35:00", payload["etfs"][0]["shareUpdatedAt"])
 
 
 if __name__ == "__main__":
