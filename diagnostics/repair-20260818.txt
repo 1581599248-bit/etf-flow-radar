@@ -1,0 +1,14 @@
+exit_code=1
+timestamp=2026-08-19T14:27:59+08:00
+--- log ---
+[warn] maintained SSE ETF share adapter failed: Expecting value: line 1 column 1 (char 0)
+[warn] browser-session SSE ETF share adapter failed: 403 Client Error: Forbidden for url: https://query.sse.com.cn/commonQuery.do?isPagination=true&pageHelp.pageSize=1000&pageHelp.pageNo=1&pageHelp.beginPage=1&pageHelp.cacheSize=1&pageHelp.endPage=1&sqlId=COMMON_SSE_ZQPZ_ETFZL_XXPL_ETFGM_SEARCH_L&STAT_DATE=2026-08-18&_=1787120808196
+[warn] maintained SSE ETF share adapter failed: Expecting value: line 1 column 1 (char 0)
+[warn] browser-session SSE ETF share adapter failed: 403 Client Error: Forbidden for url: https://query.sse.com.cn/commonQuery.do?isPagination=true&pageHelp.pageSize=1000&pageHelp.pageNo=1&pageHelp.beginPage=1&pageHelp.cacheSize=1&pageHelp.endPage=1&sqlId=COMMON_SSE_ZQPZ_ETFZL_XXPL_ETFGM_SEARCH_L&STAT_DATE=2026-08-18&_=1787120818042
+[warn] maintained SSE ETF share adapter failed: Expecting value: line 1 column 1 (char 0)
+[warn] browser-session SSE ETF share adapter failed: 403 Client Error: Forbidden for url: https://query.sse.com.cn/commonQuery.do?isPagination=true&pageHelp.pageSize=1000&pageHelp.pageNo=1&pageHelp.beginPage=1&pageHelp.cacheSize=1&pageHelp.endPage=1&sqlId=COMMON_SSE_ZQPZ_ETFZL_XXPL_ETFGM_SEARCH_L&STAT_DATE=2026-08-18&_=1787120829927
+[warn] maintained SSE ETF share adapter failed: Expecting value: line 1 column 1 (char 0)
+[warn] browser-session SSE ETF share adapter failed: 403 Client Error: Forbidden for url: https://query.sse.com.cn/commonQuery.do?isPagination=true&pageHelp.pageSize=1000&pageHelp.pageNo=1&pageHelp.beginPage=1&pageHelp.cacheSize=1&pageHelp.endPage=1&sqlId=COMMON_SSE_ZQPZ_ETFZL_XXPL_ETFGM_SEARCH_L&STAT_DATE=2026-08-18&_=1787120846088
+[warn] maintained SSE ETF share adapter failed: Expecting value: line 1 column 1 (char 0)
+[warn] browser-session SSE ETF share adapter failed: 403 Client Error: Forbidden for url: https://query.sse.com.cn/commonQuery.do?isPagination=true&pageHelp.pageSize=1000&pageHelp.pageNo=1&pageHelp.beginPage=1&pageHelp.cacheSize=1&pageHelp.endPage=1&sqlId=COMMON_SSE_ZQPZ_ETFZL_XXPL_ETFGM_SEARCH_L&STAT_DATE=2026-08-18&_=1787120877395
+UPDATE FAILED: SSE ETF shares failed after 5 attempts: all SSE ETF-share transports failed; maintained=Expecting value: line 1 column 1 (char 0); browser=403 Client Error: Forbidden for url: https://query.sse.com.cn/commonQuery.do?isPagination=true&pageHelp.pageSize=1000&pageHelp.pageNo=1&pageHelp.beginPage=1&pageHelp.cacheSize=1&pageHelp.endPage=1&sqlId=COMMON_SSE_ZQPZ_ETFZL_XXPL_ETFGM_SEARCH_L&STAT_DATE=2026-08-18&_=1787120877395; legacy=403 Client Error: Forbidden for url: https://query.sse.com.cn/commonQuery.do?isPagination=true&pageHelp.pageSize=10000&pageHelp.pageNo=1&pageHelp.beginPage=1&pageHelp.cacheSize=1&pageHelp.endPage=1&sqlId=COMMON_SSE_ZQPZ_ETFZL_XXPL_ETFGM_SEARCH_L&STAT_DATE=2026-08-18
