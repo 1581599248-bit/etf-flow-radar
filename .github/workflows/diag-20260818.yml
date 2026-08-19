@@ -12,7 +12,7 @@ permissions:
 jobs:
   diagnose:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 8
     env:
       TZ: Asia/Shanghai
     steps:
@@ -23,52 +23,38 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: pip
-          cache-dependency-path: data_pipeline/requirements.txt
       - run: pip install -r data_pipeline/requirements.txt
-      - name: Diagnose exact 2026-08-18 publication chain
+      - name: Test official SSE browser-session transport only
         shell: bash
         run: |
           set +e
-          python -m unittest discover -s data_pipeline -p "test_*.py" > /tmp/tests.log 2>&1
-          TESTS=$?
-          timeout 15m python data_pipeline/update_daily_v2.py --date 2026-08-18 > /tmp/build.log 2>&1
-          BUILD=$?
-          AUDIT=99
-          NPM=99
-          if [ "$BUILD" = "0" ]; then
-            python data_pipeline/audit_snapshot_v6.py > /tmp/audit.log 2>&1
-            AUDIT=$?
-            npm ci > /tmp/npmci.log 2>&1
-            if [ "$AUDIT" = "0" ]; then
-              npm test > /tmp/npmtest.log 2>&1
-              NPM=$?
-            fi
-          fi
+          PYTHONPATH=data_pipeline python - <<'PY' > /tmp/sse.log 2>&1
+          from datetime import date
+          import update_daily_resilient as r
+          day = date(2026, 8, 18)
+          try:
+              frame = r._browser_session_sse_shares(day)
+              print(f"status=success rows={len(frame)} date={sorted(frame['统计日期'].unique())[:3]} unit={frame.attrs.get('share_unit_normalization')}")
+              print(frame[['基金代码','基金简称','基金份额']].head(5).to_string(index=False))
+          except Exception as exc:
+              print(f"status=failed type={type(exc).__name__} error={exc}")
+              raise
+          PY
+          code=$?
           set -e
           mkdir -p diagnostics
           {
             echo "timestamp=$(date -Iseconds)"
-            echo "tests_exit=$TESTS"
-            echo "build_exit=$BUILD"
-            echo "audit_exit=$AUDIT"
-            echo "npm_test_exit=$NPM"
-            echo "=== TESTS ==="
-            tail -n 180 /tmp/tests.log 2>/dev/null || true
-            echo "=== BUILD ==="
-            tail -n 260 /tmp/build.log 2>/dev/null || true
-            echo "=== AUDIT ==="
-            tail -n 180 /tmp/audit.log 2>/dev/null || true
-            echo "=== NPM TEST ==="
-            tail -n 180 /tmp/npmtest.log 2>/dev/null || true
-          } > diagnostics/2026-08-18-publish.txt
-      - name: Commit diagnostic only
+            echo "exit_code=$code"
+            cat /tmp/sse.log
+          } > diagnostics/2026-08-18-sse-transport.txt
+      - name: Commit transport diagnostic
         shell: bash
         run: |
           git config user.name "etf-flow-radar-bot"
           git config user.email "etf-flow-radar-bot@users.noreply.github.com"
-          git add diagnostics/2026-08-18-publish.txt
+          git add diagnostics/2026-08-18-sse-transport.txt
           git diff --cached --quiet && exit 0
-          git commit -m "diag: record 2026-08-18 publication trace"
+          git commit -m "diag: record SSE transport result"
           git pull --rebase origin main
           git push origin HEAD:main
