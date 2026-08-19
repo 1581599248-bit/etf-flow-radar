@@ -1,0 +1,58 @@
+name: Inspect Eastmoney ETF historical share fields
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/debug-eastmoney-historical-share.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests pandas
+      - name: Inspect raw historical quote payload
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import requests
+
+          out={}
+          for code in ['510300','588000','512000','512100']:
+              market='1' if code.startswith('5') else '0'
+              params={
+                'fields1':'f1,f2,f3,f4,f5,f6',
+                'fields2':'f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f116,f117,f20,f21,f38',
+                'ut':'7eea3edcaed734bea9cbfc24409ed989',
+                'klt':'101','fqt':'0','beg':'20260814','end':'20260819',
+                'secid':f'{market}.{code}',
+              }
+              r=requests.get('https://push2his.eastmoney.com/api/qt/stock/kline/get',params=params,timeout=20)
+              out[code]={'status':r.status_code,'url':r.url,'json':r.json() if r.ok else r.text[:500]}
+          Path('diagnostics').mkdir(exist_ok=True)
+          Path('diagnostics/eastmoney-historical-share-fields.json').write_text(json.dumps(out,ensure_ascii=False,indent=2),'utf-8')
+          print(json.dumps(out,ensure_ascii=False,indent=2))
+          PY
+      - name: Commit diagnostic
+        run: |
+          git config user.name "etf-flow-radar-bot"
+          git config user.email "etf-flow-radar-bot@users.noreply.github.com"
+          git add diagnostics/eastmoney-historical-share-fields.json
+          git diff --cached --quiet && exit 0
+          git commit -m "diag: inspect Eastmoney historical ETF share fields"
+          git pull --rebase origin main
+          git push origin HEAD:main
