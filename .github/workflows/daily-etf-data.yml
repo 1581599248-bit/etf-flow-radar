@@ -2,7 +2,6 @@ name: Daily ETF data
 
 on:
   schedule:
-    - cron: "*/5 5-6 * * 1-5" # temporary catch-up window: 13:00-14:59 Asia/Shanghai
     - cron: "0 21 * * 1-5"  # 05:00 Asia/Shanghai, Tuesday-Saturday
     - cron: "0 22 * * 1-5"  # 06:00 Asia/Shanghai, Tuesday-Saturday
     - cron: "0 23 * * 1-5"  # 07:00 Asia/Shanghai, Tuesday-Saturday
@@ -25,7 +24,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: daily-etf-data
+  group: etf-full-publish-v2
   cancel-in-progress: true
 
 jobs:
@@ -44,6 +43,13 @@ jobs:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: data_pipeline/requirements.txt
+      - name: Restore verified official-share cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache/exchange_shares
+          key: etf-exchange-shares-v1-${{ github.run_id }}
+          restore-keys: |
+            etf-exchange-shares-v1-
       - run: pip install -r data_pipeline/requirements.txt
       - name: Resolve target trade date
         id: trade
@@ -73,7 +79,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          python data_pipeline/update_daily_v2.py --date "${{ steps.trade.outputs.trade_date }}" > /tmp/etf-build.log 2>&1
+          timeout 20m python data_pipeline/update_daily_v2.py --date "${{ steps.trade.outputs.trade_date }}" > /tmp/etf-build.log 2>&1
           code=$?
           set -e
           echo "exit_code=${code}" >> "$GITHUB_OUTPUT"
@@ -87,6 +93,12 @@ jobs:
               cat /tmp/etf-build.log
             } > diagnostics/latest-etf-publish-failure.txt
           fi
+      - name: Save verified official-share cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/exchange_shares
+          key: etf-exchange-shares-v1-${{ github.run_id }}
       - name: Run external-send reconciliation audit
         if: steps.build.outputs.exit_code == '0'
         run: python data_pipeline/audit_snapshot_v6.py
