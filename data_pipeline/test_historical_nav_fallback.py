@@ -38,7 +38,7 @@ class HistoricalNavFallbackTests(unittest.TestCase):
         ), patch.object(fallback.base.ak, "fund_etf_category_ths", return_value=ths_frame):
             result = fallback.fetch_reference_prices(day)
         self.assertEqual(set(result["code"]), {"510300", "588000"})
-        self.assertEqual(set(result["reference_price_type"]), {"NAV_THS_EXACT_DATE"})
+        self.assertEqual(set(result["reference_price_type"]), {"NAV"})
         self.assertAlmostEqual(float(result.loc[result["code"] == "510300", "reference_price"].iloc[0]), 4.2)
 
     def test_fallback_rejects_wrong_query_date(self):
