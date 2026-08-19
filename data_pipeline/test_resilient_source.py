@@ -47,7 +47,11 @@ class ResilientSseSourceTests(unittest.TestCase):
             "统计日期": ["2026-08-14"] * 10,
             "基金份额": [500_000_000.0 + i * 500_000_000.0 for i in range(10)],
         })
-        with patch.object(resilient.base.ak, "fund_etf_scale_sse", return_value=raw), patch.object(
+        # 浏览器通道是否真实联网取决于运行环境，必须 mock 掉，
+        # 否则 SSE 可达的环境下测试会误用真实数据而失败。
+        with patch.object(
+            resilient, "_browser_session_sse_shares", side_effect=RuntimeError("browser transport down")
+        ), patch.object(resilient.base.ak, "fund_etf_scale_sse", return_value=raw), patch.object(
             resilient, "_ORIG_FETCH_SSE_SHARES"
         ) as legacy:
             out = resilient.resilient_fetch_sse_shares(day)

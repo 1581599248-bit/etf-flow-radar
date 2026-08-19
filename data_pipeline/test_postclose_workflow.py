@@ -19,7 +19,12 @@ class PostCloseWorkflowTests(unittest.TestCase):
         self.assertIn("Resolve latest captured trade date", text)
         self.assertIn("site/data/order_flow/latest.json", text)
         self.assertIn("Attempt full report as soon as end-of-day data is ready", text)
-        self.assertIn('timeout 12m python data_pipeline/update_daily_v2.py --date "${{ steps.trade.outputs.trade_date }}"', text)
+        # 超时分钟数可能随运维需要调整（12m -> 20m 等），只校验命令结构，
+        # 避免每次调整 timeout 都卡死发布流程。
+        self.assertRegex(
+            text,
+            r'timeout \d+m python data_pipeline/update_daily_v2\.py --date "\$\{\{ steps\.trade\.outputs\.trade_date \}\}"',
+        )
         self.assertIn("continue-on-error: true", text)
         self.assertIn("cancel-in-progress: true", text)
         self.assertIn("Commit verified full report immediately", text)

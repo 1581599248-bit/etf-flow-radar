@@ -17,6 +17,7 @@ back through the same date/schema/count validation used for live official data.
 from __future__ import annotations
 
 import json
+import random
 import time
 from datetime import date
 from pathlib import Path
@@ -49,6 +50,13 @@ _SSE_MAX_REASONABLE_P99_INDIVIDUAL = 10_000_000_000_000.0
 _SSE_SESSION: requests.Session | None = None
 _SSE_LAST_REQUEST_AT = 0.0
 _SSE_MIN_REQUEST_INTERVAL = 1.25
+
+# The SSE WAF hands out 403/429 bans that last minutes, not seconds.  Short
+# backoffs just extend the ban, so wait long enough for the ban window to
+# lapse between attempts.  Retry-After, when present, takes precedence.
+_SSE_BAN_BACKOFF_SECONDS = (30.0, 90.0, 180.0)
+_SSE_BAN_BACKOFF_CAP = 300.0
+_SSE_ERROR_BACKOFF_SECONDS = (5.0, 15.0, 40.0)
 
 
 def _normalize_share_units(values: pd.Series) -> tuple[pd.Series, str]:
@@ -164,6 +172,16 @@ def _throttle_sse() -> None:
     _SSE_LAST_REQUEST_AT = time.monotonic()
 
 
+def _ban_backoff(attempt: int, response: requests.Response) -> float:
+    """Seconds to wait after a 403/429 ban; honors Retry-After when present."""
+    delay = _SSE_BAN_BACKOFF_SECONDS[min(attempt, len(_SSE_BAN_BACKOFF_SECONDS)) - 1]
+    retry_after = response.headers.get("Retry-After", "").strip()
+    if retry_after.isdigit():
+        delay = max(delay, min(float(retry_after), _SSE_BAN_BACKOFF_CAP))
+    # Small jitter so concurrent serialized runs do not retry in lockstep.
+    return delay + random.uniform(0.0, 5.0)
+
+
 def _browser_session_sse_shares(day: date) -> pd.DataFrame:
     """Fetch one exact official SSE date using a persistent browser session."""
     params = {
@@ -186,7 +204,13 @@ def _browser_session_sse_shares(day: date) -> pd.DataFrame:
             if response.status_code in {403, 429}:
                 errors.append(f"attempt {attempt}: HTTP {response.status_code}")
                 if attempt < 4:
-                    time.sleep((3, 8, 18)[attempt - 1])
+                    delay = _ban_backoff(attempt, response)
+                    print(
+                        f"[warn] SSE WAF ban (HTTP {response.status_code}); "
+                        f"backing off {delay:.0f}s before attempt {attempt + 1}",
+                        file=base.sys.stderr,
+                    )
+                    time.sleep(delay)
                     continue
             response.raise_for_status()
             payload = _extract_sse_payload(response)
@@ -207,7 +231,7 @@ def _browser_session_sse_shares(day: date) -> pd.DataFrame:
         except Exception as exc:
             errors.append(f"attempt {attempt}: {exc}")
             if attempt < 4:
-                time.sleep((2, 5, 12)[attempt - 1])
+                time.sleep(_SSE_ERROR_BACKOFF_SECONDS[attempt - 1] + random.uniform(0.0, 3.0))
     raise RuntimeError("; ".join(errors[-4:]))
 
 
