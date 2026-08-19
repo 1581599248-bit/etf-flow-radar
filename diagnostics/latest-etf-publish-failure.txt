@@ -1,0 +1,10 @@
+trade_date=2026-08-18
+generated_at=2026-08-19T13:57:09+08:00
+exit_code=1
+--- build log ---
+[warn] maintained SSE ETF share adapter failed: Expecting value: line 1 column 1 (char 0)
+[warn] maintained SSE ETF share adapter failed: Expecting value: line 1 column 1 (char 0)
+[warn] maintained SSE ETF share adapter failed: Expecting value: line 1 column 1 (char 0)
+[warn] maintained SSE ETF share adapter failed: Expecting value: line 1 column 1 (char 0)
+[warn] maintained SSE ETF share adapter failed: Expecting value: line 1 column 1 (char 0)
+UPDATE FAILED: SSE ETF shares failed after 5 attempts: both SSE ETF-share transports failed; maintained=Expecting value: line 1 column 1 (char 0); legacy=403 Client Error: Forbidden for url: https://query.sse.com.cn/commonQuery.do?isPagination=true&pageHelp.pageSize=10000&pageHelp.pageNo=1&pageHelp.beginPage=1&pageHelp.cacheSize=1&pageHelp.endPage=1&sqlId=COMMON_SSE_ZQPZ_ETFZL_XXPL_ETFGM_SEARCH_L&STAT_DATE=2026-08-18
