@@ -1,5 +1,5 @@
 trade_date=2026-08-18
-generated_at=2026-08-19T13:57:09+08:00
+generated_at=2026-08-19T14:04:05+08:00
 exit_code=1
 --- build log ---
 [warn] maintained SSE ETF share adapter failed: Expecting value: line 1 column 1 (char 0)
