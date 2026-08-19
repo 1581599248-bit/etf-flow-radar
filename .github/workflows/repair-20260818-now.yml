@@ -1,5 +1,5 @@
 name: Repair 2026-08-18 ETF report now
-# Explicit retrigger after SSE transport repair.
+# One-shot repair after persistent official-share cache and SSE throttling fix.
 
 on:
   push:
@@ -10,10 +10,14 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: postclose-etf-publish-v2
+  cancel-in-progress: true
+
 jobs:
   repair:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     env:
       TZ: Asia/Shanghai
     steps:
@@ -26,13 +30,20 @@ jobs:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: data_pipeline/requirements.txt
+      - name: Restore verified official-share cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/exchange_shares
+          key: etf-exchange-shares-v1-repair-${{ github.run_id }}
+          restore-keys: |
+            etf-exchange-shares-v1-
       - run: pip install -r data_pipeline/requirements.txt
       - name: Run 2026-08-18 pipeline and capture result
         id: build
         shell: bash
         run: |
           set +e
-          timeout 18m python data_pipeline/update_daily_v2.py --date 2026-08-18 > /tmp/repair.log 2>&1
+          timeout 20m python data_pipeline/update_daily_v2.py --date 2026-08-18 > /tmp/repair.log 2>&1
           code=$?
           set -e
           mkdir -p diagnostics
@@ -59,7 +70,7 @@ jobs:
             git add site/data
             msg="data: repair and publish 2026-08-18 ETF report"
           else
-            msg="diag: capture exact 2026-08-18 publish failure"
+            msg="diag: capture cached 2026-08-18 publish failure"
           fi
           git diff --cached --quiet && exit 0
           git commit -m "$msg"
