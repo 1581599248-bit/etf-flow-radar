@@ -237,10 +237,32 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertNotIn("申万一级和主题行业", headline)
         self.assertNotIn("A股股票ETF当日合计", headline)
         self.assertNotIn("流出最多的是电子", headline)
-        self.assertIn("净流出最多为半导体-23.4亿", snapshot["conclusion"]["facts"][1])
+        self.assertIn("净流出最多为半导体-23.4亿", snapshot["conclusion"]["facts"][2])
         self.assertIn("净流入居前为传媒+1.8亿", snapshot["conclusion"]["facts"][1])
         self.assertIn("宽基2组中1个流出、1个流入", snapshot["conclusion"]["facts"][0])
         self.assertIn("流出仅沪深300-3.0亿", snapshot["conclusion"]["facts"][0])
+
+    def test_homepage_summary_has_four_fixed_data_modules(self):
+        snapshot = {
+            "market": {"flow1d": 1.0, "aum": 20000.0},
+            "groups": self._groups() + [{"id": "value", "name": "价值", "kind": "style", "flow1d": 2.0}],
+            "etfs": [
+                {"name": "ETF甲", "flow1d": 3.0},
+                {"name": "ETF乙", "flow1d": -4.0},
+            ],
+            "flowMetrics": {"secondaryMarketTradeFlow": {"scopeTotals": {"aShareStockEtf": {
+                "netFlow1d": 0.0, "inflow1d": 100.0, "outflow1d": 100.0,
+            }}}},
+        }
+        with patch.object(v2.production, "_regenerate_conclusion", side_effect=self._legacy_conclusion):
+            v2._regenerate_v2_conclusion(snapshot)
+        facts = snapshot["conclusion"]["facts"]
+        self.assertEqual(len(facts), 4)
+        self.assertIn("宽基", facts[0])
+        self.assertIn("价值+2.0亿", facts[1])
+        self.assertIn("半导体-23.4亿", facts[2])
+        self.assertIn("ETF甲+3.0亿", facts[3])
+        self.assertIn("ETF乙-4.0亿", facts[3])
 
     def test_homepage_headline_keeps_primary_share_flow_when_secondary_is_missing(self):
         snapshot = {
