@@ -161,6 +161,52 @@ class UpdateDailyV2Tests(unittest.TestCase):
             with self.subTest(trade_value=trade_value, primary_value=primary_value):
                 self.assertEqual(v2._market_flow_headline(trade_value, primary_value, turnover, aum), expected)
 
+    def test_market_flow_headline_calibrates_every_strength_and_direction_regime(self):
+        trade_cases = [
+            ("balanced", 0.0, 2000.0),
+            ("small_in", 20.0, 2000.0),
+            ("small_out", -20.0, 2000.0),
+            ("clear_in", 80.0, 2000.0),
+            ("clear_out", -80.0, 2000.0),
+            ("large_in", 150.0, 2000.0),
+            ("large_out", -150.0, 2000.0),
+            ("generic_in", 20.0, None),
+            ("generic_out", -20.0, None),
+        ]
+        primary_cases = [
+            ("flat", 0.0, 20000.0),
+            ("small_in", 20.0, 20000.0),
+            ("small_out", -20.0, 20000.0),
+            ("clear_in", 60.0, 20000.0),
+            ("clear_out", -60.0, 20000.0),
+            ("large_in", 120.0, 20000.0),
+            ("large_out", -120.0, 20000.0),
+            ("generic_in", 20.0, None),
+            ("generic_out", -20.0, None),
+        ]
+        prohibited = ("资金离场", "持续撤离", "有资金借反弹离场", "护盘")
+        for trade_name, trade_value, turnover in trade_cases:
+            for primary_name, primary_value, aum in primary_cases:
+                with self.subTest(trade=trade_name, primary=primary_name):
+                    headline = v2._market_flow_headline(trade_value, primary_value, turnover, aum)
+                    self.assertIn("\n—— ", headline)
+                    self.assertFalse(any(text in headline for text in prohibited))
+                    if primary_name.startswith("small"):
+                        self.assertIn("小幅", headline)
+                        self.assertFalse(any(text in headline for text in ("大额", "明显转弱", "连续赎回")))
+                    if "generic" in trade_name or "generic" in primary_name:
+                        self.assertIn("缺少可比规模基准", headline)
+
+        for primary_name, primary_value, aum in primary_cases:
+            with self.subTest(trade="missing", primary=primary_name):
+                headline = v2._market_flow_headline(None, primary_value, None, aum)
+                self.assertIn("\n—— ", headline)
+                self.assertFalse(any(text in headline for text in prohibited))
+                if primary_name.startswith("small"):
+                    self.assertIn("单日变动有限", headline)
+                if primary_name.startswith("generic"):
+                    self.assertIn("缺少可比规模基准", headline)
+
     def test_homepage_headline_uses_strength_copy_and_visible_sector_layer(self):
         snapshot = {
             "market": {
