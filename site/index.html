@@ -127,9 +127,93 @@
 
   function openDrawer(data,id){const r=data.groups.find(x=>x.id===id),etfs=data.etfs.filter(x=>x.groupId===id);$("#drawer").innerHTML=`<div class="drawer-bg"><button class="drawer-mask" aria-label="关闭"></button><aside class="drawer"><button class="drawer-close">×</button><span>${groupTag(r)} OBSERVATION GROUP</span><h2>${r.name}</h2><div class="drawer-kpis"><article><span>组内ETF参考规模</span><b>${r.aum.toFixed(1)}亿</b></article><article><span>纳入分析ETF</span><b>${etfs.length}只</b></article><article><span>1日资金变化</span><b class="${tone(r.flow1d)}">${money(r.flow1d)}</b></article><article><span>5日累计</span><b class="${tone(r.flow5d)}">${money(r.flow5d)}</b></article><article><span>20日相对收益</span><b class="${tone(r.relativeReturn20d)}">${pct(r.relativeReturn20d)}</b></article></div><div class="drawer-answer"><b>${r.priceFlowState}</b><p>5日资金变化率 ${pct(flowRate(r))}，ETF份额 ${countText(r,"5d")}；当日最大单只产品贡献 ${r.concentration1d.toFixed(1)}%。${r.concentration1d>70?"变化主要来自少数产品，板块代表性较弱。":"变化未明显集中于单只产品。"}</p></div><h3>组内全部ETF（按当日绝对变化排序，共${etfs.length}只）</h3><div class="etf-table">${etfs.map(e=>`<div><span><b>${e.name}</b><small>${e.code} · ${priceTypeName[e.referencePriceType]||e.referencePriceType}</small></span><span>${e.aum.toFixed(1)}亿</span><strong class="${tone(e.flow1d)}">${money(e.flow1d)}</strong></div>`).join("")}</div><p class="drawer-note">参考规模 = 日终总份额 × 当日成交均价（成交额÷成交量），资金变化 = 份额变化 × 当日成交均价；成交均价缺失时依次回退当日收盘价、单位净值。${r.parent?"该组为申万一级行业下的热门主题子组，归属相应一级行业":"该组按ETF名称映射到申万一级行业"}；收益代理为 ${r.representative.name}（${r.representative.code}）。</p></aside></div>`;$(".drawer-mask").onclick=$(".drawer-close").onclick=()=>$("#drawer").innerHTML=""}
 
-  async function exportJpg(day){const report=$("#report"),button=$("#export"),viewport=document.querySelector('meta[name="viewport"]'),savedViewport=viewport.getAttribute("content"),desktop=innerWidth>680;button.disabled=true;button.textContent="正在生成…";viewport.setAttribute("content","width=900");report.classList.add("export-crop");report.classList.add("exporting");try{if(!window.__imageExportReady||!window.htmlToImage)throw new Error("图片组件尚未加载，请刷新页面后重试");await document.fonts.ready;layoutBubbleLabels();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));const height=report.scrollHeight,isIOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1),areaBudget=isIOS?14e6:55e6,ratio=Math.max(1.5,Math.min(3,Math.floor(Math.min(Math.sqrt(areaBudget/(900*height)),15800/height)*10)/10));const canvas=await window.htmlToImage.toCanvas(report,{pixelRatio:ratio,backgroundColor:"#f2f3f5",cacheBust:true,width:900,filter:el=>!(el instanceof HTMLElement&&el.dataset.exportHide==="true")});canvas.toBlob(blob=>{if(!blob){alert("图片生成失败，请刷新页面后重试");return}const objectUrl=URL.createObjectURL(blob),file=new File([blob],`资金ETF流动每日跟踪_${day}_高清版.jpg`,{type:"image/jpeg"});showExportResult(objectUrl,file,desktop)},"image/jpeg",.97)}catch(error){alert(`导出失败：${error.message}`)}finally{viewport.setAttribute("content",savedViewport);report.classList.remove("exporting");report.classList.remove("export-crop");requestAnimationFrame(layoutBubbleLabels);button.disabled=false;button.textContent="导出高清 JPG"}}
+  const EXPORT_IMAGE_SPEC=Object.freeze({cssWidth:900,cssHeight:1200,padding:16,footer:34,pixelRatio:2,quality:.96});
+  const exportBlockSelector=[".masthead","#summary",".market-strip","#broad","#maps",".lower-grid"];
 
-  function showExportResult(objectUrl,file,desktop){const wrap=document.createElement("div");wrap.style.cssText="position:fixed;inset:0;z-index:99;background:#111318e6;overflow:auto;padding:18px 12px 34px;text-align:center";const close=document.createElement("button");close.textContent="×";close.style.cssText="position:fixed;top:10px;right:14px;z-index:2;background:#fff;color:#17191e;border:0;width:34px;height:34px;border-radius:50%;font-size:19px;cursor:pointer";const tip=document.createElement("p");tip.style.cssText="color:#fff;font-size:14px;margin:4px 0 12px";const canShare=typeof navigator.canShare==="function"&&navigator.canShare({files:[file]});const btn=document.createElement("button");btn.style.cssText="background:#a62a3c;color:#fff;border:0;padding:12px 30px;font-size:14px;border-radius:3px;cursor:pointer;margin-bottom:13px";const img=document.createElement("img");img.src=objectUrl;img.style.cssText="width:100%;max-width:680px;display:block;margin:0 auto";const note=document.createElement("p");note.style.cssText="color:#b9bec6;font-size:11px;margin:10px 0 0";if(canShare){tip.textContent="高清图已生成";btn.textContent="发送给朋友 / 保存到相册";btn.onclick=()=>navigator.share({files:[file],title:"资金ETF流动每日跟踪"}).catch(()=>{});note.textContent="按钮无反应时，也可长按下方图片保存"}else if(desktop){tip.textContent="高清图已生成";btn.textContent="下载高清 JPG";btn.onclick=()=>{const link=document.createElement("a");link.href=objectUrl;link.download=file.name;document.body.appendChild(link);link.click();link.remove()}}else{tip.textContent="长按下方图片，保存到相册";btn.style.display="none"}wrap.append(close,tip,btn,img,note);close.onclick=()=>{wrap.remove();setTimeout(()=>URL.revokeObjectURL(objectUrl),5000)};document.body.appendChild(wrap)}
+  function exportBlockMetric(block){
+    const rect=block.getBoundingClientRect(),style=getComputedStyle(block);
+    return {block,width:Math.ceil(rect.width),height:Math.ceil(rect.height),marginTop:Math.max(0,Math.ceil(parseFloat(style.marginTop)||0))};
+  }
+
+  function makeExportPages(blocks){
+    const spec=EXPORT_IMAGE_SPEC,capacity=spec.cssHeight-spec.padding*2-spec.footer;
+    const pages=[],current=[];
+    let used=0;
+    for(const metric of blocks.map(exportBlockMetric)){
+      const required=metric.height+(current.length?metric.marginTop:0);
+      if(current.length&&used+required>capacity){pages.push(current.splice(0));used=0}
+      current.push(metric);used+=metric.height+(current.length>1?metric.marginTop:0);
+    }
+    if(current.length)pages.push(current);
+    return pages;
+  }
+
+  async function canvasFromExportBlock(metric){
+    return window.htmlToImage.toCanvas(metric.block,{pixelRatio:EXPORT_IMAGE_SPEC.pixelRatio,backgroundColor:"#f2f3f5",cacheBust:true,width:metric.width,height:metric.height,filter:el=>!(el instanceof HTMLElement&&el.dataset.exportHide==="true")});
+  }
+
+  function drawExportFooter(ctx,page,total,day){
+    const spec=EXPORT_IMAGE_SPEC,scale=spec.pixelRatio,width=spec.cssWidth*scale,height=spec.cssHeight*scale,y=height-spec.footer*scale;
+    ctx.fillStyle="#fff";ctx.fillRect(0,y,width,spec.footer*scale);
+    ctx.fillStyle="#d9dde2";ctx.fillRect(spec.padding*scale,y,width-spec.padding*scale*2,1);
+    ctx.fillStyle="#646c76";ctx.font="500 18px Inter, PingFang SC, Microsoft YaHei, sans-serif";
+    ctx.textAlign="left";ctx.fillText("资金ETF流动每日跟踪",spec.padding*scale,y+23*scale);
+    ctx.textAlign="right";ctx.fillText(`${day} · ${page}/${total}`,width-spec.padding*scale,y+23*scale);
+  }
+
+  async function renderStandardJpg(pageBlocks,page,total,day){
+    const spec=EXPORT_IMAGE_SPEC,scale=spec.pixelRatio,canvas=document.createElement("canvas");
+    canvas.width=spec.cssWidth*scale;canvas.height=spec.cssHeight*scale;
+    const ctx=canvas.getContext("2d",{alpha:false});
+    ctx.fillStyle="#f2f3f5";ctx.fillRect(0,0,canvas.width,canvas.height);
+    let y=spec.padding;
+    for(let index=0;index<pageBlocks.length;index++){
+      const metric=pageBlocks[index],part=await canvasFromExportBlock(metric),available=spec.cssHeight-spec.padding-spec.footer-y;
+      if(index)y+=metric.marginTop;
+      const shrink=Math.min(1,available/metric.height);
+      const drawWidth=metric.width*scale*shrink,drawHeight=metric.height*scale*shrink,x=(spec.cssWidth*scale-drawWidth)/2;
+      ctx.drawImage(part,x,y*scale,drawWidth,drawHeight);
+      y+=metric.height*shrink;
+    }
+    drawExportFooter(ctx,page,total,day);
+    const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error("JPG 编码失败")),"image/jpeg",spec.quality));
+    return {blob,url:URL.createObjectURL(blob),filename:`资金ETF流动每日跟踪_${day}_${String(page).padStart(2,"0")}.jpg`};
+  }
+
+  async function exportJpg(day){
+    const report=$("#report"),button=$("#export"),viewport=document.querySelector('meta[name="viewport"]'),savedViewport=viewport.getAttribute("content");
+    button.disabled=true;button.textContent="正在生成标准 JPG…";viewport.setAttribute("content","width=900");report.classList.add("export-crop");report.classList.add("exporting");
+    try{
+      if(!window.__imageExportReady||!window.htmlToImage)throw new Error("图片组件尚未加载，请刷新页面后重试");
+      await document.fonts.ready;
+      requestAnimationFrame(layoutBubbleLabels);
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      const blocks=exportBlockSelector.map(selector=>document.querySelector(selector)).filter(Boolean);
+      const pages=makeExportPages(blocks);
+      const exports=[];
+      for(let index=0;index<pages.length;index++){
+        button.textContent=`正在生成 ${index+1}/${pages.length}…`;
+        exports.push(await renderStandardJpg(pages[index],index+1,pages.length,day));
+      }
+      showExportDownloads(exports,day);
+    }catch(error){alert(`导出失败：${error.message}`)}
+    finally{viewport.setAttribute("content",savedViewport);report.classList.remove("exporting");report.classList.remove("export-crop");requestAnimationFrame(layoutBubbleLabels);button.disabled=false;button.textContent="导出标准 JPG"}
+  }
+
+  function showExportDownloads(exports,day){
+    const wrap=document.createElement("div"),close=document.createElement("button"),box=document.createElement("section"),title=document.createElement("h2"),note=document.createElement("p"),list=document.createElement("div");
+    wrap.style.cssText="position:fixed;inset:0;z-index:99;background:#111318e6;display:grid;place-items:center;padding:20px";
+    box.style.cssText="width:min(460px,100%);background:#fff;border-top:3px solid #a62a3c;padding:24px 20px 20px;text-align:left";
+    close.textContent="×";close.setAttribute("aria-label","关闭");close.style.cssText="position:absolute;top:12px;right:14px;width:36px;height:36px;border:0;border-radius:50%;background:#fff;color:#17191e;font-size:23px;cursor:pointer";
+    title.textContent=`已生成 ${exports.length} 张标准 JPG`;title.style.cssText='margin:0;color:#17191e;font:700 22px "Songti SC","SimSun",serif';
+    note.textContent=`每张固定为 1800 × 2400 像素、JPG 格式。点击对应按钮直接下载；不再需要长按图片。`;note.style.cssText="margin:9px 0 16px;color:#646c76;font-size:13px;line-height:1.6";
+    list.style.cssText="display:grid;gap:9px";
+    exports.forEach((item,index)=>{const link=document.createElement("a");link.href=item.url;link.download=item.filename;link.textContent=`下载第 ${index+1} 张 JPG`;link.style.cssText="display:block;background:#a62a3c;color:#fff;text-align:center;text-decoration:none;padding:12px;border-radius:2px;font-size:14px;font-weight:700";list.appendChild(link)});
+    const footer=document.createElement("small");footer.textContent=`${day} 客户发送版 · ${exports.length} 张`;footer.style.cssText="display:block;margin-top:13px;color:#8a919a;font-size:11px";
+    const dispose=()=>{exports.forEach(item=>URL.revokeObjectURL(item.url));wrap.remove()};
+    close.onclick=dispose;wrap.append(close,box);box.append(title,note,list,footer);document.body.appendChild(wrap);
+  }
+
   addEventListener("resize",()=>requestAnimationFrame(layoutBubbleLabels));
   load();
   </script>
