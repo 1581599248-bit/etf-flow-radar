@@ -90,7 +90,7 @@
     const cards=["hs300","csi_a500","csi500","csi1000","chinext","star50"].map(id=>data.groups.find(r=>r.id===id)).filter(Boolean);
     const topIn=[...data.groups].sort((a,b)=>b.flow1d-a.flow1d)[0],topOut=[...data.groups].sort((a,b)=>a.flow1d-b.flow1d)[0];
     document.getElementById("app").innerHTML=`
-    <nav><div class="brand-mark">F</div><div class="brand"><b>资金ETF流动每日跟踪</b><span>A-SHARE ETF FLOW MONITOR</span></div><div class="nav-links"><a href="#summary">结论</a><a href="#broad">宽基摘要</a><a href="#maps">资金坐标</a><a href="#detail">明细</a></div><button id="export" data-export-hide="true">导出高清 JPG</button></nav>
+    <nav><div class="brand-mark">F</div><div class="brand"><b>资金ETF流动每日跟踪</b><span>A-SHARE ETF FLOW MONITOR</span></div><div class="nav-links"><a href="#summary">结论</a><a href="#broad">宽基摘要</a><a href="#maps">资金坐标</a><a href="#detail">明细</a></div><button id="export" data-export-hide="true">导出标准 JPG</button></nav>
     <main id="report" class="report">
       <header class="masthead"><div><span>DAILY CLIENT BRIEF · OFFICIAL CLOSE</span><h1>资金ETF流动每日跟踪</h1><p>⭐光大证券上海销售团队</p></div><div class="analysis-date"><span>数据交易日</span><strong>${fullDate(data.tradeDate)}</strong></div></header>
 
@@ -168,8 +168,9 @@
     ctx.fillStyle="#f2f3f5";ctx.fillRect(0,0,canvas.width,canvas.height);
     let y=spec.padding;
     for(let index=0;index<pageBlocks.length;index++){
-      const metric=pageBlocks[index],part=await canvasFromExportBlock(metric),available=spec.cssHeight-spec.padding-spec.footer-y;
+      const metric=pageBlocks[index];
       if(index)y+=metric.marginTop;
+      const available=spec.cssHeight-spec.padding-spec.footer-y,part=await canvasFromExportBlock(metric);
       const shrink=Math.min(1,available/metric.height);
       const drawWidth=metric.width*scale*shrink,drawHeight=metric.height*scale*shrink,x=(spec.cssWidth*scale-drawWidth)/2;
       ctx.drawImage(part,x,y*scale,drawWidth,drawHeight);
