@@ -227,7 +227,12 @@ def _market_flow_headline(
     trade_turnover: float | None = None,
     market_aum: float | None = None,
 ) -> str:
-    """Translate flow direction, strength and divergence into plain-language client copy."""
+    """Translate flow direction, strength and divergence into plain-language client copy.
+
+    解读型话术：不只复述两个市场的数字，还点出资金行为含义（同向共振 /
+    逢跌承接 / 逢高兑现 / 存量博弈 / 整体观望）。只描述资金行为本身，
+    不给出买卖建议，与页脚"不构成投资建议"一致。
+    """
     primary_strength = _primary_strength(primary_value, market_aum)
     primary_text = _primary_copy(primary_value, primary_strength)
     motion_text = _motion_copy(primary_value, primary_strength)
@@ -237,29 +242,34 @@ def _market_flow_headline(
 
     trade_strength = _trade_strength(trade_value, trade_turnover)
     trade_text = _trade_copy(trade_value, trade_strength)
+
     if trade_strength == "balanced":
         if primary_strength == "flat":
-            return f"{trade_text}；{primary_text}，显示短线交易与整体资金均无明显方向。"
-        return f"{trade_text}；{primary_text}，显示短线交易相对平稳，但{motion_text}。"
+            return f"{trade_text}；{primary_text}，盘面交易与份额申赎均无明显方向，资金整体观望。"
+        if primary_value > 0:
+            return f"{trade_text}；{primary_text}，盘面交易相对平稳，份额端资金已在持续进场。"
+        return f"{trade_text}；{primary_text}，盘面交易相对平稳，份额端资金却在持续撤离。"
 
     if primary_strength == "flat":
         if trade_value > 0:
-            support = {"small": "一定", "clear": "较强", "large": "很强"}.get(trade_strength, "一定")
-            return f"{trade_text}；{primary_text}，显示短线仍有{support}承接，但整体资金暂无明显增减。"
-        pressure = {"small": "一定", "clear": "较强", "large": "很强"}.get(trade_strength, "一定")
-        return f"{trade_text}；{primary_text}，显示短线仍有{pressure}抛压，但整体资金暂无明显增减。"
+            return f"{trade_text}；{primary_text}，盘面买盘活跃，但份额申赎按兵不动，仍属存量博弈。"
+        return f"{trade_text}；{primary_text}，盘面抛压偏重，但份额申赎按兵不动，尚未演变为增量资金撤离。"
 
     same_direction = (trade_value > 0 and primary_value > 0) or (trade_value < 0 and primary_value < 0)
     if same_direction:
         if trade_value > 0:
-            return f"{trade_text}；{primary_text}，显示短线买盘与整体资金方向一致，{motion_text}。"
-        return f"{trade_text}；{primary_text}，显示短线卖盘与整体资金方向一致，{motion_text}。"
+            return f"{trade_text}；{primary_text}，盘面买盘与份额申购同向发力，资金进场意愿明确。"
+        return f"{trade_text}；{primary_text}，盘面抛压与份额赎回共振，资金离场方向一致。"
 
-    if trade_value > 0:
-        support = {"small": "一定", "clear": "较强", "large": "很强"}.get(trade_strength, "一定")
-        return f"{trade_text}；但{primary_text}，显示短线仍有{support}承接，但{motion_text}。"
-    pressure = {"small": "一定", "clear": "较强", "large": "很强"}.get(trade_strength, "一定")
-    return f"{trade_text}；但{primary_text}，显示短线仍有{pressure}抛压，但{motion_text}。"
+    if trade_value < 0:
+        # 盘面跌、份额申购：典型的逢跌进场/护盘组合。
+        if primary_strength in {"clear", "large"}:
+            return f"{trade_text}；但{primary_text}，盘面抛压虽重，大资金却在逢跌进场，一级市场承接有力。"
+        return f"{trade_text}；但{primary_text}，盘面抛压之下，已有资金逢跌申购，一级市场初现承接。"
+    # 盘面涨、份额赎回：反弹中有人借道离场。
+    if primary_strength in {"clear", "large"}:
+        return f"{trade_text}；但{primary_text}，盘面买盘虽强，份额端却在逢高兑现，有资金借反弹离场。"
+    return f"{trade_text}；但{primary_text}，盘面买盘背后，份额端已出现小幅兑现迹象。"
 
 
 def _visible_sector_groups(snapshot: dict[str, Any]) -> list[dict[str, Any]]:

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "tradeDate": "2026-08-19",
-  "generatedAt": "2026-08-20T12:25:44+08:00",
+  "generatedAt": "2026-08-20T13:32:47+08:00",
   "metric": "primaryMarketNetSubscriptionEstimate",
   "valuation": "sameDayUnitNAV",
   "marketScopes": {
