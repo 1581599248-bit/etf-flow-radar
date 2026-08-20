@@ -112,12 +112,14 @@ jobs:
           git config user.email "etf-flow-radar-bot@users.noreply.github.com"
           if [ "${{ steps.build.outputs.exit_code }}" = "0" ]; then
             rm -f diagnostics/latest-etf-publish-failure.txt
-            git add site/data diagnostics/latest-etf-publish-failure.txt
             msg="data: update schema-v6 ETF flow snapshot"
           else
-            git add diagnostics/latest-etf-publish-failure.txt
             msg="diag: capture ETF publish failure"
           fi
+          # 按目录暂存：诊断文件被 rm 删除或本就不存在时，
+          # 对单文件 pathspec 执行 git add 会直接报错（06:00 连续成功后的
+          # 第二次发布正是这样失败的），目录形式两种情况都安全。
+          git add site/data diagnostics/
           git diff --cached --quiet && exit 0
           git commit -m "$msg"
           git pull --rebase origin main
