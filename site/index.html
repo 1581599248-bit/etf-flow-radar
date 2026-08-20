@@ -90,7 +90,7 @@
     const cards=["hs300","csi_a500","csi500","csi1000","chinext","star50"].map(id=>data.groups.find(r=>r.id===id)).filter(Boolean);
     const topIn=[...data.groups].sort((a,b)=>b.flow1d-a.flow1d)[0],topOut=[...data.groups].sort((a,b)=>a.flow1d-b.flow1d)[0];
     document.getElementById("app").innerHTML=`
-    <nav><div class="brand-mark">F</div><div class="brand"><b>资金ETF流动每日跟踪</b><span>A-SHARE ETF FLOW MONITOR</span></div><div class="nav-links"><a href="#summary">结论</a><a href="#broad">宽基摘要</a><a href="#maps">资金坐标</a><a href="#detail">明细</a></div><button id="export" data-export-hide="true">导出客户 JPG</button></nav>
+    <nav><div class="brand-mark">F</div><div class="brand"><b>资金ETF流动每日跟踪</b><span>A-SHARE ETF FLOW MONITOR</span></div><div class="nav-links"><a href="#summary">结论</a><a href="#broad">宽基摘要</a><a href="#maps">资金坐标</a><a href="#detail">明细</a></div><div class="nav-export-actions" data-export-hide="true"><button id="export">导出客户 JPG</button><button id="export-summary">导出结论 JPG</button></div></nav>
     <main id="report" class="report">
       <header class="masthead"><div><span>DAILY CLIENT BRIEF · OFFICIAL CLOSE</span><h1>资金ETF流动每日跟踪</h1><p>⭐光大证券上海销售团队</p></div><div class="analysis-date"><span>数据交易日</span><strong>${fullDate(data.tradeDate)}</strong></div></header>
 
@@ -100,9 +100,11 @@
 
       <section id="broad" class="panel"><div class="section-head"><div><span>CORE BROAD INDEXES</span><h2>主要宽基数据摘要</h2><p>先看今天，再用5日和20日辨别一次性申赎还是持续切换</p></div></div><div class="summary-grid">${cards.map(summaryCard).join("")}</div></section>
 
+      <section class="lower-grid"><article class="panel"><div class="section-head"><div><span>FLOW LEADERS</span><h2 id="flow-leaders-title">当日流入领跑 / 流出领跑</h2><p>前半部分为净流入最多的组，后半部分为净流出最多的组</p></div><div class="tabs" data-rank-tabs><button class="active" data-period="1d">1日</button><button data-period="5d">5日</button><button data-period="20d">20日</button></div></div><div id="ranking">${ranking(data.groups,"1d",10)}</div></article><article class="panel"><div class="section-head"><div><span>PRICE × FLOW STATE</span><h2>近20日相对表现与近5日资金方向</h2><p>价格为代表ETF近20日相对沪深300表现，资金为组内ETF近5日净流入/流出；与上方坐标图使用同一口径</p></div></div><div class="state-grid">${["跑赢且流入","跑输但流入","跑赢但流出","跑输且流出"].map(state=>{const rs=data.groups.filter(r=>r.priceFlowState===state).sort((a,b)=>Math.abs(b.flow5d)-Math.abs(a.flow5d));const empty=`当前暂无“${state}”的观察组`;return `<article><span>${state}</span><b>${rs.slice(0,3).map(r=>r.name).join(" · ")||empty}</b><small>${state==="跑赢且流入"?"近20日跑赢沪深300，近5日资金流入":state==="跑输但流入"?"近20日跑输沪深300，但近5日资金流入":state==="跑赢但流出"?"近20日跑赢沪深300，但近5日资金流出":"近20日跑输沪深300，近5日资金流出"}</small></article>`}).join("")}</div></article></section>
+
       <section id="maps" class="map-grid">${chart(wide,"宽基与风格资金坐标","宽基与风格放在同一标尺，定位大小盘与红利/成长的配置切换")}${chart(industries,"申万一级与主流行业资金坐标",`申万行业分类标准2021版；31个一级行业中，本期${industryParentCount}个行业存在可分析ETF，共${industryEtfs}只`)}</section>
 
-      <section class="lower-grid"><article class="panel"><div class="section-head"><div><span>FLOW LEADERS</span><h2 id="flow-leaders-title">当日流入领跑 / 流出领跑</h2><p>前半部分为净流入最多的组，后半部分为净流出最多的组</p></div><div class="tabs" data-rank-tabs><button class="active" data-period="1d">1日</button><button data-period="5d">5日</button><button data-period="20d">20日</button></div></div><div id="ranking">${ranking(data.groups,"1d",10)}</div></article><article class="panel"><div class="section-head"><div><span>PRICE × FLOW STATE</span><h2>近20日相对表现与近5日资金方向</h2><p>价格为代表ETF近20日相对沪深300表现，资金为组内ETF近5日净流入/流出；与上方坐标图使用同一口径</p></div></div><div class="state-grid">${["跑赢且流入","跑输但流入","跑赢但流出","跑输且流出"].map(state=>{const rs=data.groups.filter(r=>r.priceFlowState===state).sort((a,b)=>Math.abs(b.flow5d)-Math.abs(a.flow5d));const empty=`当前暂无“${state}”的观察组`;return `<article><span>${state}</span><b>${rs.slice(0,3).map(r=>r.name).join(" · ")||empty}</b><small>${state==="跑赢且流入"?"近20日跑赢沪深300，近5日资金流入":state==="跑输但流入"?"近20日跑输沪深300，但近5日资金流入":state==="跑赢但流出"?"近20日跑赢沪深300，但近5日资金流出":"近20日跑输沪深300，近5日资金流出"}</small></article>`}).join("")}</div></article></section>
+      
 
       <section id="detail" class="panel"><div class="section-head"><div><span>OBJECTIVE EVIDENCE TABLE</span><h2>全部资金观察组证据表</h2><p>${broad.length}个宽基组 + ${styles.length}个风格策略组 + ${industries.filter(r=>!r.parent).length}个申万一级行业组 + ${industries.filter(r=>r.parent).length}个热门主题组</p></div><div class="filters"><button class="active" data-kind="all">全部 ${data.groups.length}</button><button data-kind="broad">宽基 ${broad.length}</button><button data-kind="style">风格 ${styles.length}</button><button data-kind="industry">行业与主题 ${industries.length}</button></div></div><div class="classification-callout"><b>申万行业口径</b><span>采用申万行业分类标准2021版${data.quality.industryDefinitionCount??31}个一级行业名称与代码；每只ETF按主要暴露行业归入唯一观察组，不重复计数；本期${industryParentCount}个行业存在可分析ETF，${data.quality.industryEtfCount??industryEtfs}只进入分析。</span></div><div class="evidence-table"><div class="e-row e-head"><span>观察组</span><span>1日</span><span>5日</span><span>20日</span><span>5日变化率</span><span>状态</span></div><div id="evidence-rows">${evidenceRows(data.groups)}</div></div></section>
 
@@ -121,56 +123,59 @@
     document.querySelectorAll("[data-id]").forEach(el=>el.onclick=()=>openDrawer(data,el.dataset.id));
     document.querySelectorAll("[data-rank-tabs] button").forEach(button=>button.onclick=()=>{document.querySelectorAll("[data-rank-tabs] button").forEach(x=>x.classList.remove("active"));button.classList.add("active");const label={"1d":"当日","5d":"近5日","20d":"近20日"}[button.dataset.period];$("#flow-leaders-title").textContent=`${label}流入领跑 / 流出领跑`;$("#ranking").innerHTML=ranking(data.groups,button.dataset.period,10);$("#ranking").querySelectorAll("[data-id]").forEach(el=>el.onclick=()=>openDrawer(data,el.dataset.id))});
     document.querySelectorAll("[data-kind]").forEach(button=>button.onclick=()=>{document.querySelectorAll("[data-kind]").forEach(x=>x.classList.remove("active"));button.classList.add("active");document.querySelectorAll("[data-kind-row]").forEach(row=>row.hidden=button.dataset.kind!=="all"&&row.dataset.kindRow!==button.dataset.kind)});
-    $("#export").onclick=()=>exportJpg(data.tradeDate);
+    $("#export").onclick=()=>exportJpg(data.tradeDate,"full");$("#export-summary").onclick=()=>exportJpg(data.tradeDate,"summary");
     requestAnimationFrame(layoutBubbleLabels);
   }
 
   function openDrawer(data,id){const r=data.groups.find(x=>x.id===id),etfs=data.etfs.filter(x=>x.groupId===id);$("#drawer").innerHTML=`<div class="drawer-bg"><button class="drawer-mask" aria-label="关闭"></button><aside class="drawer"><button class="drawer-close">×</button><span>${groupTag(r)} OBSERVATION GROUP</span><h2>${r.name}</h2><div class="drawer-kpis"><article><span>组内ETF参考规模</span><b>${r.aum.toFixed(1)}亿</b></article><article><span>纳入分析ETF</span><b>${etfs.length}只</b></article><article><span>1日资金变化</span><b class="${tone(r.flow1d)}">${money(r.flow1d)}</b></article><article><span>5日累计</span><b class="${tone(r.flow5d)}">${money(r.flow5d)}</b></article><article><span>20日相对收益</span><b class="${tone(r.relativeReturn20d)}">${pct(r.relativeReturn20d)}</b></article></div><div class="drawer-answer"><b>${r.priceFlowState}</b><p>5日资金变化率 ${pct(flowRate(r))}，ETF份额 ${countText(r,"5d")}；当日最大单只产品贡献 ${r.concentration1d.toFixed(1)}%。${r.concentration1d>70?"变化主要来自少数产品，板块代表性较弱。":"变化未明显集中于单只产品。"}</p></div><h3>组内全部ETF（按当日绝对变化排序，共${etfs.length}只）</h3><div class="etf-table">${etfs.map(e=>`<div><span><b>${e.name}</b><small>${e.code} · ${priceTypeName[e.referencePriceType]||e.referencePriceType}</small></span><span>${e.aum.toFixed(1)}亿</span><strong class="${tone(e.flow1d)}">${money(e.flow1d)}</strong></div>`).join("")}</div><p class="drawer-note">参考规模 = 日终总份额 × 当日成交均价（成交额÷成交量），资金变化 = 份额变化 × 当日成交均价；成交均价缺失时依次回退当日收盘价、单位净值。${r.parent?"该组为申万一级行业下的热门主题子组，归属相应一级行业":"该组按ETF名称映射到申万一级行业"}；收益代理为 ${r.representative.name}（${r.representative.code}）。</p></aside></div>`;$(".drawer-mask").onclick=$(".drawer-close").onclick=()=>$("#drawer").innerHTML=""}
 
-  const EXPORT_IMAGE_SPEC=Object.freeze({cssWidth:900,maxPixelRatio:2,maxPixelHeight:7200,maxCanvasPixels:11e6,quality:.97});
+  const EXPORT_IMAGE_SPEC=Object.freeze({full:{cssWidth:900,maxPixelRatio:1.4,maxPixelHeight:6000,maxCanvasPixels:7.2e6,quality:.96},summary:{cssWidth:900,maxPixelRatio:2,maxPixelHeight:3200,maxCanvasPixels:6e6,quality:.97}});
 
-  function exportPixelRatio(width,height){
-    const spec=EXPORT_IMAGE_SPEC;
+  function exportPixelRatio(spec,width,height){
     return Math.min(spec.maxPixelRatio,spec.maxPixelHeight/height,Math.sqrt(spec.maxCanvasPixels/(width*height)));
   }
 
-  function createExportSnapshot(report){
-    const snapshot=report.cloneNode(true);
+  function createExportSnapshot(report,mode){
+    const snapshot=report.cloneNode(true),cover=document.createElement("div");
     snapshot.removeAttribute("id");
     snapshot.classList.add("exporting","export-crop","export-snapshot");
+    if(mode==="summary")snapshot.classList.add("export-summary");
     snapshot.setAttribute("aria-hidden","true");
-    snapshot.style.cssText="position:fixed;left:-10000px;top:0;width:900px;min-width:900px;max-width:900px;margin:0;padding:16px;pointer-events:none;z-index:-1";
-    document.body.appendChild(snapshot);
-    return snapshot;
+    snapshot.style.cssText="position:fixed;left:0;top:0;width:900px;min-width:900px;max-width:900px;margin:0;padding:16px;background:#f2f3f5;pointer-events:none;z-index:90";
+    cover.style.cssText="position:fixed;inset:0;z-index:91;display:grid;place-items:center;background:#111318ee;color:#fff;font:600 15px/1.5 PingFang SC,Microsoft YaHei,Arial,sans-serif;letter-spacing:.04em";
+    cover.textContent=mode==="summary"?"正在生成结论 JPG…":"正在生成客户 JPG…";
+    document.body.append(snapshot,cover);
+    return {snapshot,cover};
   }
 
-  async function exportJpg(day){
-    const report=$("#report"),button=$("#export");
-    let snapshot;
-    button.disabled=true;button.textContent="正在生成高清 JPG…";
+  async function exportJpg(day,mode){
+    const button=$(mode==="summary"?"#export-summary":"#export"),spec=EXPORT_IMAGE_SPEC[mode];
+    let stage;
+    button.disabled=true;button.textContent="正在生成…";
     try{
       if(!window.__imageExportReady||!window.htmlToImage)throw new Error("图片组件尚未加载，请刷新页面后重试");
-      snapshot=createExportSnapshot(report);
+      stage=createExportSnapshot($("#report"),mode);
       await document.fonts.ready;
       await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-      const width=EXPORT_IMAGE_SPEC.cssWidth,height=Math.ceil(snapshot.scrollHeight),pixelRatio=exportPixelRatio(width,height);
+      const width=spec.cssWidth,height=Math.ceil(stage.snapshot.scrollHeight),pixelRatio=exportPixelRatio(spec,width,height);
       if(pixelRatio<=0||height<=0)throw new Error("图片尺寸计算失败");
-      const canvas=await window.htmlToImage.toCanvas(snapshot,{pixelRatio,backgroundColor:"#f2f3f5",cacheBust:true,width,height});
-      const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error("JPG 编码失败")),"image/jpeg",EXPORT_IMAGE_SPEC.quality));
-      showSingleExportDownload({url:URL.createObjectURL(blob),filename:`资金ETF流动每日跟踪_${day}_客户版.jpg`,width:canvas.width,height:canvas.height},day);
+      const canvas=await window.htmlToImage.toCanvas(stage.snapshot,{pixelRatio,backgroundColor:"#f2f3f5",cacheBust:true,width,height});
+      const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error("JPG 编码失败")),"image/jpeg",spec.quality));
+      const label=mode==="summary"?"结论摘要版":"完整客户发送版";
+      showSingleExportDownload({url:URL.createObjectURL(blob),filename:`资金ETF流动每日跟踪_${day}_${mode==="summary"?"结论摘要":"客户版"}.jpg`,width:canvas.width,height:canvas.height},day,label);
     }catch(error){alert(`导出失败：${error.message}`)}
-    finally{snapshot?.remove();button.disabled=false;button.textContent="导出客户 JPG"}
+    finally{stage?.cover.remove();stage?.snapshot.remove();button.disabled=false;button.textContent=mode==="summary"?"导出结论 JPG":"导出客户 JPG"}
   }
 
-  function showSingleExportDownload(file,day){
+  function showSingleExportDownload(file,day,label){
     const wrap=document.createElement("div"),close=document.createElement("button"),box=document.createElement("section"),title=document.createElement("h2"),note=document.createElement("p"),link=document.createElement("a"),footer=document.createElement("small");
     wrap.style.cssText="position:fixed;inset:0;z-index:99;background:#111318e6;display:grid;place-items:center;padding:20px";
     box.style.cssText="width:min(460px,100%);background:#fff;border-top:3px solid #a62a3c;padding:24px 20px 20px;text-align:left";
     close.textContent="×";close.setAttribute("aria-label","关闭");close.style.cssText="position:absolute;top:12px;right:14px;width:36px;height:36px;border:0;border-radius:50%;background:#fff;color:#17191e;font-size:23px;cursor:pointer";
-    title.textContent="单张高清 JPG 已生成";title.style.cssText='margin:0;color:#17191e;font:700 22px "Songti SC","SimSun",serif';
-    note.textContent=`完整客户发送版，${file.width} × ${file.height} 像素、JPG 格式。点击下方直接下载，无需长按图片。`;note.style.cssText="margin:9px 0 16px;color:#646c76;font-size:13px;line-height:1.6";
-    link.href=file.url;link.download=file.filename;link.textContent="直接下载高清 JPG";link.style.cssText="display:block;background:#a62a3c;color:#fff;text-align:center;text-decoration:none;padding:12px;border-radius:2px;font-size:14px;font-weight:700";
-    footer.textContent=`${day} 客户发送版 · 单张完整图`;footer.style.cssText="display:block;margin-top:13px;color:#8a919a;font-size:11px";
+    title.textContent=`${label}已生成`;title.style.cssText='margin:0;color:#17191e;font:700 22px "Songti SC","SimSun",serif';
+    note.textContent=`单张 JPG，${file.width} × ${file.height} 像素。点击下方直接下载，无需长按或保存图片。`;note.style.cssText="margin:9px 0 16px;color:#646c76;font-size:13px;line-height:1.6";
+    link.href=file.url;link.download=file.filename;link.textContent="直接下载 JPG";link.style.cssText="display:block;background:#a62a3c;color:#fff;text-align:center;text-decoration:none;padding:12px;border-radius:2px;font-size:14px;font-weight:700";
+    footer.textContent=`${day} · ${label} · 固定尺寸`;footer.style.cssText="display:block;margin-top:13px;color:#8a919a;font-size:11px";
     const dispose=()=>{URL.revokeObjectURL(file.url);wrap.remove()};
     close.onclick=dispose;wrap.append(close,box);box.append(title,note,link,footer);document.body.appendChild(wrap);
   }
