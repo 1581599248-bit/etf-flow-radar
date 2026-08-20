@@ -339,39 +339,59 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
 
     groups = snapshot.get("groups", [])
     broad = [g for g in groups if g.get("kind") == "broad"]
-    broad_in_count = sum(float(g.get("flow1d", 0) or 0) > 0 for g in broad)
-    broad_out_count = sum(float(g.get("flow1d", 0) or 0) < 0 for g in broad)
+    styles = [g for g in groups if g.get("kind") == "style"]
     sectors = _visible_sector_groups(snapshot)
-    facts = list(snapshot.setdefault("conclusion", {}).get("facts") or [])
+
     if broad:
-        broad_stat = f"宽基{len(broad)}组中{broad_out_count}个流出、{broad_in_count}个流入"
+        broad_in_count = sum(float(g.get("flow1d", 0) or 0) > 0 for g in broad)
+        broad_out_count = sum(float(g.get("flow1d", 0) or 0) < 0 for g in broad)
+        broad_stat = f"共{len(broad)}组，{broad_out_count}个流出、{broad_in_count}个流入"
         out_groups = [g for g in sorted(broad, key=lambda g: float(g.get("flow1d", 0) or 0)) if float(g.get("flow1d", 0) or 0) < 0]
-        if not out_groups:
-            out_detail = "当日无流出组"
-        elif len(out_groups) > 3:
-            out_detail = "流出前三为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in out_groups[:3])
-        else:
-            significant = [g for g in out_groups if float(g.get("flow1d", 0) or 0) <= -0.1]
-            trivial = [g for g in out_groups if float(g.get("flow1d", 0) or 0) > -0.1]
-            parts = [f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in significant]
-            if trivial:
-                parts.append("、".join(g["name"] for g in trivial) + "不足0.1亿")
-            out_detail = "流出仅" + "，".join(parts)
-        worst_5d = min(broad, key=lambda g: float(g.get("flow5d", 0) or 0))
-        broad_fact = f"{broad_stat}；{out_detail}；5日端点变化流出最大为{worst_5d['name']}。"
-        if facts:
-            facts[0] = broad_fact
-        else:
-            facts = [broad_fact]
+        in_groups = [g for g in sorted(broad, key=lambda g: float(g.get("flow1d", 0) or 0), reverse=True) if float(g.get("flow1d", 0) or 0) > 0]
+        details = []
+        if out_groups:
+            details.append("流出居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in out_groups[:2]))
+        if in_groups:
+            details.append("流入居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in in_groups[:2]))
+        broad_fact = f"{broad_stat}；" + "；".join(details) + "。" if details else f"{broad_stat}；当日无明显资金方向。"
+    else:
+        broad_fact = "暂无可分析宽基ETF。"
+
+    if styles:
+        style_in = [g for g in sorted(styles, key=lambda g: float(g.get("flow1d", 0) or 0), reverse=True) if float(g.get("flow1d", 0) or 0) > 0]
+        style_out = [g for g in sorted(styles, key=lambda g: float(g.get("flow1d", 0) or 0)) if float(g.get("flow1d", 0) or 0) < 0]
+        parts = []
+        if style_in:
+            parts.append("净流入居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in style_in[:2]))
+        if style_out:
+            parts.append("净流出居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in style_out[:2]))
+        style_fact = "；".join(parts) + "。" if parts else f"共{len(styles)}组，当日均无明显资金方向。"
+    else:
+        style_fact = "暂无可分析风格ETF。"
+
     if sectors:
-        sector_in = sorted(sectors, key=lambda g: float(g.get("flow1d", 0) or 0), reverse=True)
-        sector_out = sorted(sectors, key=lambda g: float(g.get("flow1d", 0) or 0))
-        positive = [g for g in sector_in if float(g.get("flow1d", 0) or 0) > 0]
-        sector_fact = ("申万一级和主题行业净流入居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in positive[:2]) + f"；净流出最多为{sector_out[0]['name']}{float(sector_out[0]['flow1d']):+.1f}亿。" if positive else f"申万一级和主题行业当日均未录得净流入；流出最多为{sector_out[0]['name']}{float(sector_out[0]['flow1d']):+.1f}亿。")
-        if len(facts) >= 2:
-            facts[1] = sector_fact
-        else:
-            facts.append(sector_fact)
+        sector_in = [g for g in sorted(sectors, key=lambda g: float(g.get("flow1d", 0) or 0), reverse=True) if float(g.get("flow1d", 0) or 0) > 0]
+        sector_out = [g for g in sorted(sectors, key=lambda g: float(g.get("flow1d", 0) or 0)) if float(g.get("flow1d", 0) or 0) < 0]
+        parts = []
+        if sector_in:
+            parts.append("净流入居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in sector_in[:2]))
+        if sector_out:
+            parts.append("净流出居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in sector_out[:2]))
+        sector_fact = "；".join(parts) + "。" if parts else "当日均无明显资金方向。"
+    else:
+        sector_fact = "暂无可分析申万一级与主题行业ETF。"
+
+    etf_flows = [e for e in snapshot.get("etfs", []) if isinstance(e.get("flow1d"), (int, float)) and pd.notna(e.get("flow1d"))]
+    single_in = max((e for e in etf_flows if float(e["flow1d"]) > 0), key=lambda e: float(e["flow1d"]), default=None)
+    single_out = min((e for e in etf_flows if float(e["flow1d"]) < 0), key=lambda e: float(e["flow1d"]), default=None)
+    single_parts = []
+    if single_in:
+        single_parts.append(f"净流入最大为{single_in['name']}{float(single_in['flow1d']):+.1f}亿")
+    if single_out:
+        single_parts.append(f"净流出最大为{single_out['name']}{float(single_out['flow1d']):+.1f}亿")
+    single_fact = "；".join(single_parts) + "。" if single_parts else "当日无单只ETF显著资金变化。"
+
+    facts = [broad_fact, style_fact, sector_fact, single_fact]
     snapshot["conclusion"]["facts"] = facts
     snapshot["conclusion"]["headline"] = flow_headline
 
