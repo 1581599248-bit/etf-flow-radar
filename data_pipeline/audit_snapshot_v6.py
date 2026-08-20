@@ -189,13 +189,24 @@ def audit(snapshot_path: Path) -> list[str]:
         raise AssertionError("legacy primary headline wording leaked into client output")
     top_in = max(visible_sectors, key=lambda g: _num(g.get("flow1d"), "sector inflow rank"))
     top_out = min(visible_sectors, key=lambda g: _num(g.get("flow1d"), "sector outflow rank"))
-    expected_sector = (
-        f"申万一级和主题行业资金流入居前的是{top_in['name']}，流出最多的是{top_out['name']}。"
-        if _num(top_in.get("flow1d"), "top sector inflow") > 0
-        else f"申万一级和主题行业当日均未录得净流入，流出最多的是{top_out['name']}。"
-    )
-    if expected_sector not in headline:
-        raise AssertionError(f"headline sector ranking is not from visible groups; expected {expected_sector!r}")
+    facts = snapshot.get("conclusion", {}).get("facts") or []
+    sector_fact = str(facts[1]) if len(facts) > 1 else ""
+    if top_in["name"] not in sector_fact or top_out["name"] not in sector_fact:
+        raise AssertionError(
+            f"facts[1] sector ranking is not from visible groups; expected {top_in['name']!r}/{top_out['name']!r} in {sector_fact!r}"
+        )
+    if f"{_num(top_in.get('flow1d'), 'top sector inflow'):+.1f}亿" not in sector_fact and _num(top_in.get("flow1d"), "top sector inflow") > 0:
+        raise AssertionError("facts[1] top inflow amount mismatch")
+    if f"{_num(top_out.get('flow1d'), 'top sector outflow'):+.1f}亿" not in sector_fact:
+        raise AssertionError("facts[1] top outflow amount mismatch")
+    if re.search(r"宽基\d+组中|申万一级和主题行业资金流入居前的是", headline):
+        raise AssertionError("group/sector tail leaked back into headline; it belongs in facts")
+    broad_fact = str(facts[0]) if facts else ""
+    broad_groups = [g for g in snapshot.get("groups", []) if g.get("kind") == "broad"]
+    broad_in = sum(_num(g.get("flow1d"), "broad flow") > 0 for g in broad_groups)
+    broad_out = sum(_num(g.get("flow1d"), "broad flow") < 0 for g in broad_groups)
+    if f"宽基{len(broad_groups)}组中{broad_out}个流出、{broad_in}个流入" not in broad_fact:
+        raise AssertionError(f"facts[0] broad-group counts mismatch; got {broad_fact!r}")
 
     trade_metric = snapshot.get("flowMetrics", {}).get("secondaryMarketTradeFlow", {})
     if trade_metric.get("status") == "available":

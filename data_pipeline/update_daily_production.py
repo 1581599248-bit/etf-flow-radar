@@ -382,8 +382,8 @@ def _regenerate_conclusion(snapshot: dict[str, Any]) -> None:
     else:
         sector_line = f"申万一级行业当日均未录得净流入；流出最多为{sec_out[0]['name']}{float(sec_out[0]['flow1d']):+.1f}亿。"
     anomaly = (
-        f"单只ETF大额变化：{market['topInflowEtf']['name']}净流入{float(market['topInflowEtf']['flow1d']):+.1f}亿元；"
-        f"{market['topOutflowEtf']['name']}净流出{float(market['topOutflowEtf']['flow1d']):+.1f}亿元。"
+        f"单只ETF大额变化：{market['topInflowEtf']['name']}净流入{float(market['topInflowEtf']['flow1d']):.1f}亿元；"
+        f"{market['topOutflowEtf']['name']}净流出{abs(float(market['topOutflowEtf']['flow1d'])):.1f}亿元。"
     )
 
     sustained = sorted(
@@ -394,15 +394,26 @@ def _regenerate_conclusion(snapshot: dict[str, Any]) -> None:
         f"{sustained[0]['name']}的1日与5日端点份额变化均为净流入，可继续观察延续性。"
         if sustained else "目前没有观察组同时满足1日与5日端点份额变化净流入。"
     )
+    n_broad = len(broad)
+    if broad_out_count == 0:
+        broad_phrase = f"宽基当日{n_broad}组无一净流出"
+    elif broad_out_count * 3 <= n_broad:
+        broad_phrase = f"宽基当日{n_broad}组中仅{broad_out_count}组净流出"
+    elif broad_out_count * 3 >= n_broad * 2:
+        broad_phrase = f"宽基当日{n_broad}组中{broad_out_count}组净流出，抛压普遍"
+    else:
+        broad_phrase = f"宽基当日{n_broad}组中{broad_out_count}组净流出"
     if styles:
         style_in = max(styles, key=lambda g: float(g.get("flow1d", 0)))
         style_out = min(styles, key=lambda g: float(g.get("flow1d", 0)))
-        interpretation = (
-            f"从份额数据看，宽基当日{broad_out_count}/{len(broad)}个组净流出；"
-            f"风格组中{style_in['name']}当日变化相对靠前，{style_out['name']}流出较多。{sustained_text}"
+        style_phrase = (
+            f"风格组中{style_in['name']}当日流入居首，{style_out['name']}流出最多"
+            if float(style_in.get("flow1d", 0)) > 0
+            else f"风格组中{style_in['name']}当日变化相对靠前，{style_out['name']}流出较多"
         )
+        interpretation = f"从份额数据看，{broad_phrase}；{style_phrase}。{sustained_text}"
     else:
-        interpretation = f"从份额数据看，宽基当日{broad_out_count}/{len(broad)}个组净流出。{sustained_text}"
+        interpretation = f"从份额数据看，{broad_phrase}。{sustained_text}"
 
     snapshot["conclusion"].update({
         "headline": headline,

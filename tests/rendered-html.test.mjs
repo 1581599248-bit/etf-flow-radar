@@ -120,8 +120,17 @@ test("schema v6 separates primary subscription flow, secondary trading flow and 
   assert.match(snapshot.conclusion.headline, primaryPattern);
   assert.match(snapshot.conclusion.headline, /\n—— /);
   assert.doesNotMatch(snapshot.conclusion.headline, /A股股票ETF当日合计/);
-  assert.match(snapshot.conclusion.headline, /申万一级和主题行业/);
-  assert.match(snapshot.conclusion.headline, new RegExp(`流出最多的是${topSectorOut.name}`));
+  assert.doesNotMatch(snapshot.conclusion.headline, /宽基\d+组中/);
+  assert.doesNotMatch(snapshot.conclusion.headline, /申万一级和主题行业/);
+  const sectorFact = String(snapshot.conclusion.facts[1] || "");
+  assert.match(sectorFact, /申万一级和主题行业/);
+  assert.ok(sectorFact.includes(topSectorIn.name), `facts[1] should name top inflow group ${topSectorIn.name}`);
+  assert.ok(sectorFact.includes(topSectorOut.name), `facts[1] should name top outflow group ${topSectorOut.name}`);
+  const broadFact = String(snapshot.conclusion.facts[0] || "");
+  const broadGroups = snapshot.groups.filter((g) => g.kind === "broad");
+  const broadIn = broadGroups.filter((g) => Number(g.flow1d || 0) > 0).length;
+  const broadOut = broadGroups.filter((g) => Number(g.flow1d || 0) < 0).length;
+  assert.ok(broadFact.includes(`宽基${broadGroups.length}组中${broadOut}个流出、${broadIn}个流入`), `facts[0] broad counts mismatch: ${broadFact}`);
   assert.doesNotMatch(snapshot.conclusion.headline, /申万一级行业资金流入居前/);
 
   const trade = snapshot.flowMetrics.secondaryMarketTradeFlow;

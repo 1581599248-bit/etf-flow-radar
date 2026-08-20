@@ -183,10 +183,14 @@ class UpdateDailyV2Tests(unittest.TestCase):
             v2._regenerate_v2_conclusion(snapshot)
         headline = snapshot["conclusion"]["headline"]
         self.assertTrue(headline.startswith("A股ETF盘中买盘偏强，主动买入净额198.4亿元；但ETF份额对应申赎资金大幅净流出48.3亿元\n—— 盘面买盘虽强，份额端却在逢高兑现，有资金借反弹离场。"))
-        self.assertIn("申万一级和主题行业资金流入居前的是传媒，流出最多的是半导体。", headline)
+        self.assertNotIn("宽基", headline)
+        self.assertNotIn("申万一级和主题行业", headline)
         self.assertNotIn("A股股票ETF当日合计", headline)
         self.assertNotIn("流出最多的是电子", headline)
         self.assertIn("净流出最多为半导体-23.4亿", snapshot["conclusion"]["facts"][1])
+        self.assertIn("净流入居前为传媒+1.8亿", snapshot["conclusion"]["facts"][1])
+        self.assertIn("宽基2组中1个流出、1个流入", snapshot["conclusion"]["facts"][0])
+        self.assertIn("流出仅沪深300-3.0亿", snapshot["conclusion"]["facts"][0])
 
     def test_homepage_headline_keeps_primary_share_flow_when_secondary_is_missing(self):
         snapshot = {
@@ -206,7 +210,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn("A股ETF盘中主动买卖数据暂缺", headline)
         self.assertIn("ETF份额对应申赎资金大幅净流入12.6亿元", headline)
         self.assertIn("整体资金仍在明显流入", headline)
-        self.assertIn("流出最多的是半导体", headline)
+        self.assertNotIn("申万一级和主题行业", headline)
+        self.assertIn("半导体", snapshot["conclusion"]["facts"][1])
 
     def test_visible_sector_groups_are_exactly_the_client_industry_layer(self):
         snapshot = {"groups": self._groups() + [{"id": "growth", "name": "成长", "kind": "style", "flow1d": 2.0}]}

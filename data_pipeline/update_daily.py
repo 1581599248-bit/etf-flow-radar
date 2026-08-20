@@ -514,8 +514,8 @@ def generate_conclusion(groups: list[dict[str, Any]], market: dict[str, Any], hi
         f"{sustained_text}"
     )
     anomaly = (
-        f"单只ETF大额变化：{market['topInflowEtf']['name']}净流入{market['topInflowEtf']['flow1d']:+.1f}亿元；"
-        f"{market['topOutflowEtf']['name']}净流出{market['topOutflowEtf']['flow1d']:+.1f}亿元。"
+        f"单只ETF大额变化：{market['topInflowEtf']['name']}净流入{market['topInflowEtf']['flow1d']:.1f}亿元；"
+        f"{market['topOutflowEtf']['name']}净流出{abs(market['topOutflowEtf']['flow1d']):.1f}亿元。"
     )
     return {
         "headline": headline,
