@@ -209,16 +209,16 @@ def _motion_copy(primary_value: float, strength: str) -> str:
     if strength == "flat":
         return "整体资金暂无明显增减"
     if primary_value > 0:
-        if strength == "small":
-            return "整体资金小幅流入"
-        if strength in {"clear", "large"}:
-            return "整体资金仍在明显流入"
-        return "整体资金仍在流入"
-    if strength == "small":
-        return "整体资金小幅撤出"
-    if strength in {"clear", "large"}:
-        return "整体资金仍在明显撤出"
-    return "整体资金仍在撤出"
+        return {
+            "small": "整体资金小幅净流入",
+            "clear": "整体资金呈较明显净流入",
+            "large": "整体资金净流入幅度较大",
+        }.get(strength, "整体资金呈净流入")
+    return {
+        "small": "整体资金小幅净流出",
+        "clear": "整体资金呈较明显净流出",
+        "large": "整体资金净流出幅度较大",
+    }.get(strength, "整体资金呈净流出")
 
 
 def _market_flow_headline(
@@ -227,50 +227,73 @@ def _market_flow_headline(
     trade_turnover: float | None = None,
     market_aum: float | None = None,
 ) -> str:
-    """Translate flow direction, strength and divergence into plain-language client copy.
+    """Translate observable flow direction and relative scale into calibrated client copy.
 
-    解读型话术：第一行陈述两个市场的数字（盘中主动买卖净额 + 份额对应申赎资金），
-    第二行以破折号引出资金行为解读（同向共振 / 逢跌承接 / 逢高兑现 /
-    存量博弈 / 整体观望）。只描述资金行为本身，不给出买卖建议，
-    与页脚"不构成投资建议"一致。
+    先按交易净额占成交额、申赎金额占ETF规模的比例划分强弱；单日小幅
+    申赎只描述为边际情绪变化，不外推为趋势性进出场。仅当规模较大且盘中
+    交易、份额申赎同步时，才提示资金情绪明显变化，且始终保留持续性观察。
     """
     primary_strength = _primary_strength(primary_value, market_aum)
     primary_text = _primary_copy(primary_value, primary_strength)
-    motion_text = _motion_copy(primary_value, primary_strength)
 
     if trade_value is None:
-        return f"A股ETF盘中主动买卖数据暂缺；{primary_text}\n—— {motion_text}。"
+        if primary_strength == "flat":
+            interpretation = "份额端资金基本持平，暂无明确方向。"
+        elif primary_strength == "small":
+            direction = "流入" if primary_value > 0 else "流出"
+            interpretation = f"份额端仅小幅净{direction}，单日变动有限，暂不宜外推为趋势性资金变化。"
+        else:
+            interpretation = f"{_motion_copy(primary_value, primary_strength)}，需结合后续数据观察持续性。"
+        return f"A股ETF盘中主动买卖数据暂缺；{primary_text}\n—— {interpretation}"
 
     trade_strength = _trade_strength(trade_value, trade_turnover)
     trade_text = _trade_copy(trade_value, trade_strength)
 
     if trade_strength == "balanced":
         if primary_strength == "flat":
-            return f"{trade_text}；{primary_text}\n—— 盘面交易与份额申赎均无明显方向，资金整体观望。"
-        if primary_value > 0:
-            return f"{trade_text}；{primary_text}\n—— 盘面交易相对平稳，份额端资金已在持续进场。"
-        return f"{trade_text}；{primary_text}\n—— 盘面交易相对平稳，份额端资金却在持续撤离。"
+            return f"{trade_text}；{primary_text}\n—— 盘面交易与份额申赎均无明显方向，短线资金以观望为主。"
+        if primary_strength == "small":
+            direction = "流入" if primary_value > 0 else "流出"
+            return f"{trade_text}；{primary_text}\n—— 盘面交易相对平稳，份额端仅小幅净{direction}，尚未形成明确资金方向。"
+        direction = "净流入" if primary_value > 0 else "净流出"
+        return f"{trade_text}；{primary_text}\n—— 盘面交易相对平稳，份额端{direction}较为明显，需观察是否持续。"
 
     if primary_strength == "flat":
-        if trade_value > 0:
-            return f"{trade_text}；{primary_text}\n—— 盘面买盘活跃，但份额申赎按兵不动，仍属存量博弈。"
-        return f"{trade_text}；{primary_text}\n—— 盘面抛压偏重，但份额申赎按兵不动，尚未演变为增量资金撤离。"
+        side = "买盘" if trade_value > 0 else "卖盘"
+        return f"{trade_text}；{primary_text}\n—— 盘中{side}偏强，但份额端基本持平，暂未见明显申赎跟随。"
 
     same_direction = (trade_value > 0 and primary_value > 0) or (trade_value < 0 and primary_value < 0)
     if same_direction:
-        if trade_value > 0:
-            return f"{trade_text}；{primary_text}\n—— 盘面买盘与份额申购同向发力，资金进场意愿明确。"
-        return f"{trade_text}；{primary_text}\n—— 盘面抛压与份额赎回共振，资金离场方向一致。"
+        if primary_strength == "small":
+            if primary_value > 0:
+                interpretation = "盘面买盘与份额端均有小幅流入，资金情绪略有改善，尚未形成强增量信号。"
+            else:
+                interpretation = "盘面卖盘与份额端均偏弱，但份额端仅小幅净流出，短线资金略偏谨慎，尚未出现集中赎回压力。"
+            return f"{trade_text}；{primary_text}\n—— {interpretation}"
+
+        if primary_value > 0:
+            if primary_strength == "large" and trade_strength == "large":
+                interpretation = "盘面买盘与份额端大额净流入同步，资金增配意愿明显升温，仍需观察延续性。"
+            else:
+                interpretation = "盘面买盘与份额端同步净流入，资金增配意愿有所升温，仍需观察延续性。"
+        elif primary_strength == "large" and trade_strength in {"clear", "large"}:
+            interpretation = "盘面卖压与份额端大额净流出同步，资金情绪明显转弱，需跟踪后续是否持续。"
+        else:
+            interpretation = "盘面卖压与份额端净流出同步，资金情绪偏谨慎，尚需观察后续是否形成连续赎回。"
+        return f"{trade_text}；{primary_text}\n—— {interpretation}"
 
     if trade_value < 0:
-        # 盘面跌、份额申购：典型的逢跌进场/护盘组合。
-        if primary_strength in {"clear", "large"}:
-            return f"{trade_text}；但{primary_text}\n—— 盘面抛压虽重，大资金却在逢跌进场，一级市场承接有力。"
-        return f"{trade_text}；但{primary_text}\n—— 盘面抛压之下，已有资金逢跌申购，一级市场初现承接。"
-    # 盘面涨、份额赎回：反弹中有人借道离场。
-    if primary_strength in {"clear", "large"}:
-        return f"{trade_text}；但{primary_text}\n—— 盘面买盘虽强，份额端却在逢高兑现，有资金借反弹离场。"
-    return f"{trade_text}；但{primary_text}\n—— 盘面买盘背后，份额端已出现小幅兑现迹象。"
+        if primary_strength == "small":
+            interpretation = "盘面卖压下份额端仅小幅申购，存在轻微承接，力度仍有限。"
+        else:
+            interpretation = "盘面卖压下份额端净流入较为明显，一级市场存在承接，但持续性仍待确认。"
+        return f"{trade_text}；但{primary_text}\n—— {interpretation}"
+
+    if primary_strength == "small":
+        interpretation = "盘面买盘偏强，份额端仅小幅净流出，可能存在短线兑现，尚不足以说明资金趋势。"
+    else:
+        interpretation = "盘面买盘偏强，但份额端净流出较为明显，二级与申赎行为分化，需观察持续性。"
+    return f"{trade_text}；但{primary_text}\n—— {interpretation}"
 
 
 def _visible_sector_groups(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
