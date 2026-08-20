@@ -345,14 +345,14 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
     if broad:
         broad_in_count = sum(float(g.get("flow1d", 0) or 0) > 0 for g in broad)
         broad_out_count = sum(float(g.get("flow1d", 0) or 0) < 0 for g in broad)
-        broad_stat = f"共{len(broad)}组，{broad_out_count}个流出、{broad_in_count}个流入"
+        broad_stat = f"共{len(broad)}组，{broad_out_count}个份额净流出、{broad_in_count}个份额净流入"
         out_groups = [g for g in sorted(broad, key=lambda g: float(g.get("flow1d", 0) or 0)) if float(g.get("flow1d", 0) or 0) < 0]
         in_groups = [g for g in sorted(broad, key=lambda g: float(g.get("flow1d", 0) or 0), reverse=True) if float(g.get("flow1d", 0) or 0) > 0]
         details = []
         if out_groups:
-            details.append("流出居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in out_groups[:2]))
+            details.append("份额净流出居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in out_groups[:2]))
         if in_groups:
-            details.append("流入居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in in_groups[:2]))
+            details.append("份额净流入居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in in_groups[:2]))
         broad_fact = f"{broad_stat}；" + "；".join(details) + "。" if details else f"{broad_stat}；当日无明显资金方向。"
     else:
         broad_fact = "暂无可分析宽基ETF。"
@@ -362,9 +362,9 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
         style_out = [g for g in sorted(styles, key=lambda g: float(g.get("flow1d", 0) or 0)) if float(g.get("flow1d", 0) or 0) < 0]
         parts = []
         if style_in:
-            parts.append("净流入居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in style_in[:2]))
+            parts.append("份额净流入居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in style_in[:2]))
         if style_out:
-            parts.append("净流出居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in style_out[:2]))
+            parts.append("份额净流出居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in style_out[:2]))
         style_fact = "；".join(parts) + "。" if parts else f"共{len(styles)}组，当日均无明显资金方向。"
     else:
         style_fact = "暂无可分析风格ETF。"
@@ -374,9 +374,9 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
         sector_out = [g for g in sorted(sectors, key=lambda g: float(g.get("flow1d", 0) or 0)) if float(g.get("flow1d", 0) or 0) < 0]
         parts = []
         if sector_in:
-            parts.append("净流入居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in sector_in[:2]))
+            parts.append("份额净流入居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in sector_in[:2]))
         if sector_out:
-            parts.append("净流出居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in sector_out[:2]))
+            parts.append("份额净流出居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in sector_out[:2]))
         sector_fact = "；".join(parts) + "。" if parts else "当日均无明显资金方向。"
     else:
         sector_fact = "暂无可分析申万一级与主题行业ETF。"
@@ -386,10 +386,10 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
     single_out = min((e for e in etf_flows if float(e["flow1d"]) < 0), key=lambda e: float(e["flow1d"]), default=None)
     single_parts = []
     if single_in:
-        single_parts.append(f"净流入最大为{single_in['name']}{float(single_in['flow1d']):+.1f}亿")
+        single_parts.append(f"份额净流入最大为{single_in['name']}{float(single_in['flow1d']):+.1f}亿")
     if single_out:
-        single_parts.append(f"净流出最大为{single_out['name']}{float(single_out['flow1d']):+.1f}亿")
-    single_fact = "；".join(single_parts) + "。" if single_parts else "当日无单只ETF显著资金变化。"
+        single_parts.append(f"份额净流出最大为{single_out['name']}{float(single_out['flow1d']):+.1f}亿")
+    single_fact = "；".join(single_parts) + "。" if single_parts else "当日无单只ETF显著份额变化。"
 
     facts = [broad_fact, style_fact, sector_fact, single_fact]
     snapshot["conclusion"]["facts"] = facts
