@@ -257,9 +257,14 @@ def _market_flow_headline(
     trade_text = _trade_copy(trade_value, trade_strength)
 
     if trade_strength == "generic" or primary_strength == "generic":
-        same_direction = (trade_value > 0 and primary_value > 0) or (trade_value < 0 and primary_value < 0)
-        relation = "方向一致" if same_direction else "方向分化"
-        return f"{trade_text}；{primary_text}\n—— 盘中与份额端{relation}，但缺少可比规模基准，暂不对资金力度作延伸判断。"
+        if trade_strength == "balanced":
+            relation = "盘面交易相对平稳，份额端存在方向变化"
+        elif primary_strength == "flat":
+            relation = "盘中存在主动交易，份额端基本持平"
+        else:
+            same_direction = (trade_value > 0 and primary_value > 0) or (trade_value < 0 and primary_value < 0)
+            relation = "盘中与份额端方向一致" if same_direction else "盘中与份额端方向分化"
+        return f"{trade_text}；{primary_text}\n—— {relation}，但缺少可比规模基准，暂不对资金力度作延伸判断。"
 
     if trade_strength == "balanced":
         if primary_strength == "flat":
