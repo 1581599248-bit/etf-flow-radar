@@ -13,6 +13,7 @@
   <script src="html-to-image.js" onload="window.__imageExportReady=true"></script>
   <script>
   const $=s=>document.querySelector(s), esc=v=>String(v??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
+  const headlineHtml=v=>String(v??"").split("\n").map(p=>p.startsWith("—— ")?`<em>${esc(p)}</em>`:esc(p)).join("\n");
   const money=n=>n==null?"—":`${n>0?"+":n<0?"−":""}${Math.abs(n).toFixed(1)}亿`;
   const pct=n=>n==null?"—":`${n>0?"+":""}${n.toFixed(2)}%`;
   const flowRate=r=>r.flowIntensity5dPct??(r.flowIntensity5dBps==null?null:r.flowIntensity5dBps/100);
@@ -93,7 +94,7 @@
     <main id="report" class="report">
       <header class="masthead"><div><span>DAILY CLIENT BRIEF · OFFICIAL CLOSE</span><h1>资金ETF流动每日跟踪</h1><p>真实份额 · 客观变化 · 可复核结论</p></div><div class="analysis-date"><span>数据交易日</span><strong>${fullDate(data.tradeDate)}</strong></div></header>
 
-      <section id="summary" class="conclusion panel"><div class="section-head"><div><span>PRE-MARKET CLIENT VIEW</span><h2>${opinionDate(data.tradeDate)} ETF跟踪观点</h2><p>${opinionDate(data.tradeDate)}收盘数据 · 下一交易日盘前使用</p></div><b class="confidence">置信度 ${data.conclusion.confidence}</b></div><h3>${esc(data.conclusion.headline)}</h3><div class="facts">${data.conclusion.facts.map((x,i)=>`<article><b>0${i+1}</b><p>${esc(x)}</p></article>`).join("")}</div><div class="view"><b>数据解读</b><p>${esc(data.conclusion.interpretation)}</p></div></section>
+      <section id="summary" class="conclusion panel"><div class="section-head"><div><span>PRE-MARKET CLIENT VIEW</span><h2>${opinionDate(data.tradeDate)} ETF跟踪观点</h2><p>${opinionDate(data.tradeDate)}收盘数据 · 下一交易日盘前使用</p></div><b class="confidence">置信度 ${data.conclusion.confidence}</b></div><h3>${headlineHtml(data.conclusion.headline)}</h3><div class="facts">${data.conclusion.facts.map((x,i)=>`<article><b>0${i+1}</b><p>${esc(x)}</p></article>`).join("")}</div><div class="view"><b>数据解读</b><p>${esc(data.conclusion.interpretation)}</p></div></section>
 
       <section class="market-strip"><article><span>A股股票ETF当日资金变化</span><strong class="${tone(data.market.flow1d)}">${money(data.market.flow1d)}</strong><small>本期统计${data.market.etfCount}只</small></article><article><span>5日累计资金变化</span><strong class="${tone(data.market.flow5d)}">${money(data.market.flow5d)}</strong><small>观察是否连续</small></article><article><span>20日累计资金变化</span><strong class="${tone(data.market.flow20d)}">${money(data.market.flow20d)}</strong><small>观察中期方向</small></article><article class="flow-distribution"><span>当日ETF流入流出分布</span><strong>${countText(data.market)}</strong></article><article><span>最大流入组</span><strong class="up">${topIn.name}</strong><small>${money(topIn.flow1d)}</small></article><article><span>最大流出组</span><strong class="down">${topOut.name}</strong><small>${money(topOut.flow1d)}</small></article></section>
 
