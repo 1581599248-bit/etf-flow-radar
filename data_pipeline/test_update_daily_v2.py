@@ -239,8 +239,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertNotIn("流出最多的是电子", headline)
         self.assertIn("净流出最多为半导体-23.4亿", snapshot["conclusion"]["facts"][2])
         self.assertIn("净流入居前为传媒+1.8亿", snapshot["conclusion"]["facts"][1])
-        self.assertIn("宽基2组中1个流出、1个流入", snapshot["conclusion"]["facts"][0])
-        self.assertIn("流出仅沪深300-3.0亿", snapshot["conclusion"]["facts"][0])
+        self.assertIn("宽基2组中1个份额净流出、1个份额净流入", snapshot["conclusion"]["facts"][0])
+        self.assertIn("份额净流出仅沪深300-3.0亿", snapshot["conclusion"]["facts"][0])
 
     def test_homepage_summary_has_four_fixed_data_modules(self):
         snapshot = {
@@ -259,10 +259,10 @@ class UpdateDailyV2Tests(unittest.TestCase):
         facts = snapshot["conclusion"]["facts"]
         self.assertEqual(len(facts), 4)
         self.assertIn("宽基", facts[0])
-        self.assertIn("价值+2.0亿", facts[1])
-        self.assertIn("半导体-23.4亿", facts[2])
-        self.assertIn("ETF甲+3.0亿", facts[3])
-        self.assertIn("ETF乙-4.0亿", facts[3])
+        self.assertIn("份额净流入居前为价值+2.0亿", facts[1])
+        self.assertIn("份额净流出居前为半导体-23.4亿", facts[2])
+        self.assertIn("份额净流入最大为ETF甲+3.0亿", facts[3])
+        self.assertIn("份额净流出最大为ETF乙-4.0亿", facts[3])
 
     def test_homepage_headline_keeps_primary_share_flow_when_secondary_is_missing(self):
         snapshot = {
