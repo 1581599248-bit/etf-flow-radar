@@ -134,21 +134,32 @@
     return Math.min(spec.maxPixelRatio,spec.maxPixelHeight/height,Math.sqrt(spec.maxCanvasPixels/(width*height)));
   }
 
+  function createExportSnapshot(report){
+    const snapshot=report.cloneNode(true);
+    snapshot.removeAttribute("id");
+    snapshot.classList.add("exporting","export-crop","export-snapshot");
+    snapshot.setAttribute("aria-hidden","true");
+    snapshot.style.cssText="position:fixed;left:-10000px;top:0;width:900px;min-width:900px;max-width:900px;margin:0;padding:16px;pointer-events:none;z-index:-1";
+    document.body.appendChild(snapshot);
+    return snapshot;
+  }
+
   async function exportJpg(day){
-    const report=$("#report"),button=$("#export"),viewport=document.querySelector('meta[name="viewport"]'),savedViewport=viewport.getAttribute("content");
-    button.disabled=true;button.textContent="正在生成高清 JPG…";viewport.setAttribute("content","width=900");report.classList.add("export-crop");report.classList.add("exporting");
+    const report=$("#report"),button=$("#export");
+    let snapshot;
+    button.disabled=true;button.textContent="正在生成高清 JPG…";
     try{
       if(!window.__imageExportReady||!window.htmlToImage)throw new Error("图片组件尚未加载，请刷新页面后重试");
+      snapshot=createExportSnapshot(report);
       await document.fonts.ready;
-      requestAnimationFrame(layoutBubbleLabels);
       await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-      const width=Math.ceil(report.getBoundingClientRect().width),height=Math.ceil(report.scrollHeight),pixelRatio=exportPixelRatio(width,height);
-      if(pixelRatio<=0)throw new Error("图片尺寸计算失败");
-      const canvas=await window.htmlToImage.toCanvas(report,{pixelRatio,backgroundColor:"#f2f3f5",cacheBust:true,width,height,filter:el=>!(el instanceof HTMLElement&&el.dataset.exportHide==="true")});
+      const width=EXPORT_IMAGE_SPEC.cssWidth,height=Math.ceil(snapshot.scrollHeight),pixelRatio=exportPixelRatio(width,height);
+      if(pixelRatio<=0||height<=0)throw new Error("图片尺寸计算失败");
+      const canvas=await window.htmlToImage.toCanvas(snapshot,{pixelRatio,backgroundColor:"#f2f3f5",cacheBust:true,width,height});
       const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error("JPG 编码失败")),"image/jpeg",EXPORT_IMAGE_SPEC.quality));
       showSingleExportDownload({url:URL.createObjectURL(blob),filename:`资金ETF流动每日跟踪_${day}_客户版.jpg`,width:canvas.width,height:canvas.height},day);
     }catch(error){alert(`导出失败：${error.message}`)}
-    finally{viewport.setAttribute("content",savedViewport);report.classList.remove("exporting");report.classList.remove("export-crop");requestAnimationFrame(layoutBubbleLabels);button.disabled=false;button.textContent="导出客户 JPG"}
+    finally{snapshot?.remove();button.disabled=false;button.textContent="导出客户 JPG"}
   }
 
   function showSingleExportDownload(file,day){
