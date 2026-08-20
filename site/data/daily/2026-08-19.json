@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "tradeDate": "2026-08-19",
-  "generatedAt": "2026-08-20T05:33:35+08:00",
+  "generatedAt": "2026-08-20T12:25:44+08:00",
   "metric": "primaryMarketNetSubscriptionEstimate",
   "valuation": "sameDayUnitNAV",
   "marketScopes": {
@@ -140,15 +140,15 @@
         "scopeTotals": {
           "allEtf": {
             "etfCount": 1563,
-            "flow1d": 556.12
+            "flow1d": 548.36
           },
           "stockEtfIncludingCrossBorder": {
             "etfCount": 1493,
-            "flow1d": 509.44
+            "flow1d": 501.68
           },
           "aShareStockEtf": {
             "etfCount": 1250,
-            "flow1d": 528.5
+            "flow1d": 520.93
           }
         }
       }
@@ -164,7 +164,7 @@
       "shareDelta1d": 1164600000.0,
       "nav": 4.6502,
       "flow1d": 54.16,
-      "flow1dAvgPriceEstimate": 54.31
+      "flow1dAvgPriceEstimate": 54.16
     },
     {
       "code": "588000",
@@ -175,7 +175,7 @@
       "shareDelta1d": 2466000000.0,
       "nav": 1.7604,
       "flow1d": 43.41,
-      "flow1dAvgPriceEstimate": 44.18
+      "flow1dAvgPriceEstimate": 43.41
     },
     {
       "code": "159915",
@@ -186,7 +186,7 @@
       "shareDelta1d": 1219000000.0,
       "nav": 3.4921,
       "flow1d": 42.57,
-      "flow1dAvgPriceEstimate": 43.38
+      "flow1dAvgPriceEstimate": 42.57
     },
     {
       "code": "512100",
@@ -197,7 +197,7 @@
       "shareDelta1d": 1064000000.0,
       "nav": 3.0477,
       "flow1d": 32.43,
-      "flow1dAvgPriceEstimate": 32.77
+      "flow1dAvgPriceEstimate": 32.43
     },
     {
       "code": "588170",
@@ -208,7 +208,7 @@
       "shareDelta1d": 2328000000.0,
       "nav": 1.0227,
       "flow1d": 23.81,
-      "flow1dAvgPriceEstimate": 24.31
+      "flow1dAvgPriceEstimate": 23.81
     },
     {
       "code": "560010",
@@ -219,7 +219,7 @@
       "shareDelta1d": 626000000.0,
       "nav": 3.128,
       "flow1d": 19.58,
-      "flow1dAvgPriceEstimate": 19.66
+      "flow1dAvgPriceEstimate": 19.58
     },
     {
       "code": "510500",
@@ -230,7 +230,7 @@
       "shareDelta1d": 216000000.0,
       "nav": 7.8,
       "flow1d": 16.85,
-      "flow1dAvgPriceEstimate": 17.03
+      "flow1dAvgPriceEstimate": 16.85
     },
     {
       "code": "588080",
@@ -241,7 +241,7 @@
       "shareDelta1d": 888000000.0,
       "nav": 1.7068,
       "flow1d": 15.16,
-      "flow1dAvgPriceEstimate": 15.42
+      "flow1dAvgPriceEstimate": 15.16
     },
     {
       "code": "515880",
@@ -252,7 +252,7 @@
       "shareDelta1d": 1570000000.0,
       "nav": 0.6523,
       "flow1d": 10.24,
-      "flow1dAvgPriceEstimate": 10.48
+      "flow1dAvgPriceEstimate": 10.24
     },
     {
       "code": "159845",
@@ -263,7 +263,7 @@
       "shareDelta1d": 312000000.0,
       "nav": 3.1299,
       "flow1d": 9.77,
-      "flow1dAvgPriceEstimate": 9.89
+      "flow1dAvgPriceEstimate": 9.77
     },
     {
       "code": "510310",
@@ -274,7 +274,7 @@
       "shareDelta1d": 205200000.0,
       "nav": 4.5155,
       "flow1d": 9.27,
-      "flow1dAvgPriceEstimate": 9.3
+      "flow1dAvgPriceEstimate": 9.27
     },
     {
       "code": "510210",
@@ -285,7 +285,7 @@
       "shareDelta1d": 861000000.0,
       "nav": 0.9954,
       "flow1d": 8.57,
-      "flow1dAvgPriceEstimate": 8.61
+      "flow1dAvgPriceEstimate": 8.57
     },
     {
       "code": "159338",
@@ -296,7 +296,7 @@
       "shareDelta1d": 657000000.0,
       "nav": 1.2147,
       "flow1d": 7.98,
-      "flow1dAvgPriceEstimate": 8.05
+      "flow1dAvgPriceEstimate": 7.98
     },
     {
       "code": "563360",
@@ -307,7 +307,7 @@
       "shareDelta1d": 615000000.0,
       "nav": 1.2824,
       "flow1d": 7.89,
-      "flow1dAvgPriceEstimate": 7.96
+      "flow1dAvgPriceEstimate": 7.89
     },
     {
       "code": "159629",
@@ -318,7 +318,7 @@
       "shareDelta1d": 242000000.0,
       "nav": 3.1426,
       "flow1d": 7.61,
-      "flow1dAvgPriceEstimate": 7.7
+      "flow1dAvgPriceEstimate": 7.61
     },
     {
       "code": "510050",
@@ -329,7 +329,7 @@
       "shareDelta1d": 236700000.0,
       "nav": 3.0017,
       "flow1d": 7.11,
-      "flow1dAvgPriceEstimate": 7.1
+      "flow1dAvgPriceEstimate": 7.11
     },
     {
       "code": "562500",
@@ -340,7 +340,7 @@
       "shareDelta1d": 739500000.0,
       "nav": 0.9559,
       "flow1d": 7.07,
-      "flow1dAvgPriceEstimate": 7.22
+      "flow1dAvgPriceEstimate": 7.07
     },
     {
       "code": "159558",
@@ -351,7 +351,7 @@
       "shareDelta1d": 606000000.0,
       "nav": 1.156,
       "flow1d": 7.01,
-      "flow1dAvgPriceEstimate": 7.15
+      "flow1dAvgPriceEstimate": 7.01
     },
     {
       "code": "588200",
@@ -362,7 +362,7 @@
       "shareDelta1d": 576000000.0,
       "nav": 1.1781,
       "flow1d": 6.79,
-      "flow1dAvgPriceEstimate": 6.92
+      "flow1dAvgPriceEstimate": 6.79
     },
     {
       "code": "159919",
@@ -373,7 +373,7 @@
       "shareDelta1d": 133200000.0,
       "nav": 4.8555,
       "flow1d": 6.47,
-      "flow1dAvgPriceEstimate": 6.5
+      "flow1dAvgPriceEstimate": 6.47
     },
     {
       "code": "512480",
@@ -384,7 +384,7 @@
       "shareDelta1d": 608000000.0,
       "nav": 1.0455,
       "flow1d": 6.36,
-      "flow1dAvgPriceEstimate": 6.49
+      "flow1dAvgPriceEstimate": 6.36
     },
     {
       "code": "588220",
@@ -395,7 +395,7 @@
       "shareDelta1d": 346500000.0,
       "nav": 1.7855,
       "flow1d": 6.19,
-      "flow1dAvgPriceEstimate": 6.28
+      "flow1dAvgPriceEstimate": 6.19
     },
     {
       "code": "159516",
@@ -406,7 +406,7 @@
       "shareDelta1d": 804000000.0,
       "nav": 0.7366,
       "flow1d": 5.92,
-      "flow1dAvgPriceEstimate": 6.04
+      "flow1dAvgPriceEstimate": 5.92
     },
     {
       "code": "510330",
@@ -417,7 +417,7 @@
       "shareDelta1d": 121500000.0,
       "nav": 4.8487,
       "flow1d": 5.89,
-      "flow1dAvgPriceEstimate": 5.91
+      "flow1dAvgPriceEstimate": 5.89
     },
     {
       "code": "159949",
@@ -428,7 +428,7 @@
       "shareDelta1d": 343000000.0,
       "nav": 1.6383,
       "flow1d": 5.62,
-      "flow1dAvgPriceEstimate": 5.72
+      "flow1dAvgPriceEstimate": 5.62
     },
     {
       "code": "159361",
@@ -439,7 +439,7 @@
       "shareDelta1d": 450000000.0,
       "nav": 1.2387,
       "flow1d": 5.57,
-      "flow1dAvgPriceEstimate": 5.62
+      "flow1dAvgPriceEstimate": 5.57
     },
     {
       "code": "159633",
@@ -450,7 +450,7 @@
       "shareDelta1d": 166000000.0,
       "nav": 3.2156,
       "flow1d": 5.34,
-      "flow1dAvgPriceEstimate": 5.42
+      "flow1dAvgPriceEstimate": 5.34
     },
     {
       "code": "159352",
@@ -461,7 +461,7 @@
       "shareDelta1d": 405000000.0,
       "nav": 1.2634,
       "flow1d": 5.12,
-      "flow1dAvgPriceEstimate": 5.17
+      "flow1dAvgPriceEstimate": 5.12
     },
     {
       "code": "512050",
@@ -472,7 +472,7 @@
       "shareDelta1d": 378000000.0,
       "nav": 1.2095,
       "flow1d": 4.57,
-      "flow1dAvgPriceEstimate": 4.62
+      "flow1dAvgPriceEstimate": 4.57
     },
     {
       "code": "159995",
@@ -483,7 +483,7 @@
       "shareDelta1d": 385000000.0,
       "nav": 1.1641,
       "flow1d": 4.48,
-      "flow1dAvgPriceEstimate": 4.57
+      "flow1dAvgPriceEstimate": 4.48
     },
     {
       "code": "159952",
@@ -494,7 +494,7 @@
       "shareDelta1d": 209100000.0,
       "nav": 2.1208,
       "flow1d": 4.43,
-      "flow1dAvgPriceEstimate": 4.51
+      "flow1dAvgPriceEstimate": 4.43
     },
     {
       "code": "159819",
@@ -505,7 +505,7 @@
       "shareDelta1d": 234000000.0,
       "nav": 1.7407,
       "flow1d": 4.07,
-      "flow1dAvgPriceEstimate": 4.16
+      "flow1dAvgPriceEstimate": 4.07
     },
     {
       "code": "512500",
@@ -516,7 +516,7 @@
       "shareDelta1d": 86400000.0,
       "nav": 4.4143,
       "flow1d": 3.81,
-      "flow1dAvgPriceEstimate": 3.85
+      "flow1dAvgPriceEstimate": 3.81
     },
     {
       "code": "588710",
@@ -527,7 +527,7 @@
       "shareDelta1d": 348000000.0,
       "nav": 1.0563,
       "flow1d": 3.68,
-      "flow1dAvgPriceEstimate": 3.76
+      "flow1dAvgPriceEstimate": 3.68
     },
     {
       "code": "159530",
@@ -538,7 +538,7 @@
       "shareDelta1d": 260000000.0,
       "nav": 1.34,
       "flow1d": 3.48,
-      "flow1dAvgPriceEstimate": 3.56
+      "flow1dAvgPriceEstimate": 3.48
     },
     {
       "code": "512760",
@@ -549,7 +549,7 @@
       "shareDelta1d": 306000000.0,
       "nav": 1.1091,
       "flow1d": 3.39,
-      "flow1dAvgPriceEstimate": 3.47
+      "flow1dAvgPriceEstimate": 3.39
     },
     {
       "code": "589020",
@@ -560,7 +560,7 @@
       "shareDelta1d": 264000000.0,
       "nav": 1.2448,
       "flow1d": 3.29,
-      "flow1dAvgPriceEstimate": 3.36
+      "flow1dAvgPriceEstimate": 3.29
     },
     {
       "code": "510880",
@@ -571,7 +571,7 @@
       "shareDelta1d": -97000000.0,
       "nav": 3.3664,
       "flow1d": -3.27,
-      "flow1dAvgPriceEstimate": -3.26
+      "flow1dAvgPriceEstimate": -3.27
     },
     {
       "code": "159813",
@@ -582,7 +582,7 @@
       "shareDelta1d": 428000000.0,
       "nav": 0.7456,
       "flow1d": 3.19,
-      "flow1dAvgPriceEstimate": 3.25
+      "flow1dAvgPriceEstimate": 3.19
     },
     {
       "code": "588060",
@@ -593,7 +593,7 @@
       "shareDelta1d": 288000000.0,
       "nav": 1.0597,
       "flow1d": 3.05,
-      "flow1dAvgPriceEstimate": 3.11
+      "flow1dAvgPriceEstimate": 3.05
     },
     {
       "code": "512880",
@@ -604,7 +604,7 @@
       "shareDelta1d": -280000000.0,
       "nav": 1.0633,
       "flow1d": -2.98,
-      "flow1dAvgPriceEstimate": -2.99
+      "flow1dAvgPriceEstimate": -2.98
     },
     {
       "code": "563230",
@@ -615,7 +615,7 @@
       "shareDelta1d": 248000000.0,
       "nav": 1.102,
       "flow1d": 2.73,
-      "flow1dAvgPriceEstimate": 2.83
+      "flow1dAvgPriceEstimate": 2.73
     },
     {
       "code": "159922",
@@ -626,7 +626,7 @@
       "shareDelta1d": 86000000.0,
       "nav": 3.1654,
       "flow1d": 2.72,
-      "flow1dAvgPriceEstimate": 2.76
+      "flow1dAvgPriceEstimate": 2.72
     },
     {
       "code": "515050",
@@ -637,7 +637,7 @@
       "shareDelta1d": 262000000.0,
       "nav": 1.0131,
       "flow1d": 2.65,
-      "flow1dAvgPriceEstimate": 2.72
+      "flow1dAvgPriceEstimate": 2.65
     },
     {
       "code": "560780",
@@ -648,7 +648,7 @@
       "shareDelta1d": 240000000.0,
       "nav": 1.0867,
       "flow1d": 2.61,
-      "flow1dAvgPriceEstimate": 2.66
+      "flow1dAvgPriceEstimate": 2.61
     },
     {
       "code": "159351",
@@ -659,7 +659,7 @@
       "shareDelta1d": 213000000.0,
       "nav": 1.2139,
       "flow1d": 2.59,
-      "flow1dAvgPriceEstimate": 2.61
+      "flow1dAvgPriceEstimate": 2.59
     },
     {
       "code": "159363",
@@ -670,18 +670,7 @@
       "shareDelta1d": 182000000.0,
       "nav": 1.2237,
       "flow1d": 2.23,
-      "flow1dAvgPriceEstimate": 2.28
-    },
-    {
-      "code": "588050",
-      "name": "科创50ETF工银",
-      "groupId": "star50",
-      "shares": 6407241300.0,
-      "previousComparableShares": 6281241300.0,
-      "shareDelta1d": 126000000.0,
-      "nav": 1.7104,
-      "flow1d": 2.16,
-      "flow1dAvgPriceEstimate": 2.2
+      "flow1dAvgPriceEstimate": 2.23
     },
     {
       "code": "563220",
@@ -692,7 +681,18 @@
       "shareDelta1d": 171000000.0,
       "nav": 1.2651,
       "flow1d": 2.16,
-      "flow1dAvgPriceEstimate": 2.18
+      "flow1dAvgPriceEstimate": 2.16
+    },
+    {
+      "code": "588050",
+      "name": "科创50ETF工银",
+      "groupId": "star50",
+      "shares": 6407241300.0,
+      "previousComparableShares": 6281241300.0,
+      "shareDelta1d": 126000000.0,
+      "nav": 1.7104,
+      "flow1d": 2.16,
+      "flow1dAvgPriceEstimate": 2.16
     },
     {
       "code": "588750",
@@ -703,7 +703,7 @@
       "shareDelta1d": 87000000.0,
       "nav": 2.3585,
       "flow1d": 2.05,
-      "flow1dAvgPriceEstimate": 2.09
+      "flow1dAvgPriceEstimate": 2.05
     },
     {
       "code": "512890",
@@ -725,7 +725,7 @@
       "shareDelta1d": 197000000.0,
       "nav": 0.9825,
       "flow1d": 1.94,
-      "flow1dAvgPriceEstimate": 1.98
+      "flow1dAvgPriceEstimate": 1.94
     },
     {
       "code": "515980",
@@ -736,7 +736,7 @@
       "shareDelta1d": 177000000.0,
       "nav": 1.0147,
       "flow1d": 1.8,
-      "flow1dAvgPriceEstimate": 1.83
+      "flow1dAvgPriceEstimate": 1.8
     },
     {
       "code": "512800",
@@ -747,7 +747,7 @@
       "shareDelta1d": 217200000.0,
       "nav": 0.8154,
       "flow1d": 1.77,
-      "flow1dAvgPriceEstimate": 1.76
+      "flow1dAvgPriceEstimate": 1.77
     },
     {
       "code": "515120",
@@ -758,18 +758,7 @@
       "shareDelta1d": -248000000.0,
       "nav": 0.673,
       "flow1d": -1.67,
-      "flow1dAvgPriceEstimate": -1.68
-    },
-    {
-      "code": "159583",
-      "name": "通信ETF富国",
-      "groupId": "sw_communications",
-      "shares": 2422592902.0,
-      "previousComparableShares": 2320592902.0,
-      "shareDelta1d": 102000000.0,
-      "nav": 1.6262,
-      "flow1d": 1.66,
-      "flow1dAvgPriceEstimate": 1.7
+      "flow1dAvgPriceEstimate": -1.67
     },
     {
       "code": "510760",
@@ -780,7 +769,18 @@
       "shareDelta1d": 126000000.0,
       "nav": 1.3195,
       "flow1d": 1.66,
-      "flow1dAvgPriceEstimate": 1.67
+      "flow1dAvgPriceEstimate": 1.66
+    },
+    {
+      "code": "159583",
+      "name": "通信ETF富国",
+      "groupId": "sw_communications",
+      "shares": 2422592902.0,
+      "previousComparableShares": 2320592902.0,
+      "shareDelta1d": 102000000.0,
+      "nav": 1.6262,
+      "flow1d": 1.66,
+      "flow1dAvgPriceEstimate": 1.66
     },
     {
       "code": "159781",
@@ -791,7 +791,7 @@
       "shareDelta1d": 150000000.0,
       "nav": 1.1003,
       "flow1d": 1.65,
-      "flow1dAvgPriceEstimate": 1.68
+      "flow1dAvgPriceEstimate": 1.65
     },
     {
       "code": "159246",
@@ -802,7 +802,7 @@
       "shareDelta1d": 142000000.0,
       "nav": 1.1522,
       "flow1d": 1.64,
-      "flow1dAvgPriceEstimate": 1.66
+      "flow1dAvgPriceEstimate": 1.64
     },
     {
       "code": "159852",
@@ -813,7 +813,7 @@
       "shareDelta1d": 236000000.0,
       "nav": 0.6789,
       "flow1d": 1.6,
-      "flow1dAvgPriceEstimate": 1.62
+      "flow1dAvgPriceEstimate": 1.6
     },
     {
       "code": "159801",
@@ -824,7 +824,7 @@
       "shareDelta1d": 135000000.0,
       "nav": 1.1553,
       "flow1d": 1.56,
-      "flow1dAvgPriceEstimate": 1.59
+      "flow1dAvgPriceEstimate": 1.56
     },
     {
       "code": "562590",
@@ -835,7 +835,7 @@
       "shareDelta1d": 147000000.0,
       "nav": 1.0417,
       "flow1d": 1.53,
-      "flow1dAvgPriceEstimate": 1.57
+      "flow1dAvgPriceEstimate": 1.53
     },
     {
       "code": "159682",
@@ -846,7 +846,7 @@
       "shareDelta1d": 94000000.0,
       "nav": 1.5938,
       "flow1d": 1.5,
-      "flow1dAvgPriceEstimate": 1.52
+      "flow1dAvgPriceEstimate": 1.5
     },
     {
       "code": "589720",
@@ -857,7 +857,7 @@
       "shareDelta1d": -155000000.0,
       "nav": 0.9451,
       "flow1d": -1.46,
-      "flow1dAvgPriceEstimate": -1.48
+      "flow1dAvgPriceEstimate": -1.46
     },
     {
       "code": "563300",
@@ -868,7 +868,7 @@
       "shareDelta1d": -105000000.0,
       "nav": 1.3848,
       "flow1d": -1.45,
-      "flow1dAvgPriceEstimate": -1.48
+      "flow1dAvgPriceEstimate": -1.45
     },
     {
       "code": "589850",
@@ -879,7 +879,7 @@
       "shareDelta1d": 90000000.0,
       "nav": 1.6018,
       "flow1d": 1.44,
-      "flow1dAvgPriceEstimate": 1.46
+      "flow1dAvgPriceEstimate": 1.44
     },
     {
       "code": "159859",
@@ -890,7 +890,7 @@
       "shareDelta1d": -351000000.0,
       "nav": 0.4094,
       "flow1d": -1.44,
-      "flow1dAvgPriceEstimate": -1.45
+      "flow1dAvgPriceEstimate": -1.44
     },
     {
       "code": "589030",
@@ -901,7 +901,7 @@
       "shareDelta1d": 126000000.0,
       "nav": 1.1247,
       "flow1d": 1.42,
-      "flow1dAvgPriceEstimate": 1.46
+      "flow1dAvgPriceEstimate": 1.42
     },
     {
       "code": "510980",
@@ -912,7 +912,7 @@
       "shareDelta1d": 102000000.0,
       "nav": 1.3845,
       "flow1d": 1.41,
-      "flow1dAvgPriceEstimate": 1.42
+      "flow1dAvgPriceEstimate": 1.41
     },
     {
       "code": "159206",
@@ -923,7 +923,7 @@
       "shareDelta1d": -101000000.0,
       "nav": 1.3727,
       "flow1d": -1.39,
-      "flow1dAvgPriceEstimate": -1.44
+      "flow1dAvgPriceEstimate": -1.39
     },
     {
       "code": "159770",
@@ -934,7 +934,7 @@
       "shareDelta1d": 136500000.0,
       "nav": 0.991,
       "flow1d": 1.35,
-      "flow1dAvgPriceEstimate": 1.38
+      "flow1dAvgPriceEstimate": 1.35
     },
     {
       "code": "159992",
@@ -945,7 +945,7 @@
       "shareDelta1d": -150600000.0,
       "nav": 0.8984,
       "flow1d": -1.35,
-      "flow1dAvgPriceEstimate": -1.36
+      "flow1dAvgPriceEstimate": -1.35
     },
     {
       "code": "512630",
@@ -956,7 +956,7 @@
       "shareDelta1d": 120000000.0,
       "nav": 1.1083,
       "flow1d": 1.33,
-      "flow1dAvgPriceEstimate": 1.37
+      "flow1dAvgPriceEstimate": 1.33
     },
     {
       "code": "588870",
@@ -967,7 +967,7 @@
       "shareDelta1d": 78000000.0,
       "nav": 1.6917,
       "flow1d": 1.32,
-      "flow1dAvgPriceEstimate": 1.34
+      "flow1dAvgPriceEstimate": 1.32
     },
     {
       "code": "159925",
@@ -989,7 +989,7 @@
       "shareDelta1d": 46500000.0,
       "nav": 2.8221,
       "flow1d": 1.31,
-      "flow1dAvgPriceEstimate": 1.34
+      "flow1dAvgPriceEstimate": 1.31
     },
     {
       "code": "159611",
@@ -1011,18 +1011,7 @@
       "shareDelta1d": 113000000.0,
       "nav": 1.1075,
       "flow1d": 1.25,
-      "flow1dAvgPriceEstimate": 1.27
-    },
-    {
-      "code": "588940",
-      "name": "科创50ETF富国",
-      "groupId": "star50",
-      "shares": 2948840000.0,
-      "previousComparableShares": 2804840000.0,
-      "shareDelta1d": 144000000.0,
-      "nav": 0.8636,
-      "flow1d": 1.24,
-      "flow1dAvgPriceEstimate": 1.26
+      "flow1dAvgPriceEstimate": 1.25
     },
     {
       "code": "560530",
@@ -1033,7 +1022,18 @@
       "shareDelta1d": 102000000.0,
       "nav": 1.2154,
       "flow1d": 1.24,
-      "flow1dAvgPriceEstimate": 1.25
+      "flow1dAvgPriceEstimate": 1.24
+    },
+    {
+      "code": "588940",
+      "name": "科创50ETF富国",
+      "groupId": "star50",
+      "shares": 2948840000.0,
+      "previousComparableShares": 2804840000.0,
+      "shareDelta1d": 144000000.0,
+      "nav": 0.8636,
+      "flow1d": 1.24,
+      "flow1dAvgPriceEstimate": 1.24
     },
     {
       "code": "515070",
@@ -1044,7 +1044,7 @@
       "shareDelta1d": 112000000.0,
       "nav": 1.1011,
       "flow1d": 1.23,
-      "flow1dAvgPriceEstimate": 1.26
+      "flow1dAvgPriceEstimate": 1.23
     },
     {
       "code": "563390",
@@ -1055,7 +1055,7 @@
       "shareDelta1d": 99000000.0,
       "nav": 1.2162,
       "flow1d": 1.2,
-      "flow1dAvgPriceEstimate": 1.21
+      "flow1dAvgPriceEstimate": 1.2
     },
     {
       "code": "159869",
@@ -1066,18 +1066,7 @@
       "shareDelta1d": -112000000.0,
       "nav": 1.073,
       "flow1d": -1.2,
-      "flow1dAvgPriceEstimate": -1.21
-    },
-    {
-      "code": "588090",
-      "name": "科创50ETF华泰柏瑞",
-      "groupId": "star50",
-      "shares": 2889072800.0,
-      "previousComparableShares": 2820072800.0,
-      "shareDelta1d": 69000000.0,
-      "nav": 1.7169,
-      "flow1d": 1.18,
-      "flow1dAvgPriceEstimate": 1.21
+      "flow1dAvgPriceEstimate": -1.2
     },
     {
       "code": "512710",
@@ -1088,7 +1077,18 @@
       "shareDelta1d": 195000000.0,
       "nav": 0.607,
       "flow1d": 1.18,
-      "flow1dAvgPriceEstimate": 1.2
+      "flow1dAvgPriceEstimate": 1.18
+    },
+    {
+      "code": "588090",
+      "name": "科创50ETF华泰柏瑞",
+      "groupId": "star50",
+      "shares": 2889072800.0,
+      "previousComparableShares": 2820072800.0,
+      "shareDelta1d": 69000000.0,
+      "nav": 1.7169,
+      "flow1d": 1.18,
+      "flow1dAvgPriceEstimate": 1.18
     },
     {
       "code": "159358",
@@ -1099,18 +1099,7 @@
       "shareDelta1d": 90000000.0,
       "nav": 1.314,
       "flow1d": 1.18,
-      "flow1dAvgPriceEstimate": 1.2
-    },
-    {
-      "code": "159205",
-      "name": "创业板ETF东财",
-      "groupId": "chinext",
-      "shares": 553056064.0,
-      "previousComparableShares": 487056064.0,
-      "shareDelta1d": 66000000.0,
-      "nav": 1.7072,
-      "flow1d": 1.13,
-      "flow1dAvgPriceEstimate": 1.15
+      "flow1dAvgPriceEstimate": 1.18
     },
     {
       "code": "512980",
@@ -1121,28 +1110,17 @@
       "shareDelta1d": -139500000.0,
       "nav": 0.8088,
       "flow1d": -1.13,
-      "flow1dAvgPriceEstimate": -1.14
+      "flow1dAvgPriceEstimate": -1.13
     },
     {
-      "code": "159242",
-      "name": "创业板人工智能ETF大成",
-      "groupId": "comp_ai",
-      "shares": 459278583.0,
-      "previousComparableShares": 513278583.0,
-      "shareDelta1d": -54000000.0,
-      "nav": 2.0647,
-      "flow1d": -1.11,
-      "flow1dAvgPriceEstimate": -1.14
-    },
-    {
-      "code": "516640",
-      "name": "芯片ETF富国",
-      "groupId": "elec_chip",
-      "shares": 1324482800.0,
-      "previousComparableShares": 1248482800.0,
-      "shareDelta1d": 76000000.0,
-      "nav": 1.4611,
-      "flow1d": 1.11,
+      "code": "159205",
+      "name": "创业板ETF东财",
+      "groupId": "chinext",
+      "shares": 553056064.0,
+      "previousComparableShares": 487056064.0,
+      "shareDelta1d": 66000000.0,
+      "nav": 1.7072,
+      "flow1d": 1.13,
       "flow1dAvgPriceEstimate": 1.13
     },
     {
@@ -1157,6 +1135,28 @@
       "flow1dAvgPriceEstimate": -1.11
     },
     {
+      "code": "516640",
+      "name": "芯片ETF富国",
+      "groupId": "elec_chip",
+      "shares": 1324482800.0,
+      "previousComparableShares": 1248482800.0,
+      "shareDelta1d": 76000000.0,
+      "nav": 1.4611,
+      "flow1d": 1.11,
+      "flow1dAvgPriceEstimate": 1.11
+    },
+    {
+      "code": "159242",
+      "name": "创业板人工智能ETF大成",
+      "groupId": "comp_ai",
+      "shares": 459278583.0,
+      "previousComparableShares": 513278583.0,
+      "shareDelta1d": -54000000.0,
+      "nav": 2.0647,
+      "flow1d": -1.11,
+      "flow1dAvgPriceEstimate": -1.11
+    },
+    {
       "code": "563530",
       "name": "卫星ETF易方达",
       "groupId": "comm_satellite",
@@ -1165,7 +1165,7 @@
       "shareDelta1d": 99000000.0,
       "nav": 1.1077,
       "flow1d": 1.1,
-      "flow1dAvgPriceEstimate": 1.13
+      "flow1dAvgPriceEstimate": 1.1
     },
     {
       "code": "159327",
@@ -1176,7 +1176,7 @@
       "shareDelta1d": 93000000.0,
       "nav": 1.1819,
       "flow1d": 1.1,
-      "flow1dAvgPriceEstimate": 1.12
+      "flow1dAvgPriceEstimate": 1.1
     },
     {
       "code": "159870",
@@ -1187,7 +1187,7 @@
       "shareDelta1d": -137000000.0,
       "nav": 0.8051,
       "flow1d": -1.1,
-      "flow1dAvgPriceEstimate": -1.11
+      "flow1dAvgPriceEstimate": -1.1
     },
     {
       "code": "159876",
@@ -1209,7 +1209,7 @@
       "shareDelta1d": -125000000.0,
       "nav": 0.8647,
       "flow1d": -1.08,
-      "flow1dAvgPriceEstimate": -1.1
+      "flow1dAvgPriceEstimate": -1.08
     },
     {
       "code": "159967",
@@ -1220,7 +1220,7 @@
       "shareDelta1d": 136000000.0,
       "nav": 0.7915,
       "flow1d": 1.08,
-      "flow1dAvgPriceEstimate": 1.1
+      "flow1dAvgPriceEstimate": 1.08
     },
     {
       "code": "159222",
@@ -1264,7 +1264,7 @@
       "shareDelta1d": 145000000.0,
       "nav": 0.7055,
       "flow1d": 1.02,
-      "flow1dAvgPriceEstimate": 1.05
+      "flow1dAvgPriceEstimate": 1.02
     },
     {
       "code": "588790",
@@ -1275,7 +1275,7 @@
       "shareDelta1d": 129000000.0,
       "nav": 0.7888,
       "flow1d": 1.02,
-      "flow1dAvgPriceEstimate": 1.04
+      "flow1dAvgPriceEstimate": 1.02
     },
     {
       "code": "515230",
@@ -1286,7 +1286,7 @@
       "shareDelta1d": 145000000.0,
       "nav": 0.6886,
       "flow1d": 1.0,
-      "flow1dAvgPriceEstimate": 1.01
+      "flow1dAvgPriceEstimate": 1.0
     },
     {
       "code": "159272",
@@ -1297,7 +1297,7 @@
       "shareDelta1d": 122000000.0,
       "nav": 0.8093,
       "flow1d": 0.99,
-      "flow1dAvgPriceEstimate": 1.01
+      "flow1dAvgPriceEstimate": 0.99
     },
     {
       "code": "159901",
@@ -1308,7 +1308,7 @@
       "shareDelta1d": 26600000.0,
       "nav": 3.6097,
       "flow1d": 0.96,
-      "flow1dAvgPriceEstimate": 0.97
+      "flow1dAvgPriceEstimate": 0.96
     },
     {
       "code": "159971",
@@ -1319,18 +1319,7 @@
       "shareDelta1d": 78000000.0,
       "nav": 1.2142,
       "flow1d": 0.95,
-      "flow1dAvgPriceEstimate": 0.96
-    },
-    {
-      "code": "159732",
-      "name": "消费电子ETF华夏",
-      "groupId": "elec_consumer",
-      "shares": 2448447904.0,
-      "previousComparableShares": 2379447904.0,
-      "shareDelta1d": 69000000.0,
-      "nav": 1.3583,
-      "flow1d": 0.94,
-      "flow1dAvgPriceEstimate": 0.96
+      "flow1dAvgPriceEstimate": 0.95
     },
     {
       "code": "515220",
@@ -1344,6 +1333,17 @@
       "flow1dAvgPriceEstimate": -0.94
     },
     {
+      "code": "159732",
+      "name": "消费电子ETF华夏",
+      "groupId": "elec_consumer",
+      "shares": 2448447904.0,
+      "previousComparableShares": 2379447904.0,
+      "shareDelta1d": 69000000.0,
+      "nav": 1.3583,
+      "flow1d": 0.94,
+      "flow1dAvgPriceEstimate": 0.94
+    },
+    {
       "code": "159994",
       "name": "通信ETF银华",
       "groupId": "sw_communications",
@@ -1352,7 +1352,7 @@
       "shareDelta1d": 74000000.0,
       "nav": 1.2424,
       "flow1d": 0.92,
-      "flow1dAvgPriceEstimate": 0.94
+      "flow1dAvgPriceEstimate": 0.92
     },
     {
       "code": "512930",
@@ -1363,7 +1363,7 @@
       "shareDelta1d": 144000000.0,
       "nav": 0.6169,
       "flow1d": 0.89,
-      "flow1dAvgPriceEstimate": 0.91
+      "flow1dAvgPriceEstimate": 0.89
     },
     {
       "code": "159562",
@@ -1385,7 +1385,7 @@
       "shareDelta1d": 51000000.0,
       "nav": 1.6982,
       "flow1d": 0.87,
-      "flow1dAvgPriceEstimate": 0.88
+      "flow1dAvgPriceEstimate": 0.87
     },
     {
       "code": "516350",
@@ -1396,7 +1396,7 @@
       "shareDelta1d": 52000000.0,
       "nav": 1.6531,
       "flow1d": 0.86,
-      "flow1dAvgPriceEstimate": 0.88
+      "flow1dAvgPriceEstimate": 0.86
     },
     {
       "code": "159780",
@@ -1407,7 +1407,7 @@
       "shareDelta1d": -78000000.0,
       "nav": 1.102,
       "flow1d": -0.86,
-      "flow1dAvgPriceEstimate": -0.88
+      "flow1dAvgPriceEstimate": -0.86
     },
     {
       "code": "159263",
@@ -1440,7 +1440,7 @@
       "shareDelta1d": 78000000.0,
       "nav": 1.0436,
       "flow1d": 0.81,
-      "flow1dAvgPriceEstimate": 0.83
+      "flow1dAvgPriceEstimate": 0.81
     },
     {
       "code": "159339",
@@ -1462,7 +1462,7 @@
       "shareDelta1d": 20000000.0,
       "nav": 3.9969,
       "flow1d": 0.8,
-      "flow1dAvgPriceEstimate": 0.82
+      "flow1dAvgPriceEstimate": 0.8
     },
     {
       "code": "588760",
@@ -1473,18 +1473,7 @@
       "shareDelta1d": 105000000.0,
       "nav": 0.7477,
       "flow1d": 0.79,
-      "flow1dAvgPriceEstimate": 0.8
-    },
-    {
-      "code": "159267",
-      "name": "航天ETF华安",
-      "groupId": "sw_defense",
-      "shares": 2725506126.0,
-      "previousComparableShares": 2631506126.0,
-      "shareDelta1d": 94000000.0,
-      "nav": 0.8334,
-      "flow1d": 0.78,
-      "flow1dAvgPriceEstimate": 0.81
+      "flow1dAvgPriceEstimate": 0.79
     },
     {
       "code": "588290",
@@ -1495,7 +1484,18 @@
       "shareDelta1d": 22500000.0,
       "nav": 3.4584,
       "flow1d": 0.78,
-      "flow1dAvgPriceEstimate": 0.79
+      "flow1dAvgPriceEstimate": 0.78
+    },
+    {
+      "code": "159267",
+      "name": "航天ETF华安",
+      "groupId": "sw_defense",
+      "shares": 2725506126.0,
+      "previousComparableShares": 2631506126.0,
+      "shareDelta1d": 94000000.0,
+      "nav": 0.8334,
+      "flow1d": 0.78,
+      "flow1dAvgPriceEstimate": 0.78
     },
     {
       "code": "159201",
@@ -1506,7 +1506,7 @@
       "shareDelta1d": -65000000.0,
       "nav": 1.1769,
       "flow1d": -0.76,
-      "flow1dAvgPriceEstimate": -0.77
+      "flow1dAvgPriceEstimate": -0.76
     },
     {
       "code": "563880",
@@ -1517,18 +1517,7 @@
       "shareDelta1d": 60000000.0,
       "nav": 1.2546,
       "flow1d": 0.75,
-      "flow1dAvgPriceEstimate": 0.76
-    },
-    {
-      "code": "159755",
-      "name": "电池ETF广发",
-      "groupId": "power_battery",
-      "shares": 8481646746.0,
-      "previousComparableShares": 8559646746.0,
-      "shareDelta1d": -78000000.0,
-      "nav": 0.9533,
-      "flow1d": -0.74,
-      "flow1dAvgPriceEstimate": -0.75
+      "flow1dAvgPriceEstimate": 0.75
     },
     {
       "code": "515080",
@@ -1542,6 +1531,17 @@
       "flow1dAvgPriceEstimate": -0.74
     },
     {
+      "code": "159755",
+      "name": "电池ETF广发",
+      "groupId": "power_battery",
+      "shares": 8481646746.0,
+      "previousComparableShares": 8559646746.0,
+      "shareDelta1d": -78000000.0,
+      "nav": 0.9533,
+      "flow1d": -0.74,
+      "flow1dAvgPriceEstimate": -0.74
+    },
+    {
       "code": "588950",
       "name": "科创50ETF景顺",
       "groupId": "star50",
@@ -1550,7 +1550,7 @@
       "shareDelta1d": 42000000.0,
       "nav": 1.7455,
       "flow1d": 0.73,
-      "flow1dAvgPriceEstimate": 0.74
+      "flow1dAvgPriceEstimate": 0.73
     },
     {
       "code": "159382",
@@ -1561,29 +1561,7 @@
       "shareDelta1d": 28000000.0,
       "nav": 2.6002,
       "flow1d": 0.73,
-      "flow1dAvgPriceEstimate": 0.75
-    },
-    {
-      "code": "159218",
-      "name": "卫星ETF招商",
-      "groupId": "comm_satellite",
-      "shares": 2144616390.0,
-      "previousComparableShares": 2091616390.0,
-      "shareDelta1d": 53000000.0,
-      "nav": 1.3507,
-      "flow1d": 0.72,
-      "flow1dAvgPriceEstimate": 0.74
-    },
-    {
-      "code": "159381",
-      "name": "创业板人工智能ETF华夏",
-      "groupId": "comp_ai",
-      "shares": 1719153206.0,
-      "previousComparableShares": 1657153206.0,
-      "shareDelta1d": 62000000.0,
-      "nav": 1.159,
-      "flow1d": 0.72,
-      "flow1dAvgPriceEstimate": 0.74
+      "flow1dAvgPriceEstimate": 0.73
     },
     {
       "code": "589130",
@@ -1594,7 +1572,29 @@
       "shareDelta1d": 51000000.0,
       "nav": 1.4026,
       "flow1d": 0.72,
-      "flow1dAvgPriceEstimate": 0.73
+      "flow1dAvgPriceEstimate": 0.72
+    },
+    {
+      "code": "159218",
+      "name": "卫星ETF招商",
+      "groupId": "comm_satellite",
+      "shares": 2144616390.0,
+      "previousComparableShares": 2091616390.0,
+      "shareDelta1d": 53000000.0,
+      "nav": 1.3507,
+      "flow1d": 0.72,
+      "flow1dAvgPriceEstimate": 0.72
+    },
+    {
+      "code": "159381",
+      "name": "创业板人工智能ETF华夏",
+      "groupId": "comp_ai",
+      "shares": 1719153206.0,
+      "previousComparableShares": 1657153206.0,
+      "shareDelta1d": 62000000.0,
+      "nav": 1.159,
+      "flow1d": 0.72,
+      "flow1dAvgPriceEstimate": 0.72
     },
     {
       "code": "560610",
@@ -1605,7 +1605,7 @@
       "shareDelta1d": 60000000.0,
       "nav": 1.1855,
       "flow1d": 0.71,
-      "flow1dAvgPriceEstimate": 0.72
+      "flow1dAvgPriceEstimate": 0.71
     },
     {
       "code": "561560",
@@ -1652,28 +1652,6 @@
       "flow1dAvgPriceEstimate": 0.68
     },
     {
-      "code": "563790",
-      "name": "卫星ETF鹏华",
-      "groupId": "comm_satellite",
-      "shares": 1224447000.0,
-      "previousComparableShares": 1145447000.0,
-      "shareDelta1d": 79000000.0,
-      "nav": 0.8328,
-      "flow1d": 0.66,
-      "flow1dAvgPriceEstimate": 0.68
-    },
-    {
-      "code": "588800",
-      "name": "科创100ETF华夏",
-      "groupId": "star100",
-      "shares": 1609877000.0,
-      "previousComparableShares": 1572377000.0,
-      "shareDelta1d": 37500000.0,
-      "nav": 1.7704,
-      "flow1d": 0.66,
-      "flow1dAvgPriceEstimate": 0.68
-    },
-    {
       "code": "512080",
       "name": "A500ETF中金",
       "groupId": "csi_a500",
@@ -1682,7 +1660,18 @@
       "shareDelta1d": 51000000.0,
       "nav": 1.2977,
       "flow1d": 0.66,
-      "flow1dAvgPriceEstimate": 0.67
+      "flow1dAvgPriceEstimate": 0.66
+    },
+    {
+      "code": "563790",
+      "name": "卫星ETF鹏华",
+      "groupId": "comm_satellite",
+      "shares": 1224447000.0,
+      "previousComparableShares": 1145447000.0,
+      "shareDelta1d": 79000000.0,
+      "nav": 0.8328,
+      "flow1d": 0.66,
+      "flow1dAvgPriceEstimate": 0.66
     },
     {
       "code": "563800",
@@ -1696,6 +1685,17 @@
       "flow1dAvgPriceEstimate": 0.66
     },
     {
+      "code": "588800",
+      "name": "科创100ETF华夏",
+      "groupId": "star100",
+      "shares": 1609877000.0,
+      "previousComparableShares": 1572377000.0,
+      "shareDelta1d": 37500000.0,
+      "nav": 1.7704,
+      "flow1d": 0.66,
+      "flow1dAvgPriceEstimate": 0.66
+    },
+    {
       "code": "512400",
       "name": "有色金属ETF南方",
       "groupId": "sw_nonferrous",
@@ -1704,7 +1704,7 @@
       "shareDelta1d": 35000000.0,
       "nav": 1.8665,
       "flow1d": 0.65,
-      "flow1dAvgPriceEstimate": 0.66
+      "flow1dAvgPriceEstimate": 0.65
     },
     {
       "code": "159325",
@@ -1715,7 +1715,7 @@
       "shareDelta1d": 30000000.0,
       "nav": 2.1524,
       "flow1d": 0.65,
-      "flow1dAvgPriceEstimate": 0.66
+      "flow1dAvgPriceEstimate": 0.65
     },
     {
       "code": "159996",
@@ -1729,6 +1729,17 @@
       "flow1dAvgPriceEstimate": -0.65
     },
     {
+      "code": "560510",
+      "name": "中证A500ETF泰康",
+      "groupId": "csi_a50",
+      "shares": 2525026900.0,
+      "previousComparableShares": 2471026900.0,
+      "shareDelta1d": 54000000.0,
+      "nav": 1.1853,
+      "flow1d": 0.64,
+      "flow1dAvgPriceEstimate": 0.64
+    },
+    {
       "code": "561460",
       "name": "人工智能ETF天弘",
       "groupId": "comp_ai",
@@ -1737,7 +1748,7 @@
       "shareDelta1d": 80000000.0,
       "nav": 0.8043,
       "flow1d": 0.64,
-      "flow1dAvgPriceEstimate": 0.66
+      "flow1dAvgPriceEstimate": 0.64
     },
     {
       "code": "588110",
@@ -1747,17 +1758,6 @@
       "previousComparableShares": 841032000.0,
       "shareDelta1d": 102000000.0,
       "nav": 0.6303,
-      "flow1d": 0.64,
-      "flow1dAvgPriceEstimate": 0.66
-    },
-    {
-      "code": "560510",
-      "name": "中证A500ETF泰康",
-      "groupId": "csi_a50",
-      "shares": 2525026900.0,
-      "previousComparableShares": 2471026900.0,
-      "shareDelta1d": 54000000.0,
-      "nav": 1.1853,
       "flow1d": 0.64,
       "flow1dAvgPriceEstimate": 0.64
     },
@@ -1817,17 +1817,6 @@
       "flow1dAvgPriceEstimate": -0.62
     },
     {
-      "code": "159957",
-      "name": "创业板ETF华夏",
-      "groupId": "chinext",
-      "shares": 1152784560.0,
-      "previousComparableShares": 1126784560.0,
-      "shareDelta1d": 26000000.0,
-      "nav": 2.2874,
-      "flow1d": 0.59,
-      "flow1dAvgPriceEstimate": 0.61
-    },
-    {
       "code": "515630",
       "name": "证券保险ETF鹏华",
       "groupId": "fin_broker",
@@ -1836,7 +1825,7 @@
       "shareDelta1d": -48000000.0,
       "nav": 1.2365,
       "flow1d": -0.59,
-      "flow1dAvgPriceEstimate": -0.6
+      "flow1dAvgPriceEstimate": -0.59
     },
     {
       "code": "159278",
@@ -1847,7 +1836,18 @@
       "shareDelta1d": 62000000.0,
       "nav": 0.9525,
       "flow1d": 0.59,
-      "flow1dAvgPriceEstimate": 0.6
+      "flow1dAvgPriceEstimate": 0.59
+    },
+    {
+      "code": "159957",
+      "name": "创业板ETF华夏",
+      "groupId": "chinext",
+      "shares": 1152784560.0,
+      "previousComparableShares": 1126784560.0,
+      "shareDelta1d": 26000000.0,
+      "nav": 2.2874,
+      "flow1d": 0.59,
+      "flow1dAvgPriceEstimate": 0.59
     },
     {
       "code": "512020",
@@ -1858,7 +1858,7 @@
       "shareDelta1d": 45000000.0,
       "nav": 1.2914,
       "flow1d": 0.58,
-      "flow1dAvgPriceEstimate": 0.59
+      "flow1dAvgPriceEstimate": 0.58
     },
     {
       "code": "159260",
@@ -1869,7 +1869,7 @@
       "shareDelta1d": -66000000.0,
       "nav": 0.8407,
       "flow1d": -0.55,
-      "flow1dAvgPriceEstimate": -0.56
+      "flow1dAvgPriceEstimate": -0.55
     },
     {
       "code": "159357",
@@ -1891,7 +1891,7 @@
       "shareDelta1d": 42000000.0,
       "nav": 1.2104,
       "flow1d": 0.51,
-      "flow1dAvgPriceEstimate": 0.52
+      "flow1dAvgPriceEstimate": 0.51
     },
     {
       "code": "159259",
@@ -1902,18 +1902,7 @@
       "shareDelta1d": 38000000.0,
       "nav": 1.3195,
       "flow1d": 0.5,
-      "flow1dAvgPriceEstimate": 0.51
-    },
-    {
-      "code": "159948",
-      "name": "创业板ETF南方",
-      "groupId": "chinext",
-      "shares": 1174697720.0,
-      "previousComparableShares": 1161697720.0,
-      "shareDelta1d": 13000000.0,
-      "nav": 3.8558,
-      "flow1d": 0.5,
-      "flow1dAvgPriceEstimate": 0.51
+      "flow1dAvgPriceEstimate": 0.5
     },
     {
       "code": "159851",
@@ -1923,6 +1912,17 @@
       "previousComparableShares": 9871904148.0,
       "shareDelta1d": 83000000.0,
       "nav": 0.5973,
+      "flow1d": 0.5,
+      "flow1dAvgPriceEstimate": 0.5
+    },
+    {
+      "code": "159948",
+      "name": "创业板ETF南方",
+      "groupId": "chinext",
+      "shares": 1174697720.0,
+      "previousComparableShares": 1161697720.0,
+      "shareDelta1d": 13000000.0,
+      "nav": 3.8558,
       "flow1d": 0.5,
       "flow1dAvgPriceEstimate": 0.5
     },
@@ -1938,17 +1938,6 @@
       "flow1dAvgPriceEstimate": 0.49
     },
     {
-      "code": "588380",
-      "name": "科创创业ETF富国",
-      "groupId": "chinext50",
-      "shares": 2669770000.0,
-      "previousComparableShares": 2627770000.0,
-      "shareDelta1d": 42000000.0,
-      "nav": 1.1262,
-      "flow1d": 0.47,
-      "flow1dAvgPriceEstimate": 0.48
-    },
-    {
       "code": "561580",
       "name": "央企红利ETF华泰柏瑞",
       "groupId": "soe",
@@ -1960,6 +1949,17 @@
       "flow1dAvgPriceEstimate": -0.47
     },
     {
+      "code": "588380",
+      "name": "科创创业ETF富国",
+      "groupId": "chinext50",
+      "shares": 2669770000.0,
+      "previousComparableShares": 2627770000.0,
+      "shareDelta1d": 42000000.0,
+      "nav": 1.1262,
+      "flow1d": 0.47,
+      "flow1dAvgPriceEstimate": 0.47
+    },
+    {
       "code": "588780",
       "name": "科创芯片设计ETF国联安",
       "groupId": "elec_chip",
@@ -1968,7 +1968,7 @@
       "shareDelta1d": 48000000.0,
       "nav": 0.9687,
       "flow1d": 0.46,
-      "flow1dAvgPriceEstimate": 0.48
+      "flow1dAvgPriceEstimate": 0.46
     },
     {
       "code": "159943",
@@ -1979,7 +1979,7 @@
       "shareDelta1d": 30000000.0,
       "nav": 1.5357,
       "flow1d": 0.46,
-      "flow1dAvgPriceEstimate": 0.47
+      "flow1dAvgPriceEstimate": 0.46
     },
     {
       "code": "561300",
@@ -1990,7 +1990,7 @@
       "shareDelta1d": 42000000.0,
       "nav": 1.057,
       "flow1d": 0.44,
-      "flow1dAvgPriceEstimate": 0.45
+      "flow1dAvgPriceEstimate": 0.44
     },
     {
       "code": "588400",
@@ -2001,7 +2001,7 @@
       "shareDelta1d": 39000000.0,
       "nav": 1.1228,
       "flow1d": 0.44,
-      "flow1dAvgPriceEstimate": 0.45
+      "flow1dAvgPriceEstimate": 0.44
     },
     {
       "code": "159998",
@@ -2012,18 +2012,7 @@
       "shareDelta1d": -45600000.0,
       "nav": 0.9659,
       "flow1d": -0.44,
-      "flow1dAvgPriceEstimate": -0.45
-    },
-    {
-      "code": "159326",
-      "name": "电网设备ETF华夏",
-      "groupId": "sw_power_equipment",
-      "shares": 12529265525.0,
-      "previousComparableShares": 12503265525.0,
-      "shareDelta1d": 26000000.0,
-      "nav": 1.6591,
-      "flow1d": 0.43,
-      "flow1dAvgPriceEstimate": 0.44
+      "flow1dAvgPriceEstimate": -0.44
     },
     {
       "code": "510360",
@@ -2037,6 +2026,17 @@
       "flow1dAvgPriceEstimate": 0.43
     },
     {
+      "code": "159326",
+      "name": "电网设备ETF华夏",
+      "groupId": "sw_power_equipment",
+      "shares": 12529265525.0,
+      "previousComparableShares": 12503265525.0,
+      "shareDelta1d": 26000000.0,
+      "nav": 1.6591,
+      "flow1d": 0.43,
+      "flow1dAvgPriceEstimate": 0.43
+    },
+    {
       "code": "589070",
       "name": "科创芯片设计ETF天弘",
       "groupId": "elec_chip",
@@ -2045,7 +2045,7 @@
       "shareDelta1d": 38000000.0,
       "nav": 1.0523,
       "flow1d": 0.4,
-      "flow1dAvgPriceEstimate": 0.41
+      "flow1dAvgPriceEstimate": 0.4
     },
     {
       "code": "510580",
@@ -2056,7 +2056,7 @@
       "shareDelta1d": 9600000.0,
       "nav": 4.1044,
       "flow1d": 0.39,
-      "flow1dAvgPriceEstimate": 0.4
+      "flow1dAvgPriceEstimate": 0.39
     },
     {
       "code": "516310",
@@ -2078,7 +2078,7 @@
       "shareDelta1d": 30000000.0,
       "nav": 1.2436,
       "flow1d": 0.37,
-      "flow1dAvgPriceEstimate": 0.38
+      "flow1dAvgPriceEstimate": 0.37
     },
     {
       "code": "589360",
@@ -2089,7 +2089,7 @@
       "shareDelta1d": 42000000.0,
       "nav": 0.8612,
       "flow1d": 0.36,
-      "flow1dAvgPriceEstimate": 0.37
+      "flow1dAvgPriceEstimate": 0.36
     },
     {
       "code": "589390",
@@ -2100,7 +2100,7 @@
       "shareDelta1d": 48000000.0,
       "nav": 0.7455,
       "flow1d": 0.36,
-      "flow1dAvgPriceEstimate": 0.37
+      "flow1dAvgPriceEstimate": 0.36
     },
     {
       "code": "159142",
@@ -2125,17 +2125,6 @@
       "flow1dAvgPriceEstimate": 0.36
     },
     {
-      "code": "159825",
-      "name": "农业ETF富国",
-      "groupId": "sw_agriculture",
-      "shares": 2482077407.0,
-      "previousComparableShares": 2531077407.0,
-      "shareDelta1d": -49000000.0,
-      "nav": 0.7241,
-      "flow1d": -0.35,
-      "flow1dAvgPriceEstimate": -0.36
-    },
-    {
       "code": "159141",
       "name": "科创创业人工智能ETF永赢",
       "groupId": "dual_innovation50",
@@ -2143,6 +2132,17 @@
       "previousComparableShares": 1423060730.0,
       "shareDelta1d": -30000000.0,
       "nav": 1.1584,
+      "flow1d": -0.35,
+      "flow1dAvgPriceEstimate": -0.35
+    },
+    {
+      "code": "159825",
+      "name": "农业ETF富国",
+      "groupId": "sw_agriculture",
+      "shares": 2482077407.0,
+      "previousComparableShares": 2531077407.0,
+      "shareDelta1d": -49000000.0,
+      "nav": 0.7241,
       "flow1d": -0.35,
       "flow1dAvgPriceEstimate": -0.35
     },
@@ -2180,28 +2180,6 @@
       "flow1dAvgPriceEstimate": 0.34
     },
     {
-      "code": "159241",
-      "name": "航空航天ETF天弘",
-      "groupId": "sw_defense",
-      "shares": 1377074265.0,
-      "previousComparableShares": 1344074265.0,
-      "shareDelta1d": 33000000.0,
-      "nav": 1.0107,
-      "flow1d": 0.33,
-      "flow1dAvgPriceEstimate": 0.34
-    },
-    {
-      "code": "159566",
-      "name": "储能电池ETF易方达",
-      "groupId": "power_storage",
-      "shares": 2788739776.0,
-      "previousComparableShares": 2806739776.0,
-      "shareDelta1d": -18000000.0,
-      "nav": 1.841,
-      "flow1d": -0.33,
-      "flow1dAvgPriceEstimate": -0.34
-    },
-    {
       "code": "560280",
       "name": "工程机械ETF广发",
       "groupId": "sw_machinery",
@@ -2211,6 +2189,17 @@
       "nav": 1.5095,
       "flow1d": -0.33,
       "flow1dAvgPriceEstimate": -0.33
+    },
+    {
+      "code": "159241",
+      "name": "航空航天ETF天弘",
+      "groupId": "sw_defense",
+      "shares": 1377074265.0,
+      "previousComparableShares": 1344074265.0,
+      "shareDelta1d": 33000000.0,
+      "nav": 1.0107,
+      "flow1d": 0.33,
+      "flow1dAvgPriceEstimate": 0.33
     },
     {
       "code": "159350",
@@ -2224,15 +2213,15 @@
       "flow1dAvgPriceEstimate": 0.33
     },
     {
-      "code": "588030",
-      "name": "科创100ETF博时",
-      "groupId": "star50",
-      "shares": 2315838100.0,
-      "previousComparableShares": 2297838100.0,
-      "shareDelta1d": 18000000.0,
-      "nav": 1.7865,
-      "flow1d": 0.32,
-      "flow1dAvgPriceEstimate": 0.33
+      "code": "159566",
+      "name": "储能电池ETF易方达",
+      "groupId": "power_storage",
+      "shares": 2788739776.0,
+      "previousComparableShares": 2806739776.0,
+      "shareDelta1d": -18000000.0,
+      "nav": 1.841,
+      "flow1d": -0.33,
+      "flow1dAvgPriceEstimate": -0.33
     },
     {
       "code": "516150",
@@ -2246,6 +2235,17 @@
       "flow1dAvgPriceEstimate": -0.32
     },
     {
+      "code": "588030",
+      "name": "科创100ETF博时",
+      "groupId": "star50",
+      "shares": 2315838100.0,
+      "previousComparableShares": 2297838100.0,
+      "shareDelta1d": 18000000.0,
+      "nav": 1.7865,
+      "flow1d": 0.32,
+      "flow1dAvgPriceEstimate": 0.32
+    },
+    {
       "code": "159896",
       "name": "物联网ETF南方",
       "groupId": "comp_internet",
@@ -2254,28 +2254,6 @@
       "shareDelta1d": 25000000.0,
       "nav": 1.271,
       "flow1d": 0.32,
-      "flow1dAvgPriceEstimate": 0.32
-    },
-    {
-      "code": "588210",
-      "name": "科创100ETF易方达",
-      "groupId": "star100",
-      "shares": 240754000.0,
-      "previousComparableShares": 223254000.0,
-      "shareDelta1d": 17500000.0,
-      "nav": 1.7995,
-      "flow1d": 0.31,
-      "flow1dAvgPriceEstimate": 0.32
-    },
-    {
-      "code": "159587",
-      "name": "粮食ETF广发",
-      "groupId": "sw_agriculture",
-      "shares": 271447031.0,
-      "previousComparableShares": 245447031.0,
-      "shareDelta1d": 26000000.0,
-      "nav": 1.2014,
-      "flow1d": 0.31,
       "flow1dAvgPriceEstimate": 0.32
     },
     {
@@ -2301,6 +2279,17 @@
       "flow1dAvgPriceEstimate": 0.31
     },
     {
+      "code": "588210",
+      "name": "科创100ETF易方达",
+      "groupId": "star100",
+      "shares": 240754000.0,
+      "previousComparableShares": 223254000.0,
+      "shareDelta1d": 17500000.0,
+      "nav": 1.7995,
+      "flow1d": 0.31,
+      "flow1dAvgPriceEstimate": 0.31
+    },
+    {
       "code": "159215",
       "name": "A500ETF平安",
       "groupId": "csi_a500",
@@ -2308,6 +2297,17 @@
       "previousComparableShares": 955582803.0,
       "shareDelta1d": 24000000.0,
       "nav": 1.3037,
+      "flow1d": 0.31,
+      "flow1dAvgPriceEstimate": 0.31
+    },
+    {
+      "code": "159587",
+      "name": "粮食ETF广发",
+      "groupId": "sw_agriculture",
+      "shares": 271447031.0,
+      "previousComparableShares": 245447031.0,
+      "shareDelta1d": 26000000.0,
+      "nav": 1.2014,
       "flow1d": 0.31,
       "flow1dAvgPriceEstimate": 0.31
     },
@@ -2331,7 +2331,7 @@
       "shareDelta1d": 18000000.0,
       "nav": 1.6642,
       "flow1d": 0.3,
-      "flow1dAvgPriceEstimate": 0.31
+      "flow1dAvgPriceEstimate": 0.3
     },
     {
       "code": "159680",
@@ -2367,17 +2367,6 @@
       "flow1dAvgPriceEstimate": -0.29
     },
     {
-      "code": "159369",
-      "name": "创业板50ETF易方达",
-      "groupId": "chinext50",
-      "shares": 379753492.0,
-      "previousComparableShares": 359753492.0,
-      "shareDelta1d": 20000000.0,
-      "nav": 1.4024,
-      "flow1d": 0.28,
-      "flow1dAvgPriceEstimate": 0.29
-    },
-    {
       "code": "512090",
       "name": "MSCIA股ETF易方达",
       "groupId": "msci_a",
@@ -2400,6 +2389,17 @@
       "flow1dAvgPriceEstimate": 0.28
     },
     {
+      "code": "159369",
+      "name": "创业板50ETF易方达",
+      "groupId": "chinext50",
+      "shares": 379753492.0,
+      "previousComparableShares": 359753492.0,
+      "shareDelta1d": 20000000.0,
+      "nav": 1.4024,
+      "flow1d": 0.28,
+      "flow1dAvgPriceEstimate": 0.28
+    },
+    {
       "code": "159667",
       "name": "工业母机ETF国泰",
       "groupId": "sw_machinery",
@@ -2408,17 +2408,6 @@
       "shareDelta1d": 42000000.0,
       "nav": 0.6598,
       "flow1d": 0.28,
-      "flow1dAvgPriceEstimate": 0.28
-    },
-    {
-      "code": "588300",
-      "name": "科创创业50ETF招商",
-      "groupId": "dual_innovation50",
-      "shares": 1513210500.0,
-      "previousComparableShares": 1489210500.0,
-      "shareDelta1d": 24000000.0,
-      "nav": 1.1441,
-      "flow1d": 0.27,
       "flow1dAvgPriceEstimate": 0.28
     },
     {
@@ -2433,14 +2422,14 @@
       "flow1dAvgPriceEstimate": 0.27
     },
     {
-      "code": "159552",
-      "name": "中证2000增强ETF招商",
-      "groupId": "enhanced",
-      "shares": 625790319.0,
-      "previousComparableShares": 613790319.0,
-      "shareDelta1d": 12000000.0,
-      "nav": 2.2027,
-      "flow1d": 0.26,
+      "code": "588300",
+      "name": "科创创业50ETF招商",
+      "groupId": "dual_innovation50",
+      "shares": 1513210500.0,
+      "previousComparableShares": 1489210500.0,
+      "shareDelta1d": 24000000.0,
+      "nav": 1.1441,
+      "flow1d": 0.27,
       "flow1dAvgPriceEstimate": 0.27
     },
     {
@@ -2477,6 +2466,17 @@
       "flow1dAvgPriceEstimate": 0.26
     },
     {
+      "code": "159552",
+      "name": "中证2000增强ETF招商",
+      "groupId": "enhanced",
+      "shares": 625790319.0,
+      "previousComparableShares": 613790319.0,
+      "shareDelta1d": 12000000.0,
+      "nav": 2.2027,
+      "flow1d": 0.26,
+      "flow1dAvgPriceEstimate": 0.26
+    },
+    {
       "code": "159865",
       "name": "养殖ETF国泰",
       "groupId": "agri_farming",
@@ -2486,39 +2486,6 @@
       "nav": 0.5323,
       "flow1d": -0.26,
       "flow1dAvgPriceEstimate": -0.26
-    },
-    {
-      "code": "589800",
-      "name": "科创综指ETF易方达",
-      "groupId": "star_composite",
-      "shares": 1155988200.0,
-      "previousComparableShares": 1139988200.0,
-      "shareDelta1d": 16000000.0,
-      "nav": 1.5836,
-      "flow1d": 0.25,
-      "flow1dAvgPriceEstimate": 0.26
-    },
-    {
-      "code": "159107",
-      "name": "创业板软件ETF富国",
-      "groupId": "comp_software",
-      "shares": 835823006.0,
-      "previousComparableShares": 801823006.0,
-      "shareDelta1d": 34000000.0,
-      "nav": 0.7369,
-      "flow1d": 0.25,
-      "flow1dAvgPriceEstimate": 0.26
-    },
-    {
-      "code": "159977",
-      "name": "创业板ETF天弘",
-      "groupId": "chinext",
-      "shares": 3531872820.0,
-      "previousComparableShares": 3517872820.0,
-      "shareDelta1d": 14000000.0,
-      "nav": 1.8117,
-      "flow1d": 0.25,
-      "flow1dAvgPriceEstimate": 0.26
     },
     {
       "code": "516020",
@@ -2543,15 +2510,37 @@
       "flow1dAvgPriceEstimate": 0.25
     },
     {
-      "code": "159867",
-      "name": "养殖ETF鹏华",
-      "groupId": "agri_farming",
-      "shares": 1606643594.0,
-      "previousComparableShares": 1651643594.0,
-      "shareDelta1d": -45000000.0,
-      "nav": 0.5424,
-      "flow1d": -0.24,
-      "flow1dAvgPriceEstimate": -0.25
+      "code": "589800",
+      "name": "科创综指ETF易方达",
+      "groupId": "star_composite",
+      "shares": 1155988200.0,
+      "previousComparableShares": 1139988200.0,
+      "shareDelta1d": 16000000.0,
+      "nav": 1.5836,
+      "flow1d": 0.25,
+      "flow1dAvgPriceEstimate": 0.25
+    },
+    {
+      "code": "159107",
+      "name": "创业板软件ETF富国",
+      "groupId": "comp_software",
+      "shares": 835823006.0,
+      "previousComparableShares": 801823006.0,
+      "shareDelta1d": 34000000.0,
+      "nav": 0.7369,
+      "flow1d": 0.25,
+      "flow1dAvgPriceEstimate": 0.25
+    },
+    {
+      "code": "159977",
+      "name": "创业板ETF天弘",
+      "groupId": "chinext",
+      "shares": 3531872820.0,
+      "previousComparableShares": 3517872820.0,
+      "shareDelta1d": 14000000.0,
+      "nav": 1.8117,
+      "flow1d": 0.25,
+      "flow1dAvgPriceEstimate": 0.25
     },
     {
       "code": "512040",
@@ -2609,6 +2598,17 @@
       "flow1dAvgPriceEstimate": -0.24
     },
     {
+      "code": "159867",
+      "name": "养殖ETF鹏华",
+      "groupId": "agri_farming",
+      "shares": 1606643594.0,
+      "previousComparableShares": 1651643594.0,
+      "shareDelta1d": -45000000.0,
+      "nav": 0.5424,
+      "flow1d": -0.24,
+      "flow1dAvgPriceEstimate": -0.24
+    },
+    {
       "code": "159039",
       "name": "机器人ETF华安",
       "groupId": "mach_robot",
@@ -2650,17 +2650,6 @@
       "shareDelta1d": 14000000.0,
       "nav": 1.6134,
       "flow1d": 0.23,
-      "flow1dAvgPriceEstimate": 0.23
-    },
-    {
-      "code": "159388",
-      "name": "创业板人工智能ETF国泰",
-      "groupId": "comp_ai",
-      "shares": 858736984.0,
-      "previousComparableShares": 836736984.0,
-      "shareDelta1d": 22000000.0,
-      "nav": 1.0016,
-      "flow1d": 0.22,
       "flow1dAvgPriceEstimate": 0.23
     },
     {
@@ -2708,6 +2697,17 @@
       "flow1dAvgPriceEstimate": 0.22
     },
     {
+      "code": "159388",
+      "name": "创业板人工智能ETF国泰",
+      "groupId": "comp_ai",
+      "shares": 858736984.0,
+      "previousComparableShares": 836736984.0,
+      "shareDelta1d": 22000000.0,
+      "nav": 1.0016,
+      "flow1d": 0.22,
+      "flow1dAvgPriceEstimate": 0.22
+    },
+    {
       "code": "159393",
       "name": "沪深300ETF万家",
       "groupId": "hs300",
@@ -2719,28 +2719,6 @@
       "flow1dAvgPriceEstimate": 0.22
     },
     {
-      "code": "516920",
-      "name": "芯片ETF汇添富",
-      "groupId": "elec_chip",
-      "shares": 471963000.0,
-      "previousComparableShares": 456963000.0,
-      "shareDelta1d": 15000000.0,
-      "nav": 1.4184,
-      "flow1d": 0.21,
-      "flow1dAvgPriceEstimate": 0.22
-    },
-    {
-      "code": "589520",
-      "name": "科创人工智能ETF华宝",
-      "groupId": "comp_ai",
-      "shares": 774104600.0,
-      "previousComparableShares": 738104600.0,
-      "shareDelta1d": 36000000.0,
-      "nav": 0.5929,
-      "flow1d": 0.21,
-      "flow1dAvgPriceEstimate": 0.22
-    },
-    {
       "code": "510100",
       "name": "上证50ETF易方达",
       "groupId": "sse50",
@@ -2748,6 +2726,17 @@
       "previousComparableShares": 897806800.0,
       "shareDelta1d": 7200000.0,
       "nav": 2.9577,
+      "flow1d": 0.21,
+      "flow1dAvgPriceEstimate": 0.21
+    },
+    {
+      "code": "516920",
+      "name": "芯片ETF汇添富",
+      "groupId": "elec_chip",
+      "shares": 471963000.0,
+      "previousComparableShares": 456963000.0,
+      "shareDelta1d": 15000000.0,
+      "nav": 1.4184,
       "flow1d": 0.21,
       "flow1dAvgPriceEstimate": 0.21
     },
@@ -2785,14 +2774,14 @@
       "flow1dAvgPriceEstimate": -0.21
     },
     {
-      "code": "159507",
-      "name": "通信ETF广发",
-      "groupId": "sw_communications",
-      "shares": 836830902.0,
-      "previousComparableShares": 812830902.0,
-      "shareDelta1d": 24000000.0,
-      "nav": 0.8506,
-      "flow1d": 0.2,
+      "code": "589520",
+      "name": "科创人工智能ETF华宝",
+      "groupId": "comp_ai",
+      "shares": 774104600.0,
+      "previousComparableShares": 738104600.0,
+      "shareDelta1d": 36000000.0,
+      "nav": 0.5929,
+      "flow1d": 0.21,
       "flow1dAvgPriceEstimate": 0.21
     },
     {
@@ -2805,6 +2794,17 @@
       "nav": 0.3622,
       "flow1d": -0.2,
       "flow1dAvgPriceEstimate": -0.2
+    },
+    {
+      "code": "159507",
+      "name": "通信ETF广发",
+      "groupId": "sw_communications",
+      "shares": 836830902.0,
+      "previousComparableShares": 812830902.0,
+      "shareDelta1d": 24000000.0,
+      "nav": 0.8506,
+      "flow1d": 0.2,
+      "flow1dAvgPriceEstimate": 0.2
     },
     {
       "code": "159590",
@@ -2840,28 +2840,6 @@
       "flow1dAvgPriceEstimate": 0.2
     },
     {
-      "code": "563380",
-      "name": "航空航天ETF华泰柏瑞",
-      "groupId": "sw_defense",
-      "shares": 920950000.0,
-      "previousComparableShares": 899950000.0,
-      "shareDelta1d": 21000000.0,
-      "nav": 0.923,
-      "flow1d": 0.19,
-      "flow1dAvgPriceEstimate": 0.2
-    },
-    {
-      "code": "588730",
-      "name": "科创人工智能ETF易方达",
-      "groupId": "comp_ai",
-      "shares": 717396300.0,
-      "previousComparableShares": 704396300.0,
-      "shareDelta1d": 13000000.0,
-      "nav": 1.4744,
-      "flow1d": 0.19,
-      "flow1dAvgPriceEstimate": 0.2
-    },
-    {
       "code": "515170",
       "name": "食品饮料ETF华夏",
       "groupId": "sw_food_beverage",
@@ -2884,6 +2862,17 @@
       "flow1dAvgPriceEstimate": 0.19
     },
     {
+      "code": "563380",
+      "name": "航空航天ETF华泰柏瑞",
+      "groupId": "sw_defense",
+      "shares": 920950000.0,
+      "previousComparableShares": 899950000.0,
+      "shareDelta1d": 21000000.0,
+      "nav": 0.923,
+      "flow1d": 0.19,
+      "flow1dAvgPriceEstimate": 0.19
+    },
+    {
       "code": "588010",
       "name": "科创新材料ETF博时",
       "groupId": "sw_basic_chemicals",
@@ -2893,6 +2882,17 @@
       "nav": 1.0847,
       "flow1d": -0.19,
       "flow1dAvgPriceEstimate": -0.19
+    },
+    {
+      "code": "588730",
+      "name": "科创人工智能ETF易方达",
+      "groupId": "comp_ai",
+      "shares": 717396300.0,
+      "previousComparableShares": 704396300.0,
+      "shareDelta1d": 13000000.0,
+      "nav": 1.4744,
+      "flow1d": 0.19,
+      "flow1dAvgPriceEstimate": 0.19
     },
     {
       "code": "589000",
@@ -3005,17 +3005,6 @@
       "flow1dAvgPriceEstimate": -0.19
     },
     {
-      "code": "159279",
-      "name": "创业板人工智能ETF华安",
-      "groupId": "comp_ai",
-      "shares": 162387534.0,
-      "previousComparableShares": 149387534.0,
-      "shareDelta1d": 13000000.0,
-      "nav": 1.3882,
-      "flow1d": 0.18,
-      "flow1dAvgPriceEstimate": 0.19
-    },
-    {
       "code": "512290",
       "name": "生物医药ETF国泰",
       "groupId": "pharma_innovative",
@@ -3038,6 +3027,17 @@
       "flow1dAvgPriceEstimate": 0.18
     },
     {
+      "code": "159279",
+      "name": "创业板人工智能ETF华安",
+      "groupId": "comp_ai",
+      "shares": 162387534.0,
+      "previousComparableShares": 149387534.0,
+      "shareDelta1d": 13000000.0,
+      "nav": 1.3882,
+      "flow1d": 0.18,
+      "flow1dAvgPriceEstimate": 0.18
+    },
+    {
       "code": "159673",
       "name": "沪深300ETF鹏华",
       "groupId": "hs300",
@@ -3046,50 +3046,6 @@
       "shareDelta1d": 14000000.0,
       "nav": 1.2818,
       "flow1d": 0.18,
-      "flow1dAvgPriceEstimate": 0.18
-    },
-    {
-      "code": "589120",
-      "name": "科创创新药ETF汇添富",
-      "groupId": "pharma_innovative",
-      "shares": 1272620000.0,
-      "previousComparableShares": 1292620000.0,
-      "shareDelta1d": -20000000.0,
-      "nav": 0.8719,
-      "flow1d": -0.17,
-      "flow1dAvgPriceEstimate": -0.18
-    },
-    {
-      "code": "589700",
-      "name": "科创成长ETF南方",
-      "groupId": "growth",
-      "shares": 36291000.0,
-      "previousComparableShares": 28291000.0,
-      "shareDelta1d": 8000000.0,
-      "nav": 2.1804,
-      "flow1d": 0.17,
-      "flow1dAvgPriceEstimate": 0.18
-    },
-    {
-      "code": "159139",
-      "name": "科创创业人工智能ETF华泰柏瑞",
-      "groupId": "dual_innovation50",
-      "shares": 168109210.0,
-      "previousComparableShares": 154109210.0,
-      "shareDelta1d": 14000000.0,
-      "nav": 1.2381,
-      "flow1d": 0.17,
-      "flow1dAvgPriceEstimate": 0.18
-    },
-    {
-      "code": "159560",
-      "name": "芯片ETF景顺",
-      "groupId": "elec_chip",
-      "shares": 193416460.0,
-      "previousComparableShares": 185916460.0,
-      "shareDelta1d": 7500000.0,
-      "nav": 2.3019,
-      "flow1d": 0.17,
       "flow1dAvgPriceEstimate": 0.18
     },
     {
@@ -3137,6 +3093,39 @@
       "flow1dAvgPriceEstimate": 0.17
     },
     {
+      "code": "589120",
+      "name": "科创创新药ETF汇添富",
+      "groupId": "pharma_innovative",
+      "shares": 1272620000.0,
+      "previousComparableShares": 1292620000.0,
+      "shareDelta1d": -20000000.0,
+      "nav": 0.8719,
+      "flow1d": -0.17,
+      "flow1dAvgPriceEstimate": -0.17
+    },
+    {
+      "code": "589700",
+      "name": "科创成长ETF南方",
+      "groupId": "growth",
+      "shares": 36291000.0,
+      "previousComparableShares": 28291000.0,
+      "shareDelta1d": 8000000.0,
+      "nav": 2.1804,
+      "flow1d": 0.17,
+      "flow1dAvgPriceEstimate": 0.17
+    },
+    {
+      "code": "159139",
+      "name": "科创创业人工智能ETF华泰柏瑞",
+      "groupId": "dual_innovation50",
+      "shares": 168109210.0,
+      "previousComparableShares": 154109210.0,
+      "shareDelta1d": 14000000.0,
+      "nav": 1.2381,
+      "flow1d": 0.17,
+      "flow1dAvgPriceEstimate": 0.17
+    },
+    {
       "code": "159531",
       "name": "中证2000ETF南方",
       "groupId": "csi2000",
@@ -3144,6 +3133,17 @@
       "previousComparableShares": 1032608406.0,
       "shareDelta1d": 12000000.0,
       "nav": 1.4172,
+      "flow1d": 0.17,
+      "flow1dAvgPriceEstimate": 0.17
+    },
+    {
+      "code": "159560",
+      "name": "芯片ETF景顺",
+      "groupId": "elec_chip",
+      "shares": 193416460.0,
+      "previousComparableShares": 185916460.0,
+      "shareDelta1d": 7500000.0,
+      "nav": 2.3019,
       "flow1d": 0.17,
       "flow1dAvgPriceEstimate": 0.17
     },
@@ -3156,17 +3156,6 @@
       "shareDelta1d": 7000000.0,
       "nav": 2.4565,
       "flow1d": 0.17,
-      "flow1dAvgPriceEstimate": 0.17
-    },
-    {
-      "code": "589100",
-      "name": "科创芯片ETF国泰",
-      "groupId": "elec_chip",
-      "shares": 887442500.0,
-      "previousComparableShares": 869442500.0,
-      "shareDelta1d": 18000000.0,
-      "nav": 0.9127,
-      "flow1d": 0.16,
       "flow1dAvgPriceEstimate": 0.17
     },
     {
@@ -3203,6 +3192,17 @@
       "flow1dAvgPriceEstimate": -0.16
     },
     {
+      "code": "589100",
+      "name": "科创芯片ETF国泰",
+      "groupId": "elec_chip",
+      "shares": 887442500.0,
+      "previousComparableShares": 869442500.0,
+      "shareDelta1d": 18000000.0,
+      "nav": 0.9127,
+      "flow1d": 0.16,
+      "flow1dAvgPriceEstimate": 0.16
+    },
+    {
       "code": "159362",
       "name": "A500ETF工银",
       "groupId": "csi_a500",
@@ -3234,50 +3234,6 @@
       "nav": 0.716,
       "flow1d": -0.16,
       "flow1dAvgPriceEstimate": -0.16
-    },
-    {
-      "code": "589160",
-      "name": "科创芯片ETF广发",
-      "groupId": "elec_chip",
-      "shares": 290296000.0,
-      "previousComparableShares": 278296000.0,
-      "shareDelta1d": 12000000.0,
-      "nav": 1.2839,
-      "flow1d": 0.15,
-      "flow1dAvgPriceEstimate": 0.16
-    },
-    {
-      "code": "589190",
-      "name": "科创芯片ETF华宝",
-      "groupId": "elec_chip",
-      "shares": 2749562000.0,
-      "previousComparableShares": 2725562000.0,
-      "shareDelta1d": 24000000.0,
-      "nav": 0.6415,
-      "flow1d": 0.15,
-      "flow1dAvgPriceEstimate": 0.16
-    },
-    {
-      "code": "589350",
-      "name": "科创芯片设计ETF银华",
-      "groupId": "elec_chip",
-      "shares": 218281500.0,
-      "previousComparableShares": 198281500.0,
-      "shareDelta1d": 20000000.0,
-      "nav": 0.755,
-      "flow1d": 0.15,
-      "flow1dAvgPriceEstimate": 0.15
-    },
-    {
-      "code": "159546",
-      "name": "集成电路ETF国泰",
-      "groupId": "elec_semiconductor",
-      "shares": 704927822.0,
-      "previousComparableShares": 684927822.0,
-      "shareDelta1d": 20000000.0,
-      "nav": 0.7704,
-      "flow1d": 0.15,
-      "flow1dAvgPriceEstimate": 0.16
     },
     {
       "code": "512720",
@@ -3324,6 +3280,50 @@
       "flow1dAvgPriceEstimate": -0.15
     },
     {
+      "code": "589160",
+      "name": "科创芯片ETF广发",
+      "groupId": "elec_chip",
+      "shares": 290296000.0,
+      "previousComparableShares": 278296000.0,
+      "shareDelta1d": 12000000.0,
+      "nav": 1.2839,
+      "flow1d": 0.15,
+      "flow1dAvgPriceEstimate": 0.15
+    },
+    {
+      "code": "589190",
+      "name": "科创芯片ETF华宝",
+      "groupId": "elec_chip",
+      "shares": 2749562000.0,
+      "previousComparableShares": 2725562000.0,
+      "shareDelta1d": 24000000.0,
+      "nav": 0.6415,
+      "flow1d": 0.15,
+      "flow1dAvgPriceEstimate": 0.15
+    },
+    {
+      "code": "589350",
+      "name": "科创芯片设计ETF银华",
+      "groupId": "elec_chip",
+      "shares": 218281500.0,
+      "previousComparableShares": 198281500.0,
+      "shareDelta1d": 20000000.0,
+      "nav": 0.755,
+      "flow1d": 0.15,
+      "flow1dAvgPriceEstimate": 0.15
+    },
+    {
+      "code": "159546",
+      "name": "集成电路ETF国泰",
+      "groupId": "elec_semiconductor",
+      "shares": 704927822.0,
+      "previousComparableShares": 684927822.0,
+      "shareDelta1d": 20000000.0,
+      "nav": 0.7704,
+      "flow1d": 0.15,
+      "flow1dAvgPriceEstimate": 0.15
+    },
+    {
       "code": "159591",
       "name": "A50ETF富国",
       "groupId": "csi_a50",
@@ -3354,28 +3354,6 @@
       "shareDelta1d": -22500000.0,
       "nav": 0.6686,
       "flow1d": -0.15,
-      "flow1dAvgPriceEstimate": -0.15
-    },
-    {
-      "code": "589150",
-      "name": "科创50ETF平安",
-      "groupId": "star50",
-      "shares": 765437200.0,
-      "previousComparableShares": 753437200.0,
-      "shareDelta1d": 12000000.0,
-      "nav": 1.206,
-      "flow1d": 0.14,
-      "flow1dAvgPriceEstimate": 0.15
-    },
-    {
-      "code": "159783",
-      "name": "科创创业50ETF华夏",
-      "groupId": "dual_innovation50",
-      "shares": 5113859442.0,
-      "previousComparableShares": 5126859442.0,
-      "shareDelta1d": -13000000.0,
-      "nav": 1.1069,
-      "flow1d": -0.14,
       "flow1dAvgPriceEstimate": -0.15
     },
     {
@@ -3467,6 +3445,17 @@
       "flow1dAvgPriceEstimate": 0.14
     },
     {
+      "code": "589150",
+      "name": "科创50ETF平安",
+      "groupId": "star50",
+      "shares": 765437200.0,
+      "previousComparableShares": 753437200.0,
+      "shareDelta1d": 12000000.0,
+      "nav": 1.206,
+      "flow1d": 0.14,
+      "flow1dAvgPriceEstimate": 0.14
+    },
+    {
       "code": "159256",
       "name": "创业板软件ETF华夏",
       "groupId": "comp_software",
@@ -3476,6 +3465,17 @@
       "nav": 0.8106,
       "flow1d": 0.14,
       "flow1dAvgPriceEstimate": 0.14
+    },
+    {
+      "code": "159783",
+      "name": "科创创业50ETF华夏",
+      "groupId": "dual_innovation50",
+      "shares": 5113859442.0,
+      "previousComparableShares": 5126859442.0,
+      "shareDelta1d": -13000000.0,
+      "nav": 1.1069,
+      "flow1d": -0.14,
+      "flow1dAvgPriceEstimate": -0.14
     },
     {
       "code": "159842",
@@ -3497,17 +3497,6 @@
       "shareDelta1d": 15000000.0,
       "nav": 0.9566,
       "flow1d": 0.14,
-      "flow1dAvgPriceEstimate": 0.14
-    },
-    {
-      "code": "159208",
-      "name": "航空航天ETF万家",
-      "groupId": "sw_defense",
-      "shares": 344462783.0,
-      "previousComparableShares": 331462783.0,
-      "shareDelta1d": 13000000.0,
-      "nav": 1.0275,
-      "flow1d": 0.13,
       "flow1dAvgPriceEstimate": 0.14
     },
     {
@@ -3621,6 +3610,17 @@
       "flow1dAvgPriceEstimate": 0.13
     },
     {
+      "code": "159208",
+      "name": "航空航天ETF万家",
+      "groupId": "sw_defense",
+      "shares": 344462783.0,
+      "previousComparableShares": 331462783.0,
+      "shareDelta1d": 13000000.0,
+      "nav": 1.0275,
+      "flow1d": 0.13,
+      "flow1dAvgPriceEstimate": 0.13
+    },
+    {
       "code": "159652",
       "name": "有色ETF汇添富",
       "groupId": "sw_nonferrous",
@@ -3641,28 +3641,6 @@
       "nav": 1.1315,
       "flow1d": -0.13,
       "flow1dAvgPriceEstimate": -0.13
-    },
-    {
-      "code": "588470",
-      "name": "科创创业人工智能ETF华安",
-      "groupId": "comp_ai",
-      "shares": 277907000.0,
-      "previousComparableShares": 262907000.0,
-      "shareDelta1d": 15000000.0,
-      "nav": 0.8294,
-      "flow1d": 0.12,
-      "flow1dAvgPriceEstimate": 0.13
-    },
-    {
-      "code": "588480",
-      "name": "科创创业人工智能ETF中金",
-      "groupId": "comp_ai",
-      "shares": 227717000.0,
-      "previousComparableShares": 213717000.0,
-      "shareDelta1d": 14000000.0,
-      "nav": 0.8868,
-      "flow1d": 0.12,
-      "flow1dAvgPriceEstimate": 0.13
     },
     {
       "code": "510180",
@@ -3731,6 +3709,28 @@
       "flow1dAvgPriceEstimate": 0.12
     },
     {
+      "code": "588470",
+      "name": "科创创业人工智能ETF华安",
+      "groupId": "comp_ai",
+      "shares": 277907000.0,
+      "previousComparableShares": 262907000.0,
+      "shareDelta1d": 15000000.0,
+      "nav": 0.8294,
+      "flow1d": 0.12,
+      "flow1dAvgPriceEstimate": 0.12
+    },
+    {
+      "code": "588480",
+      "name": "科创创业人工智能ETF中金",
+      "groupId": "comp_ai",
+      "shares": 227717000.0,
+      "previousComparableShares": 213717000.0,
+      "shareDelta1d": 14000000.0,
+      "nav": 0.8868,
+      "flow1d": 0.12,
+      "flow1dAvgPriceEstimate": 0.12
+    },
+    {
       "code": "589420",
       "name": "科创芯片设计ETF永赢",
       "groupId": "elec_chip",
@@ -3753,6 +3753,17 @@
       "flow1dAvgPriceEstimate": -0.12
     },
     {
+      "code": "512170",
+      "name": "医疗ETF华宝",
+      "groupId": "sw_pharma_bio",
+      "shares": 72754820500.0,
+      "previousComparableShares": 72723820500.0,
+      "shareDelta1d": 31000000.0,
+      "nav": 0.3438,
+      "flow1d": 0.11,
+      "flow1dAvgPriceEstimate": 0.11
+    },
+    {
       "code": "512200",
       "name": "房地产ETF南方",
       "groupId": "sw_real_estate",
@@ -3761,7 +3772,7 @@
       "shareDelta1d": -9500000.0,
       "nav": 1.2089,
       "flow1d": -0.11,
-      "flow1dAvgPriceEstimate": -0.12
+      "flow1dAvgPriceEstimate": -0.11
     },
     {
       "code": "516160",
@@ -3772,18 +3783,7 @@
       "shareDelta1d": -4500000.0,
       "nav": 2.5151,
       "flow1d": -0.11,
-      "flow1dAvgPriceEstimate": -0.12
-    },
-    {
-      "code": "512170",
-      "name": "医疗ETF华宝",
-      "groupId": "sw_pharma_bio",
-      "shares": 72754820500.0,
-      "previousComparableShares": 72723820500.0,
-      "shareDelta1d": 31000000.0,
-      "nav": 0.3438,
-      "flow1d": 0.11,
-      "flow1dAvgPriceEstimate": 0.11
+      "flow1dAvgPriceEstimate": -0.11
     },
     {
       "code": "561170",
@@ -3874,39 +3874,6 @@
       "flow1dAvgPriceEstimate": -0.11
     },
     {
-      "code": "561330",
-      "name": "矿业ETF国泰",
-      "groupId": "sw_nonferrous",
-      "shares": 1847392100.0,
-      "previousComparableShares": 1858392100.0,
-      "shareDelta1d": -11000000.0,
-      "nav": 0.9506,
-      "flow1d": -0.1,
-      "flow1dAvgPriceEstimate": -0.11
-    },
-    {
-      "code": "159367",
-      "name": "创业板50ETF华夏",
-      "groupId": "chinext50",
-      "shares": 166079029.0,
-      "previousComparableShares": 160079029.0,
-      "shareDelta1d": 6000000.0,
-      "nav": 1.7274,
-      "flow1d": 0.1,
-      "flow1dAvgPriceEstimate": 0.11
-    },
-    {
-      "code": "159997",
-      "name": "电子ETF天弘",
-      "groupId": "sw_electronics",
-      "shares": 744306634.0,
-      "previousComparableShares": 739306634.0,
-      "shareDelta1d": 5000000.0,
-      "nav": 2.0855,
-      "flow1d": 0.1,
-      "flow1dAvgPriceEstimate": 0.11
-    },
-    {
       "code": "515020",
       "name": "银行ETF华夏",
       "groupId": "sw_banks",
@@ -3951,6 +3918,17 @@
       "flow1dAvgPriceEstimate": 0.1
     },
     {
+      "code": "561330",
+      "name": "矿业ETF国泰",
+      "groupId": "sw_nonferrous",
+      "shares": 1847392100.0,
+      "previousComparableShares": 1858392100.0,
+      "shareDelta1d": -11000000.0,
+      "nav": 0.9506,
+      "flow1d": -0.1,
+      "flow1dAvgPriceEstimate": -0.1
+    },
+    {
       "code": "562820",
       "name": "集成电路ETF嘉实",
       "groupId": "elec_semiconductor",
@@ -3969,6 +3947,17 @@
       "previousComparableShares": 122633000.0,
       "shareDelta1d": 6000000.0,
       "nav": 1.6303,
+      "flow1d": 0.1,
+      "flow1dAvgPriceEstimate": 0.1
+    },
+    {
+      "code": "159367",
+      "name": "创业板50ETF华夏",
+      "groupId": "chinext50",
+      "shares": 166079029.0,
+      "previousComparableShares": 160079029.0,
+      "shareDelta1d": 6000000.0,
+      "nav": 1.7274,
       "flow1d": 0.1,
       "flow1dAvgPriceEstimate": 0.1
     },
@@ -4017,36 +4006,14 @@
       "flow1dAvgPriceEstimate": -0.1
     },
     {
-      "code": "515400",
-      "name": "大数据ETF富国",
-      "groupId": "comp_ai",
-      "shares": 1652631400.0,
-      "previousComparableShares": 1641631400.0,
-      "shareDelta1d": 11000000.0,
-      "nav": 0.8544,
-      "flow1d": 0.09,
-      "flow1dAvgPriceEstimate": 0.1
-    },
-    {
-      "code": "589630",
-      "name": "科创综指ETF国泰",
-      "groupId": "star_composite",
-      "shares": 349258000.0,
-      "previousComparableShares": 337258000.0,
-      "shareDelta1d": 12000000.0,
-      "nav": 0.782,
-      "flow1d": 0.09,
-      "flow1dAvgPriceEstimate": 0.1
-    },
-    {
-      "code": "159048",
-      "name": "机器人ETF大成",
-      "groupId": "mach_robot",
-      "shares": 204803897.0,
-      "previousComparableShares": 193803897.0,
-      "shareDelta1d": 11000000.0,
-      "nav": 0.8632,
-      "flow1d": 0.09,
+      "code": "159997",
+      "name": "电子ETF天弘",
+      "groupId": "sw_electronics",
+      "shares": 744306634.0,
+      "previousComparableShares": 739306634.0,
+      "shareDelta1d": 5000000.0,
+      "nav": 2.0855,
+      "flow1d": 0.1,
       "flow1dAvgPriceEstimate": 0.1
     },
     {
@@ -4059,6 +4026,17 @@
       "nav": 3.5609,
       "flow1d": -0.09,
       "flow1dAvgPriceEstimate": -0.09
+    },
+    {
+      "code": "515400",
+      "name": "大数据ETF富国",
+      "groupId": "comp_ai",
+      "shares": 1652631400.0,
+      "previousComparableShares": 1641631400.0,
+      "shareDelta1d": 11000000.0,
+      "nav": 0.8544,
+      "flow1d": 0.09,
+      "flow1dAvgPriceEstimate": 0.09
     },
     {
       "code": "516120",
@@ -4123,6 +4101,28 @@
       "previousComparableShares": 267785200.0,
       "shareDelta1d": 12000000.0,
       "nav": 0.747,
+      "flow1d": 0.09,
+      "flow1dAvgPriceEstimate": 0.09
+    },
+    {
+      "code": "589630",
+      "name": "科创综指ETF国泰",
+      "groupId": "star_composite",
+      "shares": 349258000.0,
+      "previousComparableShares": 337258000.0,
+      "shareDelta1d": 12000000.0,
+      "nav": 0.782,
+      "flow1d": 0.09,
+      "flow1dAvgPriceEstimate": 0.09
+    },
+    {
+      "code": "159048",
+      "name": "机器人ETF大成",
+      "groupId": "mach_robot",
+      "shares": 204803897.0,
+      "previousComparableShares": 193803897.0,
+      "shareDelta1d": 11000000.0,
+      "nav": 0.8632,
       "flow1d": 0.09,
       "flow1dAvgPriceEstimate": 0.09
     },
@@ -4226,39 +4226,6 @@
       "flow1dAvgPriceEstimate": 0.09
     },
     {
-      "code": "589560",
-      "name": "科创人工智能ETF汇添富",
-      "groupId": "comp_ai",
-      "shares": 241355000.0,
-      "previousComparableShares": 232355000.0,
-      "shareDelta1d": 9000000.0,
-      "nav": 0.9412,
-      "flow1d": 0.08,
-      "flow1dAvgPriceEstimate": 0.09
-    },
-    {
-      "code": "159295",
-      "name": "创业综指ETF西部利得",
-      "groupId": "chinext_composite",
-      "shares": 78958239.0,
-      "previousComparableShares": 70958239.0,
-      "shareDelta1d": 8000000.0,
-      "nav": 1.0364,
-      "flow1d": 0.08,
-      "flow1dAvgPriceEstimate": 0.09
-    },
-    {
-      "code": "159982",
-      "name": "中证500ETF鹏华",
-      "groupId": "csi500",
-      "shares": 194211253.0,
-      "previousComparableShares": 198211253.0,
-      "shareDelta1d": -4000000.0,
-      "nav": 2.0983,
-      "flow1d": -0.08,
-      "flow1dAvgPriceEstimate": -0.09
-    },
-    {
       "code": "515010",
       "name": "证券ETF华夏",
       "groupId": "fin_broker",
@@ -4358,6 +4325,17 @@
       "flow1dAvgPriceEstimate": 0.08
     },
     {
+      "code": "589560",
+      "name": "科创人工智能ETF汇添富",
+      "groupId": "comp_ai",
+      "shares": 241355000.0,
+      "previousComparableShares": 232355000.0,
+      "shareDelta1d": 9000000.0,
+      "nav": 0.9412,
+      "flow1d": 0.08,
+      "flow1dAvgPriceEstimate": 0.08
+    },
+    {
       "code": "589680",
       "name": "科创综指ETF鹏华",
       "groupId": "star_composite",
@@ -4420,6 +4398,17 @@
       "previousComparableShares": 1318265664.0,
       "shareDelta1d": 7500000.0,
       "nav": 1.0816,
+      "flow1d": 0.08,
+      "flow1dAvgPriceEstimate": 0.08
+    },
+    {
+      "code": "159295",
+      "name": "创业综指ETF西部利得",
+      "groupId": "chinext_composite",
+      "shares": 78958239.0,
+      "previousComparableShares": 70958239.0,
+      "shareDelta1d": 8000000.0,
+      "nav": 1.0364,
       "flow1d": 0.08,
       "flow1dAvgPriceEstimate": 0.08
     },
@@ -4490,15 +4479,15 @@
       "flow1dAvgPriceEstimate": -0.08
     },
     {
-      "code": "588990",
-      "name": "科创芯片ETF博时",
-      "groupId": "elec_chip",
-      "shares": 195745400.0,
-      "previousComparableShares": 193745400.0,
-      "shareDelta1d": 2000000.0,
-      "nav": 3.6865,
-      "flow1d": 0.07,
-      "flow1dAvgPriceEstimate": 0.08
+      "code": "159982",
+      "name": "中证500ETF鹏华",
+      "groupId": "csi500",
+      "shares": 194211253.0,
+      "previousComparableShares": 198211253.0,
+      "shareDelta1d": -4000000.0,
+      "nav": 2.0983,
+      "flow1d": -0.08,
+      "flow1dAvgPriceEstimate": -0.08
     },
     {
       "code": "515210",
@@ -4589,6 +4578,17 @@
       "flow1dAvgPriceEstimate": 0.07
     },
     {
+      "code": "588990",
+      "name": "科创芯片ETF博时",
+      "groupId": "elec_chip",
+      "shares": 195745400.0,
+      "previousComparableShares": 193745400.0,
+      "shareDelta1d": 2000000.0,
+      "nav": 3.6865,
+      "flow1d": 0.07,
+      "flow1dAvgPriceEstimate": 0.07
+    },
+    {
       "code": "159213",
       "name": "机器人ETF汇添富",
       "groupId": "mach_robot",
@@ -4674,17 +4674,6 @@
       "shareDelta1d": 10000000.0,
       "nav": 0.7246,
       "flow1d": 0.07,
-      "flow1dAvgPriceEstimate": 0.07
-    },
-    {
-      "code": "589230",
-      "name": "科创人工智能ETF南方",
-      "groupId": "comp_ai",
-      "shares": 233553000.0,
-      "previousComparableShares": 226053000.0,
-      "shareDelta1d": 7500000.0,
-      "nav": 0.8541,
-      "flow1d": 0.06,
       "flow1dAvgPriceEstimate": 0.07
     },
     {
@@ -4783,6 +4772,17 @@
       "previousComparableShares": 313495800.0,
       "shareDelta1d": 6000000.0,
       "nav": 0.9977,
+      "flow1d": 0.06,
+      "flow1dAvgPriceEstimate": 0.06
+    },
+    {
+      "code": "589230",
+      "name": "科创人工智能ETF南方",
+      "groupId": "comp_ai",
+      "shares": 233553000.0,
+      "previousComparableShares": 226053000.0,
+      "shareDelta1d": 7500000.0,
+      "nav": 0.8541,
       "flow1d": 0.06,
       "flow1dAvgPriceEstimate": 0.06
     },
@@ -4897,50 +4897,6 @@
       "flow1dAvgPriceEstimate": -0.06
     },
     {
-      "code": "561220",
-      "name": "数字经济ETF工银",
-      "groupId": "soe",
-      "shares": 46053000.0,
-      "previousComparableShares": 43053000.0,
-      "shareDelta1d": 3000000.0,
-      "nav": 1.7984,
-      "flow1d": 0.05,
-      "flow1dAvgPriceEstimate": 0.06
-    },
-    {
-      "code": "588120",
-      "name": "科创100ETF国泰",
-      "groupId": "star100",
-      "shares": 901622000.0,
-      "previousComparableShares": 895622000.0,
-      "shareDelta1d": 6000000.0,
-      "nav": 0.9079,
-      "flow1d": 0.05,
-      "flow1dAvgPriceEstimate": 0.06
-    },
-    {
-      "code": "588550",
-      "name": "科创综指增强ETF易方达",
-      "groupId": "enhanced",
-      "shares": 71290000.0,
-      "previousComparableShares": 67290000.0,
-      "shareDelta1d": 4000000.0,
-      "nav": 1.3467,
-      "flow1d": 0.05,
-      "flow1dAvgPriceEstimate": 0.06
-    },
-    {
-      "code": "159012",
-      "name": "鹏华科创创业50ETF",
-      "groupId": "dual_innovation50",
-      "shares": 107881148.0,
-      "previousComparableShares": 101881148.0,
-      "shareDelta1d": 6000000.0,
-      "nav": 0.9087,
-      "flow1d": 0.05,
-      "flow1dAvgPriceEstimate": 0.06
-    },
-    {
       "code": "510510",
       "name": "中证500ETF广发",
       "groupId": "csi500",
@@ -5051,6 +5007,17 @@
       "flow1dAvgPriceEstimate": -0.05
     },
     {
+      "code": "561220",
+      "name": "数字经济ETF工银",
+      "groupId": "soe",
+      "shares": 46053000.0,
+      "previousComparableShares": 43053000.0,
+      "shareDelta1d": 3000000.0,
+      "nav": 1.7984,
+      "flow1d": 0.05,
+      "flow1dAvgPriceEstimate": 0.05
+    },
+    {
       "code": "561250",
       "name": "稀有金属ETF鹏华",
       "groupId": "metal_rare",
@@ -5093,6 +5060,17 @@
       "nav": 4.174,
       "flow1d": -0.05,
       "flow1dAvgPriceEstimate": -0.05
+    },
+    {
+      "code": "588120",
+      "name": "科创100ETF国泰",
+      "groupId": "star100",
+      "shares": 901622000.0,
+      "previousComparableShares": 895622000.0,
+      "shareDelta1d": 6000000.0,
+      "nav": 0.9079,
+      "flow1d": 0.05,
+      "flow1dAvgPriceEstimate": 0.05
     },
     {
       "code": "588160",
@@ -5150,6 +5128,17 @@
       "flow1dAvgPriceEstimate": 0.05
     },
     {
+      "code": "588550",
+      "name": "科创综指增强ETF易方达",
+      "groupId": "enhanced",
+      "shares": 71290000.0,
+      "previousComparableShares": 67290000.0,
+      "shareDelta1d": 4000000.0,
+      "nav": 1.3467,
+      "flow1d": 0.05,
+      "flow1dAvgPriceEstimate": 0.05
+    },
+    {
       "code": "589090",
       "name": "科创AIETF鹏华",
       "groupId": "comp_ai",
@@ -5168,6 +5157,17 @@
       "previousComparableShares": 83101300.0,
       "shareDelta1d": 4000000.0,
       "nav": 1.2236,
+      "flow1d": 0.05,
+      "flow1dAvgPriceEstimate": 0.05
+    },
+    {
+      "code": "159012",
+      "name": "鹏华科创创业50ETF",
+      "groupId": "dual_innovation50",
+      "shares": 107881148.0,
+      "previousComparableShares": 101881148.0,
+      "shareDelta1d": 6000000.0,
+      "nav": 0.9087,
       "flow1d": 0.05,
       "flow1dAvgPriceEstimate": 0.05
     },
@@ -5246,28 +5246,6 @@
       "shareDelta1d": 2000000.0,
       "nav": 2.2827,
       "flow1d": 0.05,
-      "flow1dAvgPriceEstimate": 0.05
-    },
-    {
-      "code": "159287",
-      "name": "创业板综ETF博时",
-      "groupId": "chinext_composite",
-      "shares": 109568753.0,
-      "previousComparableShares": 105568753.0,
-      "shareDelta1d": 4000000.0,
-      "nav": 1.1102,
-      "flow1d": 0.04,
-      "flow1dAvgPriceEstimate": 0.05
-    },
-    {
-      "code": "159537",
-      "name": "信创ETF国泰",
-      "groupId": "comp_software",
-      "shares": 150285204.0,
-      "previousComparableShares": 145285204.0,
-      "shareDelta1d": 5000000.0,
-      "nav": 0.8939,
-      "flow1d": 0.04,
       "flow1dAvgPriceEstimate": 0.05
     },
     {
@@ -5667,6 +5645,17 @@
       "flow1dAvgPriceEstimate": 0.04
     },
     {
+      "code": "159287",
+      "name": "创业板综ETF博时",
+      "groupId": "chinext_composite",
+      "shares": 109568753.0,
+      "previousComparableShares": 105568753.0,
+      "shareDelta1d": 4000000.0,
+      "nav": 1.1102,
+      "flow1d": 0.04,
+      "flow1dAvgPriceEstimate": 0.04
+    },
+    {
       "code": "159315",
       "name": "黄金股ETF工银",
       "groupId": "metal_gold",
@@ -5742,6 +5731,17 @@
       "nav": 1.3462,
       "flow1d": -0.04,
       "flow1dAvgPriceEstimate": -0.04
+    },
+    {
+      "code": "159537",
+      "name": "信创ETF国泰",
+      "groupId": "comp_software",
+      "shares": 150285204.0,
+      "previousComparableShares": 145285204.0,
+      "shareDelta1d": 5000000.0,
+      "nav": 0.8939,
+      "flow1d": 0.04,
+      "flow1dAvgPriceEstimate": 0.04
     },
     {
       "code": "159547",
@@ -5852,39 +5852,6 @@
       "nav": 10.2111,
       "flow1d": -0.04,
       "flow1dAvgPriceEstimate": -0.04
-    },
-    {
-      "code": "560260",
-      "name": "医疗ETF广发",
-      "groupId": "sw_pharma_bio",
-      "shares": 1742664700.0,
-      "previousComparableShares": 1746664700.0,
-      "shareDelta1d": -4000000.0,
-      "nav": 0.8737,
-      "flow1d": -0.03,
-      "flow1dAvgPriceEstimate": -0.04
-    },
-    {
-      "code": "159030",
-      "name": "粮食ETF华夏",
-      "groupId": "sw_agriculture",
-      "shares": 343968176.0,
-      "previousComparableShares": 339968176.0,
-      "shareDelta1d": 4000000.0,
-      "nav": 0.8742,
-      "flow1d": 0.03,
-      "flow1dAvgPriceEstimate": 0.04
-    },
-    {
-      "code": "159906",
-      "name": "深成长ETF大成",
-      "groupId": "growth",
-      "shares": 149639725.0,
-      "previousComparableShares": 147639725.0,
-      "shareDelta1d": 2000000.0,
-      "nav": 1.7043,
-      "flow1d": 0.03,
-      "flow1dAvgPriceEstimate": 0.04
     },
     {
       "code": "510140",
@@ -6050,6 +6017,17 @@
       "nav": 0.9719,
       "flow1d": 0.03,
       "flow1dAvgPriceEstimate": 0.03
+    },
+    {
+      "code": "560260",
+      "name": "医疗ETF广发",
+      "groupId": "sw_pharma_bio",
+      "shares": 1742664700.0,
+      "previousComparableShares": 1746664700.0,
+      "shareDelta1d": -4000000.0,
+      "nav": 0.8737,
+      "flow1d": -0.03,
+      "flow1dAvgPriceEstimate": -0.03
     },
     {
       "code": "560570",
@@ -6224,6 +6202,17 @@
       "previousComparableShares": 123848900.0,
       "shareDelta1d": 4000000.0,
       "nav": 0.7768,
+      "flow1d": 0.03,
+      "flow1dAvgPriceEstimate": 0.03
+    },
+    {
+      "code": "159030",
+      "name": "粮食ETF华夏",
+      "groupId": "sw_agriculture",
+      "shares": 343968176.0,
+      "previousComparableShares": 339968176.0,
+      "shareDelta1d": 4000000.0,
+      "nav": 0.8742,
       "flow1d": 0.03,
       "flow1dAvgPriceEstimate": 0.03
     },
@@ -6470,6 +6459,17 @@
       "flow1dAvgPriceEstimate": -0.03
     },
     {
+      "code": "159906",
+      "name": "深成长ETF大成",
+      "groupId": "growth",
+      "shares": 149639725.0,
+      "previousComparableShares": 147639725.0,
+      "shareDelta1d": 2000000.0,
+      "nav": 1.7043,
+      "flow1d": 0.03,
+      "flow1dAvgPriceEstimate": 0.03
+    },
+    {
       "code": "159993",
       "name": "证券ETF鹏华",
       "groupId": "fin_broker",
@@ -6677,6 +6677,17 @@
       "nav": 0.9249,
       "flow1d": 0.02,
       "flow1dAvgPriceEstimate": 0.02
+    },
+    {
+      "code": "517180",
+      "name": "中国国企ETF南方",
+      "groupId": "soe",
+      "shares": 100496300.0,
+      "previousComparableShares": 101496300.0,
+      "shareDelta1d": -1000000.0,
+      "nav": 1.5067,
+      "flow1d": -0.02,
+      "flow1dAvgPriceEstimate": -0.02
     },
     {
       "code": "517900",
@@ -7394,28 +7405,6 @@
       "flow1dAvgPriceEstimate": 0.02
     },
     {
-      "code": "517180",
-      "name": "中国国企ETF南方",
-      "groupId": "soe",
-      "shares": 100496300.0,
-      "previousComparableShares": 101496300.0,
-      "shareDelta1d": -1000000.0,
-      "nav": 1.5067,
-      "flow1d": -0.02,
-      "flow1dAvgPriceEstimate": -0.01
-    },
-    {
-      "code": "512870",
-      "name": "杭州湾区ETF南华",
-      "groupId": "region",
-      "shares": 21410600.0,
-      "previousComparableShares": 20410600.0,
-      "shareDelta1d": 1000000.0,
-      "nav": 1.4469,
-      "flow1d": 0.01,
-      "flow1dAvgPriceEstimate": 0.02
-    },
-    {
       "code": "510200",
       "name": "上证券商ETF汇安",
       "groupId": "fin_broker",
@@ -7491,6 +7480,17 @@
       "nav": 1.6726,
       "flow1d": -0.01,
       "flow1dAvgPriceEstimate": -0.01
+    },
+    {
+      "code": "512870",
+      "name": "杭州湾区ETF南华",
+      "groupId": "region",
+      "shares": 21410600.0,
+      "previousComparableShares": 20410600.0,
+      "shareDelta1d": 1000000.0,
+      "nav": 1.4469,
+      "flow1d": 0.01,
+      "flow1dAvgPriceEstimate": 0.01
     },
     {
       "code": "512960",
@@ -8613,17 +8613,6 @@
       "nav": 1.1945,
       "flow1d": -0.01,
       "flow1dAvgPriceEstimate": -0.01
-    },
-    {
-      "code": "562030",
-      "name": "信创ETF华宝",
-      "groupId": "comp_software",
-      "shares": 137973900.0,
-      "previousComparableShares": 136973900.0,
-      "shareDelta1d": 1000000.0,
-      "nav": 0.4997,
-      "flow1d": 0.0,
-      "flow1dAvgPriceEstimate": 0.01
     },
     {
       "code": "510010",
@@ -10558,6 +10547,17 @@
       "previousComparableShares": 18298700.0,
       "shareDelta1d": 0.0,
       "nav": 0.8856,
+      "flow1d": 0.0,
+      "flow1dAvgPriceEstimate": 0.0
+    },
+    {
+      "code": "562030",
+      "name": "信创ETF华宝",
+      "groupId": "comp_software",
+      "shares": 137973900.0,
+      "previousComparableShares": 136973900.0,
+      "shareDelta1d": 1000000.0,
+      "nav": 0.4997,
       "flow1d": 0.0,
       "flow1dAvgPriceEstimate": 0.0
     },
