@@ -490,7 +490,7 @@ def generate_conclusion(groups: list[dict[str, Any]], market: dict[str, Any], hi
     headline = (
         f"本期统计的{market['etfCount']}只A股股票ETF当日合计{market_word}{abs(market['flow1d']):.1f}亿元；"
         f"净流入{market['increaseEtfCount1d']}只、净流出{market['decreaseEtfCount1d']}只。"
-        f"宽基中{broad_out_count}个流出、{broad_in_count}个流入；{sector_headline}"
+        f"宽基{len(broad)}组中{broad_out_count}个流出、{broad_in_count}个流入；{sector_headline}"
     )
     broad_line = (
         f"宽基流出前三为{broad_out[0]['name']}{broad_out[0]['flow1d']:.1f}亿、"

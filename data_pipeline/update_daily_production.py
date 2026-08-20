@@ -367,7 +367,7 @@ def _regenerate_conclusion(snapshot: dict[str, Any]) -> None:
     headline = (
         f"本期统计的{market['etfCount']}只A股股票ETF当日合计{direction}{abs(float(market['flow1d'])):.1f}亿元；"
         f"净流入{market['increaseEtfCount1d']}只、净流出{market['decreaseEtfCount1d']}只。"
-        f"宽基中{broad_out_count}个流出、{broad_in_count}个流入；{sector_headline}"
+        f"宽基{len(broad)}组中{broad_out_count}个流出、{broad_in_count}个流入；{sector_headline}"
     )
 
     broad_out = sorted(broad, key=lambda g: float(g.get("flow1d", 0)))

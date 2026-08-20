@@ -302,12 +302,12 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
     broad_in_count = sum(float(g.get("flow1d", 0) or 0) > 0 for g in broad)
     broad_out_count = sum(float(g.get("flow1d", 0) or 0) < 0 for g in broad)
     sectors = _visible_sector_groups(snapshot)
-    tail = f"宽基中{broad_out_count}个流出、{broad_in_count}个流入。"
+    tail = f"宽基{len(broad)}组中{broad_out_count}个流出、{broad_in_count}个流入。"
     if sectors:
         sector_in = sorted(sectors, key=lambda g: float(g.get("flow1d", 0) or 0), reverse=True)
         sector_out = sorted(sectors, key=lambda g: float(g.get("flow1d", 0) or 0))
         sector_headline = (f"申万一级和主题行业资金流入居前的是{sector_in[0]['name']}，流出最多的是{sector_out[0]['name']}。" if float(sector_in[0].get("flow1d", 0) or 0) > 0 else f"申万一级和主题行业当日均未录得净流入，流出最多的是{sector_out[0]['name']}。")
-        tail = f"宽基中{broad_out_count}个流出、{broad_in_count}个流入；{sector_headline}"
+        tail = f"宽基{len(broad)}组中{broad_out_count}个流出、{broad_in_count}个流入；{sector_headline}"
         positive = [g for g in sector_in if float(g.get("flow1d", 0) or 0) > 0]
         sector_fact = ("申万一级和主题行业净流入居前为" + "、".join(f"{g['name']}{float(g['flow1d']):+.1f}亿" for g in positive[:2]) + f"；净流出最多为{sector_out[0]['name']}{float(sector_out[0]['flow1d']):+.1f}亿。" if positive else f"申万一级和主题行业当日均未录得净流入；流出最多为{sector_out[0]['name']}{float(sector_out[0]['flow1d']):+.1f}亿。")
         facts = list(snapshot.setdefault("conclusion", {}).get("facts") or [])
