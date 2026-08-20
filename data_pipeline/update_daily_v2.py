@@ -189,10 +189,14 @@ def _primary_strength(primary_value: float, aum: float | None) -> str:
 def _trade_copy(trade_value: float, strength: str) -> str:
     if strength == "balanced":
         return "A股ETF盘中买卖力量基本均衡"
+    if strength == "generic":
+        if trade_value > 0:
+            return f"A股ETF盘中主动买入净额{trade_value:.1f}亿元"
+        return f"A股ETF盘中主动卖出净额{abs(trade_value):.1f}亿元"
     if trade_value > 0:
-        label = {"small": "买盘小幅偏强", "clear": "买盘偏强", "large": "买盘明显占优"}.get(strength, "买盘偏强")
+        label = {"small": "买盘小幅偏强", "clear": "买盘偏强", "large": "买盘明显占优"}[strength]
         return f"A股ETF盘中{label}，主动买入净额{trade_value:.1f}亿元"
-    label = {"small": "卖盘小幅偏强", "clear": "卖盘偏强", "large": "卖盘明显占优"}.get(strength, "卖盘偏强")
+    label = {"small": "卖盘小幅偏强", "clear": "卖盘偏强", "large": "卖盘明显占优"}[strength]
     return f"A股ETF盘中{label}，主动卖出净额{abs(trade_value):.1f}亿元"
 
 
@@ -242,12 +246,20 @@ def _market_flow_headline(
         elif primary_strength == "small":
             direction = "流入" if primary_value > 0 else "流出"
             interpretation = f"份额端仅小幅净{direction}，单日变动有限，暂不宜外推为趋势性资金变化。"
+        elif primary_strength == "generic":
+            direction = "净流入" if primary_value > 0 else "净流出"
+            interpretation = f"份额端方向显示为{direction}，但缺少可比规模基准，暂不对资金力度作延伸判断。"
         else:
             interpretation = f"{_motion_copy(primary_value, primary_strength)}，需结合后续数据观察持续性。"
         return f"A股ETF盘中主动买卖数据暂缺；{primary_text}\n—— {interpretation}"
 
     trade_strength = _trade_strength(trade_value, trade_turnover)
     trade_text = _trade_copy(trade_value, trade_strength)
+
+    if trade_strength == "generic" or primary_strength == "generic":
+        same_direction = (trade_value > 0 and primary_value > 0) or (trade_value < 0 and primary_value < 0)
+        relation = "方向一致" if same_direction else "方向分化"
+        return f"{trade_text}；{primary_text}\n—— 盘中与份额端{relation}，但缺少可比规模基准，暂不对资金力度作延伸判断。"
 
     if trade_strength == "balanced":
         if primary_strength == "flat":
