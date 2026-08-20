@@ -201,16 +201,17 @@
   overflow:hidden;
 }
 .exporting.export-summary .conclusion-qr{
-  display:grid;
-  justify-items:center;
-  gap:6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
   margin:18px 4px 0;
   padding:13px 0 15px;
   border-top:1px solid #e4e7eb;
   background:#fff;
-  text-align:center;
 }
 .exporting.export-summary .conclusion-qr-code{
+  flex:0 0 auto;
   width:64px;
   height:64px;
   padding:3px;
@@ -224,10 +225,10 @@
 }
 .exporting.export-summary .conclusion-qr-copy{
   display:grid;
-  justify-items:center;
+  justify-items:start;
   gap:3px;
   min-width:0;
-  text-align:center;
+  text-align:left;
 }
 .exporting.export-summary .conclusion-qr-copy span{
   color:#536171;
