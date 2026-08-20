@@ -177,11 +177,11 @@ def audit(snapshot_path: Path) -> list[str]:
     # 措辞形容词（小幅/明显/大幅）随强度阈值调优可能变化，审计只对账数字与方向，
     # 措辞本身以 update_daily_v2 的生成为准。
     if primary_value == 0:
-        primary_pattern = r"ETF份额对应资金(?:基本持平|净额0\.0亿元)"
+        primary_pattern = r"ETF份额对应申赎资金(?:基本持平|净额0\.0亿元)"
     else:
         primary_direction = "流入" if primary_value > 0 else "流出"
         primary_pattern = (
-            rf"ETF份额对应资金(?:小幅|明显|大幅)?净{primary_direction}{abs(primary_value):.1f}亿元"
+            rf"ETF份额对应申赎资金(?:小幅|明显|大幅)?净{primary_direction}{abs(primary_value):.1f}亿元"
         )
     if not re.search(primary_pattern, headline):
         raise AssertionError(f"headline primary phrase mismatch; expected /{primary_pattern}/")

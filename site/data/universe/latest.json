@@ -1,7 +1,7 @@
 {
   "schemaVersion": 6,
   "tradeDate": "2026-08-19",
-  "generatedAt": "2026-08-20T13:40:55+08:00",
+  "generatedAt": "2026-08-20T16:06:01+08:00",
   "universe": [
     {
       "code": "510010",
@@ -26094,11 +26094,11 @@
       "analysisStatus": "history_or_nav_pending",
       "assetScope": "crossBorderStockEtf",
       "fundType": "股票型",
-      "nav": null,
+      "nav": 1.8897,
       "previousNav": 1.8867,
       "previousComparableShares": 2159143045.0,
       "shareDelta1d": 1000000.0,
-      "primaryFlow1d": null
+      "primaryFlow1d": 0.02
     },
     {
       "code": "159656",
@@ -26748,11 +26748,11 @@
       "analysisStatus": "history_or_nav_pending",
       "assetScope": "crossBorderStockEtf",
       "fundType": "股票型",
-      "nav": null,
+      "nav": 1.8524,
       "previousNav": 1.8579,
       "previousComparableShares": 2787824034.0,
       "shareDelta1d": 5000000.0,
-      "primaryFlow1d": null
+      "primaryFlow1d": 0.09
     },
     {
       "code": "159697",

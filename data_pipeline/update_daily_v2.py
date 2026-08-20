@@ -198,11 +198,11 @@ def _trade_copy(trade_value: float, strength: str) -> str:
 
 def _primary_copy(primary_value: float, strength: str) -> str:
     if strength == "flat":
-        return "ETF份额对应资金基本持平"
+        return "ETF份额对应申赎资金基本持平"
     qualifier = {"small": "小幅", "clear": "明显", "large": "大幅"}.get(strength, "")
     if primary_value > 0:
-        return f"ETF份额对应资金{qualifier}净流入{primary_value:.1f}亿元"
-    return f"ETF份额对应资金{qualifier}净流出{abs(primary_value):.1f}亿元"
+        return f"ETF份额对应申赎资金{qualifier}净流入{primary_value:.1f}亿元"
+    return f"ETF份额对应申赎资金{qualifier}净流出{abs(primary_value):.1f}亿元"
 
 
 def _motion_copy(primary_value: float, strength: str) -> str:
@@ -229,47 +229,48 @@ def _market_flow_headline(
 ) -> str:
     """Translate flow direction, strength and divergence into plain-language client copy.
 
-    解读型话术：不只复述两个市场的数字，还点出资金行为含义（同向共振 /
-    逢跌承接 / 逢高兑现 / 存量博弈 / 整体观望）。只描述资金行为本身，
-    不给出买卖建议，与页脚"不构成投资建议"一致。
+    解读型话术：第一行陈述两个市场的数字（盘中主动买卖净额 + 份额对应申赎资金），
+    第二行以破折号引出资金行为解读（同向共振 / 逢跌承接 / 逢高兑现 /
+    存量博弈 / 整体观望）。只描述资金行为本身，不给出买卖建议，
+    与页脚"不构成投资建议"一致。
     """
     primary_strength = _primary_strength(primary_value, market_aum)
     primary_text = _primary_copy(primary_value, primary_strength)
     motion_text = _motion_copy(primary_value, primary_strength)
 
     if trade_value is None:
-        return f"A股ETF盘中主动买卖数据暂缺；{primary_text}，{motion_text}。"
+        return f"A股ETF盘中主动买卖数据暂缺；{primary_text}\n—— {motion_text}。"
 
     trade_strength = _trade_strength(trade_value, trade_turnover)
     trade_text = _trade_copy(trade_value, trade_strength)
 
     if trade_strength == "balanced":
         if primary_strength == "flat":
-            return f"{trade_text}；{primary_text}，盘面交易与份额申赎均无明显方向，资金整体观望。"
+            return f"{trade_text}；{primary_text}\n—— 盘面交易与份额申赎均无明显方向，资金整体观望。"
         if primary_value > 0:
-            return f"{trade_text}；{primary_text}，盘面交易相对平稳，份额端资金已在持续进场。"
-        return f"{trade_text}；{primary_text}，盘面交易相对平稳，份额端资金却在持续撤离。"
+            return f"{trade_text}；{primary_text}\n—— 盘面交易相对平稳，份额端资金已在持续进场。"
+        return f"{trade_text}；{primary_text}\n—— 盘面交易相对平稳，份额端资金却在持续撤离。"
 
     if primary_strength == "flat":
         if trade_value > 0:
-            return f"{trade_text}；{primary_text}，盘面买盘活跃，但份额申赎按兵不动，仍属存量博弈。"
-        return f"{trade_text}；{primary_text}，盘面抛压偏重，但份额申赎按兵不动，尚未演变为增量资金撤离。"
+            return f"{trade_text}；{primary_text}\n—— 盘面买盘活跃，但份额申赎按兵不动，仍属存量博弈。"
+        return f"{trade_text}；{primary_text}\n—— 盘面抛压偏重，但份额申赎按兵不动，尚未演变为增量资金撤离。"
 
     same_direction = (trade_value > 0 and primary_value > 0) or (trade_value < 0 and primary_value < 0)
     if same_direction:
         if trade_value > 0:
-            return f"{trade_text}；{primary_text}，盘面买盘与份额申购同向发力，资金进场意愿明确。"
-        return f"{trade_text}；{primary_text}，盘面抛压与份额赎回共振，资金离场方向一致。"
+            return f"{trade_text}；{primary_text}\n—— 盘面买盘与份额申购同向发力，资金进场意愿明确。"
+        return f"{trade_text}；{primary_text}\n—— 盘面抛压与份额赎回共振，资金离场方向一致。"
 
     if trade_value < 0:
         # 盘面跌、份额申购：典型的逢跌进场/护盘组合。
         if primary_strength in {"clear", "large"}:
-            return f"{trade_text}；但{primary_text}，盘面抛压虽重，大资金却在逢跌进场，一级市场承接有力。"
-        return f"{trade_text}；但{primary_text}，盘面抛压之下，已有资金逢跌申购，一级市场初现承接。"
+            return f"{trade_text}；但{primary_text}\n—— 盘面抛压虽重，大资金却在逢跌进场，一级市场承接有力。"
+        return f"{trade_text}；但{primary_text}\n—— 盘面抛压之下，已有资金逢跌申购，一级市场初现承接。"
     # 盘面涨、份额赎回：反弹中有人借道离场。
     if primary_strength in {"clear", "large"}:
-        return f"{trade_text}；但{primary_text}，盘面买盘虽强，份额端却在逢高兑现，有资金借反弹离场。"
-    return f"{trade_text}；但{primary_text}，盘面买盘背后，份额端已出现小幅兑现迹象。"
+        return f"{trade_text}；但{primary_text}\n—— 盘面买盘虽强，份额端却在逢高兑现，有资金借反弹离场。"
+    return f"{trade_text}；但{primary_text}\n—— 盘面买盘背后，份额端已出现小幅兑现迹象。"
 
 
 def _visible_sector_groups(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
@@ -360,7 +361,7 @@ def apply_v2_semantics(snapshot: dict[str, Any], day: date, share_window: list[t
     snapshot["schemaVersion"] = 6
     snapshot.setdefault("methodology", {}).update({
         "flow": "ETF当日净流入/净流出估算 =（T日交易所日终份额 − T-1日公司行动调整后的可比份额）× T日单位净值。T-1只作为T日份额变化的基准；该结果就是T日净申购/赎回的资金估算，不是再与上一日资金流做一次比较。",
-        "metricSeparation": "首页结论把两类数据翻译成易懂话术：盘中买盘/卖盘强弱来自同日成交额与外盘/内盘估算的主动买卖净额；ETF份额对应资金来自交易所T日与T-1可比份额变化×T日NAV。盘中强弱按主动买卖净额占总成交额比例分为基本均衡、小幅偏强、偏强、明显占优；ETF份额资金按当日资金变化占A股股票ETF总规模比例分为基本持平、小幅、明显、大幅。系统再结合两者方向判断一致或背离。",
+        "metricSeparation": "首页结论把两类数据翻译成易懂话术：盘中买盘/卖盘强弱来自同日成交额与外盘/内盘估算的主动买卖净额；ETF份额对应申赎资金来自交易所T日与T-1可比份额变化×T日NAV。盘中强弱按主动买卖净额占总成交额比例分为基本均衡、小幅偏强、偏强、明显占优；ETF份额资金按当日资金变化占A股股票ETF总规模比例分为基本持平、小幅、明显、大幅。系统再结合两者方向判断一致或背离。",
         "multiDay": "5日/20日当前字段为端点份额变化×期末单位净值，字段明确标记 Endpoint；不是逐日净流入额之和。schema v6开始落盘每日单ETF份额flow1d，积累足够交易日后再生成真正5日/20日累计净流入额。",
         "scope": "首页主指标固定使用A股股票ETF范围，不含跨境股票ETF、债券ETF、货币ETF和商品ETF；同时保留全部ETF、股票ETF（含跨境）和六类资产范围用于审计与对照。",
         "valuation": "ETF当日净流入/净流出主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。",

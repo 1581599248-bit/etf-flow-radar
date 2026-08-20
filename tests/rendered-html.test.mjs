@@ -115,9 +115,10 @@ test("schema v6 separates primary subscription flow, secondary trading flow and 
 
   const primaryValue = snapshot.market.flow1d;
   const primaryPattern = primaryValue === 0
-    ? /ETF份额对应资金(?:基本持平|净额0\.0亿元)/
-    : new RegExp(`ETF份额对应资金(?:小幅|明显|大幅)?净${primaryValue > 0 ? "流入" : "流出"}${escapeRegExp(Math.abs(primaryValue).toFixed(1))}亿元`);
+    ? /ETF份额对应申赎资金(?:基本持平|净额0\.0亿元)/
+    : new RegExp(`ETF份额对应申赎资金(?:小幅|明显|大幅)?净${primaryValue > 0 ? "流入" : "流出"}${escapeRegExp(Math.abs(primaryValue).toFixed(1))}亿元`);
   assert.match(snapshot.conclusion.headline, primaryPattern);
+  assert.match(snapshot.conclusion.headline, /\n—— /);
   assert.doesNotMatch(snapshot.conclusion.headline, /A股股票ETF当日合计/);
   assert.match(snapshot.conclusion.headline, /申万一级和主题行业/);
   assert.match(snapshot.conclusion.headline, new RegExp(`流出最多的是${topSectorOut.name}`));
@@ -138,7 +139,7 @@ test("schema v6 separates primary subscription flow, secondary trading flow and 
   assert.match(snapshot.methodology.identity, /禁止据此推断/);
   assert.match(snapshot.methodology.flow, /T日单位净值/);
   assert.match(snapshot.methodology.metricSeparation, /主动买卖净额/);
-  assert.match(snapshot.methodology.metricSeparation, /ETF份额对应资金/);
+  assert.match(snapshot.methodology.metricSeparation, /ETF份额对应申赎资金/);
   assert.match(snapshot.methodology.sectorDisplay, /申万一级行业\+热门主题/);
   assert.match(snapshot.methodology.multiDay, /不是逐日净(?:申购|流入)额之和/);
   assert.match(snapshot.methodology.scope, /A股股票ETF/);
