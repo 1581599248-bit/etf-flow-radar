@@ -2,10 +2,17 @@ name: Daily ETF data
 
 on:
   schedule:
+    # Official ETF shares usually become available late on the trade date.
+    # Publish as soon as the official SSE/SZSE data passes validation.
+    - cron: "10 15 * * 1-5" # 23:10 Asia/Shanghai
+    - cron: "30 15 * * 1-5" # 23:30 Asia/Shanghai
+    - cron: "50 15 * * 1-5" # 23:50 Asia/Shanghai
+    - cron: "10 16 * * 1-5" # 00:10 Asia/Shanghai
+    # Morning retries remain only as a fail-safe for delayed exchange publication.
     - cron: "0 21 * * 1-5"  # 05:00 Asia/Shanghai, Tuesday-Saturday
     - cron: "0 22 * * 1-5"  # 06:00 Asia/Shanghai, Tuesday-Saturday
     - cron: "0 23 * * 1-5"  # 07:00 Asia/Shanghai, Tuesday-Saturday
-    - cron: "0 0 * * 2-6"   # 08:00 Asia/Shanghai, Tuesday-Saturday final pre-open retry
+    - cron: "0 0 * * 2-6"   # 08:00 Asia/Shanghai, Tuesday-Saturday final retry
   push:
     branches:
       - main
