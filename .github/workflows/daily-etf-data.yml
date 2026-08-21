@@ -5,9 +5,8 @@ on:
     # Official ETF shares usually become available late on the trade date.
     # Publish as soon as the official SSE/SZSE data passes validation.
     - cron: "10 15 * * 1-5" # 23:10 Asia/Shanghai
-    - cron: "30 15 * * 1-5" # 23:30 Asia/Shanghai
     - cron: "50 15 * * 1-5" # 23:50 Asia/Shanghai
-    - cron: "10 16 * * 1-5" # 00:10 Asia/Shanghai
+    - cron: "30 16 * * 1-5" # 00:30 Asia/Shanghai
     # Morning retries remain only as a fail-safe for delayed exchange publication.
     - cron: "0 21 * * 1-5"  # 05:00 Asia/Shanghai, Tuesday-Saturday
     - cron: "0 22 * * 1-5"  # 06:00 Asia/Shanghai, Tuesday-Saturday
@@ -32,7 +31,7 @@ permissions:
 
 concurrency:
   group: etf-full-publish-v2
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   update:
