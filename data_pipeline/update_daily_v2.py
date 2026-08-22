@@ -234,57 +234,30 @@ def _current_regime_copy(
 ) -> str:
     if trade_value is None:
         if primary_strength == "flat":
-            return "仅从份额端看，资金增减接近平衡。"
-        direction = "净流入" if primary_value > 0 else "净流出"
-        if primary_strength == "small":
-            return f"仅从份额端看，资金小幅{direction}，单日变动有限。"
-        if primary_strength == "clear":
-            return f"仅从份额端看，资金{direction}较为明确。"
-        if primary_strength == "large":
-            return f"仅从份额端看，资金{direction}幅度较大。"
-        return f"仅从份额端可确认{direction}方向，因缺少可比规模基准，暂不判断力度。"
-
-    if trade_strength == "generic" or primary_strength == "generic":
-        if trade_strength == "balanced":
-            relation = "盘中交易相对均衡，份额端存在方向变化"
-        elif primary_strength == "flat":
-            relation = "盘中存在方向变化，份额端接近平衡"
-        else:
-            same_direction = (trade_value > 0 and primary_value > 0) or (trade_value < 0 and primary_value < 0)
-            relation = "盘中与份额端方向一致" if same_direction else "盘中与份额端方向分化"
-        return f"{relation}；因缺少可比规模基准，暂只判断方向。"
-
+            return "份额端接近平衡。"
+        return f"仅观察到份额端{'净流入' if primary_value > 0 else '净流出'}。"
     if trade_strength == "balanced":
         if primary_strength == "flat":
-            return "盘中交易与份额申赎均接近平衡，短线资金方向尚不明确。"
-        direction = "净流入" if primary_value > 0 else "净流出"
-        return f"盘中交易相对均衡，份额端{direction}成为当日主要方向信号。"
-
+            return "盘中与份额端均接近平衡。"
+        return f"盘中交易均衡，份额端{'净流入' if primary_value > 0 else '净流出'}为主。"
     if primary_strength == "flat":
-        side = "买盘" if trade_value > 0 else "卖盘"
-        return f"盘中{side}偏强，但份额端接近平衡，交易情绪尚未转化为明确申赎方向。"
-
-    same_direction = (trade_value > 0 and primary_value > 0) or (trade_value < 0 and primary_value < 0)
-    if same_direction and primary_value > 0:
+        return f"盘中{'买盘' if trade_value > 0 else '卖盘'}偏强，份额端平衡，增量尚不明显。"
+    same = (trade_value > 0) == (primary_value > 0)
+    if same and primary_value > 0:
         if trade_strength == "large" and primary_strength == "large":
-            return "当日盘中与份额端同步明显改善，ETF增量资金信号较强。"
+            return "两端同步大额流入，增量资金较为明确。"
         if trade_strength == "small" or primary_strength == "small":
-            return "当日盘中与份额端同步改善，但整体力度有限，ETF资金行为仅边际回暖。"
-        return "当日盘中与份额端同步改善，ETF增量资金信号有所增强。"
-    if same_direction:
-        if primary_strength == "small":
-            return "当日盘中与份额端同步偏弱，但份额流出幅度有限，ETF资金行为仅边际趋谨慎。"
+            return "两端同步小幅流入，资金情绪略有改善。"
+        return "两端同步流入，资金偏积极。"
+    if same:
         if trade_strength == "large" and primary_strength == "large":
-            return "当日盘中与份额端同步明显承压，ETF资金行为短线显著趋谨慎。"
-        return "当日盘中与份额端同步偏弱，ETF资金行为有所趋谨慎。"
-
+            return "两端同步大额流出，资金行为偏谨慎。"
+        if trade_strength == "small" or primary_strength == "small":
+            return "两端同步小幅流出，资金行为略偏谨慎。"
+        return "两端同步流出，资金行为偏谨慎。"
     if trade_value > 0:
-        if primary_strength == "small":
-            return "盘中承接偏强，但份额仅小幅净流出，二者轻度分化，暂偏存量资金博弈。"
-        return "盘中承接偏强但份额净流出，交易改善尚未获得申购确认，暂偏存量资金博弈。"
-    if primary_strength == "small":
-        return "盘中卖压偏强，但份额小幅净流入，显示回调中有边际承接。"
-    return "盘中卖压偏强但份额净流入，回调承接较为明确，交易情绪与申购行为分化。"
+        return "盘中承接偏强但份额净流出，交易与申赎分化。"
+    return "盘中卖压偏强但份额净流入，交易与申赎分化。"
 
 
 def _historical_context(primary_value: float, flow_5d: float | None, flow_20d: float | None, market_aum: float | None) -> str:
