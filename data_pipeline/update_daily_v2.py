@@ -160,6 +160,7 @@ def _relative_intensity(value: float, base_value: float | None) -> float | None:
 
 
 def _trade_strength(trade_value: float, turnover: float | None) -> str:
+    """Classify intraday net trading flow by its share of gross ETF turnover."""
     intensity = _relative_intensity(trade_value, turnover)
     if intensity is None:
         return "balanced" if trade_value == 0 else "generic"
@@ -169,10 +170,13 @@ def _trade_strength(trade_value: float, turnover: float | None) -> str:
         return "small"
     if intensity < 6.0:
         return "clear"
-    return "large"
+    if intensity < 10.0:
+        return "large"
+    return "extreme"
 
 
 def _primary_strength(primary_value: float, aum: float | None) -> str:
+    """Classify share subscription/redemption flow by its share of ETF AUM."""
     intensity = _relative_intensity(primary_value, aum)
     if primary_value == 0:
         return "flat"
@@ -184,7 +188,16 @@ def _primary_strength(primary_value: float, aum: float | None) -> str:
         return "small"
     if intensity < 0.50:
         return "clear"
-    return "large"
+    if intensity < 1.00:
+        return "large"
+    return "extreme"
+
+
+# Quantified market states plus explicit missing-scale/data fallbacks.
+PRIMARY_SCENARIO_COUNT = 11
+TRADE_SCENARIO_COUNT = 12
+STYLE_SCENARIO_COUNT = 6
+CONCLUSION_SCENARIO_COUNT = PRIMARY_SCENARIO_COUNT * TRADE_SCENARIO_COUNT * STYLE_SCENARIO_COUNT
 
 
 def _trade_copy(trade_value: float, strength: str) -> str:
@@ -195,16 +208,31 @@ def _trade_copy(trade_value: float, strength: str) -> str:
             return f"A股ETF盘中主动买入净额{trade_value:.1f}亿元"
         return f"A股ETF盘中主动卖出净额{abs(trade_value):.1f}亿元"
     if trade_value > 0:
-        label = {"small": "买盘小幅偏强", "clear": "买盘偏强", "large": "买盘明显占优"}[strength]
+        label = {
+            "small": "买盘小幅偏强",
+            "clear": "买盘偏强",
+            "large": "买盘明显占优",
+            "extreme": "买盘显著占优",
+        }[strength]
         return f"A股ETF盘中{label}，主动买入净额{trade_value:.1f}亿元"
-    label = {"small": "卖盘小幅偏强", "clear": "卖盘偏强", "large": "卖盘明显占优"}[strength]
+    label = {
+        "small": "卖盘小幅偏强",
+        "clear": "卖盘偏强",
+        "large": "卖盘明显占优",
+        "extreme": "卖压显著增强",
+    }[strength]
     return f"A股ETF盘中{label}，主动卖出净额{abs(trade_value):.1f}亿元"
 
 
 def _primary_copy(primary_value: float, strength: str) -> str:
     if strength == "flat":
         return "ETF份额对应申赎资金基本持平"
-    qualifier = {"small": "小幅", "clear": "明显", "large": "大幅"}.get(strength, "")
+    qualifier = {
+        "small": "小幅",
+        "clear": "明显",
+        "large": "大幅",
+        "extreme": "巨量",
+    }.get(strength, "")
     if primary_value > 0:
         return f"ETF份额对应申赎资金{qualifier}净流入{primary_value:.1f}亿元"
     return f"ETF份额对应申赎资金{qualifier}净流出{abs(primary_value):.1f}亿元"
@@ -218,93 +246,203 @@ def _motion_copy(primary_value: float, strength: str) -> str:
             "small": "整体资金小幅净流入",
             "clear": "整体资金呈较明显净流入",
             "large": "整体资金净流入幅度较大",
+            "extreme": "整体资金净流入幅度显著",
         }.get(strength, "整体资金呈净流入")
     return {
         "small": "整体资金小幅净流出",
         "clear": "整体资金呈较明显净流出",
         "large": "整体资金净流出幅度较大",
+        "extreme": "整体资金净流出幅度显著",
     }.get(strength, "整体资金呈净流出")
 
 
 def _strength_rank(strength: str | None) -> int:
-    return {"flat": 0, "balanced": 0, "small": 1, "clear": 2, "large": 3}.get(strength or "", 0)
+    return {
+        "flat": 0,
+        "balanced": 0,
+        "small": 1,
+        "clear": 2,
+        "large": 3,
+        "extreme": 4,
+    }.get(strength or "", 0)
 
 
-def _current_regime_copy(trade_value: float | None, primary_value: float, trade_strength: str | None, primary_strength: str) -> str:
-    """Keep the original trade -> share -> conclusion structure, with share intent made explicit."""
-    direction = "净流入" if primary_value > 0 else "净流出"
+def _primary_signal_copy(primary_value: float, strength: str) -> str:
+    if strength == "flat":
+        return "份额申赎基本平衡"
     action = "申购" if primary_value > 0 else "赎回"
-    primary_level = {"small": "小幅", "clear": "明显", "large": "大幅"}.get(primary_strength, "")
-    primary_signal = f"份额端{primary_level}{direction}"
+    if strength == "small":
+        return f"份额少量净{action}"
+    if strength == "clear":
+        return f"份额净{action}偏多"
+    if strength == "large":
+        return f"份额大量净{action}"
+    if strength == "extreme":
+        return f"份额巨量净{action}"
+    return f"份额净{action}"
 
+
+def _trade_signal_copy(trade_value: float, strength: str | None) -> str:
+    if strength == "balanced":
+        return "盘中买卖基本均衡"
+    side = "盘中买盘" if trade_value > 0 else "盘中卖压"
+    if strength == "small":
+        return side + "小幅偏强"
+    if strength == "clear":
+        return side + "偏强"
+    if strength == "large":
+        return side + "明显占优"
+    if strength == "extreme":
+        return side + "显著占优"
+    return side + "存在方向"
+
+
+def _relation_copy(
+    trade_value: float | None,
+    primary_value: float,
+    trade_strength: str | None,
+    primary_strength: str,
+) -> str:
+    primary_signal = _primary_signal_copy(primary_value, primary_strength)
     if trade_value is None:
-        if primary_strength == "flat":
-            return "份额端接近平衡，盘中数据暂缺。"
-        intent = {"small": "略占优", "clear": "偏强", "large": "较强"}.get(primary_strength, "占优")
-        return f"仅从份额端看，资金{primary_level}{direction}，{action}意愿{intent}。"
-
-    if trade_strength == "generic" or primary_strength == "generic":
-        if primary_strength == "flat":
-            return f"盘中{'买盘' if trade_value > 0 else '卖压'}存在方向，份额端接近平衡。"
-        same = (trade_value > 0) == (primary_value > 0)
-        return (
-            f"盘中{'买盘' if trade_value > 0 else '卖压'}与份额端{action}"
-            f"{'方向一致' if same else '信号分化'}。"
-        )
-
+        return f"{primary_signal}，盘中数据暂缺"
     if trade_strength == "balanced":
         if primary_strength == "flat":
-            return "盘中买卖与份额端均接近平衡，资金方向不明显。"
-        intent = {"small": "略占优", "clear": "偏强", "large": "较强"}[primary_strength]
-        return f"盘中买卖均衡，{primary_signal}，资金{action}意愿{intent}。"
-
-    trade_signal = (
-        {
-            "small": "盘中买盘小幅偏强",
-            "clear": "盘中买盘偏强",
-            "large": "盘中买盘明显占优",
-        }[trade_strength]
-        if trade_value > 0
-        else {
-            "small": "盘中卖压小幅偏强",
-            "clear": "盘中卖压偏强",
-            "large": "盘中卖压明显增强",
-        }[trade_strength]
-    )
-
+            return "份额申赎与盘中买卖均基本平衡"
+        return f"{primary_signal}，盘中买卖基本均衡"
     if primary_strength == "flat":
-        return f"{trade_signal}，份额端接近平衡，资金申赎意愿不明显。"
+        return f"{primary_signal}，{_trade_signal_copy(trade_value, trade_strength)}"
+
+    trade_side = "盘中买盘" if trade_value > 0 else "盘中卖压"
+    same_direction = (trade_value > 0) == (primary_value > 0)
+    relation = "同步" if same_direction else "背离"
+    if "generic" in {trade_strength, primary_strength}:
+        return f"{primary_signal}，{trade_side}{relation}"
 
     trade_rank = _strength_rank(trade_strength)
     primary_rank = _strength_rank(primary_strength)
-    same = (trade_value > 0) == (primary_value > 0)
+    if primary_rank > trade_rank:
+        relation += "但相对有限"
+    elif trade_rank > primary_rank:
+        relation += "且更强"
+    return f"{primary_signal}，{trade_side}{relation}"
 
-    if same and primary_value > 0:
-        if primary_rank > trade_rank:
-            return f"{trade_signal}，{primary_signal}，资金申购意愿较强，整体资金有所改善。"
-        if trade_rank > primary_rank:
-            return f"{trade_signal}，{primary_signal}，但资金申购意愿相对温和。"
-        if primary_rank == 1:
-            return "盘中买盘与份额端同步小幅净流入，资金申购意愿略占优。"
-        return "盘中买盘与份额端同步增强，资金申购意愿较强，整体资金有所改善。"
 
-    if same:
-        if primary_rank > trade_rank:
-            return f"{trade_signal}，{primary_signal}，资金赎回意愿偏强，整体资金偏谨慎。"
-        if trade_rank > primary_rank:
-            return f"{trade_signal}，{primary_signal}，但资金赎回意愿相对温和。"
-        if primary_rank == 1:
-            return "盘中卖压与份额端同步小幅净流出，资金略偏谨慎。"
-        return "盘中卖压与份额端同步增强，资金赎回意愿偏强，整体资金偏谨慎。"
+def _base_intent_copy(primary_value: float, primary_strength: str) -> str:
+    if primary_strength == "flat":
+        return "整体资金方向不明"
+    if primary_value > 0:
+        return {
+            "small": "整体市场略偏积极",
+            "clear": "整体市场偏积极",
+            "large": "整体市场资金意愿较强",
+            "extreme": "整体市场资金意愿明显增强",
+            "generic": "整体资金偏申购",
+        }[primary_strength]
+    return {
+        "small": "整体市场略偏谨慎",
+        "clear": "整体市场偏谨慎",
+        "large": "整体市场谨慎情绪较强",
+        "extreme": "整体市场谨慎情绪明显升温",
+        "generic": "整体资金偏赎回",
+    }[primary_strength]
 
-    if trade_value > 0:
+
+def _overall_intent_copy(
+    trade_value: float | None,
+    primary_value: float,
+    trade_strength: str | None,
+    primary_strength: str,
+) -> str:
+    base_intent = _base_intent_copy(primary_value, primary_strength)
+    if primary_strength == "flat":
+        if trade_value is None or trade_strength == "balanced":
+            return base_intent
+        return "短线买盘占优，份额端尚未确认" if trade_value > 0 else "短线卖压占优，份额端尚未确认"
+    if trade_value is None or trade_strength == "balanced":
+        return base_intent
+
+    same_direction = (trade_value > 0) == (primary_value > 0)
+    if same_direction:
+        return base_intent
+    if "generic" in {trade_strength, primary_strength}:
+        if primary_value > 0:
+            return "申购承接存在，但资金信号分化"
+        return "盘中承接存在，但赎回信号仍在"
+
+    trade_rank = _strength_rank(trade_strength)
+    primary_rank = _strength_rank(primary_strength)
+    if primary_value > 0:
         if primary_rank > trade_rank:
-            return f"{trade_signal}，但{primary_signal}，资金赎回意愿仍占主导。"
-        return f"{trade_signal}，{primary_signal}，资金信号分化。"
+            if primary_rank >= _strength_rank("large"):
+                return "大资金逢跌进场，份额端承接有力"
+            return "资金逢跌申购，份额端承接占优"
+        if primary_rank == trade_rank:
+            return "资金逢跌承接，但整体信号分化"
+        return "盘中抛压占优，份额端承接有限"
 
     if primary_rank > trade_rank:
-        return f"{trade_signal}，但{primary_signal}，资金申购意愿仍占主导。"
-    return f"{trade_signal}，{primary_signal}，资金信号分化。"
+        return "赎回意愿占主导，整体市场偏谨慎"
+    if primary_rank == trade_rank:
+        return "资金信号分化，整体市场方向不明"
+    return "盘中承接占优，但份额端尚未确认"
+
+
+def _style_flow_context(snapshot: dict[str, Any]) -> tuple[str, str]:
+    """Return one of six style-flow states and its compact client-facing clause."""
+    styles = [
+        g for g in snapshot.get("groups", [])
+        if g.get("kind") == "style"
+        and isinstance(g.get("flow1d"), (int, float))
+        and math.isfinite(float(g["flow1d"]))
+    ]
+    if not styles:
+        return "unavailable", "风格流向暂不明确"
+
+    positive = sorted(
+        (
+            {"name": str(g.get("name", "")).strip(), "flow": float(g["flow1d"])}
+            for g in styles
+            if float(g["flow1d"]) > 0.05 and str(g.get("name", "")).strip()
+        ),
+        key=lambda item: item["flow"],
+        reverse=True,
+    )
+    if not positive:
+        return "no_inflow", "风格资金未见明显流入"
+
+    positive_total = sum(item["flow"] for item in positive)
+    if positive_total < 0.50:
+        return "limited", "风格资金流入有限"
+
+    if len(positive) == 1 or positive[0]["flow"] / positive_total >= 0.70:
+        return "concentrated_one", f"资金较多流向{positive[0]['name']}"
+
+    top_two = positive[:2]
+    if sum(item["flow"] for item in top_two) / positive_total >= 0.75:
+        return "concentrated_two", f"资金较多流向{top_two[0]['name']}与{top_two[1]['name']}"
+
+    return "dispersed", "风格资金呈分散流入"
+
+
+def _style_flow_copy(snapshot: dict[str, Any]) -> str:
+    return _style_flow_context(snapshot)[1]
+
+
+def _current_regime_copy(
+    trade_value: float | None,
+    primary_value: float,
+    trade_strength: str | None,
+    primary_strength: str,
+    style_text: str | None = None,
+) -> str:
+    """Compose share -> intraday relation -> style -> overall intent, in that order."""
+    relation = _relation_copy(trade_value, primary_value, trade_strength, primary_strength)
+    intent = _overall_intent_copy(trade_value, primary_value, trade_strength, primary_strength)
+    if style_text:
+        return f"{relation}；{style_text}，{intent}。"
+    return f"{relation}；{intent}。"
+
 
 def _historical_context(primary_value: float, prior_5d_value: float | None, prior_20d_value: float | None, market_aum: float | None) -> str:
     """Compare today only with completed prior trading days, never with a window containing today."""
@@ -352,6 +490,7 @@ def _market_flow_headline(
     market_aum: float | None = None,
     primary_5d_value: float | None = None,
     primary_20d_value: float | None = None,
+    style_text: str | None = None,
 ) -> str:
     primary_strength = _primary_strength(primary_value, market_aum)
     primary_text = _primary_copy(primary_value, primary_strength)
@@ -366,10 +505,15 @@ def _market_flow_headline(
             else "；"
         )
         fact_line = f"{_trade_copy(trade_value, trade_strength)}{joiner}{primary_text}"
-    current = _current_regime_copy(trade_value, primary_value, trade_strength, primary_strength)
-    trend = _historical_context(primary_value, primary_5d_value, primary_20d_value, market_aum)
-    watch = _next_watch_copy(trade_value, primary_value, trade_strength, primary_strength)
-    return f"{fact_line}\n—— {current}{trend}{watch}"
+    current = _current_regime_copy(
+        trade_value,
+        primary_value,
+        trade_strength,
+        primary_strength,
+        style_text=style_text,
+    )
+    return f"{fact_line}\n—— {current}"
+
 
 def _visible_sector_groups(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
     """Mutually-exclusive SW-level/theme groups actually rendered to clients."""
@@ -460,27 +604,18 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
         trade_turnover = float(raw_inflow) + float(raw_outflow)
     raw_aum = market.get("aum")
     market_aum = float(raw_aum) if isinstance(raw_aum, (int, float)) and pd.notna(raw_aum) else None
-    raw_trade_date = snapshot.get("tradeDate")
-    try:
-        trade_date = date.fromisoformat(str(raw_trade_date))
-    except ValueError:
-        trade_date = None
-    prior_flows = _prior_primary_flows(trade_date, market.get("etfCount"))
-    primary_5d_value = _prior_window_total(prior_flows, 5)
-    primary_20d_value = _prior_window_total(prior_flows, 20)
+    groups = snapshot.get("groups", [])
+    broad = [g for g in groups if g.get("kind") == "broad"]
+    styles = [g for g in groups if g.get("kind") == "style"]
+    sectors = _visible_sector_groups(snapshot)
+    style_text = _style_flow_copy(snapshot)
     flow_headline = _market_flow_headline(
         trade_value,
         float(primary_value),
         trade_turnover,
         market_aum,
-        primary_5d_value,
-        primary_20d_value,
+        style_text=style_text,
     )
-
-    groups = snapshot.get("groups", [])
-    broad = [g for g in groups if g.get("kind") == "broad"]
-    styles = [g for g in groups if g.get("kind") == "style"]
-    sectors = _visible_sector_groups(snapshot)
 
     if broad:
         broad_in_count = sum(float(g.get("flow1d", 0) or 0) > 0 for g in broad)
@@ -533,8 +668,7 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
 
     facts = [broad_fact, style_fact, sector_fact, single_fact]
     snapshot["conclusion"]["facts"] = facts
-    structure = _flow_structure_copy(snapshot)
-    snapshot["conclusion"]["headline"] = flow_headline + structure
+    snapshot["conclusion"]["headline"] = flow_headline
 
 
 def apply_v2_semantics(snapshot: dict[str, Any], day: date, share_window: list[tuple[date, pd.DataFrame]], ths: pd.DataFrame, spot: pd.DataFrame | None) -> None:
