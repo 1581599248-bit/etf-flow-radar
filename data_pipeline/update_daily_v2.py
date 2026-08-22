@@ -226,67 +226,51 @@ def _motion_copy(primary_value: float, strength: str) -> str:
     }.get(strength, "整体资金呈净流出")
 
 
-def _current_regime_copy(
-    trade_value: float | None,
-    primary_value: float,
-    trade_strength: str | None,
-    primary_strength: str,
-) -> str:
+def _current_regime_copy(trade_value: float | None, primary_value: float, trade_strength: str | None, primary_strength: str) -> str:
     if trade_value is None:
-        if primary_strength == "flat":
-            return "份额端接近平衡。"
-        return f"仅观察到份额端{'净流入' if primary_value > 0 else '净流出'}。"
+        return "份额端接近平衡。" if primary_strength == "flat" else f"仅观察到ETF份额{'净流入' if primary_value > 0 else '净流出'}。"
     if trade_strength == "balanced":
-        if primary_strength == "flat":
-            return "盘中与份额端均接近平衡。"
-        return f"盘中交易均衡，份额端{'净流入' if primary_value > 0 else '净流出'}为主。"
+        return "盘中交易与份额端均接近平衡。" if primary_strength == "flat" else f"盘中交易均衡，ETF份额{'净流入' if primary_value > 0 else '净流出'}为主。"
     if primary_strength == "flat":
-        return f"盘中{'买盘' if trade_value > 0 else '卖盘'}偏强，份额端平衡，增量尚不明显。"
+        return f"盘中{'买盘' if trade_value > 0 else '卖盘'}偏强，ETF份额变化不明显。"
     same = (trade_value > 0) == (primary_value > 0)
-    if same and primary_value > 0:
-        if trade_strength == "large" and primary_strength == "large":
-            return "两端同步大额流入，增量资金较为明确。"
-        if trade_strength == "small" or primary_strength == "small":
-            return "两端同步小幅流入，资金情绪略有改善。"
-        return "两端同步流入，资金偏积极。"
     if same:
+        direction = "流入" if primary_value > 0 else "流出"
         if trade_strength == "large" and primary_strength == "large":
-            return "两端同步大额流出，资金行为偏谨慎。"
-        if trade_strength == "small" or primary_strength == "small":
-            return "两端同步小幅流出，资金行为略偏谨慎。"
-        return "两端同步流出，资金行为偏谨慎。"
-    if trade_value > 0:
-        return "盘中承接偏强但份额净流出，交易与申赎分化。"
-    return "盘中卖压偏强但份额净流入，交易与申赎分化。"
+            return f"盘中与ETF份额同步大额{direction}。"
+        return f"盘中交易与ETF份额{direction}方向一致，资金行为{'改善' if primary_value > 0 else '有所谨慎'}。"
+    return "盘中买入与ETF份额流出分化。" if trade_value > 0 else "盘中卖出与ETF份额流入分化。"
 
 
 def _historical_context(primary_value: float, flow_5d: float | None, flow_20d: float | None, market_aum: float | None) -> str:
     if _primary_strength(primary_value, market_aum) == "flat":
         return ""
-    history = [(n, value / n) for n, value in ((5, flow_5d), (20, flow_20d)) if isinstance(value, (int, float)) and math.isfinite(value) and abs(value / n) > 0.01]
-    if not history:
+    series = [(n, value) for n, value in ((5, flow_5d), (20, flow_20d)) if isinstance(value, (int, float)) and math.isfinite(value) and abs(value / n) > 0.01]
+    if not series:
         return ""
-    n, avg = history[0]
-    ratio = abs(primary_value) / abs(avg)
+    n, total = series[0]
+    avg = total / n
+    current = abs(primary_value)
+    average = abs(avg)
     if primary_value * avg < 0:
-        strength = "变化较大" if ratio >= 1.5 else "变化有限"
-        return f"较近{n}日均值由{'流入' if avg > 0 else '流出'}转为{'流入' if primary_value > 0 else '流出'}，{strength}。"
+        return f"近{n}日累计{'净流入' if total > 0 else '净流出'}{abs(total):.1f}亿元（日均{average:.1f}亿元）；当日转为{'净流入' if primary_value > 0 else '净流出'}{current:.1f}亿元，较日均变动{abs(primary_value - avg):.1f}亿元。"
+    ratio = current / average
     if ratio >= 1.8:
-        return f"高于近{n}日均值，力度放大。"
+        return f"当日{'净流入' if primary_value > 0 else '净流出'}{current:.1f}亿元，为近{n}日日均{average:.1f}亿元的{ratio:.1f}倍。"
     if ratio <= 0.55:
-        return f"低于近{n}日均值，力度有限。"
+        return f"当日{'净流入' if primary_value > 0 else '净流出'}{current:.1f}亿元，低于近{n}日日均{average:.1f}亿元。"
     return ""
 
 
 def _next_watch_copy(trade_value: float | None, primary_value: float, trade_strength: str | None, primary_strength: str) -> str:
     if trade_value is None:
-        return "待补充盘中数据。" if primary_strength == "flat" else "关注明日份额变化。"
+        return ""
     if trade_strength == "balanced" or primary_strength == "flat":
-        return "关注明日两端方向。"
+        return ""
     same_direction = (trade_value > 0 and primary_value > 0) or (trade_value < 0 and primary_value < 0)
     if same_direction:
-        return "关注明日份额与盘中买盘。" if primary_value > 0 else "关注明日份额与盘中卖压。"
-    return "关注明日两端是否收敛。"
+        return ""
+    return ""
 
 
 def _market_flow_headline(
