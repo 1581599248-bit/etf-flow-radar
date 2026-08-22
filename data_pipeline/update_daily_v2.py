@@ -238,12 +238,12 @@ def _primary_intent_copy(primary_value: float, primary_strength: str) -> str:
     direction = "净流入" if primary_value > 0 else "净流出"
     action = "申购" if primary_value > 0 else "赎回"
     if primary_strength == "small":
-        return f"份额端小幅{direction}，资金{action}意愿略占优"
+        return f"份额端小幅{direction}，反映资金{action}意愿略占优"
     if primary_strength == "clear":
-        return f"份额端{direction}明显，资金{action}意愿较强"
+        return f"份额端明显{direction}，反映资金{action}意愿较强"
     if primary_strength == "large":
-        return f"份额端大幅{direction}，资金{action}意愿明显占优"
-    return f"份额端{direction}，资金{action}意愿占优"
+        return f"份额端大幅{direction}，反映资金{action}意愿明显占优"
+    return f"份额端{direction}，反映资金{action}意愿占优"
 
 
 def _current_regime_copy(trade_value: float | None, primary_value: float, trade_strength: str | None, primary_strength: str) -> str:
@@ -284,7 +284,7 @@ def _current_regime_copy(trade_value: float | None, primary_value: float, trade_
 
     if same:
         if primary_rank > trade_rank:
-            return f"{primary}；盘中卖压相对温和，流出主要来自份额端。"
+            return f"{primary}；盘中卖压相对温和，主要流出压力来自份额端。"
         if trade_rank > primary_rank:
             return f"{primary}；盘中卖压更强，但份额端赎回力度相对有限。"
         if primary_rank == 1:
