@@ -263,21 +263,20 @@ def _current_regime_copy(
 def _historical_context(primary_value: float, flow_5d: float | None, flow_20d: float | None, market_aum: float | None) -> str:
     if _primary_strength(primary_value, market_aum) == "flat":
         return ""
-    valid = [(n, v / n) for n, v in ((5, flow_5d), (20, flow_20d)) if isinstance(v, (int, float)) and math.isfinite(v) and abs(v / n) > 0.01]
-    if not valid:
+    history = [(n, value / n) for n, value in ((5, flow_5d), (20, flow_20d)) if isinstance(value, (int, float)) and math.isfinite(value) and abs(value / n) > 0.01]
+    if not history:
         return ""
-    same = [(n, avg) for n, avg in valid if avg * primary_value > 0]
-    opposite = [(n, avg) for n, avg in valid if avg * primary_value < 0]
-    if opposite and not same:
-        return "与近阶段平均方向相反，暂按单日变化观察。"
-    if same:
-        n, avg = same[0]
-        ratio = abs(primary_value) / abs(avg)
-        if ratio >= 1.8:
-            return f"当日幅度高于近{n}日均值，变化较明显。"
-        if ratio <= 0.55:
-            return f"当日幅度低于近{n}日均值，延续性尚有限。"
+    n, avg = history[0]
+    ratio = abs(primary_value) / abs(avg)
+    if primary_value * avg < 0:
+        strength = "变化较大" if ratio >= 1.5 else "变化有限"
+        return f"较近{n}日均值由{'流入' if avg > 0 else '流出'}转为{'流入' if primary_value > 0 else '流出'}，{strength}。"
+    if ratio >= 1.8:
+        return f"高于近{n}日均值，力度放大。"
+    if ratio <= 0.55:
+        return f"低于近{n}日均值，力度有限。"
     return ""
+
 
 def _next_watch_copy(trade_value: float | None, primary_value: float, trade_strength: str | None, primary_strength: str) -> str:
     if trade_value is None:
