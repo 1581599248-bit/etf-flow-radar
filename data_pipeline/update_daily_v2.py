@@ -260,7 +260,7 @@ def _current_regime_copy(trade_value: float | None, primary_value: float, trade_
         if trade_rank == primary_rank == 3:
             return "盘中买盘与份额申购同步增强，增量资金较为明显。"
         if primary_rank > trade_rank:
-            return "盘中买盘有限，份额申购更明显，资金边际改善。"
+            return "盘中买盘不强，但份额端净流入较为明显，资金有所改善。"
         if trade_rank > primary_rank:
             return "盘中买盘偏强，份额申购相对有限。"
         if trade_rank == 1:
@@ -271,7 +271,7 @@ def _current_regime_copy(trade_value: float | None, primary_value: float, trade_
         if trade_rank == primary_rank == 3:
             return "盘中卖压与份额赎回同步放大，资金偏谨慎。"
         if primary_rank > trade_rank:
-            return "盘中卖压有限，份额赎回更明显，资金偏谨慎。"
+            return "盘中卖压不强，但份额端净流出较为明显，资金偏谨慎。"
         if trade_rank > primary_rank:
             return "盘中卖压偏强，份额赎回相对有限。"
         if trade_rank == 1:
