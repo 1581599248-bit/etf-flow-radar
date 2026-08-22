@@ -196,8 +196,8 @@ def _primary_strength(primary_value: float, aum: float | None) -> str:
 # Quantified market states plus explicit missing-scale/data fallbacks.
 PRIMARY_SCENARIO_COUNT = 11
 TRADE_SCENARIO_COUNT = 12
-STYLE_SCENARIO_COUNT = 6
-CONCLUSION_SCENARIO_COUNT = PRIMARY_SCENARIO_COUNT * TRADE_SCENARIO_COUNT * STYLE_SCENARIO_COUNT
+ALLOCATION_SCENARIO_COUNT = 13
+CONCLUSION_SCENARIO_COUNT = PRIMARY_SCENARIO_COUNT * TRADE_SCENARIO_COUNT * ALLOCATION_SCENARIO_COUNT
 
 
 def _trade_copy(trade_value: float, strength: str) -> str:
@@ -388,45 +388,134 @@ def _overall_intent_copy(
     return "盘中承接占优，但份额端尚未确认"
 
 
-def _style_flow_context(snapshot: dict[str, Any]) -> tuple[str, str]:
-    """Return one of six style-flow states and its compact client-facing clause."""
-    styles = [
+_GROWTH_FLOW_KEYWORDS = (
+    "成长", "科技", "半导体", "创新药", "AI", "算力", "芯片", "通信", "机器人",
+    "软件", "信创", "消费电子", "新能源", "光伏", "锂电", "储能", "医疗器械",
+    "智能驾驶", "电子", "计算机", "传媒", "游戏", "国防军工", "卫星", "互联网",
+)
+_DEFENSIVE_FLOW_KEYWORDS = (
+    "红利", "低波", "价值", "质量", "自由现金流", "央国企", "银行", "公用事业",
+    "煤炭", "石油石化", "食品饮料", "白酒", "家用电器", "交通运输", "黄金",
+)
+_CYCLICAL_FLOW_KEYWORDS = (
+    "有色金属", "稀土", "基础化工", "钢铁", "建筑材料", "建筑装饰", "房地产",
+    "券商", "证券", "金融科技", "机械设备", "汽车", "农林牧渔", "养殖",
+)
+
+
+def _allocation_tilt(name: str) -> str:
+    """Map a style/industry label to a conservative allocation tilt."""
+    if any(keyword in name for keyword in _GROWTH_FLOW_KEYWORDS):
+        return "growth"
+    if any(keyword in name for keyword in _DEFENSIVE_FLOW_KEYWORDS):
+        return "defensive"
+    if any(keyword in name for keyword in _CYCLICAL_FLOW_KEYWORDS):
+        return "cyclical"
+    return "neutral"
+
+
+def _inflow_focus_context(snapshot: dict[str, Any]) -> tuple[str, str, str]:
+    """Rank style and industry/theme groups together and describe the inflow focus."""
+    candidates = [
         g for g in snapshot.get("groups", [])
-        if g.get("kind") == "style"
+        if g.get("kind") in {"style", "industry"}
         and isinstance(g.get("flow1d"), (int, float))
         and math.isfinite(float(g["flow1d"]))
+        and str(g.get("name", "")).strip()
     ]
-    if not styles:
-        return "unavailable", "风格流向暂不明确"
+    if not candidates:
+        return "unavailable", "资金流向暂不明确。", "unknown"
 
     positive = sorted(
         (
-            {"name": str(g.get("name", "")).strip(), "flow": float(g["flow1d"])}
-            for g in styles
-            if float(g["flow1d"]) > 0.05 and str(g.get("name", "")).strip()
+            {"name": str(g["name"]).strip(), "flow": float(g["flow1d"])}
+            for g in candidates
+            if float(g["flow1d"]) > 0.05
         ),
         key=lambda item: item["flow"],
         reverse=True,
     )
     if not positive:
-        return "no_inflow", "风格资金未见明显流入"
+        return "no_inflow", "资金未见明显集中流入。", "unknown"
 
     positive_total = sum(item["flow"] for item in positive)
     if positive_total < 0.50:
-        return "limited", "风格资金流入有限"
+        return "limited", "资金流入有限。", "unknown"
 
     if len(positive) == 1 or positive[0]["flow"] / positive_total >= 0.70:
-        return "concentrated_one", f"资金较多流向{positive[0]['name']}"
+        selected = positive[:1]
+    elif (
+        len(positive) == 2
+        or sum(item["flow"] for item in positive[:2]) / positive_total >= 0.60
+        or positive[0]["flow"] >= positive[2]["flow"] * 2
+    ):
+        selected = positive[:2]
+    else:
+        return "dispersed", "资金流入较为分散。", "mixed"
 
-    top_two = positive[:2]
-    if sum(item["flow"] for item in top_two) / positive_total >= 0.75:
-        return "concentrated_two", f"资金较多流向{top_two[0]['name']}与{top_two[1]['name']}"
+    tilts = {_allocation_tilt(item["name"]) for item in selected}
+    tilt = next(iter(tilts)) if len(tilts) == 1 else "mixed"
+    count_label = "one" if len(selected) == 1 else "two"
+    state = f"concentrated_{count_label}_{tilt}"
+    names = selected[0]["name"] if len(selected) == 1 else f"{selected[0]['name']}与{selected[1]['name']}"
+    return state, f"资金流入集中于{names}。", tilt
 
-    return "dispersed", "风格资金呈分散流入"
 
+def _market_conclusion_copy(
+    primary_value: float,
+    primary_strength: str,
+    allocation_state: str,
+    allocation_tilt: str,
+) -> str:
+    """Separate total market expansion/contraction from the direction of marginal inflows."""
+    if primary_strength == "flat":
+        base = "市场总体平稳"
+    elif primary_value > 0:
+        base = {
+            "small": "市场小幅扩张",
+            "clear": "市场总体扩张",
+            "large": "市场明显扩张",
+            "extreme": "市场显著扩张",
+            "generic": "市场呈净申购",
+        }[primary_strength]
+    else:
+        base = {
+            "small": "市场小幅收缩",
+            "clear": "市场总体收缩",
+            "large": "市场明显收缩",
+            "extreme": "市场显著收缩",
+            "generic": "市场呈净赎回",
+        }[primary_strength]
 
-def _style_flow_copy(snapshot: dict[str, Any]) -> str:
-    return _style_flow_context(snapshot)[1]
+    if allocation_state in {"unavailable", "no_inflow", "limited"}:
+        return base + "。"
+    if allocation_state == "dispersed" or allocation_tilt == "mixed":
+        return base + "，资金流向分化。"
+
+    primary_side = 0 if primary_strength == "flat" else (1 if primary_value > 0 else -1)
+    suffixes = {
+        "growth": {
+            1: "，风险偏好有所回升。",
+            0: "，成长方向相对活跃。",
+            -1: "，但未转向防御。",
+        },
+        "defensive": {
+            1: "，但配置仍偏防御。",
+            0: "，资金略偏防御。",
+            -1: "，防御倾向增强。",
+        },
+        "cyclical": {
+            1: "，顺周期方向获得承接。",
+            0: "，顺周期方向相对活跃。",
+            -1: "，但顺周期方向仍有承接。",
+        },
+        "neutral": {
+            1: "，局部配置有所增加。",
+            0: "，局部方向相对活跃。",
+            -1: "，局部仍有承接。",
+        },
+    }
+    return base + suffixes.get(allocation_tilt, suffixes["neutral"])[primary_side]
 
 
 def _current_regime_copy(
@@ -434,14 +523,15 @@ def _current_regime_copy(
     primary_value: float,
     trade_strength: str | None,
     primary_strength: str,
-    style_text: str | None = None,
+    inflow_text: str | None = None,
+    allocation_state: str = "unavailable",
+    allocation_tilt: str = "unknown",
 ) -> str:
-    """Compose share -> intraday relation -> style -> overall intent, in that order."""
+    """Compose share -> intraday -> merged inflow ranking -> market state."""
     relation = _relation_copy(trade_value, primary_value, trade_strength, primary_strength)
-    intent = _overall_intent_copy(trade_value, primary_value, trade_strength, primary_strength)
-    if style_text:
-        return f"{relation}；{style_text}，{intent}。"
-    return f"{relation}；{intent}。"
+    focus = inflow_text or "资金流向暂不明确。"
+    market = _market_conclusion_copy(primary_value, primary_strength, allocation_state, allocation_tilt)
+    return f"{relation}。{focus}{market}"
 
 
 def _historical_context(primary_value: float, prior_5d_value: float | None, prior_20d_value: float | None, market_aum: float | None) -> str:
@@ -490,7 +580,9 @@ def _market_flow_headline(
     market_aum: float | None = None,
     primary_5d_value: float | None = None,
     primary_20d_value: float | None = None,
-    style_text: str | None = None,
+    inflow_text: str | None = None,
+    allocation_state: str = "unavailable",
+    allocation_tilt: str = "unknown",
 ) -> str:
     primary_strength = _primary_strength(primary_value, market_aum)
     primary_text = _primary_copy(primary_value, primary_strength)
@@ -510,7 +602,9 @@ def _market_flow_headline(
         primary_value,
         trade_strength,
         primary_strength,
-        style_text=style_text,
+        inflow_text=inflow_text,
+        allocation_state=allocation_state,
+        allocation_tilt=allocation_tilt,
     )
     return f"{fact_line}\n—— {current}"
 
@@ -608,13 +702,15 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
     broad = [g for g in groups if g.get("kind") == "broad"]
     styles = [g for g in groups if g.get("kind") == "style"]
     sectors = _visible_sector_groups(snapshot)
-    style_text = _style_flow_copy(snapshot)
+    allocation_state, inflow_text, allocation_tilt = _inflow_focus_context(snapshot)
     flow_headline = _market_flow_headline(
         trade_value,
         float(primary_value),
         trade_turnover,
         market_aum,
-        style_text=style_text,
+        inflow_text=inflow_text,
+        allocation_state=allocation_state,
+        allocation_tilt=allocation_tilt,
     )
 
     if broad:
@@ -711,7 +807,7 @@ def apply_v2_semantics(snapshot: dict[str, Any], day: date, share_window: list[t
     snapshot["schemaVersion"] = 6
     snapshot.setdefault("methodology", {}).update({
         "flow": "ETF当日净流入/净流出估算 =（T日交易所日终份额 − T-1日公司行动调整后的可比份额）× T日单位净值。T-1只作为T日份额变化的基准；该结果就是T日净申购/赎回的资金估算，不是再与上一日资金流做一次比较。",
-        "metricSeparation": "首页结论把两类数据翻译成易懂话术：盘中买盘/卖盘强弱来自同日成交额与外盘/内盘估算的主动买卖净额；ETF份额对应申赎资金来自交易所T日与T-1可比份额变化×T日NAV。盘中强弱按主动买卖净额占总成交额比例分为基本均衡、小幅偏强、偏强、明显占优；ETF份额资金按当日资金变化占A股股票ETF总规模比例分为基本持平、小幅、明显、大幅。系统保留“盘中买卖—份额申赎—资金结论”的原有结构，并通过份额端判断资金申购或赎回意愿，再识别两类资金是否同向或分化。",
+        "metricSeparation": "首页结论把两类数据翻译成易懂话术：盘中买盘/卖盘强弱来自同日成交额与外盘/内盘估算的主动买卖净额；ETF份额对应申赎资金来自交易所T日与T-1可比份额变化×T日NAV。盘中强弱按主动买卖净额占总成交额比例分为基本均衡、小幅偏强、偏强、明显占优；ETF份额资金按当日资金变化占A股股票ETF总规模比例分为基本持平、小幅、明显、大幅。结论固定按“份额主判断—盘中同步或背离—风格与行业主题合并流入排名—市场扩张或收缩及配置倾向”生成；市场总量由份额端决定，局部方向不替代市场总量判断。",
         "multiDay": "坐标轴的5日/20日字段仍为端点份额变化×期末单位净值，字段明确标记 Endpoint；首页结论的历史比较仅使用T-1及以前已落盘的逐日flow1d，且要求ETF池数量与当前日相差不超过2%，不把当天放入比较基准。",
         "scope": "首页主指标固定使用A股股票ETF范围，不含跨境股票ETF、债券ETF、货币ETF和商品ETF；同时保留全部ETF、股票ETF（含跨境）和六类资产范围用于审计与对照。",
         "valuation": "ETF当日净流入/净流出主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。",

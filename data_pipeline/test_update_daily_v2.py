@@ -121,19 +121,21 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertEqual(v2._primary_strength(200.0, 20000.0), "extreme")
 
     def test_finalized_current_market_copy_is_exact_and_share_led(self):
-        style_text = "资金较多流向红利低波与价值"
         headline = v2._market_flow_headline(
             -39.3,
             -99.7,
             1320.8,
             26683.68,
-            style_text=style_text,
+            inflow_text="资金流入集中于半导体与创新药。",
+            allocation_state="concentrated_two_growth",
+            allocation_tilt="growth",
         )
         conclusion = headline.split("\n—— ", 1)[1]
         self.assertEqual(
             conclusion,
-            "份额净赎回偏多，盘中卖压同步但相对有限；"
-            "资金较多流向红利低波与价值，整体市场偏谨慎。",
+            "份额净赎回偏多，盘中卖压同步但相对有限。"
+            "资金流入集中于半导体与创新药。"
+            "市场总体收缩，但未转向防御。",
         )
 
     def test_market_flow_headline_covers_direction_strength_and_stays_concise(self):
@@ -150,7 +152,9 @@ class UpdateDailyV2Tests(unittest.TestCase):
                     20000.0,
                     -100.0,
                     -200.0,
-                    style_text="风格资金呈分散流入",
+                    inflow_text="资金流入较为分散。",
+                    allocation_state="dispersed",
+                    allocation_tilt="mixed",
                 )
                 self.assertIn("\n—— ", headline)
                 self.assertFalse(any(text in headline for text in prohibited))
@@ -164,7 +168,9 @@ class UpdateDailyV2Tests(unittest.TestCase):
             26683.68,
             126.5,
             500.0,
-            style_text="资金较多流向红利低波与价值",
+            inflow_text="资金流入集中于半导体与创新药。",
+            allocation_state="concentrated_two_growth",
+            allocation_tilt="growth",
         )
         self.assertNotIn("前5日", headline)
         self.assertNotIn("前20日", headline)
@@ -173,51 +179,88 @@ class UpdateDailyV2Tests(unittest.TestCase):
 
     def test_current_regime_copy_preserves_finalized_order_and_relationships(self):
         share_led_outflow = v2._current_regime_copy(
-            -30.0, -100.0, "small", "clear", "资金较多流向红利低波与价值"
+            -30.0, -100.0, "small", "clear",
+            "资金流入集中于半导体与创新药。", "concentrated_two_growth", "growth",
         )
         trade_led_outflow = v2._current_regime_copy(
-            -150.0, -30.0, "large", "small", "风格资金流入有限"
+            -150.0, -30.0, "large", "small",
+            "资金流入有限。", "limited", "unknown",
         )
         share_led_inflow = v2._current_regime_copy(
-            -30.0, 140.0, "small", "large", "资金较多流向价值"
+            -30.0, 140.0, "small", "large",
+            "资金流入集中于价值。", "concentrated_one_defensive", "defensive",
         )
         divergent = v2._current_regime_copy(
-            150.0, -30.0, "large", "small", "风格资金呈分散流入"
+            150.0, -30.0, "large", "small",
+            "资金流入较为分散。", "dispersed", "mixed",
         )
 
         self.assertTrue(share_led_outflow.startswith("份额净赎回偏多"))
         self.assertIn("盘中卖压同步但相对有限", share_led_outflow)
-        self.assertIn("整体市场偏谨慎", share_led_outflow)
+        self.assertTrue(share_led_outflow.endswith("市场总体收缩，但未转向防御。"))
         self.assertTrue(trade_led_outflow.startswith("份额少量净赎回"))
         self.assertIn("盘中卖压同步且更强", trade_led_outflow)
-        self.assertIn("大资金逢跌进场，份额端承接有力", share_led_inflow)
-        self.assertIn("盘中承接占优，但份额端尚未确认", divergent)
+        self.assertTrue(trade_led_outflow.endswith("市场小幅收缩。"))
+        self.assertIn("盘中卖压背离但相对有限", share_led_inflow)
+        self.assertTrue(share_led_inflow.endswith("市场明显扩张，但配置仍偏防御。"))
+        self.assertIn("盘中买盘背离且更强", divergent)
+        self.assertTrue(divergent.endswith("市场小幅收缩，资金流向分化。"))
 
-    def test_style_flow_has_six_complete_states(self):
+    def test_merged_style_industry_ranking_has_thirteen_complete_states(self):
         cases = [
-            ([], "unavailable", "风格流向暂不明确"),
-            ([{"name": "价值", "kind": "style", "flow1d": -1.0}], "no_inflow", "风格资金未见明显流入"),
-            ([{"name": "价值", "kind": "style", "flow1d": 0.2}], "limited", "风格资金流入有限"),
+            ([], "unavailable", "资金流向暂不明确。", "unknown"),
+            ([{"name": "价值", "kind": "style", "flow1d": -1.0}], "no_inflow", "资金未见明显集中流入。", "unknown"),
+            ([{"name": "价值", "kind": "style", "flow1d": 0.2}], "limited", "资金流入有限。", "unknown"),
+            ([
+                {"name": "半导体", "kind": "industry", "flow1d": 2.0},
+                {"name": "红利低波", "kind": "style", "flow1d": 0.2},
+            ], "concentrated_one_growth", "资金流入集中于半导体。", "growth"),
+            ([
+                {"name": "半导体", "kind": "industry", "flow1d": 1.7},
+                {"name": "创新药", "kind": "industry", "flow1d": 1.2},
+                {"name": "红利低波", "kind": "style", "flow1d": 0.1},
+            ], "concentrated_two_growth", "资金流入集中于半导体与创新药。", "growth"),
             ([
                 {"name": "红利低波", "kind": "style", "flow1d": 2.0},
-                {"name": "价值", "kind": "style", "flow1d": 0.2},
-            ], "concentrated_one", "资金较多流向红利低波"),
+                {"name": "半导体", "kind": "industry", "flow1d": 0.2},
+            ], "concentrated_one_defensive", "资金流入集中于红利低波。", "defensive"),
             ([
                 {"name": "红利低波", "kind": "style", "flow1d": 1.7},
                 {"name": "价值", "kind": "style", "flow1d": 1.2},
-            ], "concentrated_two", "资金较多流向红利低波与价值"),
+            ], "concentrated_two_defensive", "资金流入集中于红利低波与价值。", "defensive"),
+            ([
+                {"name": "有色金属", "kind": "industry", "flow1d": 2.0},
+                {"name": "半导体", "kind": "industry", "flow1d": 0.2},
+            ], "concentrated_one_cyclical", "资金流入集中于有色金属。", "cyclical"),
+            ([
+                {"name": "有色金属", "kind": "industry", "flow1d": 1.7},
+                {"name": "券商", "kind": "industry", "flow1d": 1.2},
+            ], "concentrated_two_cyclical", "资金流入集中于有色金属与券商。", "cyclical"),
+            ([
+                {"name": "综合", "kind": "industry", "flow1d": 2.0},
+                {"name": "半导体", "kind": "industry", "flow1d": 0.2},
+            ], "concentrated_one_neutral", "资金流入集中于综合。", "neutral"),
+            ([
+                {"name": "综合", "kind": "industry", "flow1d": 1.7},
+                {"name": "保险", "kind": "industry", "flow1d": 1.2},
+            ], "concentrated_two_neutral", "资金流入集中于综合与保险。", "neutral"),
+            ([
+                {"name": "半导体", "kind": "industry", "flow1d": 1.7},
+                {"name": "红利低波", "kind": "style", "flow1d": 1.2},
+                {"name": "沪深300", "kind": "broad", "flow1d": 99.0},
+            ], "concentrated_two_mixed", "资金流入集中于半导体与红利低波。", "mixed"),
             ([
                 {"name": "红利低波", "kind": "style", "flow1d": 1.0},
-                {"name": "价值", "kind": "style", "flow1d": 1.0},
-                {"name": "成长", "kind": "style", "flow1d": 1.0},
-                {"name": "质量", "kind": "style", "flow1d": 1.0},
-            ], "dispersed", "风格资金呈分散流入"),
+                {"name": "半导体", "kind": "industry", "flow1d": 1.0},
+                {"name": "有色金属", "kind": "industry", "flow1d": 1.0},
+                {"name": "综合", "kind": "industry", "flow1d": 1.0},
+            ], "dispersed", "资金流入较为分散。", "mixed"),
         ]
-        for groups, state, expected in cases:
+        for groups, state, expected, tilt in cases:
             with self.subTest(state=state):
-                self.assertEqual(v2._style_flow_context({"groups": groups}), (state, expected))
+                self.assertEqual(v2._inflow_focus_context({"groups": groups}), (state, expected, tilt))
 
-    def test_all_792_structural_scenarios_are_composable(self):
+    def test_all_1716_structural_scenarios_are_composable(self):
         primary_cases = [
             (0.0, 20000.0),
             (20.0, 20000.0), (-20.0, 20000.0),
@@ -235,31 +278,40 @@ class UpdateDailyV2Tests(unittest.TestCase):
             (240.0, 2000.0), (-240.0, 2000.0),
             (20.0, None), (-20.0, None),
         ]
-        style_clauses = [
-            "风格流向暂不明确",
-            "风格资金未见明显流入",
-            "风格资金流入有限",
-            "资金较多流向红利低波",
-            "资金较多流向红利低波与价值",
-            "风格资金呈分散流入",
+        allocation_cases = [
+            ("unavailable", "资金流向暂不明确。", "unknown"),
+            ("no_inflow", "资金未见明显集中流入。", "unknown"),
+            ("limited", "资金流入有限。", "unknown"),
+            ("concentrated_one_growth", "资金流入集中于半导体。", "growth"),
+            ("concentrated_two_growth", "资金流入集中于半导体与创新药。", "growth"),
+            ("concentrated_one_defensive", "资金流入集中于红利低波。", "defensive"),
+            ("concentrated_two_defensive", "资金流入集中于红利低波与价值。", "defensive"),
+            ("concentrated_one_cyclical", "资金流入集中于有色金属。", "cyclical"),
+            ("concentrated_two_cyclical", "资金流入集中于有色金属与券商。", "cyclical"),
+            ("concentrated_one_neutral", "资金流入集中于综合。", "neutral"),
+            ("concentrated_two_neutral", "资金流入集中于综合与保险。", "neutral"),
+            ("concentrated_two_mixed", "资金流入集中于半导体与红利低波。", "mixed"),
+            ("dispersed", "资金流入较为分散。", "mixed"),
         ]
         generated = 0
         for primary_value, aum in primary_cases:
             for trade_value, turnover in trade_cases:
-                for style_text in style_clauses:
+                for allocation_state, inflow_text, allocation_tilt in allocation_cases:
                     headline = v2._market_flow_headline(
                         trade_value,
                         primary_value,
                         turnover,
                         aum,
-                        style_text=style_text,
+                        inflow_text=inflow_text,
+                        allocation_state=allocation_state,
+                        allocation_tilt=allocation_tilt,
                     )
                     conclusion = headline.split("\n—— ", 1)[1]
                     self.assertTrue(conclusion.startswith("份额"))
-                    self.assertIn("；", conclusion)
+                    self.assertEqual(conclusion.count("。"), 3)
                     self.assertTrue(conclusion.endswith("。"))
                     generated += 1
-        self.assertEqual(generated, 792)
+        self.assertEqual(generated, 1716)
         self.assertEqual(generated, v2.CONCLUSION_SCENARIO_COUNT)
 
     def test_prior_history_excludes_current_and_unstable_universe(self):
@@ -283,7 +335,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertEqual(flows, [10.0, 20.0, 30.0, 40.0, 50.0])
         self.assertEqual(v2._prior_window_total(flows, 5), 150.0)
 
-    def test_homepage_headline_uses_share_trade_style_intent_order(self):
+    def test_homepage_headline_uses_share_trade_merged_focus_market_order(self):
         snapshot = {
             "market": {
                 "flow1d": -48.3,
@@ -293,9 +345,14 @@ class UpdateDailyV2Tests(unittest.TestCase):
                 "unchangedEtfCount1d": 607,
                 "flow5dEndpoint": 20.0,
             },
-            "groups": self._groups() + [
-                {"id": "dividend_lowvol", "name": "红利低波", "kind": "style", "flow1d": 2.0},
-                {"id": "value", "name": "价值", "kind": "style", "flow1d": 1.0},
+            "groups": [
+                {"id": "hs300", "name": "沪深300", "kind": "broad", "flow1d": -3.0},
+                {"id": "csi500", "name": "中证500", "kind": "broad", "flow1d": 1.0},
+                {"id": "semi", "name": "半导体", "kind": "industry", "flow1d": 12.6},
+                {"id": "innovative_drug", "name": "创新药", "kind": "industry", "flow1d": 3.8},
+                {"id": "ai_compute", "name": "AI算力", "kind": "industry", "flow1d": 3.0},
+                {"id": "dividend_lowvol", "name": "红利低波", "kind": "style", "flow1d": 1.7},
+                {"id": "value", "name": "价值", "kind": "style", "flow1d": 1.2},
             ],
             "flowMetrics": {
                 "secondaryMarketTradeFlow": {
@@ -314,16 +371,16 @@ class UpdateDailyV2Tests(unittest.TestCase):
         headline = snapshot["conclusion"]["headline"]
         self.assertTrue(headline.startswith("A股ETF盘中"))
         self.assertIn(
-            "\n—— 份额大量净赎回，盘中买盘背离但相对有限；"
-            "资金较多流向红利低波与价值，赎回意愿占主导，整体市场偏谨慎。",
+            "\n—— 份额大量净赎回，盘中买盘背离但相对有限。"
+            "资金流入集中于半导体与创新药。"
+            "市场明显收缩，但未转向防御。",
             headline,
         )
-        self.assertNotIn("行业主题", headline)
+        self.assertNotIn("红利低波与价值", headline)
         self.assertNotIn("前5日", headline)
         self.assertNotIn("下一交易日", headline)
         self.assertNotIn("A股股票ETF当日合计", headline)
-        self.assertIn("净流出居前为半导体-23.4亿", snapshot["conclusion"]["facts"][2])
-        self.assertIn("净流入居前为传媒+1.8亿", snapshot["conclusion"]["facts"][2])
+        self.assertIn("净流入居前为半导体+12.6亿、创新药+3.8亿", snapshot["conclusion"]["facts"][2])
         self.assertIn("共2组，1个净流出、1个净流入", snapshot["conclusion"]["facts"][0])
         self.assertIn("净流出居前为沪深300-3.0亿", snapshot["conclusion"]["facts"][0])
 
@@ -368,7 +425,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn("A股ETF盘中主动买卖数据暂缺", headline)
         self.assertIn("ETF份额对应申赎资金大幅净流入12.6亿元", headline)
         self.assertIn("份额大量净申购，盘中数据暂缺", headline)
-        self.assertIn("风格流向暂不明确", headline)
+        self.assertIn("资金流入集中于传媒。", headline)
+        self.assertIn("市场明显扩张，风险偏好有所回升。", headline)
         self.assertNotIn("申万一级和主题行业", headline)
         self.assertIn("半导体", snapshot["conclusion"]["facts"][2])
 
