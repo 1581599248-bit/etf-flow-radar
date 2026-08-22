@@ -238,7 +238,7 @@ def _current_regime_copy(trade_value: float | None, primary_value: float, trade_
         direction = "流入" if primary_value > 0 else "流出"
         if trade_strength == "large" and primary_strength == "large":
             return f"盘中与ETF份额同步大额{direction}。"
-        return f"盘中交易与ETF份额{direction}方向一致，资金行为{'改善' if primary_value > 0 else '有所谨慎'}。"
+        return f"盘中{'买入' if trade_value > 0 else '卖出'}与ETF份额净{direction}同向。"
     return "盘中买入与ETF份额流出分化。" if trade_value > 0 else "盘中卖出与ETF份额流入分化。"
 
 
@@ -250,15 +250,14 @@ def _historical_context(primary_value: float, flow_5d: float | None, flow_20d: f
         return ""
     n, total = series[0]
     avg = total / n
-    current = abs(primary_value)
-    average = abs(avg)
+    current, average = abs(primary_value), abs(avg)
     if primary_value * avg < 0:
-        return f"近{n}日累计{'净流入' if total > 0 else '净流出'}{abs(total):.1f}亿元（日均{average:.1f}亿元）；当日转为{'净流入' if primary_value > 0 else '净流出'}{current:.1f}亿元，较日均变动{abs(primary_value - avg):.1f}亿元。"
+        return f"份额端由近{n}日日均{'流入' if avg > 0 else '流出'}{average:.0f}亿元转为{'流入' if primary_value > 0 else '流出'}{current:.0f}亿元。"
     ratio = current / average
     if ratio >= 1.8:
-        return f"当日{'净流入' if primary_value > 0 else '净流出'}{current:.1f}亿元，为近{n}日日均{average:.1f}亿元的{ratio:.1f}倍。"
+        return f"份额端为近{n}日日均的{ratio:.1f}倍。"
     if ratio <= 0.55:
-        return f"当日{'净流入' if primary_value > 0 else '净流出'}{current:.1f}亿元，低于近{n}日日均{average:.1f}亿元。"
+        return f"份额端低于近{n}日日均。"
     return ""
 
 
