@@ -287,22 +287,24 @@ def _current_regime_copy(
     return "盘中卖压偏强但份额净流入，回调承接较为明确，交易情绪与申购行为分化。"
 
 
-def _five_day_context(primary_value: float, primary_5d_value: float | None, market_aum: float | None) -> str:
-    if not isinstance(primary_5d_value, (int, float)) or not math.isfinite(primary_5d_value):
+def _historical_context(primary_value: float, flow_5d: float | None, flow_20d: float | None, market_aum: float | None) -> str:
+    if _primary_strength(primary_value, market_aum) == "flat":
         return ""
-    if _primary_strength(primary_5d_value, market_aum) == "flat":
-        return "近5个交易日份额端点接近平衡，当前信号仍需连续数据确认。"
-    if primary_value == 0:
-        direction = "净流入" if primary_5d_value > 0 else "净流出"
-        return f"近5个交易日份额端点仍为{direction}，中短期方向尚未被当日数据改变。"
-    if primary_value > 0 and primary_5d_value > 0:
-        return "近5个交易日份额端点同样为净流入，当前信号获得中短期方向支持。"
-    if primary_value < 0 and primary_5d_value < 0:
-        return "近5个交易日份额端点同样为净流出，当前偏弱信号获得中短期方向印证。"
-    if primary_value > 0:
-        return "但近5个交易日份额端点仍为净流出，当前更接近短线修复，尚未形成趋势反转证据。"
-    return "但近5个交易日份额端点仍为净流入，当前更接近短期降温，尚不足以判断趋势转弱。"
-
+    valid = [(n, v / n) for n, v in ((5, flow_5d), (20, flow_20d)) if isinstance(v, (int, float)) and math.isfinite(v) and abs(v / n) > 0.01]
+    if not valid:
+        return ""
+    same = [(n, avg) for n, avg in valid if avg * primary_value > 0]
+    opposite = [(n, avg) for n, avg in valid if avg * primary_value < 0]
+    if opposite and not same:
+        return "与近阶段平均方向相反，暂按单日变化观察。"
+    if same:
+        n, avg = same[0]
+        ratio = abs(primary_value) / abs(avg)
+        if ratio >= 1.8:
+            return f"当日幅度高于近{n}日均值，变化较明显。"
+        if ratio <= 0.55:
+            return f"当日幅度低于近{n}日均值，延续性尚有限。"
+    return ""
 
 def _next_watch_copy(trade_value: float | None, primary_value: float, trade_strength: str | None, primary_strength: str) -> str:
     if trade_value is None:
@@ -323,9 +325,9 @@ def _next_watch_copy(trade_value: float | None, primary_value: float, trade_stre
         return "下一交易日重点看份额端能否继续稳定，以判断盘中卖压是否仅属短期波动。"
     same_direction = (trade_value > 0 and primary_value > 0) or (trade_value < 0 and primary_value < 0)
     if same_direction and primary_value > 0:
-        return "下一交易日重点看份额增量能否延续，以及盘中买盘是否保持。"
+        return "关注份额增量与盘中买盘。"
     if same_direction:
-        return "下一交易日重点看份额流出是否收窄，以及盘中卖压能否缓和。"
+        return "关注份额流出与盘中卖压。"
     if trade_value > 0:
         return "下一交易日重点看份额能否转正，以确认盘中承接是否获得增量资金配合。"
     return "下一交易日重点看盘中卖压能否缓和，以及份额承接能否延续。"
@@ -337,6 +339,7 @@ def _market_flow_headline(
     trade_turnover: float | None = None,
     market_aum: float | None = None,
     primary_5d_value: float | None = None,
+    primary_20d_value: float | None = None,
 ) -> str:
     primary_strength = _primary_strength(primary_value, market_aum)
     primary_text = _primary_copy(primary_value, primary_strength)
@@ -352,7 +355,7 @@ def _market_flow_headline(
         )
         fact_line = f"{_trade_copy(trade_value, trade_strength)}{joiner}{primary_text}"
     current = _current_regime_copy(trade_value, primary_value, trade_strength, primary_strength)
-    trend = _five_day_context(primary_value, primary_5d_value, market_aum)
+    trend = _historical_context(primary_value, primary_5d_value, primary_20d_value, market_aum)
     watch = _next_watch_copy(trade_value, primary_value, trade_strength, primary_strength)
     return f"{fact_line}\n—— {current}{trend}{watch}"
 
@@ -378,6 +381,8 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
         trade_turnover = float(raw_inflow) + float(raw_outflow)
     raw_aum = market.get("aum")
     market_aum = float(raw_aum) if isinstance(raw_aum, (int, float)) and pd.notna(raw_aum) else None
+    raw_primary_20d_value = market.get("flow20dEndpoint")
+    primary_20d_value = float(raw_primary_20d_value) if isinstance(raw_primary_20d_value, (int, float)) and pd.notna(raw_primary_20d_value) else None
     raw_primary_5d_value = market.get("flow5dEndpoint")
     if not isinstance(raw_primary_5d_value, (int, float)) or not pd.notna(raw_primary_5d_value):
         raw_primary_5d_value = market.get("flow5d")
