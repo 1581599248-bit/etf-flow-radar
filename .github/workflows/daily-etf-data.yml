@@ -25,6 +25,7 @@ on:
       - "data_pipeline/test_probe_official_shares.py"
       - "data_pipeline/test_update_daily_v2.py"
       - "data_pipeline/audit_snapshot_v6.py"
+      - "tests/rendered-html.test.mjs"
   workflow_dispatch:
     inputs:
       trade_date:
