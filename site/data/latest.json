@@ -4,7 +4,7 @@
   "tradeDate": "2026-08-21",
   "previousTradeDate": "2026-08-20",
   "windowStartDate": "2026-07-24",
-  "generatedAt": "2026-08-22T12:45:04+08:00",
+  "generatedAt": "2026-08-22T13:25:55+08:00",
   "publicationDate": "2026-08-22",
   "sourceMode": "REAL",
   "market": {
@@ -40,7 +40,7 @@
     "multiDayMethod": "endpoint_share_change_times_current_nav"
   },
   "conclusion": {
-    "headline": "A股ETF盘中卖盘小幅偏强，主动卖出净额39.3亿元；ETF份额对应申赎资金明显净流出99.7亿元\n—— 当日盘中与份额端同步偏弱，ETF资金行为有所趋谨慎。但近5个交易日份额端点仍为净流入，当前更接近短期降温，尚不足以判断趋势转弱。下一交易日重点看份额流出是否收窄，以及盘中卖压能否缓和。",
+    "headline": "A股ETF盘中卖盘小幅偏强，主动卖出净额39.3亿元；ETF份额对应申赎资金明显净流出99.7亿元\n—— 当日盘中与份额端同步偏弱，ETF资金行为有所趋谨慎。与近阶段平均方向相反，暂按单日变化观察。关注明日份额与盘中卖压。",
     "facts": [
       "共27组，21个净流出、4个净流入；净流出居前为沪深300-24.7亿、中证A500-22.6亿；净流入居前为科创100+1.5亿、上证50+1.0亿。",
       "净流入居前为红利低波+1.7亿、价值+1.2亿；净流出居前为指数增强-1.4亿、自由现金流策略-0.5亿。",
@@ -73358,7 +73358,7 @@
     "shareCrossCheck": {
       "status": "usable",
       "scale": 1.0,
-      "medianRelativeError": 0.002003,
+      "medianRelativeError": 0.002224,
       "commonCount": 1559,
       "repaired": [],
       "disagreements": [
