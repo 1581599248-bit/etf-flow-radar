@@ -308,29 +308,13 @@ def _historical_context(primary_value: float, flow_5d: float | None, flow_20d: f
 
 def _next_watch_copy(trade_value: float | None, primary_value: float, trade_strength: str | None, primary_strength: str) -> str:
     if trade_value is None:
-        if primary_strength == "flat":
-            return "待盘中交易数据补齐后再判断短线资金方向。"
-        if primary_value > 0:
-            return "下一交易日重点看份额增量能否延续，并补充验证盘中交易方向。"
-        return "下一交易日重点看份额流出是否收窄，并补充验证盘中交易方向。"
-    if trade_strength == "balanced":
-        if primary_strength == "flat":
-            return "下一交易日等待盘中与份额方向进一步明确。"
-        if primary_value > 0:
-            return "下一交易日重点看份额增量能否延续，以及盘中买盘能否跟进。"
-        return "下一交易日重点看份额流出是否收窄，以及盘中卖压是否抬升。"
-    if primary_strength == "flat":
-        if trade_value > 0:
-            return "下一交易日重点看份额端能否转为净流入，以确认盘中买盘是否获得增量资金配合。"
-        return "下一交易日重点看份额端能否继续稳定，以判断盘中卖压是否仅属短期波动。"
+        return "待补充盘中数据。" if primary_strength == "flat" else "关注明日份额变化。"
+    if trade_strength == "balanced" or primary_strength == "flat":
+        return "关注明日两端方向。"
     same_direction = (trade_value > 0 and primary_value > 0) or (trade_value < 0 and primary_value < 0)
-    if same_direction and primary_value > 0:
-        return "关注份额增量与盘中买盘。"
     if same_direction:
-        return "关注份额流出与盘中卖压。"
-    if trade_value > 0:
-        return "下一交易日重点看份额能否转正，以确认盘中承接是否获得增量资金配合。"
-    return "下一交易日重点看盘中卖压能否缓和，以及份额承接能否延续。"
+        return "关注明日份额与盘中买盘。" if primary_value > 0 else "关注明日份额与盘中卖压。"
+    return "关注明日两端是否收敛。"
 
 
 def _market_flow_headline(
