@@ -281,7 +281,7 @@ def _current_regime_copy(trade_value: float | None, primary_value: float, trade_
     if trade_value > 0:
         if trade_rank > primary_rank:
             return "盘中买盘偏强，份额出现赎回，资金信号分化。"
-        return "盘中买盘有限，份额赎回更明显，资金信号分化。"
+        return "盘中买盘偏强，份额赎回更明显，资金信号分化。"
     if primary_rank > trade_rank:
         return "盘中卖压下份额申购更明显，资金信号分化。"
     return "盘中卖压偏强，仍有小幅份额申购承接。"
