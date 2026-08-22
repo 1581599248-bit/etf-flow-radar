@@ -1,135 +1,35 @@
-name: Publish ETF report after close
-# Publisher schema: v6. Exchange-share history is cached between runs so each
-# new report normally fetches only dates that have not already been verified.
+name: Manual ETF report recovery
 
 on:
-  workflow_run:
-    workflows:
-      - "Capture ETF order flow"
-    types:
-      - completed
-  schedule:
-    - cron: "30 9 * * 1-5"   # 17:30 Asia/Shanghai
-    - cron: "30 10 * * 1-5"  # 18:30 Asia/Shanghai
-    - cron: "0 12 * * 1-5"   # 20:00 Asia/Shanghai
-    - cron: "0 14 * * 1-5"   # 22:00 Asia/Shanghai
-    - cron: "0 16 * * 1-5"   # 00:00 Asia/Shanghai, following calendar day
-    - cron: "0 18 * * 1-5"   # 02:00 Asia/Shanghai, following calendar day
-    - cron: "0 20 * * 1-5"   # 04:00 Asia/Shanghai, following calendar day
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/postclose-etf-publish.yml"
   workflow_dispatch:
     inputs:
       trade_date:
-        description: "Optional trade date (YYYY-MM-DD); otherwise use the latest captured order-flow trade date"
+        description: "Optional trade date (YYYY-MM-DD); otherwise use the latest captured order-flow date"
         required: false
         type: string
 
 permissions:
-  contents: write
+  actions: write
+  contents: read
 
 concurrency:
-  group: etf-full-publish-v2
-  cancel-in-progress: true
+  group: manual-etf-recovery-dispatch
+  cancel-in-progress: false
 
 jobs:
-  publish:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+  dispatch:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
-    env:
-      TZ: Asia/Shanghai
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: data_pipeline/requirements.txt
-      - name: Restore verified official-share cache
-        uses: actions/cache/restore@v4
-        with:
-          path: .cache/exchange_shares
-          key: etf-exchange-shares-v1-${{ github.run_id }}
-          restore-keys: |
-            etf-exchange-shares-v1-
-      - run: pip install -r data_pipeline/requirements.txt
-
-      - name: Resolve latest captured trade date
-        id: trade
+      - name: Dispatch the single official-share gate workflow
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TRADE_DATE: ${{ inputs.trade_date }}
         run: |
-          if [ -n "${{ inputs.trade_date }}" ]; then
-            TRADE_DATE="${{ inputs.trade_date }}"
+          if [ -n "$TRADE_DATE" ]; then
+            gh workflow run daily-etf-data.yml --ref main -f "trade_date=${TRADE_DATE}"
           else
-            TRADE_DATE=$(python - <<'PY'
-          import json
-          from pathlib import Path
-
-          path = Path("site/data/order_flow/latest.json")
-          if not path.exists():
-              raise SystemExit("site/data/order_flow/latest.json is missing")
-          payload = json.loads(path.read_text("utf-8"))
-          trade_date = str(payload.get("tradeDate") or "").strip()
-          if not trade_date:
-              raise SystemExit("latest order-flow snapshot has no tradeDate")
-          print(trade_date)
-          PY
-          )
+            gh workflow run daily-etf-data.yml --ref main
           fi
-          echo "trade_date=${TRADE_DATE}" >> "$GITHUB_OUTPUT"
-          echo "Post-close publish target: ${TRADE_DATE}"
-
-      - name: Run deterministic pipeline tests
-        run: python -m unittest discover -s data_pipeline -p "test_*.py"
-
-      - name: Attempt full report as soon as end-of-day data is ready
-        id: build
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -o pipefail
-          timeout 20m python data_pipeline/update_daily_v2.py --date "${{ steps.trade.outputs.trade_date }}" 2>&1 | tee /tmp/etf-publish.log
-
-      - name: Save verified official-share cache
-        if: always()
-        uses: actions/cache/save@v4
-        with:
-          path: .cache/exchange_shares
-          key: etf-exchange-shares-v1-${{ github.run_id }}
-
-      - name: Run external-send reconciliation audit
-        if: steps.build.outcome == 'success'
-        run: python data_pipeline/audit_snapshot_v6.py
-
-      - name: Validate published schema and client bundle
-        if: steps.build.outcome == 'success'
-        run: npm ci && npm test
-
-      - name: Commit verified full report immediately
-        if: steps.build.outcome == 'success'
-        run: |
-          git config user.name "etf-flow-radar-bot"
-          git config user.email "etf-flow-radar-bot@users.noreply.github.com"
-          git add site/data
-          if ! git diff --cached --quiet; then
-            git commit -m "data: publish ETF report after close"
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
-
-      - name: Explain deferred publication
-        if: steps.build.outcome != 'success'
-        shell: bash
-        run: |
-          echo "Full report for ${{ steps.trade.outputs.trade_date }} is not publishable yet." >> "$GITHUB_STEP_SUMMARY"
-          echo "The captured trading-flow fact remains intact. Verified exchange-share dates fetched in this run are retained in the shared Actions cache for the next retry." >> "$GITHUB_STEP_SUMMARY"
-          echo '```text' >> "$GITHUB_STEP_SUMMARY"
-          tail -n 80 /tmp/etf-publish.log >> "$GITHUB_STEP_SUMMARY" || true
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "Recovery request was handed to the official ETF share gate workflow." >> "$GITHUB_STEP_SUMMARY"

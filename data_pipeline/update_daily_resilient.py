@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import random
+import socket
 import time
 from datetime import date
 from pathlib import Path
@@ -50,6 +51,25 @@ _SSE_MAX_REASONABLE_P99_INDIVIDUAL = 10_000_000_000_000.0
 _SSE_SESSION: requests.Session | None = None
 _SSE_LAST_REQUEST_AT = 0.0
 _SSE_MIN_REQUEST_INTERVAL = 1.25
+
+# Hosted CI sometimes receives an unusable IPv6 route for query.sse.com.cn.
+# Keep every resolved address, but try IPv4 first so urllib3 can fall back to
+# IPv6 only when it is actually reachable.
+_ORIGINAL_GETADDRINFO = socket.getaddrinfo
+_IPV4_PREFERENCE_INSTALLED = False
+
+
+def _ipv4_first_getaddrinfo(*args, **kwargs):
+    results = list(_ORIGINAL_GETADDRINFO(*args, **kwargs))
+    return sorted(results, key=lambda item: 0 if item[0] == socket.AF_INET else 1)
+
+
+def install_ipv4_preference() -> None:
+    global _IPV4_PREFERENCE_INSTALLED
+    if _IPV4_PREFERENCE_INSTALLED:
+        return
+    socket.getaddrinfo = _ipv4_first_getaddrinfo
+    _IPV4_PREFERENCE_INSTALLED = True
 
 # The SSE WAF hands out 403/429 bans that last minutes, not seconds.  Short
 # backoffs just extend the ban, so wait long enough for the ban window to
@@ -346,6 +366,7 @@ def resilient_fetch_exchange_shares(day: date) -> pd.DataFrame:
 
 
 def install_resilient_sources() -> None:
+    install_ipv4_preference()
     base.fetch_sse_shares = resilient_fetch_sse_shares
     base.fetch_exchange_shares = resilient_fetch_exchange_shares
     guarded.install_guards()
@@ -361,3 +382,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

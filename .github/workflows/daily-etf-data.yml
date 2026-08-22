@@ -1,27 +1,28 @@
-name: Daily ETF data
+name: Official ETF share gate and publish
 
 on:
   schedule:
-    # Official ETF shares usually become available late on the trade date.
-    # Publish as soon as the official SSE/SZSE data passes validation.
-    - cron: "5 15 * * 1-5"  # 23:05 Asia/Shanghai
-    - cron: "35 15 * * 1-5" # 23:35 Asia/Shanghai
-    - cron: "5 16 * * 1-5"  # 00:05 Asia/Shanghai
-    - cron: "35 16 * * 1-5" # 00:35 Asia/Shanghai
-    # Re-run the most recent trade date throughout the weekend if Friday missed.
-    - cron: "0 1,5,9 * * 0,6" # 09:00, 13:00, 17:00 Asia/Shanghai, Sat/Sun
-    # Morning retries remain only as a fail-safe for delayed exchange publication.
-    - cron: "0 21 * * 1-5"  # 05:00 Asia/Shanghai, Tuesday-Saturday
-    - cron: "0 22 * * 1-5"  # 06:00 Asia/Shanghai, Tuesday-Saturday
-    - cron: "0 23 * * 1-5"  # 07:00 Asia/Shanghai, Tuesday-Saturday
-    - cron: "0 0 * * 2-6"   # 08:00 Asia/Shanghai, Tuesday-Saturday final retry
+    # Beijing time 22:30 and 22:45 on the trade date.
+    - cron: "30,45 14 * * 1-5"
+    # Beijing time 23:00-00:55: dense five-minute detection before 01:00.
+    - cron: "*/5 15,16 * * 1-5"
+    # Beijing time 01:00-02:45: continue every fifteen minutes.
+    - cron: "*/15 17,18 * * 1-5"
+    # Beijing time 03:00-07:30: continue every thirty minutes.
+    - cron: "0,30 19-23 * * 1-5"
+    # Beijing time 08:00-14:00 Tuesday-Saturday: hourly fallback.
+    - cron: "0 0-6 * * 2-6"
+    # Friday data keeps retrying through the weekend until it is published.
+    - cron: "0 1,5,9 * * 0,6"
   push:
     branches:
       - main
     paths:
       - ".github/workflows/daily-etf-data.yml"
+      - "data_pipeline/probe_official_shares.py"
       - "data_pipeline/update_daily_resilient.py"
       - "data_pipeline/update_daily_v2.py"
+      - "data_pipeline/test_probe_official_shares.py"
   workflow_dispatch:
     inputs:
       trade_date:
@@ -33,20 +34,69 @@ permissions:
   contents: write
 
 concurrency:
-  group: etf-full-publish-v2
+  group: official-etf-share-gate-v3
   cancel-in-progress: false
 
 jobs:
-  update:
+  resolve:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 5
+    outputs:
+      trade_date: ${{ steps.target.outputs.trade_date }}
+      needed: ${{ steps.target.outputs.needed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Resolve target and skip an already published date
+        id: target
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from datetime import date
+          from pathlib import Path
+
+          requested = "${{ inputs.trade_date }}".strip()
+          if requested:
+              date.fromisoformat(requested)
+              target = requested
+          else:
+              order_path = Path("site/data/order_flow/latest.json")
+              order_payload = json.loads(order_path.read_text("utf-8"))
+              target = str(order_payload.get("tradeDate") or "").strip()
+              date.fromisoformat(target)
+
+          published = ""
+          published_path = Path("site/data/latest.json")
+          if published_path.exists():
+              published = str(json.loads(published_path.read_text("utf-8")).get("tradeDate") or "")
+
+          needed = target != published
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"trade_date={target}\n")
+              output.write(f"needed={'true' if needed else 'false'}\n")
+          print(f"target={target}; published={published or 'none'}; needed={needed}")
+          PY
+
+  probe:
+    needs: resolve
+    if: needs.resolve.outputs.needed == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        lane:
+          - primary
+          - secondary
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     env:
       TZ: Asia/Shanghai
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -56,93 +106,182 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .cache/exchange_shares
-          key: etf-exchange-shares-v1-${{ github.run_id }}
+          key: etf-exchange-shares-v2-${{ github.run_id }}-${{ matrix.lane }}
           restore-keys: |
+            etf-exchange-shares-v2-
             etf-exchange-shares-v1-
       - run: pip install -r data_pipeline/requirements.txt
-      - name: Resolve target trade date
-        id: trade
+      - name: Probe one exact official SSE/SZSE date
+        id: official
         shell: bash
         run: |
-          if [ -n "${{ inputs.trade_date }}" ]; then
-            TRADE_DATE="${{ inputs.trade_date }}"
+          set +e
+          timeout 4m python data_pipeline/probe_official_shares.py \
+            --date "${{ needs.resolve.outputs.trade_date }}" \
+            --status-file "/tmp/official-share-probe-${{ matrix.lane }}.json"
+          code=$?
+          set -e
+          cat "/tmp/official-share-probe-${{ matrix.lane }}.json" >> "$GITHUB_STEP_SUMMARY" || true
+          if [ "$code" -eq 0 ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+            mkdir -p .probe-output
+            cp ".cache/exchange_shares/${{ needs.resolve.outputs.trade_date }}.json" .probe-output/
+          elif [ "$code" -eq 75 ] || [ "$code" -eq 124 ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Official shares are not ready on lane ${{ matrix.lane }}; the next scheduled run will retry." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
           else
-            TRADE_DATE=$(python - <<'PY'
-          import json
-          from pathlib import Path
-          path = Path("site/data/order_flow/latest.json")
-          payload = json.loads(path.read_text("utf-8"))
-          value = str(payload.get("tradeDate") or "").strip()
-          if not value:
-              raise SystemExit("order-flow latest has no tradeDate")
-          print(value)
-          PY
-          )
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            exit "$code"
           fi
-          echo "trade_date=${TRADE_DATE}" >> "$GITHUB_OUTPUT"
-          echo "Target trade date: ${TRADE_DATE}"
+      - name: Pass verified official shares to publisher
+        if: steps.official.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: official-share-${{ matrix.lane }}
+          path: .probe-output/${{ needs.resolve.outputs.trade_date }}.json
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    needs:
+      - resolve
+      - probe
+    if: always() && needs.resolve.outputs.needed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      TZ: Asia/Shanghai
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Restore verified official-share cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache/exchange_shares
+          key: etf-exchange-shares-v2-${{ github.run_id }}-publisher
+          restore-keys: |
+            etf-exchange-shares-v2-
+            etf-exchange-shares-v1-
+      - name: Download successful probe lanes
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: official-share-*
+          path: .probe-artifacts
+      - name: Select and reconcile a verified probe result
+        id: gate
+        shell: bash
+        env:
+          TARGET_TRADE_DATE: ${{ needs.resolve.outputs.trade_date }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          target = os.environ["TARGET_TRADE_DATE"]
+          candidates = sorted(Path(".probe-artifacts").rglob(f"{target}.json"))
+          output = Path(os.environ["GITHUB_OUTPUT"])
+          if not candidates:
+              with output.open("a", encoding="utf-8") as handle:
+                  handle.write("ready=false\n")
+              print("No probe lane obtained both official exchanges; wait for the next schedule.")
+              raise SystemExit(0)
+
+          payloads = [json.loads(path.read_text("utf-8")) for path in candidates]
+          fingerprints = set()
+          for payload in payloads:
+              if payload.get("tradeDate") != target:
+                  raise SystemExit("probe artifact date mismatch")
+              rows = sorted(payload.get("rows", []), key=lambda row: (row.get("exchange"), row.get("code")))
+              canonical = json.dumps(rows, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+              fingerprints.add(hashlib.sha256(canonical.encode("utf-8")).hexdigest())
+          if len(fingerprints) != 1:
+              raise SystemExit("independent official-share probes disagree; publication blocked")
+
+          cache_dir = Path(".cache/exchange_shares")
+          cache_dir.mkdir(parents=True, exist_ok=True)
+          target_path = cache_dir / f"{target}.json"
+          target_path.write_text(json.dumps(payloads[0], ensure_ascii=False, separators=(",", ":")), "utf-8")
+          with output.open("a", encoding="utf-8") as handle:
+              handle.write("ready=true\n")
+          print(f"verified probe lanes={len(payloads)}; cache={target_path}")
+          PY
+      - uses: actions/setup-python@v5
+        if: steps.gate.outputs.ready == 'true'
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: data_pipeline/requirements.txt
+      - name: Install production dependencies
+        if: steps.gate.outputs.ready == 'true'
+        run: pip install -r data_pipeline/requirements.txt
+      - name: Revalidate selected official cache
+        if: steps.gate.outputs.ready == 'true'
+        run: |
+          python data_pipeline/probe_official_shares.py \
+            --date "${{ needs.resolve.outputs.trade_date }}" \
+            --status-file /tmp/official-share-selected.json
       - name: Run deterministic pipeline tests
+        if: steps.gate.outputs.ready == 'true'
         run: python -m unittest discover -s data_pipeline -p "test_*.py"
-      - name: Build schema-v6 production snapshot and capture failure reason
+      - name: Build schema-v6 production snapshot once
+        if: steps.gate.outputs.ready == 'true'
         id: build
         shell: bash
         run: |
           set +e
-          code=1
-          : > /tmp/etf-build.log
-          # Keep probing after the official release window opens.  A transient
-          # SSE network failure must not end the night's publication attempt.
-          for attempt in 1 2 3 4; do
-            echo "=== official data attempt ${attempt}/4: $(date -Iseconds) ===" >> /tmp/etf-build.log
-            timeout 20m python data_pipeline/update_daily_v2.py --date "${{ steps.trade.outputs.trade_date }}" >> /tmp/etf-build.log 2>&1
-            code=$?
-            [ "$code" -eq 0 ] && break
-            [ "$attempt" -lt 4 ] && sleep 180
-          done
+          timeout 45m python data_pipeline/update_daily_v2.py \
+            --date "${{ needs.resolve.outputs.trade_date }}" > /tmp/etf-build.log 2>&1
+          code=$?
           set -e
           echo "exit_code=${code}" >> "$GITHUB_OUTPUT"
           if [ "$code" -ne 0 ]; then
             mkdir -p diagnostics
             {
-              echo "trade_date=${{ steps.trade.outputs.trade_date }}"
+              echo "trade_date=${{ needs.resolve.outputs.trade_date }}"
               echo "generated_at=$(date -Iseconds)"
               echo "exit_code=${code}"
-              echo "official_attempts=4"
+              echo "official_probe=verified"
               echo "--- build log ---"
               cat /tmp/etf-build.log
             } > diagnostics/latest-etf-publish-failure.txt
+          else
+            cat /tmp/etf-build.log
           fi
       - name: Save verified official-share cache
-        if: always()
+        if: always() && steps.gate.outputs.ready == 'true'
         uses: actions/cache/save@v4
         with:
           path: .cache/exchange_shares
-          key: etf-exchange-shares-v1-${{ github.run_id }}
+          key: etf-exchange-shares-v2-${{ github.run_id }}-publisher
       - name: Run external-send reconciliation audit
         if: steps.build.outputs.exit_code == '0'
         run: python data_pipeline/audit_snapshot_v6.py
       - name: Validate published schema and client bundle
         if: steps.build.outputs.exit_code == '0'
         run: npm ci && npm test
-      - name: Commit verified report or failure diagnostic
+      - name: Commit verified report or build diagnostic
+        if: steps.gate.outputs.ready == 'true' && steps.build.outputs.exit_code != ''
         shell: bash
         run: |
           git config user.name "etf-flow-radar-bot"
           git config user.email "etf-flow-radar-bot@users.noreply.github.com"
           if [ "${{ steps.build.outputs.exit_code }}" = "0" ]; then
             rm -f diagnostics/latest-etf-publish-failure.txt
-            msg="data: update schema-v6 ETF flow snapshot"
+            message="data: publish verified official ETF share snapshot"
           else
-            msg="diag: capture ETF publish failure"
+            message="diag: capture post-probe ETF build failure"
           fi
-          # 按目录暂存：诊断文件被 rm 删除或本就不存在时，
-          # 对单文件 pathspec 执行 git add 会直接报错（06:00 连续成功后的
-          # 第二次发布正是这样失败的），目录形式两种情况都安全。
           git add site/data diagnostics/
           git diff --cached --quiet && exit 0
-          git commit -m "$msg"
+          git commit -m "$message"
           git pull --rebase origin main
           git push origin HEAD:main
-      - name: Fail workflow after diagnostic is persisted
-        if: steps.build.outputs.exit_code != '0'
+      - name: Fail only after a verified-source build error is persisted
+        if: steps.gate.outputs.ready == 'true' && steps.build.outputs.exit_code != '0'
         run: exit 1
