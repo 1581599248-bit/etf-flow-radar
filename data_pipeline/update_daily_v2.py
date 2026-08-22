@@ -303,6 +303,21 @@ def _visible_sector_groups(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
     return [g for g in snapshot.get("groups", []) if g.get("kind") == "industry"]
 
 
+def _flow_structure_copy(snapshot: dict[str, Any]) -> str:
+    broad = [g.get("flow1d") for g in snapshot.get("groups", []) if g.get("kind") == "broad" and isinstance(g.get("flow1d"), (int, float))]
+    industry = [g.get("flow1d") for g in _visible_sector_groups(snapshot) if isinstance(g.get("flow1d"), (int, float))]
+    if not broad or not industry:
+        return ""
+    broad_net, industry_net = sum(broad), sum(industry)
+    industry_in = sum(1 for value in industry if value > 0)
+    industry_out = sum(1 for value in industry if value < 0)
+    if broad_net < 0 and industry_in:
+        return "宽基流出居多，行业主题仍有局部申购。"
+    if broad_net > 0 and industry_out:
+        return "宽基申购居多，行业主题仍有局部赎回。"
+    return ""
+
+
 def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
     """Build the client headline from one consistent visible classification layer."""
     production._regenerate_conclusion(snapshot)
@@ -394,7 +409,8 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
 
     facts = [broad_fact, style_fact, sector_fact, single_fact]
     snapshot["conclusion"]["facts"] = facts
-    snapshot["conclusion"]["headline"] = flow_headline
+    structure = _flow_structure_copy(snapshot)
+    snapshot["conclusion"]["headline"] = flow_headline + structure
 
 
 def apply_v2_semantics(snapshot: dict[str, Any], day: date, share_window: list[tuple[date, pd.DataFrame]], ths: pd.DataFrame, spot: pd.DataFrame | None) -> None:
