@@ -76,11 +76,18 @@ jobs:
           if published_path.exists():
               published = str(json.loads(published_path.read_text("utf-8")).get("tradeDate") or "")
 
-          needed = target != published
+          # A code push or an explicit manual date must re-run validation and
+          # rebuild the latest snapshot even when that trade date is already
+          # published. Scheduled retries still skip an unchanged published date.
+          force_rebuild = bool(requested) or os.environ.get("GITHUB_EVENT_NAME") == "push"
+          needed = force_rebuild or target != published
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
               output.write(f"trade_date={target}\n")
               output.write(f"needed={'true' if needed else 'false'}\n")
-          print(f"target={target}; published={published or 'none'}; needed={needed}")
+          print(
+              f"target={target}; published={published or 'none'}; "
+              f"force_rebuild={force_rebuild}; needed={needed}"
+          )
           PY
 
   probe:
