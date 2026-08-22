@@ -4,7 +4,7 @@
   "tradeDate": "2026-08-21",
   "previousTradeDate": "2026-08-20",
   "windowStartDate": "2026-07-24",
-  "generatedAt": "2026-08-22T13:28:53+08:00",
+  "generatedAt": "2026-08-22T13:33:34+08:00",
   "publicationDate": "2026-08-22",
   "sourceMode": "REAL",
   "market": {
@@ -40,7 +40,7 @@
     "multiDayMethod": "endpoint_share_change_times_current_nav"
   },
   "conclusion": {
-    "headline": "A股ETF盘中卖盘小幅偏强，主动卖出净额39.3亿元；ETF份额对应申赎资金明显净流出99.7亿元\n—— 两端同步小幅流出，资金行为略偏谨慎。与近阶段平均方向相反，暂按单日变化观察。关注明日份额与盘中卖压。",
+    "headline": "A股ETF盘中卖盘小幅偏强，主动卖出净额39.3亿元；ETF份额对应申赎资金明显净流出99.7亿元\n—— 两端同步小幅流出，资金行为略偏谨慎。较近5日均值由流入转为流出，变化较大。关注明日份额与盘中卖压。",
     "facts": [
       "共27组，21个净流出、4个净流入；净流出居前为沪深300-24.7亿、中证A500-22.6亿；净流入居前为科创100+1.5亿、上证50+1.0亿。",
       "净流入居前为红利低波+1.7亿、价值+1.2亿；净流出居前为指数增强-1.4亿、自由现金流策略-0.5亿。",
@@ -73352,13 +73352,13 @@
       {
         "severity": "info",
         "check": "secondary_share_disagreement",
-        "message": "2只ETF的第三方最新份额与交易所官方份额显著不一致；官方份额已保留，并进入公司行动校验。"
+        "message": "1只ETF的第三方最新份额与交易所官方份额显著不一致；官方份额已保留，并进入公司行动校验。"
       }
     ],
     "shareCrossCheck": {
       "status": "usable",
       "scale": 1.0,
-      "medianRelativeError": 0.001903,
+      "medianRelativeError": 0.002003,
       "commonCount": 1559,
       "repaired": [],
       "disagreements": [
@@ -73366,18 +73366,9 @@
           "code": "588290",
           "name": "芯片科创",
           "officialShares": 4969191000.0,
-          "secondaryShares": 1623897008.0,
+          "secondaryShares": 1643897008.0,
           "previousOfficialShares": 1643897000.0,
           "officialJumpPct": 202.28,
-          "action": "official_retained_event_check_required"
-        },
-        {
-          "code": "159717",
-          "name": "ESGETF鹏华",
-          "officialShares": 25373183.0,
-          "secondaryShares": 52873183.0,
-          "previousOfficialShares": 52873183.0,
-          "officialJumpPct": -52.01,
           "action": "official_retained_event_check_required"
         }
       ],
