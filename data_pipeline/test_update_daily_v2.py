@@ -131,7 +131,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         stronger = v2._market_flow_headline(80.0, 100.0, 2000.0, 20000.0, 100.0, 200.0)
         opposite = v2._market_flow_headline(-80.0, -100.0, 2000.0, 20000.0, 100.0, 200.0)
         quiet = v2._market_flow_headline(80.0, 100.0, 2000.0, 20000.0, 0.0, 0.0)
-        self.assertIn("当日幅度高于近5日均值", stronger)
+        self.assertIn("高于近5日均值，力度放大", stronger)
         self.assertIn("较近5日均值由流入转为流出，变化较大", opposite)
         self.assertNotIn("近5日", quiet)
 
