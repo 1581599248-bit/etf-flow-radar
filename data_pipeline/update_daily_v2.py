@@ -238,7 +238,7 @@ def _current_regime_copy(trade_value: float | None, primary_value: float, trade_
         direction = "流入" if primary_value > 0 else "流出"
         if trade_strength == "large" and primary_strength == "large":
             return f"盘中与ETF份额同步大额{direction}。"
-        return f"盘中{'买入' if trade_value > 0 else '卖出'}与ETF份额净{direction}同向。"
+        return f"盘中{'买入' if trade_value > 0 else '卖出'}与ETF份额净{direction}同向，资金行为{'改善' if primary_value > 0 else '有所谨慎'}。"
     return "盘中买入与ETF份额流出分化。" if trade_value > 0 else "盘中卖出与ETF份额流入分化。"
 
 
