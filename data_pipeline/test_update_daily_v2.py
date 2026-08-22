@@ -120,42 +120,15 @@ class UpdateDailyV2Tests(unittest.TestCase):
 
     def test_market_flow_headline_covers_strength_direction_and_divergence(self):
         cases = [
-            (
-                94.5, -185.7, 2500.0, 27455.95,
-                "A股ETF盘中买盘偏强，主动买入净额94.5亿元；但ETF份额对应申赎资金大幅净流出185.7亿元\n—— 盘面买盘偏强，但份额端净流出较为明显，二级与申赎行为分化，需观察持续性。",
-            ),
-            (
-                20.0, 20.0, 2000.0, 20000.0,
-                "A股ETF盘中买盘小幅偏强，主动买入净额20.0亿元；ETF份额对应申赎资金小幅净流入20.0亿元\n—— 盘面买盘与份额端均有小幅流入，资金情绪略有改善，尚未形成强增量信号。",
-            ),
-            (
-                150.0, 120.0, 2000.0, 20000.0,
-                "A股ETF盘中买盘明显占优，主动买入净额150.0亿元；ETF份额对应申赎资金大幅净流入120.0亿元\n—— 盘面买盘与份额端大额净流入同步，资金增配意愿明显升温，仍需观察延续性。",
-            ),
-            (
-                -150.0, -120.0, 2000.0, 20000.0,
-                "A股ETF盘中卖盘明显占优，主动卖出净额150.0亿元；ETF份额对应申赎资金大幅净流出120.0亿元\n—— 盘面卖压与份额端大额净流出同步，资金情绪明显转弱，需跟踪后续是否持续。",
-            ),
-            (
-                -46.4, -31.8, 1525.63, 26701.71,
-                "A股ETF盘中卖盘偏强，主动卖出净额46.4亿元；ETF份额对应申赎资金小幅净流出31.8亿元\n—— 盘面卖盘与份额端均偏弱，但份额端仅小幅净流出，短线资金略偏谨慎，尚未出现集中赎回压力。",
-            ),
-            (
-                -80.0, 80.0, 2000.0, 20000.0,
-                "A股ETF盘中卖盘偏强，主动卖出净额80.0亿元；但ETF份额对应申赎资金明显净流入80.0亿元\n—— 盘面卖压下份额端净流入较为明显，一级市场存在承接，但持续性仍待确认。",
-            ),
-            (
-                10.0, -120.0, 2000.0, 20000.0,
-                "A股ETF盘中买卖力量基本均衡；ETF份额对应申赎资金大幅净流出120.0亿元\n—— 盘面交易相对平稳，份额端净流出较为明显，需观察是否持续。",
-            ),
-            (
-                80.0, 5.0, 2000.0, 20000.0,
-                "A股ETF盘中买盘偏强，主动买入净额80.0亿元；ETF份额对应申赎资金基本持平\n—— 盘中买盘偏强，但份额端基本持平，暂未见明显申赎跟随。",
-            ),
-            (
-                None, -120.0, None, 20000.0,
-                "A股ETF盘中主动买卖数据暂缺；ETF份额对应申赎资金大幅净流出120.0亿元\n—— 整体资金净流出幅度较大，需结合后续数据观察持续性。",
-            ),
+            (94.5, -185.7, 2500.0, 27455.95, "A股ETF盘中买盘偏强，主动买入净额94.5亿元；但ETF份额对应申赎资金大幅净流出185.7亿元\n—— 盘中承接偏强但份额净流出，交易改善尚未获得申购确认，暂偏存量资金博弈。下一交易日重点看份额能否转正，以确认盘中承接是否获得增量资金配合。"),
+            (20.0, 20.0, 2000.0, 20000.0, "A股ETF盘中买盘小幅偏强，主动买入净额20.0亿元；ETF份额对应申赎资金小幅净流入20.0亿元\n—— 当日盘中与份额端同步改善，但整体力度有限，ETF资金行为仅边际回暖。下一交易日重点看份额增量能否延续，以及盘中买盘是否保持。"),
+            (150.0, 120.0, 2000.0, 20000.0, "A股ETF盘中买盘明显占优，主动买入净额150.0亿元；ETF份额对应申赎资金大幅净流入120.0亿元\n—— 当日盘中与份额端同步明显改善，ETF增量资金信号较强。下一交易日重点看份额增量能否延续，以及盘中买盘是否保持。"),
+            (-150.0, -120.0, 2000.0, 20000.0, "A股ETF盘中卖盘明显占优，主动卖出净额150.0亿元；ETF份额对应申赎资金大幅净流出120.0亿元\n—— 当日盘中与份额端同步明显承压，ETF资金行为短线显著趋谨慎。下一交易日重点看份额流出是否收窄，以及盘中卖压能否缓和。"),
+            (-46.4, -31.8, 1525.63, 26701.71, "A股ETF盘中卖盘偏强，主动卖出净额46.4亿元；ETF份额对应申赎资金小幅净流出31.8亿元\n—— 当日盘中与份额端同步偏弱，但份额流出幅度有限，ETF资金行为仅边际趋谨慎。下一交易日重点看份额流出是否收窄，以及盘中卖压能否缓和。"),
+            (-80.0, 80.0, 2000.0, 20000.0, "A股ETF盘中卖盘偏强，主动卖出净额80.0亿元；但ETF份额对应申赎资金明显净流入80.0亿元\n—— 盘中卖压偏强但份额净流入，回调承接较为明确，交易情绪与申购行为分化。下一交易日重点看盘中卖压能否缓和，以及份额承接能否延续。"),
+            (10.0, -120.0, 2000.0, 20000.0, "A股ETF盘中买卖力量基本均衡；ETF份额对应申赎资金大幅净流出120.0亿元\n—— 盘中交易相对均衡，份额端净流出成为当日主要方向信号。下一交易日重点看份额流出是否收窄，以及盘中卖压是否抬升。"),
+            (80.0, 5.0, 2000.0, 20000.0, "A股ETF盘中买盘偏强，主动买入净额80.0亿元；ETF份额对应申赎资金基本持平\n—— 盘中买盘偏强，但份额端接近平衡，交易情绪尚未转化为明确申赎方向。下一交易日重点看份额端能否转为净流入，以确认盘中买盘是否获得增量资金配合。"),
+            (None, -120.0, None, 20000.0, "A股ETF盘中主动买卖数据暂缺；ETF份额对应申赎资金大幅净流出120.0亿元\n—— 仅从份额端看，资金净流出幅度较大。下一交易日重点看份额流出是否收窄，并补充验证盘中交易方向。"),
         ]
         for trade_value, primary_value, turnover, aum, expected in cases:
             with self.subTest(trade_value=trade_value, primary_value=primary_value):
@@ -184,13 +157,14 @@ class UpdateDailyV2Tests(unittest.TestCase):
             ("generic_in", 20.0, None),
             ("generic_out", -20.0, None),
         ]
-        prohibited = ("资金离场", "持续撤离", "有资金借反弹离场", "护盘")
+        prohibited = ("资金离场", "持续撤离", "有资金借反弹离场", "护盘", "股灾", "连续赎回", "资金出逃")
         for trade_name, trade_value, turnover in trade_cases:
             for primary_name, primary_value, aum in primary_cases:
                 with self.subTest(trade=trade_name, primary=primary_name):
                     headline = v2._market_flow_headline(trade_value, primary_value, turnover, aum)
                     self.assertIn("\n—— ", headline)
                     self.assertFalse(any(text in headline for text in prohibited))
+                    self.assertIn("下一交易日", headline)
                     if primary_name.startswith("small"):
                         self.assertIn("小幅", headline)
                         self.assertFalse(any(text in headline for text in ("大额", "明显转弱", "连续赎回")))
@@ -207,6 +181,23 @@ class UpdateDailyV2Tests(unittest.TestCase):
                 if primary_name.startswith("generic"):
                     self.assertIn("缺少可比规模基准", headline)
 
+    def test_market_flow_headline_uses_five_day_context_without_overstatement(self):
+        cases = [
+            (-39.34, -99.7, 1320.8, 26683.68, 89.88, "当前更接近短期降温，尚不足以判断趋势转弱"),
+            (39.34, 99.7, 1320.8, 26683.68, -89.88, "当前更接近短线修复，尚未形成趋势反转证据"),
+            (39.34, 99.7, 1320.8, 26683.68, 89.88, "当前信号获得中短期方向支持"),
+            (-39.34, -99.7, 1320.8, 26683.68, -89.88, "当前偏弱信号获得中短期方向印证"),
+            (39.34, 99.7, 1320.8, 26683.68, 0.0, "近5个交易日份额端点接近平衡"),
+        ]
+        for trade_value, primary_value, turnover, aum, primary_5d, expected in cases:
+            with self.subTest(primary_value=primary_value, primary_5d=primary_5d):
+                headline = v2._market_flow_headline(
+                    trade_value, primary_value, turnover, aum, primary_5d
+                )
+                self.assertIn(expected, headline)
+                self.assertIn("下一交易日", headline)
+                self.assertNotIn("连续赎回", headline)
+
     def test_homepage_headline_uses_strength_copy_and_visible_sector_layer(self):
         snapshot = {
             "market": {
@@ -215,6 +206,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
                 "increaseEtfCount1d": 231,
                 "decreaseEtfCount1d": 409,
                 "unchangedEtfCount1d": 607,
+                "flow5dEndpoint": 20.0,
             },
             "groups": self._groups(),
             "flowMetrics": {
@@ -232,7 +224,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         with patch.object(v2.production, "_regenerate_conclusion", side_effect=self._legacy_conclusion):
             v2._regenerate_v2_conclusion(snapshot)
         headline = snapshot["conclusion"]["headline"]
-        self.assertTrue(headline.startswith("A股ETF盘中买盘偏强，主动买入净额198.4亿元；但ETF份额对应申赎资金大幅净流出48.3亿元\n—— 盘面买盘偏强，但份额端净流出较为明显，二级与申赎行为分化，需观察持续性。"))
+        self.assertTrue(headline.startswith("A股ETF盘中买盘偏强，主动买入净额198.4亿元；但ETF份额对应申赎资金大幅净流出48.3亿元\n—— 盘中承接偏强但份额净流出，交易改善尚未获得申购确认，暂偏存量资金博弈。但近5个交易日份额端点仍为净流入，当前更接近短期降温，尚不足以判断趋势转弱。下一交易日重点看份额能否转正，以确认盘中承接是否获得增量资金配合。"))
         self.assertNotIn("宽基", headline)
         self.assertNotIn("申万一级和主题行业", headline)
         self.assertNotIn("A股股票ETF当日合计", headline)
@@ -272,6 +264,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
                 "increaseEtfCount1d": 300,
                 "decreaseEtfCount1d": 200,
                 "unchangedEtfCount1d": 700,
+                "flow5dEndpoint": 15.0,
             },
             "groups": self._groups(),
             "flowMetrics": {"secondaryMarketTradeFlow": {"status": "unavailable", "scopeTotals": {}}},
@@ -281,7 +274,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
         headline = snapshot["conclusion"]["headline"]
         self.assertIn("A股ETF盘中主动买卖数据暂缺", headline)
         self.assertIn("ETF份额对应申赎资金大幅净流入12.6亿元", headline)
-        self.assertIn("整体资金净流入幅度较大，需结合后续数据观察持续性。", headline)
+        self.assertIn("近5个交易日份额端点同样为净流入，当前信号获得中短期方向支持。", headline)
+        self.assertIn("下一交易日重点看份额增量能否延续", headline)
         self.assertNotIn("申万一级和主题行业", headline)
         self.assertIn("半导体", snapshot["conclusion"]["facts"][2])
 

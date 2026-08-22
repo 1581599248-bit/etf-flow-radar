@@ -225,93 +225,135 @@ def _motion_copy(primary_value: float, strength: str) -> str:
     }.get(strength, "整体资金呈净流出")
 
 
+def _current_regime_copy(
+    trade_value: float | None,
+    primary_value: float,
+    trade_strength: str | None,
+    primary_strength: str,
+) -> str:
+    if trade_value is None:
+        if primary_strength == "flat":
+            return "仅从份额端看，资金增减接近平衡。"
+        direction = "净流入" if primary_value > 0 else "净流出"
+        if primary_strength == "small":
+            return f"仅从份额端看，资金小幅{direction}，单日变动有限。"
+        if primary_strength == "clear":
+            return f"仅从份额端看，资金{direction}较为明确。"
+        if primary_strength == "large":
+            return f"仅从份额端看，资金{direction}幅度较大。"
+        return f"仅从份额端可确认{direction}方向，因缺少可比规模基准，暂不判断力度。"
+
+    if trade_strength == "generic" or primary_strength == "generic":
+        if trade_strength == "balanced":
+            relation = "盘中交易相对均衡，份额端存在方向变化"
+        elif primary_strength == "flat":
+            relation = "盘中存在方向变化，份额端接近平衡"
+        else:
+            same_direction = (trade_value > 0 and primary_value > 0) or (trade_value < 0 and primary_value < 0)
+            relation = "盘中与份额端方向一致" if same_direction else "盘中与份额端方向分化"
+        return f"{relation}；因缺少可比规模基准，暂只判断方向。"
+
+    if trade_strength == "balanced":
+        if primary_strength == "flat":
+            return "盘中交易与份额申赎均接近平衡，短线资金方向尚不明确。"
+        direction = "净流入" if primary_value > 0 else "净流出"
+        return f"盘中交易相对均衡，份额端{direction}成为当日主要方向信号。"
+
+    if primary_strength == "flat":
+        side = "买盘" if trade_value > 0 else "卖盘"
+        return f"盘中{side}偏强，但份额端接近平衡，交易情绪尚未转化为明确申赎方向。"
+
+    same_direction = (trade_value > 0 and primary_value > 0) or (trade_value < 0 and primary_value < 0)
+    if same_direction and primary_value > 0:
+        if trade_strength == "large" and primary_strength == "large":
+            return "当日盘中与份额端同步明显改善，ETF增量资金信号较强。"
+        if trade_strength == "small" or primary_strength == "small":
+            return "当日盘中与份额端同步改善，但整体力度有限，ETF资金行为仅边际回暖。"
+        return "当日盘中与份额端同步改善，ETF增量资金信号有所增强。"
+    if same_direction:
+        if primary_strength == "small":
+            return "当日盘中与份额端同步偏弱，但份额流出幅度有限，ETF资金行为仅边际趋谨慎。"
+        if trade_strength == "large" and primary_strength == "large":
+            return "当日盘中与份额端同步明显承压，ETF资金行为短线显著趋谨慎。"
+        return "当日盘中与份额端同步偏弱，ETF资金行为有所趋谨慎。"
+
+    if trade_value > 0:
+        if primary_strength == "small":
+            return "盘中承接偏强，但份额仅小幅净流出，二者轻度分化，暂偏存量资金博弈。"
+        return "盘中承接偏强但份额净流出，交易改善尚未获得申购确认，暂偏存量资金博弈。"
+    if primary_strength == "small":
+        return "盘中卖压偏强，但份额小幅净流入，显示回调中有边际承接。"
+    return "盘中卖压偏强但份额净流入，回调承接较为明确，交易情绪与申购行为分化。"
+
+
+def _five_day_context(primary_value: float, primary_5d_value: float | None, market_aum: float | None) -> str:
+    if not isinstance(primary_5d_value, (int, float)) or not math.isfinite(primary_5d_value):
+        return ""
+    if _primary_strength(primary_5d_value, market_aum) == "flat":
+        return "近5个交易日份额端点接近平衡，当前信号仍需连续数据确认。"
+    if primary_value == 0:
+        direction = "净流入" if primary_5d_value > 0 else "净流出"
+        return f"近5个交易日份额端点仍为{direction}，中短期方向尚未被当日数据改变。"
+    if primary_value > 0 and primary_5d_value > 0:
+        return "近5个交易日份额端点同样为净流入，当前信号获得中短期方向支持。"
+    if primary_value < 0 and primary_5d_value < 0:
+        return "近5个交易日份额端点同样为净流出，当前偏弱信号获得中短期方向印证。"
+    if primary_value > 0:
+        return "但近5个交易日份额端点仍为净流出，当前更接近短线修复，尚未形成趋势反转证据。"
+    return "但近5个交易日份额端点仍为净流入，当前更接近短期降温，尚不足以判断趋势转弱。"
+
+
+def _next_watch_copy(trade_value: float | None, primary_value: float, trade_strength: str | None, primary_strength: str) -> str:
+    if trade_value is None:
+        if primary_strength == "flat":
+            return "待盘中交易数据补齐后再判断短线资金方向。"
+        if primary_value > 0:
+            return "下一交易日重点看份额增量能否延续，并补充验证盘中交易方向。"
+        return "下一交易日重点看份额流出是否收窄，并补充验证盘中交易方向。"
+    if trade_strength == "balanced":
+        if primary_strength == "flat":
+            return "下一交易日等待盘中与份额方向进一步明确。"
+        if primary_value > 0:
+            return "下一交易日重点看份额增量能否延续，以及盘中买盘能否跟进。"
+        return "下一交易日重点看份额流出是否收窄，以及盘中卖压是否抬升。"
+    if primary_strength == "flat":
+        if trade_value > 0:
+            return "下一交易日重点看份额端能否转为净流入，以确认盘中买盘是否获得增量资金配合。"
+        return "下一交易日重点看份额端能否继续稳定，以判断盘中卖压是否仅属短期波动。"
+    same_direction = (trade_value > 0 and primary_value > 0) or (trade_value < 0 and primary_value < 0)
+    if same_direction and primary_value > 0:
+        return "下一交易日重点看份额增量能否延续，以及盘中买盘是否保持。"
+    if same_direction:
+        return "下一交易日重点看份额流出是否收窄，以及盘中卖压能否缓和。"
+    if trade_value > 0:
+        return "下一交易日重点看份额能否转正，以确认盘中承接是否获得增量资金配合。"
+    return "下一交易日重点看盘中卖压能否缓和，以及份额承接能否延续。"
+
+
 def _market_flow_headline(
     trade_value: float | None,
     primary_value: float,
     trade_turnover: float | None = None,
     market_aum: float | None = None,
+    primary_5d_value: float | None = None,
 ) -> str:
-    """Translate observable flow direction and relative scale into calibrated client copy.
-
-    先按交易净额占成交额、申赎金额占ETF规模的比例划分强弱；单日小幅
-    申赎只描述为边际情绪变化，不外推为趋势性进出场。仅当规模较大且盘中
-    交易、份额申赎同步时，才提示资金情绪明显变化，且始终保留持续性观察。
-    """
     primary_strength = _primary_strength(primary_value, market_aum)
     primary_text = _primary_copy(primary_value, primary_strength)
-
     if trade_value is None:
-        if primary_strength == "flat":
-            interpretation = "份额端资金基本持平，暂无明确方向。"
-        elif primary_strength == "small":
-            direction = "流入" if primary_value > 0 else "流出"
-            interpretation = f"份额端仅小幅净{direction}，单日变动有限，暂不宜外推为趋势性资金变化。"
-        elif primary_strength == "generic":
-            direction = "净流入" if primary_value > 0 else "净流出"
-            interpretation = f"份额端方向显示为{direction}，但缺少可比规模基准，暂不对资金力度作延伸判断。"
-        else:
-            interpretation = f"{_motion_copy(primary_value, primary_strength)}，需结合后续数据观察持续性。"
-        return f"A股ETF盘中主动买卖数据暂缺；{primary_text}\n—— {interpretation}"
-
-    trade_strength = _trade_strength(trade_value, trade_turnover)
-    trade_text = _trade_copy(trade_value, trade_strength)
-
-    if trade_strength == "generic" or primary_strength == "generic":
-        if trade_strength == "balanced":
-            relation = "盘面交易相对平稳，份额端存在方向变化"
-        elif primary_strength == "flat":
-            relation = "盘中存在主动交易，份额端基本持平"
-        else:
-            same_direction = (trade_value > 0 and primary_value > 0) or (trade_value < 0 and primary_value < 0)
-            relation = "盘中与份额端方向一致" if same_direction else "盘中与份额端方向分化"
-        return f"{trade_text}；{primary_text}\n—— {relation}，但缺少可比规模基准，暂不对资金力度作延伸判断。"
-
-    if trade_strength == "balanced":
-        if primary_strength == "flat":
-            return f"{trade_text}；{primary_text}\n—— 盘面交易与份额申赎均无明显方向，短线资金以观望为主。"
-        if primary_strength == "small":
-            direction = "流入" if primary_value > 0 else "流出"
-            return f"{trade_text}；{primary_text}\n—— 盘面交易相对平稳，份额端仅小幅净{direction}，尚未形成明确资金方向。"
-        direction = "净流入" if primary_value > 0 else "净流出"
-        return f"{trade_text}；{primary_text}\n—— 盘面交易相对平稳，份额端{direction}较为明显，需观察是否持续。"
-
-    if primary_strength == "flat":
-        side = "买盘" if trade_value > 0 else "卖盘"
-        return f"{trade_text}；{primary_text}\n—— 盘中{side}偏强，但份额端基本持平，暂未见明显申赎跟随。"
-
-    same_direction = (trade_value > 0 and primary_value > 0) or (trade_value < 0 and primary_value < 0)
-    if same_direction:
-        if primary_strength == "small":
-            if primary_value > 0:
-                interpretation = "盘面买盘与份额端均有小幅流入，资金情绪略有改善，尚未形成强增量信号。"
-            else:
-                interpretation = "盘面卖盘与份额端均偏弱，但份额端仅小幅净流出，短线资金略偏谨慎，尚未出现集中赎回压力。"
-            return f"{trade_text}；{primary_text}\n—— {interpretation}"
-
-        if primary_value > 0:
-            if primary_strength == "large" and trade_strength == "large":
-                interpretation = "盘面买盘与份额端大额净流入同步，资金增配意愿明显升温，仍需观察延续性。"
-            else:
-                interpretation = "盘面买盘与份额端同步净流入，资金增配意愿有所升温，仍需观察延续性。"
-        elif primary_strength == "large" and trade_strength in {"clear", "large"}:
-            interpretation = "盘面卖压与份额端大额净流出同步，资金情绪明显转弱，需跟踪后续是否持续。"
-        else:
-            interpretation = "盘面卖压与份额端净流出同步，资金情绪偏谨慎，尚需观察后续是否形成连续赎回。"
-        return f"{trade_text}；{primary_text}\n—— {interpretation}"
-
-    if trade_value < 0:
-        if primary_strength == "small":
-            interpretation = "盘面卖压下份额端仅小幅申购，存在轻微承接，力度仍有限。"
-        else:
-            interpretation = "盘面卖压下份额端净流入较为明显，一级市场存在承接，但持续性仍待确认。"
-        return f"{trade_text}；但{primary_text}\n—— {interpretation}"
-
-    if primary_strength == "small":
-        interpretation = "盘面买盘偏强，份额端仅小幅净流出，可能存在短线兑现，尚不足以说明资金趋势。"
+        fact_line = f"A股ETF盘中主动买卖数据暂缺；{primary_text}"
+        trade_strength = None
     else:
-        interpretation = "盘面买盘偏强，但份额端净流出较为明显，二级与申赎行为分化，需观察持续性。"
-    return f"{trade_text}；但{primary_text}\n—— {interpretation}"
-
+        trade_strength = _trade_strength(trade_value, trade_turnover)
+        joiner = (
+            "；但"
+            if trade_strength != "balanced" and trade_value * primary_value < 0 and primary_strength != "flat"
+            else "；"
+        )
+        fact_line = f"{_trade_copy(trade_value, trade_strength)}{joiner}{primary_text}"
+    current = _current_regime_copy(trade_value, primary_value, trade_strength, primary_strength)
+    trend = _five_day_context(primary_value, primary_5d_value, market_aum)
+    watch = _next_watch_copy(trade_value, primary_value, trade_strength, primary_strength)
+    return f"{fact_line}\n—— {current}{trend}{watch}"
 
 def _visible_sector_groups(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
     """Mutually-exclusive SW-level/theme groups actually rendered to clients."""
@@ -335,7 +377,21 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
         trade_turnover = float(raw_inflow) + float(raw_outflow)
     raw_aum = market.get("aum")
     market_aum = float(raw_aum) if isinstance(raw_aum, (int, float)) and pd.notna(raw_aum) else None
-    flow_headline = _market_flow_headline(trade_value, float(primary_value), trade_turnover, market_aum)
+    raw_primary_5d_value = market.get("flow5dEndpoint")
+    if not isinstance(raw_primary_5d_value, (int, float)) or not pd.notna(raw_primary_5d_value):
+        raw_primary_5d_value = market.get("flow5d")
+    primary_5d_value = (
+        float(raw_primary_5d_value)
+        if isinstance(raw_primary_5d_value, (int, float)) and pd.notna(raw_primary_5d_value)
+        else None
+    )
+    flow_headline = _market_flow_headline(
+        trade_value,
+        float(primary_value),
+        trade_turnover,
+        market_aum,
+        primary_5d_value,
+    )
 
     groups = snapshot.get("groups", [])
     broad = [g for g in groups if g.get("kind") == "broad"]
