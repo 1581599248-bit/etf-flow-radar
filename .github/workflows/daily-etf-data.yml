@@ -39,7 +39,7 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
     env:
       TZ: Asia/Shanghai
     steps:
@@ -94,7 +94,7 @@ jobs:
           # SSE network failure must not end the night's publication attempt.
           for attempt in 1 2 3 4; do
             echo "=== official data attempt ${attempt}/4: $(date -Iseconds) ===" >> /tmp/etf-build.log
-            timeout 18m python data_pipeline/update_daily_v2.py --date "${{ steps.trade.outputs.trade_date }}" >> /tmp/etf-build.log 2>&1
+            timeout 20m python data_pipeline/update_daily_v2.py --date "${{ steps.trade.outputs.trade_date }}" >> /tmp/etf-build.log 2>&1
             code=$?
             [ "$code" -eq 0 ] && break
             [ "$attempt" -lt 4 ] && sleep 180
