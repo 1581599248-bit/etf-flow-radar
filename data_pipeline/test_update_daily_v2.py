@@ -135,11 +135,18 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn("前5日日均净流入20亿元，今日转为净流出100亿元", opposite)
         self.assertNotIn("前5日", quiet)
 
-    def test_current_regime_copy_distinguishes_strength_and_divergence(self):
-        self.assertIn("份额赎回更明显", v2._current_regime_copy(-30.0, -100.0, "small", "clear"))
-        self.assertIn("份额赎回相对有限", v2._current_regime_copy(-150.0, -30.0, "large", "small"))
-        self.assertIn("份额申购更明显", v2._current_regime_copy(30.0, 100.0, "small", "clear"))
-        self.assertIn("申购承接", v2._current_regime_copy(-150.0, 30.0, "large", "small"))
+    def test_current_regime_copy_leads_with_share_intent_and_distinguishes_strength(self):
+        share_led_outflow = v2._current_regime_copy(-30.0, -100.0, "small", "clear")
+        trade_led_outflow = v2._current_regime_copy(-150.0, -30.0, "large", "small")
+        share_led_inflow = v2._current_regime_copy(30.0, 100.0, "small", "clear")
+        divergent = v2._current_regime_copy(-150.0, 30.0, "large", "small")
+
+        self.assertTrue(share_led_outflow.startswith("份额端净流出明显"))
+        self.assertIn("资金赎回意愿较强", share_led_outflow)
+        self.assertIn("流出主要来自份额端", share_led_outflow)
+        self.assertIn("份额端赎回力度相对有限", trade_led_outflow)
+        self.assertIn("增量主要来自份额端", share_led_inflow)
+        self.assertIn("两类资金方向分化", divergent)
 
     def test_prior_history_excludes_current_and_unstable_universe(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -188,7 +195,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         with patch.object(v2.production, "_regenerate_conclusion", side_effect=self._legacy_conclusion):
             v2._regenerate_v2_conclusion(snapshot)
         headline = snapshot["conclusion"]["headline"]
-        self.assertIn("盘中买盘偏强，份额赎回更明显", headline)
+        self.assertIn("资金赎回意愿明显占优", headline)\n        self.assertIn("流出仍由份额端主导", headline)\n        self.assertTrue(headline.startswith("ETF份额对应申赎资金"))
         self.assertIn("行业主题赎回更明显", headline)
         self.assertNotIn("申万一级和主题行业", headline)
         self.assertNotIn("A股股票ETF当日合计", headline)
