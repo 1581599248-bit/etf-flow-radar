@@ -127,13 +127,40 @@ class UpdateDailyV2Tests(unittest.TestCase):
                 self.assertFalse(any(text in headline for text in prohibited))
                 self.assertTrue(headline.endswith("。"))
 
-    def test_market_flow_headline_uses_relative_history_only_when_meaningful(self):
+    def test_market_flow_headline_compares_with_completed_prior_history_only(self):
         stronger = v2._market_flow_headline(80.0, 100.0, 2000.0, 20000.0, 100.0, 200.0)
         opposite = v2._market_flow_headline(-80.0, -100.0, 2000.0, 20000.0, 100.0, 200.0)
         quiet = v2._market_flow_headline(80.0, 100.0, 2000.0, 20000.0, 0.0, 0.0)
-        self.assertIn("份额端为近5日日均的", stronger)
-        self.assertIn("份额端由近5日日均流入20亿元转为流出100亿元", opposite)
-        self.assertNotIn("近5日", quiet)
+        self.assertIn("约为前5日日均净流入20亿元的5.0倍", stronger)
+        self.assertIn("前5日日均净流入20亿元，今日转为净流出100亿元", opposite)
+        self.assertNotIn("前5日", quiet)
+
+    def test_current_regime_copy_distinguishes_strength_and_divergence(self):
+        self.assertIn("份额赎回更明显", v2._current_regime_copy(-30.0, -100.0, "small", "clear"))
+        self.assertIn("份额赎回相对有限", v2._current_regime_copy(-150.0, -30.0, "large", "small"))
+        self.assertIn("份额申购更明显", v2._current_regime_copy(30.0, 100.0, "small", "clear"))
+        self.assertIn("申购承接", v2._current_regime_copy(-150.0, 30.0, "large", "small"))
+
+    def test_prior_history_excludes_current_and_unstable_universe(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            public = Path(tmp)
+            history = public / "history"
+            history.mkdir()
+            for offset, flow in enumerate((10.0, 20.0, 30.0, 40.0, 50.0), start=1):
+                payload = {
+                    "status": "verified",
+                    "tradeDate": f"2026-08-0{offset}",
+                    "market": {"flow1d": flow, "etfCount": 100},
+                }
+                (history / f"{payload['tradeDate']}.json").write_text(json.dumps(payload), "utf-8")
+            unstable = {"status": "verified", "tradeDate": "2026-08-07", "market": {"flow1d": 999.0, "etfCount": 90}}
+            (history / "2026-08-07.json").write_text(json.dumps(unstable), "utf-8")
+            current = {"status": "verified", "tradeDate": "2026-08-10", "market": {"flow1d": 888.0, "etfCount": 100}}
+            (history / "2026-08-10.json").write_text(json.dumps(current), "utf-8")
+            with patch.object(v2.base, "PUBLIC", public):
+                flows = v2._prior_primary_flows(date(2026, 8, 10), 100)
+        self.assertEqual(flows, [10.0, 20.0, 30.0, 40.0, 50.0])
+        self.assertEqual(v2._prior_window_total(flows, 5), 150.0)
 
     def test_homepage_headline_uses_strength_copy_and_visible_sector_layer(self):
         snapshot = {
@@ -161,9 +188,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
         with patch.object(v2.production, "_regenerate_conclusion", side_effect=self._legacy_conclusion):
             v2._regenerate_v2_conclusion(snapshot)
         headline = snapshot["conclusion"]["headline"]
-        self.assertIn("盘中承接偏强但份额净流出", headline)
-        self.assertIn("关注明日两端是否收敛", headline)
-        self.assertNotIn("宽基", headline)
+        self.assertIn("盘中买盘偏强，份额赎回更明显", headline)
+        self.assertIn("行业主题赎回更明显", headline)
         self.assertNotIn("申万一级和主题行业", headline)
         self.assertNotIn("A股股票ETF当日合计", headline)
         self.assertNotIn("流出最多的是电子", headline)
@@ -212,7 +238,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         headline = snapshot["conclusion"]["headline"]
         self.assertIn("A股ETF盘中主动买卖数据暂缺", headline)
         self.assertIn("ETF份额对应申赎资金大幅净流入12.6亿元", headline)
-        self.assertIn("关注明日份额变化", headline)
+        self.assertIn("仅从份额端看，申购为主", headline)
         self.assertNotIn("申万一级和主题行业", headline)
         self.assertIn("半导体", snapshot["conclusion"]["facts"][2])
 
