@@ -135,18 +135,19 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn("前5日日均净流入20亿元，今日转为净流出100亿元", opposite)
         self.assertNotIn("前5日", quiet)
 
-    def test_current_regime_copy_leads_with_share_intent_and_distinguishes_strength(self):
+    def test_current_regime_copy_preserves_trade_share_conclusion_structure(self):
         share_led_outflow = v2._current_regime_copy(-30.0, -100.0, "small", "clear")
         trade_led_outflow = v2._current_regime_copy(-150.0, -30.0, "large", "small")
         share_led_inflow = v2._current_regime_copy(30.0, 100.0, "small", "clear")
         divergent = v2._current_regime_copy(-150.0, 30.0, "large", "small")
 
-        self.assertTrue(share_led_outflow.startswith("份额端明显净流出"))
-        self.assertIn("反映资金赎回意愿较强", share_led_outflow)
-        self.assertIn("主要流出压力来自份额端", share_led_outflow)
-        self.assertIn("份额端赎回力度相对有限", trade_led_outflow)
-        self.assertIn("增量主要来自份额端", share_led_inflow)
-        self.assertIn("两类资金方向分化", divergent)
+        self.assertTrue(share_led_outflow.startswith("盘中卖压小幅偏强"))
+        self.assertIn("份额端明显净流出", share_led_outflow)
+        self.assertIn("资金赎回意愿偏强", share_led_outflow)
+        self.assertIn("整体资金偏谨慎", share_led_outflow)
+        self.assertIn("资金赎回意愿相对温和", trade_led_outflow)
+        self.assertIn("资金申购意愿较强", share_led_inflow)
+        self.assertIn("资金信号分化", divergent)
 
     def test_prior_history_excludes_current_and_unstable_universe(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -195,7 +196,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         with patch.object(v2.production, "_regenerate_conclusion", side_effect=self._legacy_conclusion):
             v2._regenerate_v2_conclusion(snapshot)
         headline = snapshot["conclusion"]["headline"]
-        self.assertIn("资金赎回意愿明显占优", headline)\n        self.assertIn("流出仍由份额端主导", headline)\n        self.assertTrue(headline.startswith("ETF份额对应申赎资金"))
+        self.assertIn("份额端大幅净流出", headline)\n        self.assertIn("资金赎回意愿仍占主导", headline)\n        self.assertTrue(headline.startswith("A股ETF盘中"))
         self.assertIn("行业主题赎回更明显", headline)
         self.assertNotIn("申万一级和主题行业", headline)
         self.assertNotIn("A股股票ETF当日合计", headline)
