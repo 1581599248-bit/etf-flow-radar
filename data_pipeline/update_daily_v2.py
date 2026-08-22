@@ -226,49 +226,102 @@ def _motion_copy(primary_value: float, strength: str) -> str:
     }.get(strength, "整体资金呈净流出")
 
 
+def _strength_rank(strength: str | None) -> int:
+    return {"flat": 0, "balanced": 0, "small": 1, "clear": 2, "large": 3}.get(strength or "", 0)
+
+
 def _current_regime_copy(trade_value: float | None, primary_value: float, trade_strength: str | None, primary_strength: str) -> str:
+    """Translate the two independent daily measures without making a market forecast."""
     if trade_value is None:
-        return "份额端接近平衡。" if primary_strength == "flat" else f"仅观察到ETF份额{'净流入' if primary_value > 0 else '净流出'}。"
+        if primary_strength == "flat":
+            return "份额端接近平衡，盘中数据暂缺。"
+        return f"仅从份额端看，{'申购' if primary_value > 0 else '赎回'}为主。"
+
+    if trade_strength == "generic" or primary_strength == "generic":
+        if primary_strength == "flat":
+            return f"盘中{'买盘' if trade_value > 0 else '卖压'}存在方向，份额变化不明显。"
+        same = (trade_value > 0) == (primary_value > 0)
+        return f"盘中{'买入' if trade_value > 0 else '卖出'}与份额{'申购' if primary_value > 0 else '赎回'}{'同向' if same else '分化'}。"
+
     if trade_strength == "balanced":
-        return "盘中交易与份额端均接近平衡。" if primary_strength == "flat" else f"盘中交易均衡，ETF份额{'净流入' if primary_value > 0 else '净流出'}为主。"
+        if primary_strength == "flat":
+            return "盘中买卖与份额变化均接近平衡。"
+        qualifier = "更明显" if _strength_rank(primary_strength) >= 2 else "为主"
+        return f"盘中买卖均衡，份额{'申购' if primary_value > 0 else '赎回'}{qualifier}。"
+
     if primary_strength == "flat":
-        return f"盘中{'买盘' if trade_value > 0 else '卖盘'}偏强，ETF份额变化不明显。"
+        return f"盘中{'买盘' if trade_value > 0 else '卖压'}偏强，ETF份额变化不明显。"
+
+    trade_rank = _strength_rank(trade_strength)
+    primary_rank = _strength_rank(primary_strength)
     same = (trade_value > 0) == (primary_value > 0)
+
+    if same and primary_value > 0:
+        if trade_rank == primary_rank == 3:
+            return "盘中买盘与份额申购同步增强，增量资金较为明显。"
+        if primary_rank > trade_rank:
+            return "盘中买盘有限，份额申购更明显，资金边际改善。"
+        if trade_rank > primary_rank:
+            return "盘中买盘偏强，份额申购相对有限。"
+        if trade_rank == 1:
+            return "盘中买盘与份额申购同步，资金边际转暖。"
+        return "盘中买盘与份额申购同步，资金有所改善。"
+
     if same:
-        direction = "流入" if primary_value > 0 else "流出"
-        if trade_strength == "large" and primary_strength == "large":
-            return f"盘中与ETF份额同步大额{direction}。"
-        return f"盘中{'买盘' if trade_value > 0 else '卖压'}与份额{'申购' if primary_value > 0 else '赎回'}同步，资金{'转暖' if primary_value > 0 else '偏谨慎'}。"
-    return "盘中买入与ETF份额流出分化。" if trade_value > 0 else "盘中卖出与ETF份额流入分化。"
+        if trade_rank == primary_rank == 3:
+            return "盘中卖压与份额赎回同步放大，资金偏谨慎。"
+        if primary_rank > trade_rank:
+            return "盘中卖压有限，份额赎回更明显，资金偏谨慎。"
+        if trade_rank > primary_rank:
+            return "盘中卖压偏强，份额赎回相对有限。"
+        if trade_rank == 1:
+            return "盘中卖压与份额赎回同步，资金略偏谨慎。"
+        return "盘中卖压与份额赎回同步，资金偏谨慎。"
 
+    if trade_value > 0:
+        if trade_rank > primary_rank:
+            return "盘中买盘偏强，份额出现赎回，资金信号分化。"
+        return "盘中买盘有限，份额赎回更明显，资金信号分化。"
+    if primary_rank > trade_rank:
+        return "盘中卖压下份额申购更明显，资金信号分化。"
+    return "盘中卖压偏强，仍有小幅份额申购承接。"
 
-def _historical_context(primary_value: float, flow_5d: float | None, flow_20d: float | None, market_aum: float | None) -> str:
+def _historical_context(primary_value: float, prior_5d_value: float | None, prior_20d_value: float | None, market_aum: float | None) -> str:
+    """Compare today only with completed prior trading days, never with a window containing today."""
     if _primary_strength(primary_value, market_aum) == "flat":
         return ""
-    series = [(n, value) for n, value in ((5, flow_5d), (20, flow_20d)) if isinstance(value, (int, float)) and math.isfinite(value) and abs(value / n) > 0.01]
-    if not series:
-        return ""
-    n, total = series[0]
-    avg = total / n
-    current, average = abs(primary_value), abs(avg)
-    if primary_value * avg < 0:
-        return f"近{n}日日均{'流入' if avg > 0 else '流出'}{average:.0f}亿元，今日转为{'流入' if primary_value > 0 else '流出'}{current:.0f}亿元。"
-    ratio = current / average
-    if ratio >= 1.8:
-        return f"份额端为近{n}日日均的{ratio:.1f}倍。"
-    if ratio <= 0.55:
-        return f"份额端低于近{n}日日均。"
+
+    noise_floor = max(10.0, float(market_aum or 0.0) * 0.0005)
+    for n, total in ((5, prior_5d_value), (20, prior_20d_value)):
+        if not isinstance(total, (int, float)) or not math.isfinite(total):
+            continue
+        average = float(total) / n
+        if abs(average) < noise_floor:
+            continue
+
+        current = abs(primary_value)
+        baseline = abs(average)
+        if primary_value * average < 0:
+            return (
+                f"前{n}日日均{'净流入' if average > 0 else '净流出'}{baseline:.0f}亿元，"
+                f"今日转为{'净流入' if primary_value > 0 else '净流出'}{current:.0f}亿元。"
+            )
+
+        ratio = current / baseline
+        if ratio >= 1.8:
+            return (
+                f"今日{'净流入' if primary_value > 0 else '净流出'}{current:.0f}亿元，"
+                f"约为前{n}日日均{'净流入' if average > 0 else '净流出'}{baseline:.0f}亿元的{ratio:.1f}倍。"
+            )
+        if ratio <= 0.55:
+            return (
+                f"今日{'净流入' if primary_value > 0 else '净流出'}{current:.0f}亿元，"
+                f"低于前{n}日日均{'净流入' if average > 0 else '净流出'}{baseline:.0f}亿元。"
+            )
     return ""
 
 
 def _next_watch_copy(trade_value: float | None, primary_value: float, trade_strength: str | None, primary_strength: str) -> str:
-    if trade_value is None:
-        return ""
-    if trade_strength == "balanced" or primary_strength == "flat":
-        return ""
-    same_direction = (trade_value > 0 and primary_value > 0) or (trade_value < 0 and primary_value < 0)
-    if same_direction:
-        return ""
     return ""
 
 
@@ -304,18 +357,70 @@ def _visible_sector_groups(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _flow_structure_copy(snapshot: dict[str, Any]) -> str:
+    """State whether the dominant direction is broad-based or structural."""
     broad = [g.get("flow1d") for g in snapshot.get("groups", []) if g.get("kind") == "broad" and isinstance(g.get("flow1d"), (int, float))]
     industry = [g.get("flow1d") for g in _visible_sector_groups(snapshot) if isinstance(g.get("flow1d"), (int, float))]
     if not broad or not industry:
         return ""
+
     broad_net, industry_net = sum(broad), sum(industry)
-    industry_in = sum(1 for value in industry if value > 0)
-    industry_out = sum(1 for value in industry if value < 0)
-    if broad_net < 0 and industry_in:
-        return "流出以宽基为主，主题仍有局部申购。"
-    if broad_net > 0 and industry_out:
-        return "申购以宽基为主，主题仍有局部赎回。"
-    return ""
+    industry_in = any(value > 0 for value in industry)
+    industry_out = any(value < 0 for value in industry)
+    epsilon = 0.01
+
+    if broad_net < -epsilon:
+        if industry_net > epsilon:
+            return "流出以宽基为主，行业主题仍有净申购。"
+        if abs(broad_net) >= abs(industry_net):
+            return "流出以宽基为主，主题仍有局部申购。" if industry_in else "宽基与行业主题均有流出。"
+        return "宽基与行业主题均有流出，行业主题赎回更明显。"
+
+    if broad_net > epsilon:
+        if industry_net < -epsilon:
+            return "申购以宽基为主，行业主题仍有净赎回。"
+        if abs(broad_net) >= abs(industry_net):
+            return "申购以宽基为主，主题内部仍有分化。" if industry_out else "宽基与行业主题同步申购。"
+        return "宽基与行业主题均有申购，主题流入更明显。"
+
+    return "宽基方向接近平衡，行业主题仍有分化。" if industry_in and industry_out else ""
+
+
+def _prior_primary_flows(before_day: date | None, expected_etf_count: int | float | None) -> list[float]:
+    """Read completed comparable daily share-flow snapshots before the current date."""
+    if before_day is None:
+        return []
+    history_dir = base.PUBLIC / "history"
+    if not history_dir.exists():
+        return []
+
+    expected = float(expected_etf_count) if isinstance(expected_etf_count, (int, float)) and float(expected_etf_count) > 0 else None
+    observations: list[tuple[date, float]] = []
+    for path in history_dir.glob("*.json"):
+        try:
+            payload = json.loads(path.read_text("utf-8"))
+            observed_day = date.fromisoformat(str(payload.get("tradeDate", "")))
+            market = payload.get("market", {})
+            flow = market.get("flow1d")
+            count = market.get("etfCount")
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+            continue
+        if observed_day >= before_day or payload.get("status") != "verified":
+            continue
+        if not isinstance(flow, (int, float)) or not math.isfinite(float(flow)):
+            continue
+        if expected is not None:
+            if not isinstance(count, (int, float)) or abs(float(count) - expected) / expected > 0.02:
+                continue
+        observations.append((observed_day, float(flow)))
+
+    observations.sort(key=lambda item: item[0])
+    return [flow for _, flow in observations[-20:]]
+
+
+def _prior_window_total(flows: list[float], days: int) -> float | None:
+    if len(flows) < days:
+        return None
+    return round(sum(flows[-days:]), 2)
 
 
 def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
@@ -335,22 +440,21 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
         trade_turnover = float(raw_inflow) + float(raw_outflow)
     raw_aum = market.get("aum")
     market_aum = float(raw_aum) if isinstance(raw_aum, (int, float)) and pd.notna(raw_aum) else None
-    raw_primary_20d_value = market.get("flow20dEndpoint")
-    primary_20d_value = float(raw_primary_20d_value) if isinstance(raw_primary_20d_value, (int, float)) and pd.notna(raw_primary_20d_value) else None
-    raw_primary_5d_value = market.get("flow5dEndpoint")
-    if not isinstance(raw_primary_5d_value, (int, float)) or not pd.notna(raw_primary_5d_value):
-        raw_primary_5d_value = market.get("flow5d")
-    primary_5d_value = (
-        float(raw_primary_5d_value)
-        if isinstance(raw_primary_5d_value, (int, float)) and pd.notna(raw_primary_5d_value)
-        else None
-    )
+    raw_trade_date = snapshot.get("tradeDate")
+    try:
+        trade_date = date.fromisoformat(str(raw_trade_date))
+    except ValueError:
+        trade_date = None
+    prior_flows = _prior_primary_flows(trade_date, market.get("etfCount"))
+    primary_5d_value = _prior_window_total(prior_flows, 5)
+    primary_20d_value = _prior_window_total(prior_flows, 20)
     flow_headline = _market_flow_headline(
         trade_value,
         float(primary_value),
         trade_turnover,
         market_aum,
         primary_5d_value,
+        primary_20d_value,
     )
 
     groups = snapshot.get("groups", [])
@@ -454,7 +558,7 @@ def apply_v2_semantics(snapshot: dict[str, Any], day: date, share_window: list[t
     snapshot.setdefault("methodology", {}).update({
         "flow": "ETF当日净流入/净流出估算 =（T日交易所日终份额 − T-1日公司行动调整后的可比份额）× T日单位净值。T-1只作为T日份额变化的基准；该结果就是T日净申购/赎回的资金估算，不是再与上一日资金流做一次比较。",
         "metricSeparation": "首页结论把两类数据翻译成易懂话术：盘中买盘/卖盘强弱来自同日成交额与外盘/内盘估算的主动买卖净额；ETF份额对应申赎资金来自交易所T日与T-1可比份额变化×T日NAV。盘中强弱按主动买卖净额占总成交额比例分为基本均衡、小幅偏强、偏强、明显占优；ETF份额资金按当日资金变化占A股股票ETF总规模比例分为基本持平、小幅、明显、大幅。系统再结合两者方向判断一致或背离。",
-        "multiDay": "5日/20日当前字段为端点份额变化×期末单位净值，字段明确标记 Endpoint；不是逐日净流入额之和。schema v6开始落盘逐日单ETF份额flow1d，积累足够交易日后再生成真正5日/20日累计净流入额。",
+        "multiDay": "坐标轴的5日/20日字段仍为端点份额变化×期末单位净值，字段明确标记 Endpoint；首页结论的历史比较仅使用T-1及以前已落盘的逐日flow1d，且要求ETF池数量与当前日相差不超过2%，不把当天放入比较基准。",
         "scope": "首页主指标固定使用A股股票ETF范围，不含跨境股票ETF、债券ETF、货币ETF和商品ETF；同时保留全部ETF、股票ETF（含跨境）和六类资产范围用于审计与对照。",
         "valuation": "ETF当日净流入/净流出主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。",
         "sectorDisplay": "客户端行业结论、排名与行业资金坐标统一使用互斥的“申万一级行业+热门主题”展示层；industryRollups仅用于把热门主题回卷到申万一级行业做审计，不参与客户端最大流入/流出排名。",
