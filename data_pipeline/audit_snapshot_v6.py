@@ -190,23 +190,62 @@ def audit(snapshot_path: Path) -> list[str]:
     top_in = max(visible_sectors, key=lambda g: _num(g.get("flow1d"), "sector inflow rank"))
     top_out = min(visible_sectors, key=lambda g: _num(g.get("flow1d"), "sector outflow rank"))
     facts = snapshot.get("conclusion", {}).get("facts") or []
-    sector_fact = str(facts[1]) if len(facts) > 1 else ""
+    if len(facts) != 4:
+        raise AssertionError(f"conclusion must expose exactly four fixed fact bodies; got {len(facts)}")
+    broad_fact, style_fact, sector_fact, single_fact = map(str, facts)
+    if any("份额" in fact for fact in facts):
+        raise AssertionError("share wording belongs in the four card labels, not the fact bodies")
+
     if top_in["name"] not in sector_fact or top_out["name"] not in sector_fact:
         raise AssertionError(
-            f"facts[1] sector ranking is not from visible groups; expected {top_in['name']!r}/{top_out['name']!r} in {sector_fact!r}"
+            f"facts[2] sector ranking is not from visible groups; expected {top_in['name']!r}/{top_out['name']!r} in {sector_fact!r}"
         )
     if f"{_num(top_in.get('flow1d'), 'top sector inflow'):+.1f}亿" not in sector_fact and _num(top_in.get("flow1d"), "top sector inflow") > 0:
-        raise AssertionError("facts[1] top inflow amount mismatch")
+        raise AssertionError("facts[2] top inflow amount mismatch")
     if f"{_num(top_out.get('flow1d'), 'top sector outflow'):+.1f}亿" not in sector_fact:
-        raise AssertionError("facts[1] top outflow amount mismatch")
+        raise AssertionError("facts[2] top outflow amount mismatch")
     if re.search(r"宽基\d+组中|申万一级和主题行业资金流入居前的是", headline):
         raise AssertionError("group/sector tail leaked back into headline; it belongs in facts")
-    broad_fact = str(facts[0]) if facts else ""
-    broad_groups = [g for g in snapshot.get("groups", []) if g.get("kind") == "broad"]
+
+    broad_groups = [g for g in groups if g.get("kind") == "broad"]
     broad_in = sum(_num(g.get("flow1d"), "broad flow") > 0 for g in broad_groups)
     broad_out = sum(_num(g.get("flow1d"), "broad flow") < 0 for g in broad_groups)
-    if f"宽基{len(broad_groups)}组中{broad_out}个流出、{broad_in}个流入" not in broad_fact:
-        raise AssertionError(f"facts[0] broad-group counts mismatch; got {broad_fact!r}")
+    expected_broad = f"共{len(broad_groups)}组，{broad_out}个净流出、{broad_in}个净流入"
+    if expected_broad not in broad_fact:
+        raise AssertionError(f"facts[0] broad-group counts mismatch; expected {expected_broad!r}, got {broad_fact!r}")
+
+    style_groups = [g for g in groups if g.get("kind") == "style"]
+    if style_groups:
+        style_in = max(style_groups, key=lambda g: _num(g.get("flow1d"), "style inflow rank"))
+        style_out = min(style_groups, key=lambda g: _num(g.get("flow1d"), "style outflow rank"))
+        if _num(style_in.get("flow1d"), "top style inflow") > 0:
+            expected = f"{style_in['name']}{_num(style_in.get('flow1d'), 'top style inflow'):+.1f}亿"
+            if expected not in style_fact:
+                raise AssertionError(f"facts[1] top style inflow mismatch; expected {expected!r}")
+        if _num(style_out.get("flow1d"), "top style outflow") < 0:
+            expected = f"{style_out['name']}{_num(style_out.get('flow1d'), 'top style outflow'):+.1f}亿"
+            if expected not in style_fact:
+                raise AssertionError(f"facts[1] top style outflow mismatch; expected {expected!r}")
+    elif style_fact != "暂无可分析风格ETF。":
+        raise AssertionError("facts[1] must explicitly mark an unavailable style module")
+
+    ranked_etfs = [
+        row for row in etfs
+        if isinstance(row.get("flow1d"), (int, float)) and math.isfinite(float(row.get("flow1d")))
+    ]
+    positive_etfs = [row for row in ranked_etfs if _num(row.get("flow1d"), "ETF inflow rank") > 0]
+    negative_etfs = [row for row in ranked_etfs if _num(row.get("flow1d"), "ETF outflow rank") < 0]
+    if positive_etfs:
+        single_in = max(positive_etfs, key=lambda row: _num(row.get("flow1d"), "ETF inflow rank"))
+        expected = f"{single_in['name']}{_num(single_in.get('flow1d'), 'top ETF inflow'):+.1f}亿"
+        if expected not in single_fact:
+            raise AssertionError(f"facts[3] top ETF inflow mismatch; expected {expected!r}")
+    if negative_etfs:
+        single_out = min(negative_etfs, key=lambda row: _num(row.get("flow1d"), "ETF outflow rank"))
+        expected = f"{single_out['name']}{_num(single_out.get('flow1d'), 'top ETF outflow'):+.1f}亿"
+        if expected not in single_fact:
+            raise AssertionError(f"facts[3] top ETF outflow mismatch; expected {expected!r}")
+
 
     trade_metric = snapshot.get("flowMetrics", {}).get("secondaryMarketTradeFlow", {})
     if trade_metric.get("status") == "available":
