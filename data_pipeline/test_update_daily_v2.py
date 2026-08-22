@@ -141,9 +141,9 @@ class UpdateDailyV2Tests(unittest.TestCase):
         share_led_inflow = v2._current_regime_copy(30.0, 100.0, "small", "clear")
         divergent = v2._current_regime_copy(-150.0, 30.0, "large", "small")
 
-        self.assertTrue(share_led_outflow.startswith("份额端净流出明显"))
-        self.assertIn("资金赎回意愿较强", share_led_outflow)
-        self.assertIn("流出主要来自份额端", share_led_outflow)
+        self.assertTrue(share_led_outflow.startswith("份额端明显净流出"))
+        self.assertIn("反映资金赎回意愿较强", share_led_outflow)
+        self.assertIn("主要流出压力来自份额端", share_led_outflow)
         self.assertIn("份额端赎回力度相对有限", trade_led_outflow)
         self.assertIn("增量主要来自份额端", share_led_inflow)
         self.assertIn("两类资金方向分化", divergent)
