@@ -18,7 +18,7 @@ test("dashboard source retains the answer-first research modules", async () => {
   assert.match(page, /当日ETF流入流出分布/);
   assert.doesNotMatch(page, /数据解读/);
   assert.match(page, /ETF跟踪观点/);
-  assert.match(page, /导出客户 JPG/);
+  assert.match(page, /导出完整 JPG/);
   assert.match(page, /导出结论 JPG/);
   assert.match(page, /全量ETF逐日变更检查/);
   assert.match(page, /【宽基份额】/);
