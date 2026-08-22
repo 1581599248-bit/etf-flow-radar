@@ -238,7 +238,7 @@ def _current_regime_copy(trade_value: float | None, primary_value: float, trade_
         direction = "流入" if primary_value > 0 else "流出"
         if trade_strength == "large" and primary_strength == "large":
             return f"盘中与ETF份额同步大额{direction}。"
-        return f"盘中{'买入' if trade_value > 0 else '卖出'}与ETF份额净{direction}同向，资金行为{'改善' if primary_value > 0 else '有所谨慎'}。"
+        return f"盘中{'买盘' if trade_value > 0 else '卖压'}与份额{'申购' if primary_value > 0 else '赎回'}同步，资金{'转暖' if primary_value > 0 else '偏谨慎'}。"
     return "盘中买入与ETF份额流出分化。" if trade_value > 0 else "盘中卖出与ETF份额流入分化。"
 
 
@@ -252,7 +252,7 @@ def _historical_context(primary_value: float, flow_5d: float | None, flow_20d: f
     avg = total / n
     current, average = abs(primary_value), abs(avg)
     if primary_value * avg < 0:
-        return f"份额端由近{n}日日均{'流入' if avg > 0 else '流出'}{average:.0f}亿元转为{'流入' if primary_value > 0 else '流出'}{current:.0f}亿元。"
+        return f"近{n}日日均{'流入' if avg > 0 else '流出'}{average:.0f}亿元，今日转为{'流入' if primary_value > 0 else '流出'}{current:.0f}亿元。"
     ratio = current / average
     if ratio >= 1.8:
         return f"份额端为近{n}日日均的{ratio:.1f}倍。"
@@ -312,9 +312,9 @@ def _flow_structure_copy(snapshot: dict[str, Any]) -> str:
     industry_in = sum(1 for value in industry if value > 0)
     industry_out = sum(1 for value in industry if value < 0)
     if broad_net < 0 and industry_in:
-        return "宽基流出居多，行业主题仍有局部申购。"
+        return "流出以宽基为主，主题仍有局部申购。"
     if broad_net > 0 and industry_out:
-        return "宽基申购居多，行业主题仍有局部赎回。"
+        return "申购以宽基为主，主题仍有局部赎回。"
     return ""
 
 
