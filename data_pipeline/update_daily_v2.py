@@ -230,44 +230,50 @@ def _strength_rank(strength: str | None) -> int:
     return {"flat": 0, "balanced": 0, "small": 1, "clear": 2, "large": 3}.get(strength or "", 0)
 
 
-def _primary_intent_copy(primary_value: float, primary_strength: str) -> str:
-    """Lead the conclusion with share creation/redemption intent."""
-    if primary_strength == "flat":
-        return "份额端接近平衡，资金申赎意愿不强"
-
+def _current_regime_copy(trade_value: float | None, primary_value: float, trade_strength: str | None, primary_strength: str) -> str:
+    """Keep the original trade -> share -> conclusion structure, with share intent made explicit."""
     direction = "净流入" if primary_value > 0 else "净流出"
     action = "申购" if primary_value > 0 else "赎回"
-    if primary_strength == "small":
-        return f"份额端小幅{direction}，反映资金{action}意愿略占优"
-    if primary_strength == "clear":
-        return f"份额端明显{direction}，反映资金{action}意愿较强"
-    if primary_strength == "large":
-        return f"份额端大幅{direction}，反映资金{action}意愿明显占优"
-    return f"份额端{direction}，反映资金{action}意愿占优"
-
-
-def _current_regime_copy(trade_value: float | None, primary_value: float, trade_strength: str | None, primary_strength: str) -> str:
-    """Use share flows as the main intent signal and intraday trades as confirmation."""
-    primary = _primary_intent_copy(primary_value, primary_strength)
+    primary_level = {"small": "小幅", "clear": "明显", "large": "大幅"}.get(primary_strength, "")
+    primary_signal = f"份额端{primary_level}{direction}"
 
     if trade_value is None:
-        return f"{primary}；盘中数据暂缺。"
+        if primary_strength == "flat":
+            return "份额端接近平衡，盘中数据暂缺。"
+        intent = {"small": "略占优", "clear": "偏强", "large": "较强"}.get(primary_strength, "占优")
+        return f"仅从份额端看，资金{primary_level}{direction}，{action}意愿{intent}。"
 
     if trade_strength == "generic" or primary_strength == "generic":
         if primary_strength == "flat":
-            return f"{primary}；盘中{'买盘' if trade_value > 0 else '卖压'}偏强。"
+            return f"盘中{'买盘' if trade_value > 0 else '卖压'}存在方向，份额端接近平衡。"
         same = (trade_value > 0) == (primary_value > 0)
-        if same:
-            return f"{primary}；盘中{'买盘' if trade_value > 0 else '卖压'}同向，两类资金方向一致。"
-        return f"{primary}；盘中{'买盘' if trade_value > 0 else '卖压'}与份额端方向分化。"
+        return (
+            f"盘中{'买盘' if trade_value > 0 else '卖压'}与份额端{action}"
+            f"{'方向一致' if same else '信号分化'}。"
+        )
 
     if trade_strength == "balanced":
         if primary_strength == "flat":
-            return "份额端与盘中交易均接近平衡，资金方向不明显。"
-        return f"{primary}；盘中买卖均衡，资金方向主要由份额端体现。"
+            return "盘中买卖与份额端均接近平衡，资金方向不明显。"
+        intent = {"small": "略占优", "clear": "偏强", "large": "较强"}[primary_strength]
+        return f"盘中买卖均衡，{primary_signal}，资金{action}意愿{intent}。"
+
+    trade_signal = (
+        {
+            "small": "盘中买盘小幅偏强",
+            "clear": "盘中买盘偏强",
+            "large": "盘中买盘明显占优",
+        }[trade_strength]
+        if trade_value > 0
+        else {
+            "small": "盘中卖压小幅偏强",
+            "clear": "盘中卖压偏强",
+            "large": "盘中卖压明显增强",
+        }[trade_strength]
+    )
 
     if primary_strength == "flat":
-        return f"{primary}；盘中{'买盘' if trade_value > 0 else '卖压'}偏强，变化主要来自交易端。"
+        return f"{trade_signal}，份额端接近平衡，资金申赎意愿不明显。"
 
     trade_rank = _strength_rank(trade_strength)
     primary_rank = _strength_rank(primary_strength)
@@ -275,34 +281,30 @@ def _current_regime_copy(trade_value: float | None, primary_value: float, trade_
 
     if same and primary_value > 0:
         if primary_rank > trade_rank:
-            return f"{primary}；盘中买盘相对温和，增量主要来自份额端。"
+            return f"{trade_signal}，{primary_signal}，资金申购意愿较强，整体资金有所改善。"
         if trade_rank > primary_rank:
-            return f"{primary}；盘中买盘更强，但份额端申购力度相对有限。"
+            return f"{trade_signal}，{primary_signal}，但资金申购意愿相对温和。"
         if primary_rank == 1:
-            return f"{primary}；盘中买盘同步出现，资金边际改善。"
-        return f"{primary}；盘中买盘同步占优，两类资金方向一致。"
+            return "盘中买盘与份额端同步小幅净流入，资金申购意愿略占优。"
+        return "盘中买盘与份额端同步增强，资金申购意愿较强，整体资金有所改善。"
 
     if same:
         if primary_rank > trade_rank:
-            return f"{primary}；盘中卖压相对温和，主要流出压力来自份额端。"
+            return f"{trade_signal}，{primary_signal}，资金赎回意愿偏强，整体资金偏谨慎。"
         if trade_rank > primary_rank:
-            return f"{primary}；盘中卖压更强，但份额端赎回力度相对有限。"
+            return f"{trade_signal}，{primary_signal}，但资金赎回意愿相对温和。"
         if primary_rank == 1:
-            return f"{primary}；盘中卖压同步出现，资金略偏谨慎。"
-        return f"{primary}；盘中卖压同步占优，资金偏谨慎。"
+            return "盘中卖压与份额端同步小幅净流出，资金略偏谨慎。"
+        return "盘中卖压与份额端同步增强，资金赎回意愿偏强，整体资金偏谨慎。"
 
-    if primary_value < 0:
+    if trade_value > 0:
         if primary_rank > trade_rank:
-            return f"{primary}；盘中虽有买盘，但流出仍由份额端主导。"
-        if trade_rank > primary_rank:
-            return f"{primary}；盘中买盘更强，两类资金方向分化。"
-        return f"{primary}；盘中买盘与份额端方向分化。"
+            return f"{trade_signal}，但{primary_signal}，资金赎回意愿仍占主导。"
+        return f"{trade_signal}，{primary_signal}，资金信号分化。"
 
     if primary_rank > trade_rank:
-        return f"{primary}；盘中虽有卖压，但净流入仍由份额端主导。"
-    if trade_rank > primary_rank:
-        return f"{primary}；盘中卖压更强，两类资金方向分化。"
-    return f"{primary}；盘中卖压与份额端方向分化。"
+        return f"{trade_signal}，但{primary_signal}，资金申购意愿仍占主导。"
+    return f"{trade_signal}，{primary_signal}，资金信号分化。"
 
 def _historical_context(primary_value: float, prior_5d_value: float | None, prior_20d_value: float | None, market_aum: float | None) -> str:
     """Compare today only with completed prior trading days, never with a window containing today."""
@@ -354,7 +356,7 @@ def _market_flow_headline(
     primary_strength = _primary_strength(primary_value, market_aum)
     primary_text = _primary_copy(primary_value, primary_strength)
     if trade_value is None:
-        fact_line = f"{primary_text}；A股ETF盘中主动买卖数据暂缺"
+        fact_line = f"A股ETF盘中主动买卖数据暂缺；{primary_text}"
         trade_strength = None
     else:
         trade_strength = _trade_strength(trade_value, trade_turnover)
@@ -363,7 +365,7 @@ def _market_flow_headline(
             if trade_strength != "balanced" and trade_value * primary_value < 0 and primary_strength != "flat"
             else "；"
         )
-        fact_line = f"{primary_text}{joiner}{_trade_copy(trade_value, trade_strength)}"
+        fact_line = f"{_trade_copy(trade_value, trade_strength)}{joiner}{primary_text}"
     current = _current_regime_copy(trade_value, primary_value, trade_strength, primary_strength)
     trend = _historical_context(primary_value, primary_5d_value, primary_20d_value, market_aum)
     watch = _next_watch_copy(trade_value, primary_value, trade_strength, primary_strength)
@@ -575,7 +577,7 @@ def apply_v2_semantics(snapshot: dict[str, Any], day: date, share_window: list[t
     snapshot["schemaVersion"] = 6
     snapshot.setdefault("methodology", {}).update({
         "flow": "ETF当日净流入/净流出估算 =（T日交易所日终份额 − T-1日公司行动调整后的可比份额）× T日单位净值。T-1只作为T日份额变化的基准；该结果就是T日净申购/赎回的资金估算，不是再与上一日资金流做一次比较。",
-        "metricSeparation": "首页结论把两类数据翻译成易懂话术：盘中买盘/卖盘强弱来自同日成交额与外盘/内盘估算的主动买卖净额；ETF份额对应申赎资金来自交易所T日与T-1可比份额变化×T日NAV。盘中强弱按主动买卖净额占总成交额比例分为基本均衡、小幅偏强、偏强、明显占优；ETF份额资金按当日资金变化占A股股票ETF总规模比例分为基本持平、小幅、明显、大幅。系统以份额端识别资金申购或赎回意愿，再用盘中买卖判断两类资金是否同向、分化以及哪一端更强。",
+        "metricSeparation": "首页结论把两类数据翻译成易懂话术：盘中买盘/卖盘强弱来自同日成交额与外盘/内盘估算的主动买卖净额；ETF份额对应申赎资金来自交易所T日与T-1可比份额变化×T日NAV。盘中强弱按主动买卖净额占总成交额比例分为基本均衡、小幅偏强、偏强、明显占优；ETF份额资金按当日资金变化占A股股票ETF总规模比例分为基本持平、小幅、明显、大幅。系统保留“盘中买卖—份额申赎—资金结论”的原有结构，并通过份额端判断资金申购或赎回意愿，再识别两类资金是否同向或分化。",
         "multiDay": "坐标轴的5日/20日字段仍为端点份额变化×期末单位净值，字段明确标记 Endpoint；首页结论的历史比较仅使用T-1及以前已落盘的逐日flow1d，且要求ETF池数量与当前日相差不超过2%，不把当天放入比较基准。",
         "scope": "首页主指标固定使用A股股票ETF范围，不含跨境股票ETF、债券ETF、货币ETF和商品ETF；同时保留全部ETF、股票ETF（含跨境）和六类资产范围用于审计与对照。",
         "valuation": "ETF当日净流入/净流出主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。",
