@@ -237,10 +237,10 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertNotIn("申万一级和主题行业", headline)
         self.assertNotIn("A股股票ETF当日合计", headline)
         self.assertNotIn("流出最多的是电子", headline)
-        self.assertIn("净流出最多为半导体-23.4亿", snapshot["conclusion"]["facts"][2])
-        self.assertIn("净流入居前为传媒+1.8亿", snapshot["conclusion"]["facts"][1])
-        self.assertIn("宽基2组中1个净流出、1个净流入", snapshot["conclusion"]["facts"][0])
-        self.assertIn("净流出仅沪深300-3.0亿", snapshot["conclusion"]["facts"][0])
+        self.assertIn("净流出居前为半导体-23.4亿", snapshot["conclusion"]["facts"][2])
+        self.assertIn("净流入居前为传媒+1.8亿", snapshot["conclusion"]["facts"][2])
+        self.assertIn("共2组，1个净流出、1个净流入", snapshot["conclusion"]["facts"][0])
+        self.assertIn("净流出居前为沪深300-3.0亿", snapshot["conclusion"]["facts"][0])
 
     def test_homepage_summary_has_four_fixed_data_modules(self):
         snapshot = {
@@ -258,7 +258,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
             v2._regenerate_v2_conclusion(snapshot)
         facts = snapshot["conclusion"]["facts"]
         self.assertEqual(len(facts), 4)
-        self.assertIn("宽基", facts[0])
+        self.assertIn("共2组，1个净流出、1个净流入", facts[0])
         self.assertIn("净流入居前为价值+2.0亿", facts[1])
         self.assertIn("净流出居前为半导体-23.4亿", facts[2])
         self.assertIn("净流入最大为ETF甲+3.0亿", facts[3])
@@ -283,7 +283,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn("ETF份额对应申赎资金大幅净流入12.6亿元", headline)
         self.assertIn("整体资金净流入幅度较大，需结合后续数据观察持续性。", headline)
         self.assertNotIn("申万一级和主题行业", headline)
-        self.assertIn("半导体", snapshot["conclusion"]["facts"][1])
+        self.assertIn("半导体", snapshot["conclusion"]["facts"][2])
 
     def test_visible_sector_groups_are_exactly_the_client_industry_layer(self):
         snapshot = {"groups": self._groups() + [{"id": "growth", "name": "成长", "kind": "style", "flow1d": 2.0}]}
