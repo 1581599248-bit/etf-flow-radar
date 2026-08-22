@@ -131,8 +131,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
         stronger = v2._market_flow_headline(80.0, 100.0, 2000.0, 20000.0, 100.0, 200.0)
         opposite = v2._market_flow_headline(-80.0, -100.0, 2000.0, 20000.0, 100.0, 200.0)
         quiet = v2._market_flow_headline(80.0, 100.0, 2000.0, 20000.0, 0.0, 0.0)
-        self.assertIn("为近5日日均", stronger)
-        self.assertIn("近5日累计净流入100.0亿元", opposite)
+        self.assertIn("份额端为近5日日均的", stronger)
+        self.assertIn("份额端由近5日日均流入20亿元转为流出100亿元", opposite)
         self.assertNotIn("近5日", quiet)
 
     def test_homepage_headline_uses_strength_copy_and_visible_sector_layer(self):
