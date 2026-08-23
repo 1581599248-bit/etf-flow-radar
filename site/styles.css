@@ -299,134 +299,149 @@
 }
 
 
-/* Conclusion JPG: a continuous research-note grid, not floating dashboard cards. */
+/* Conclusion JPG: dark cover, white research sheet; preserve the established four-card body. */
 .exporting.export-summary{
-  padding:22px!important;
-  background:#eeece7!important;
+  padding:20px!important;
+  background:#ebe9e4!important;
   background-image:none!important;
 }
 .exporting.export-summary .masthead{
   position:relative;
-  min-height:106px;
-  padding:18px 22px 17px;
-  border:1px solid #cbd1d6;
-  border-top:4px solid #1e2730;
-  background:#fffefd;
+  min-height:118px;
+  padding:20px 22px 19px;
+  overflow:hidden;
+  border:0;
+  border-top:3px solid #ab8c4f;
+  background:#192027;
+}
+.exporting.export-summary .masthead::before{
+  content:"";
+  position:absolute;
+  top:18px;
+  right:20px;
+  width:96px;
+  height:34px;
+  border-top:1px solid rgba(224,229,233,.3);
+  border-bottom:1px solid rgba(224,229,233,.16);
 }
 .exporting.export-summary .masthead::after{
   content:"";
   position:absolute;
   left:22px;
   right:22px;
-  bottom:10px;
+  bottom:13px;
   height:1px;
-  background:linear-gradient(90deg,#a3263a 0 58px,#d6dbe0 58px 100%);
+  background:linear-gradient(90deg,#b79450 0 62px,rgba(226,231,235,.28) 62px 100%);
+}
+.exporting.export-summary .masthead>div:first-child>span{
+  color:#d5bd7e;
+  font-size:12px;
 }
 .exporting.export-summary .masthead h1{
-  color:#171d24;
+  position:relative;
+  z-index:1;
+  margin:7px 0 5px;
+  color:#fbfbf8;
   font-size:39px;
-  letter-spacing:.045em;
+  letter-spacing:.055em;
 }
 .exporting.export-summary .masthead p{
-  color:#6b737c!important;
-  font-weight:600;
+  color:#bcc4cc!important;
+  font-size:14px;
+  font-weight:500;
 }
 .exporting.export-summary .analysis-date{
-  border-left:1px solid #b9c0c7;
+  position:relative;
+  z-index:1;
+  border-left:1px solid rgba(225,230,234,.35);
   padding-left:18px;
 }
+.exporting.export-summary .analysis-date span,
+.exporting.export-summary .analysis-date small{
+  color:#b8c1c9!important;
+}
 .exporting.export-summary .analysis-date strong{
-  color:#202a34;
+  color:#f6f4ef;
 }
 .exporting.export-summary .conclusion{
   position:relative;
-  margin-top:12px;
-  padding:18px 20px 0;
+  margin-top:11px;
+  padding:19px 20px 0;
   overflow:hidden;
-  border:1px solid #cbd1d6;
-  border-top:3px solid #a3263a;
-  border-left:1px solid #cbd1d6;
+  border:1px solid #d1d6da;
+  border-top:3px solid #a62a3c;
+  border-left:3px solid #a62a3c;
   background:#fffefd;
   box-shadow:none;
 }
 .exporting.export-summary .conclusion::after{
   content:"";
   position:absolute;
-  top:17px;
+  top:18px;
   right:20px;
   width:43px;
   height:10px;
-  border-top:1px solid #7c8791;
-  border-bottom:1px solid #d7dce1;
+  border-top:1px solid #9ba5ae;
+  border-bottom:1px solid #d8dde1;
 }
 .exporting.export-summary .conclusion .section-head{
   position:relative;
   margin-bottom:13px;
   padding:0 0 10px;
-  border-bottom:1px solid #cfd5db;
+  border-bottom:1px solid #d7dce0;
 }
 .exporting.export-summary .conclusion .section-head::after{
   content:"";
   position:absolute;
   left:0;
   bottom:-1px;
-  width:50px;
+  width:48px;
   height:2px;
-  background:#a3263a;
+  background:#a62a3c;
 }
 .exporting.export-summary .conclusion>h3{
   margin:8px 0 16px;
-  color:#171d24;
+  color:#171c22;
   font-size:29px;
-  letter-spacing:.018em;
+  letter-spacing:.015em;
 }
 .exporting.export-summary .facts{
-  gap:0;
+  gap:10px;
   margin:0;
-  border:1px solid #cfd5db;
-  background:#cfd5db;
+  border:0;
+  background:transparent;
 }
 .exporting.export-summary .facts .fact-module{
-  min-height:151px;
+  min-height:0;
   padding:15px 17px 16px;
-  border:0;
-  border-radius:0;
-  background:#fffefd;
+  border:1px solid #d8dde1;
+  border-radius:2px;
+  background:#fbfbfa;
   box-shadow:none;
 }
 .exporting.export-summary .facts .fact-module:nth-child(2),
 .exporting.export-summary .facts .fact-module:nth-child(3){
-  background:#fafaf8;
+  background:#f8f9f9;
 }
 .exporting.export-summary .facts .fact-module::before{
   width:3px;
-  background:#68737e;
 }
-.exporting.export-summary .facts .fact-module:nth-child(2)::before,
-.exporting.export-summary .facts .fact-module:nth-child(3)::before,
-.exporting.export-summary .facts .fact-module:nth-child(4)::before{
-  background:#68737e;
-}
-.exporting.export-summary .facts .fact-module:nth-child(1),
-.exporting.export-summary .facts .fact-module:nth-child(2){
-  border-bottom:1px solid #cfd5db;
-}
-.exporting.export-summary .facts .fact-module:nth-child(1),
-.exporting.export-summary .facts .fact-module:nth-child(3){
-  border-right:1px solid #cfd5db;
-}
+.exporting.export-summary .facts .fact-module:nth-child(1)::before{background:#a62a3c}
+.exporting.export-summary .facts .fact-module:nth-child(2)::before{background:#506f8c}
+.exporting.export-summary .facts .fact-module:nth-child(3)::before{background:#637b70}
+.exporting.export-summary .facts .fact-module:nth-child(4)::before{background:#95784b}
 .exporting.export-summary .facts .fact-module b{
   display:block;
-  margin:0 0 10px;
+  margin:0 0 9px;
   padding:0 0 8px 2px;
-  border-bottom:1px solid #d7dce1;
-  color:#1e2a35;
+  border-bottom:1px solid #dce1e5;
+  color:#243342;
   font-size:16px;
   font-weight:800;
-  letter-spacing:.015em;
+  letter-spacing:.01em;
 }
 .exporting.export-summary .facts .fact-module p{
-  color:#27323d!important;
+  color:#27323c!important;
   font-size:14px;
   font-weight:600;
   line-height:1.68;
@@ -436,23 +451,20 @@
   display:none;
 }
 .exporting.export-summary .conclusion-qr{
-  margin:0;
-  padding:16px 0 18px;
-  border-top:0;
-  background:transparent;
+  margin:18px 0 0;
+  padding:15px 0 17px;
+  border-top:1px solid #d9dee2;
+  background:#fbfbfa;
 }
 .exporting.export-summary .conclusion-qr-code{
   padding:3px;
-  border:1px solid #cbd1d6;
+  border:1px solid #cbd2d8;
   background:#fff;
 }
-.exporting.export-summary .conclusion-qr-copy{
-  gap:4px;
-}
 .exporting.export-summary .conclusion-qr-copy span{
-  color:#5f6b75;
+  color:#596774;
   font-weight:700;
 }
 .exporting.export-summary .conclusion-qr-copy strong{
-  color:#202a34;
+  color:#1f2a35;
 }
