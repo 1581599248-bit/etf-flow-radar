@@ -282,8 +282,7 @@
   font-weight:700;
 }
 
-
-/* Conclusion brief: show one evidence module per line for a cleaner client JPG. */
+/* Scope is intentionally understated; evidence cards retain the established 2×2 layout. */
 .conclusion .conclusion-scope{
   margin-top:5px;
   color:#89919b;
@@ -291,57 +290,10 @@
   font-weight:500;
   line-height:1.65;
 }
-.facts{
-  grid-template-columns:1fr;
-  gap:8px;
-}
-.facts .fact-module{
-  display:grid;
-  grid-template-columns:minmax(136px,19%) 1fr;
-  align-items:start;
-  padding:10px 14px;
-}
-.facts .fact-module b{
-  margin:1px 0 0;
-  padding:0 14px 0 2px;
-  font-size:11px;
-  line-height:1.5;
-}
-.facts .fact-module p{
-  border-left:1px solid #e3e7eb;
-  padding-left:14px;
-  font-size:10.5px;
-  line-height:1.65;
-}
-.exporting.export-summary .conclusion .section-head{margin-bottom:9px}
 .exporting .conclusion-scope{
   margin-top:6px;
   color:#89919b!important;
   font-size:12px!important;
   font-weight:500!important;
   line-height:1.55;
-}
-.exporting .facts{
-  grid-template-columns:1fr;
-  gap:8px;
-}
-.exporting .facts .fact-module{
-  grid-template-columns:188px 1fr;
-  padding:13px 17px;
-}
-.exporting .facts .fact-module b{
-  margin:1px 0 0;
-  padding:0 18px 0 2px;
-  font-size:15px;
-}
-.exporting .facts .fact-module p{
-  border-left:1px solid #dfe5eb;
-  padding-left:18px;
-  font-size:14px;
-  line-height:1.6;
-}
-@media(max-width:680px){
-  .facts .fact-module{grid-template-columns:1fr;gap:5px}
-  .facts .fact-module b{padding:0 2px}
-  .facts .fact-module p{border-left:0;border-top:1px solid #e3e7eb;padding:6px 0 0}
 }
