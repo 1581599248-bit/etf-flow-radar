@@ -415,10 +415,10 @@ def _allocation_tilt(name: str) -> str:
 
 
 def _inflow_focus_context(snapshot: dict[str, Any]) -> tuple[str, str, str]:
-    """Rank style and industry/theme groups together and describe the inflow focus."""
+    """Rank broad-index and sector/theme net inflows together; always name the leaders."""
     candidates = [
         g for g in snapshot.get("groups", [])
-        if g.get("kind") in {"style", "industry"}
+        if g.get("kind") in {"broad", "industry"}
         and isinstance(g.get("flow1d"), (int, float))
         and math.isfinite(float(g["flow1d"]))
         and str(g.get("name", "")).strip()
@@ -430,36 +430,24 @@ def _inflow_focus_context(snapshot: dict[str, Any]) -> tuple[str, str, str]:
         (
             {"name": str(g["name"]).strip(), "flow": float(g["flow1d"])}
             for g in candidates
-            if float(g["flow1d"]) > 0.05
+            if float(g["flow1d"]) > 0
         ),
         key=lambda item: item["flow"],
         reverse=True,
     )
     if not positive:
-        return "no_inflow", "资金未见明显集中流入。", "unknown"
+        return "no_inflow", "未出现明确净流入方向。", "unknown"
 
-    positive_total = sum(item["flow"] for item in positive)
-    if positive_total < 0.50:
-        return "limited", "资金流入有限。", "unknown"
-
-    if len(positive) == 1 or positive[0]["flow"] / positive_total >= 0.70:
-        selected = positive[:1]
-    elif (
-        len(positive) == 2
-        or sum(item["flow"] for item in positive[:2]) / positive_total >= 0.60
-        or positive[0]["flow"] >= positive[2]["flow"] * 2
-    ):
-        selected = positive[:2]
-    else:
-        return "dispersed", "资金流入较为分散。", "mixed"
-
+    # The conclusion must report the actual combined ranking, not suppress it
+    # with a concentration judgement.  Style groups are intentionally excluded:
+    # the client-facing leaders are broad indices and sector/theme groups only.
+    selected = positive[:2]
     tilts = {_allocation_tilt(item["name"]) for item in selected}
     tilt = next(iter(tilts)) if len(tilts) == 1 else "mixed"
     count_label = "one" if len(selected) == 1 else "two"
     state = f"concentrated_{count_label}_{tilt}"
-    names = selected[0]["name"] if len(selected) == 1 else f"{selected[0]['name']}与{selected[1]['name']}"
-    return state, f"资金流入集中于{names}。", tilt
-
+    names = selected[0]["name"] if len(selected) == 1 else f"{selected[0]["name"]}与{selected[1]["name"]}"
+    return state, f"资金流入居前为{names}。", tilt
 
 def _market_conclusion_copy(
     primary_value: float,
