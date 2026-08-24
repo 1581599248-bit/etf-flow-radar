@@ -266,10 +266,10 @@ jobs:
           path: .cache/exchange_shares
           key: etf-exchange-shares-v2-${{ github.run_id }}-publisher
       - name: Run external-send reconciliation audit
-        if: steps.build.outputs.exit_code == '0'
+        if: steps.gate.outputs.ready == 'true' && steps.build.outputs.exit_code == '0'
         run: python data_pipeline/audit_snapshot_v6.py
       - name: Validate published schema and client bundle
-        if: steps.build.outputs.exit_code == '0'
+        if: steps.gate.outputs.ready == 'true' && steps.build.outputs.exit_code == '0'
         run: npm ci && npm test
       - name: Commit verified report or build diagnostic
         if: steps.gate.outputs.ready == 'true' && steps.build.outputs.exit_code != ''
