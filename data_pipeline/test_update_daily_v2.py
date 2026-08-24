@@ -206,59 +206,33 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn("盘中买盘背离且更强", divergent)
         self.assertTrue(divergent.endswith("市场小幅收缩，资金流向分化。"))
 
-    def test_merged_style_industry_ranking_has_thirteen_complete_states(self):
-        cases = [
-            ([], "unavailable", "资金流向暂不明确。", "unknown"),
-            ([{"name": "价值", "kind": "style", "flow1d": -1.0}], "no_inflow", "资金未见明显集中流入。", "unknown"),
-            ([{"name": "价值", "kind": "style", "flow1d": 0.2}], "limited", "资金流入有限。", "unknown"),
-            ([
-                {"name": "半导体", "kind": "industry", "flow1d": 2.0},
-                {"name": "红利低波", "kind": "style", "flow1d": 0.2},
-            ], "concentrated_one_growth", "资金流入集中于半导体。", "growth"),
-            ([
-                {"name": "半导体", "kind": "industry", "flow1d": 1.7},
-                {"name": "创新药", "kind": "industry", "flow1d": 1.2},
-                {"name": "红利低波", "kind": "style", "flow1d": 0.1},
-            ], "concentrated_two_growth", "资金流入集中于半导体与创新药。", "growth"),
-            ([
-                {"name": "红利低波", "kind": "style", "flow1d": 2.0},
-                {"name": "半导体", "kind": "industry", "flow1d": 0.2},
-            ], "concentrated_one_defensive", "资金流入集中于红利低波。", "defensive"),
-            ([
-                {"name": "红利低波", "kind": "style", "flow1d": 1.7},
-                {"name": "价值", "kind": "style", "flow1d": 1.2},
-            ], "concentrated_two_defensive", "资金流入集中于红利低波与价值。", "defensive"),
-            ([
-                {"name": "有色金属", "kind": "industry", "flow1d": 2.0},
-                {"name": "半导体", "kind": "industry", "flow1d": 0.2},
-            ], "concentrated_one_cyclical", "资金流入集中于有色金属。", "cyclical"),
-            ([
-                {"name": "有色金属", "kind": "industry", "flow1d": 1.7},
-                {"name": "券商", "kind": "industry", "flow1d": 1.2},
-            ], "concentrated_two_cyclical", "资金流入集中于有色金属与券商。", "cyclical"),
-            ([
-                {"name": "综合", "kind": "industry", "flow1d": 2.0},
-                {"name": "半导体", "kind": "industry", "flow1d": 0.2},
-            ], "concentrated_one_neutral", "资金流入集中于综合。", "neutral"),
-            ([
-                {"name": "综合", "kind": "industry", "flow1d": 1.7},
-                {"name": "保险", "kind": "industry", "flow1d": 1.2},
-            ], "concentrated_two_neutral", "资金流入集中于综合与保险。", "neutral"),
-            ([
-                {"name": "半导体", "kind": "industry", "flow1d": 1.7},
-                {"name": "红利低波", "kind": "style", "flow1d": 1.2},
-                {"name": "沪深300", "kind": "broad", "flow1d": 99.0},
-            ], "concentrated_two_mixed", "资金流入集中于半导体与红利低波。", "mixed"),
-            ([
-                {"name": "红利低波", "kind": "style", "flow1d": 1.0},
-                {"name": "半导体", "kind": "industry", "flow1d": 1.0},
-                {"name": "有色金属", "kind": "industry", "flow1d": 1.0},
-                {"name": "综合", "kind": "industry", "flow1d": 1.0},
-            ], "dispersed", "资金流入较为分散。", "mixed"),
-        ]
-        for groups, state, expected, tilt in cases:
-            with self.subTest(state=state):
-                self.assertEqual(v2._inflow_focus_context({"groups": groups}), (state, expected, tilt))
+    def test_merged_broad_and_sector_ranking_always_names_top_two_inflows(self):
+        state, text, tilt = v2._inflow_focus_context({"groups": [
+            {"name": "红利低波", "kind": "style", "flow1d": 100.0},
+            {"name": "沪深300", "kind": "broad", "flow1d": 8.0},
+            {"name": "半导体", "kind": "industry", "flow1d": 12.0},
+            {"name": "创新药", "kind": "industry", "flow1d": 6.0},
+            {"name": "中证500", "kind": "broad", "flow1d": 4.0},
+        ]})
+        self.assertEqual(state, "concentrated_two_growth")
+        self.assertEqual(text, "资金流入居前为半导体与沪深300。")
+        self.assertEqual(tilt, "growth")
+
+        state, text, tilt = v2._inflow_focus_context({"groups": [
+            {"name": "沪深300", "kind": "broad", "flow1d": 2.0},
+            {"name": "创新药", "kind": "industry", "flow1d": 1.0},
+            {"name": "半导体", "kind": "industry", "flow1d": 1.0},
+        ]})
+        self.assertEqual(text, "资金流入居前为沪深300与创新药。")
+        self.assertNotEqual(state, "dispersed")
+
+        self.assertEqual(
+            v2._inflow_focus_context({"groups": [
+                {"name": "沪深300", "kind": "broad", "flow1d": 0.0},
+                {"name": "半导体", "kind": "industry", "flow1d": -1.0},
+            ]}),
+            ("no_inflow", "未出现明确净流入方向。", "unknown"),
+        )
 
     def test_all_1716_structural_scenarios_are_composable(self):
         primary_cases = [
