@@ -197,7 +197,13 @@ def _primary_strength(primary_value: float, aum: float | None) -> str:
 PRIMARY_SCENARIO_COUNT = 11
 TRADE_SCENARIO_COUNT = 12
 ALLOCATION_SCENARIO_COUNT = 13
-CONCLUSION_SCENARIO_COUNT = PRIMARY_SCENARIO_COUNT * TRADE_SCENARIO_COUNT * ALLOCATION_SCENARIO_COUNT
+ALLOCATION_SCOPE_SCENARIO_COUNT = 4
+CONCLUSION_SCENARIO_COUNT = (
+    PRIMARY_SCENARIO_COUNT
+    * TRADE_SCENARIO_COUNT
+    * ALLOCATION_SCENARIO_COUNT
+    * ALLOCATION_SCOPE_SCENARIO_COUNT
+)
 
 
 def _trade_copy(trade_value: float, strength: str) -> str:
@@ -424,7 +430,7 @@ def _inflow_focus_context(snapshot: dict[str, Any]) -> tuple[str, str, str]:
         and str(g.get("name", "")).strip()
     ]
     if not candidates:
-        return "unavailable", "资金流向暂不明确。", "unknown"
+        return "unavailable", "资金份额流向暂不明确。", "unknown"
 
     positive = sorted(
         (
@@ -436,7 +442,7 @@ def _inflow_focus_context(snapshot: dict[str, Any]) -> tuple[str, str, str]:
         reverse=True,
     )
     if not positive:
-        return "no_inflow", "未出现明确净流入方向。", "unknown"
+        return "no_inflow", "未出现明确资金份额净流入方向。", "unknown"
 
     # The conclusion must report the actual combined ranking, not suppress it
     # with a concentration judgement.  Style groups are intentionally excluded:
@@ -447,7 +453,7 @@ def _inflow_focus_context(snapshot: dict[str, Any]) -> tuple[str, str, str]:
     count_label = "one" if len(selected) == 1 else "two"
     state = f"concentrated_{count_label}_{tilt}"
     names = selected[0]["name"] if len(selected) == 1 else f"{selected[0]['name']}与{selected[1]['name']}"
-    return state, f"资金流入居前为{names}。", tilt
+    return state, f"资金份额流入居前为{names}。", tilt
 
 def _inflow_leader_scope(snapshot: dict[str, Any]) -> str:
     """Describe whether the two displayed inflow leaders are broad, sector, or mixed."""
@@ -470,6 +476,46 @@ def _inflow_leader_scope(snapshot: dict[str, Any]) -> str:
     return "mixed"
 
 
+def _inflow_focus_label(
+    allocation_state: str,
+    allocation_tilt: str,
+    allocation_scope: str,
+) -> str | None:
+    """Name the observed subscription recipient without inferring a market-wide stance."""
+    if not allocation_state.startswith("concentrated_"):
+        return None
+    if allocation_tilt not in {"growth", "defensive", "cyclical", "neutral"}:
+        return None
+
+    labels = {
+        "broad": {
+            "growth": "成长宽基",
+            "defensive": "防御宽基",
+            "cyclical": "顺周期宽基",
+            "neutral": "宽基ETF",
+        },
+        "industry": {
+            "growth": "成长板块",
+            "defensive": "防御板块",
+            "cyclical": "顺周期板块",
+            "neutral": "行业板块",
+        },
+        "mixed": {
+            "growth": "成长方向",
+            "defensive": "防御方向",
+            "cyclical": "顺周期方向",
+            "neutral": "相关方向",
+        },
+        "unknown": {
+            "growth": "成长方向",
+            "defensive": "防御方向",
+            "cyclical": "顺周期方向",
+            "neutral": "相关方向",
+        },
+    }
+    return labels.get(allocation_scope, labels["unknown"])[allocation_tilt]
+
+
 def _market_conclusion_copy(
     primary_value: float,
     primary_strength: str,
@@ -479,64 +525,46 @@ def _market_conclusion_copy(
     trade_strength: str | None = None,
     allocation_scope: str = "unknown",
 ) -> str:
-    """Describe aggregate ETF behavior without equating primary subscriptions with broad market expansion."""
-    if (
-        primary_value > 0
-        and trade_value is not None
-        and trade_value < 0
-        and trade_strength not in {None, "balanced"}
-        and allocation_scope == "broad"
-        and allocation_tilt == "growth"
-    ):
-        return "市场总体分化，成长宽基获得资金申购承接。"
-    if primary_strength == "flat":
-        base = "市场总体平稳"
-    elif primary_value > 0:
-        base = {
-            "small": "市场小幅扩张",
-            "clear": "市场总体扩张",
-            "large": "市场明显扩张",
-            "extreme": "市场显著扩张",
-            "generic": "市场呈净申购",
-        }[primary_strength]
-    else:
-        base = {
-            "small": "市场小幅收缩",
-            "clear": "市场总体收缩",
-            "large": "市场明显收缩",
-            "extreme": "市场显著收缩",
-            "generic": "市场呈净赎回",
-        }[primary_strength]
-
-    if allocation_state in {"unavailable", "no_inflow", "limited"}:
-        return base + "。"
-    if allocation_state == "dispersed" or allocation_tilt == "mixed":
-        return base + "，资金流向分化。"
-
+    """Explain the observed trade/share relationship without claiming market expansion or contraction."""
     primary_side = 0 if primary_strength == "flat" else (1 if primary_value > 0 else -1)
-    suffixes = {
-        "growth": {
-            1: "，风险偏好有所回升。",
-            0: "，成长方向相对活跃。",
-            -1: "，但未转向防御。",
-        },
-        "defensive": {
-            1: "，但配置仍偏防御。",
-            0: "，资金略偏防御。",
-            -1: "，防御倾向增强。",
-        },
-        "cyclical": {
-            1: "，顺周期方向获得承接。",
-            0: "，顺周期方向相对活跃。",
-            -1: "，但顺周期方向仍有承接。",
-        },
-        "neutral": {
-            1: "，局部配置有所增加。",
-            0: "，局部方向相对活跃。",
-            -1: "，局部仍有承接。",
-        },
-    }
-    return base + suffixes.get(allocation_tilt, suffixes["neutral"])[primary_side]
+    trade_side = 0 if trade_value is None or trade_strength == "balanced" else (1 if trade_value > 0 else -1)
+    focus_label = _inflow_focus_label(allocation_state, allocation_tilt, allocation_scope)
+
+    if trade_value is None:
+        if primary_side > 0:
+            if focus_label:
+                return f"{focus_label}获得增量配置，盘中交易信号暂缺。"
+            return "份额端出现净申购，盘中交易信号暂缺。"
+        if primary_side < 0:
+            return "份额端以净赎回为主，盘中交易信号暂缺。"
+        return "份额端未形成明确方向，盘中交易信号暂缺。"
+
+    if primary_side == 0:
+        if trade_side > 0:
+            return "盘中买盘占优，但尚未形成明确的份额申购。"
+        if trade_side < 0:
+            return "盘中卖压占优，但尚未形成明确的份额赎回。"
+        return "盘中与份额端均未形成明确方向，市场以存量博弈为主。"
+
+    if trade_side == 0:
+        if primary_side > 0:
+            if focus_label:
+                return f"{focus_label}获得增量配置，盘中买卖未形成单边方向。"
+            return "份额端出现净申购，盘中买卖未形成单边方向。"
+        return "份额端以净赎回为主，盘中买卖未形成单边方向。"
+
+    if primary_side != trade_side:
+        if primary_side > 0:
+            if focus_label:
+                return f"市场总体流向分化，{focus_label}获得资金申购承接。"
+            return "市场总体流向分化，盘中卖压下仍有份额申购承接。"
+        return "市场总体流向分化，盘中买盘尚未转化为整体份额申购。"
+
+    if primary_side > 0:
+        if focus_label:
+            return f"盘中买盘与份额申购共振，{focus_label}的增量配置意愿较强。"
+        return "盘中买盘与份额申购共振，增量配置未集中于明确方向。"
+    return "盘中卖压与份额赎回同步，市场交易与份额端均偏谨慎。"
 
 
 def _current_regime_copy(
@@ -551,7 +579,7 @@ def _current_regime_copy(
 ) -> str:
     """Compose share -> intraday -> merged inflow ranking -> market state."""
     relation = _relation_copy(trade_value, primary_value, trade_strength, primary_strength)
-    focus = inflow_text or "资金流向暂不明确。"
+    focus = inflow_text or "资金份额流向暂不明确。"
     market = _market_conclusion_copy(
         primary_value,
         primary_strength,
