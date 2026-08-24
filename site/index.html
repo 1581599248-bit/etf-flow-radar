@@ -23,8 +23,8 @@
   const groupTag=r=>r.kind==="industry"&&r.parent?"热门主题":kindName[r.kind];
   const priceTypeName={AVG:"成交均价",NAV:"单位净值",CLOSE:"收盘价"};
   const periodKey={"1d":"flow1d","5d":"flow5d","20d":"flow20d"};
-  const fullDate=d=>new Intl.DateTimeFormat("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"short"}).format(new Date(`${d}T12:00:00+08:00`));
-  const opinionDate=d=>new Intl.DateTimeFormat("zh-CN",{year:"numeric",month:"long",day:"numeric"}).format(new Date(`${d}T12:00:00+08:00`));
+  const fullDate=d=>new Intl.DateTimeFormat("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"short",timeZone:"Asia/Shanghai"}).format(new Date(`${d}T12:00:00+08:00`));
+  const opinionDate=d=>new Intl.DateTimeFormat("zh-CN",{year:"numeric",month:"long",day:"numeric",timeZone:"Asia/Shanghai"}).format(new Date(`${d}T12:00:00+08:00`));
 
   async function load(){
     try{
