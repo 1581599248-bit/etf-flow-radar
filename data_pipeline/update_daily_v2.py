@@ -389,7 +389,7 @@ def _overall_intent_copy(
 
 
 _GROWTH_FLOW_KEYWORDS = (
-    "成长", "科技", "半导体", "创新药", "AI", "算力", "芯片", "通信", "机器人",
+    "成长", "科技", "科创", "创业板", "双创", "半导体", "创新药", "AI", "算力", "芯片", "通信", "机器人",
     "软件", "信创", "消费电子", "新能源", "光伏", "锂电", "储能", "医疗器械",
     "智能驾驶", "电子", "计算机", "传媒", "游戏", "国防军工", "卫星", "互联网",
 )
@@ -449,13 +449,46 @@ def _inflow_focus_context(snapshot: dict[str, Any]) -> tuple[str, str, str]:
     names = selected[0]["name"] if len(selected) == 1 else f"{selected[0]['name']}与{selected[1]['name']}"
     return state, f"资金流入居前为{names}。", tilt
 
+def _inflow_leader_scope(snapshot: dict[str, Any]) -> str:
+    """Describe whether the two displayed inflow leaders are broad, sector, or mixed."""
+    candidates = [
+        g for g in snapshot.get("groups", [])
+        if g.get("kind") in {"broad", "industry"}
+        and isinstance(g.get("flow1d"), (int, float))
+        and math.isfinite(float(g["flow1d"]))
+        and str(g.get("name", "")).strip()
+        and float(g["flow1d"]) > 0
+    ]
+    selected = sorted(candidates, key=lambda group: float(group["flow1d"]), reverse=True)[:2]
+    if not selected:
+        return "unknown"
+    kinds = {str(group.get("kind")) for group in selected}
+    if kinds == {"broad"}:
+        return "broad"
+    if kinds == {"industry"}:
+        return "industry"
+    return "mixed"
+
+
 def _market_conclusion_copy(
     primary_value: float,
     primary_strength: str,
     allocation_state: str,
     allocation_tilt: str,
+    trade_value: float | None = None,
+    trade_strength: str | None = None,
+    allocation_scope: str = "unknown",
 ) -> str:
-    """Separate total market expansion/contraction from the direction of marginal inflows."""
+    """Describe aggregate ETF behavior without equating primary subscriptions with broad market expansion."""
+    if (
+        primary_value > 0
+        and trade_value is not None
+        and trade_value < 0
+        and trade_strength not in {None, "balanced"}
+        and allocation_scope == "broad"
+        and allocation_tilt == "growth"
+    ):
+        return "市场总体分化，成长宽基获得资金申购承接。"
     if primary_strength == "flat":
         base = "市场总体平稳"
     elif primary_value > 0:
@@ -514,11 +547,20 @@ def _current_regime_copy(
     inflow_text: str | None = None,
     allocation_state: str = "unavailable",
     allocation_tilt: str = "unknown",
+    allocation_scope: str = "unknown",
 ) -> str:
     """Compose share -> intraday -> merged inflow ranking -> market state."""
     relation = _relation_copy(trade_value, primary_value, trade_strength, primary_strength)
     focus = inflow_text or "资金流向暂不明确。"
-    market = _market_conclusion_copy(primary_value, primary_strength, allocation_state, allocation_tilt)
+    market = _market_conclusion_copy(
+        primary_value,
+        primary_strength,
+        allocation_state,
+        allocation_tilt,
+        trade_value=trade_value,
+        trade_strength=trade_strength,
+        allocation_scope=allocation_scope,
+    )
     return f"{relation}。{focus}{market}"
 
 
@@ -571,6 +613,7 @@ def _market_flow_headline(
     inflow_text: str | None = None,
     allocation_state: str = "unavailable",
     allocation_tilt: str = "unknown",
+    allocation_scope: str = "unknown",
 ) -> str:
     primary_strength = _primary_strength(primary_value, market_aum)
     primary_text = _primary_copy(primary_value, primary_strength)
@@ -593,6 +636,7 @@ def _market_flow_headline(
         inflow_text=inflow_text,
         allocation_state=allocation_state,
         allocation_tilt=allocation_tilt,
+        allocation_scope=allocation_scope,
     )
     return f"{fact_line}\n—— {current}"
 
@@ -691,6 +735,7 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
     styles = [g for g in groups if g.get("kind") == "style"]
     sectors = _visible_sector_groups(snapshot)
     allocation_state, inflow_text, allocation_tilt = _inflow_focus_context(snapshot)
+    allocation_scope = _inflow_leader_scope(snapshot)
     flow_headline = _market_flow_headline(
         trade_value,
         float(primary_value),
@@ -699,6 +744,7 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
         inflow_text=inflow_text,
         allocation_state=allocation_state,
         allocation_tilt=allocation_tilt,
+        allocation_scope=allocation_scope,
     )
 
     if broad:
