@@ -446,7 +446,7 @@ def _inflow_focus_context(snapshot: dict[str, Any]) -> tuple[str, str, str]:
     tilt = next(iter(tilts)) if len(tilts) == 1 else "mixed"
     count_label = "one" if len(selected) == 1 else "two"
     state = f"concentrated_{count_label}_{tilt}"
-    names = selected[0]["name"] if len(selected) == 1 else f"{selected[0]["name"]}与{selected[1]["name"]}"
+    names = selected[0]["name"] if len(selected) == 1 else f"{selected[0]['name']}与{selected[1]['name']}"
     return state, f"资金流入居前为{names}。", tilt
 
 def _market_conclusion_copy(
