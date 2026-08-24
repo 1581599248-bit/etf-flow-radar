@@ -126,7 +126,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
             -99.7,
             1320.8,
             26683.68,
-            inflow_text="资金流入居前为半导体与创新药。",
+            inflow_text="资金份额流入居前为半导体与创新药。",
             allocation_state="concentrated_two_growth",
             allocation_tilt="growth",
         )
@@ -134,8 +134,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertEqual(
             conclusion,
             "份额净赎回偏多，盘中卖压同步但相对有限。"
-            "资金流入居前为半导体与创新药。"
-            "市场总体收缩，但未转向防御。",
+            "资金份额流入居前为半导体与创新药。"
+            "盘中卖压与份额赎回同步，市场交易与份额端均偏谨慎。",
         )
 
     def test_market_flow_headline_covers_direction_strength_and_stays_concise(self):
@@ -168,7 +168,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
             26683.68,
             126.5,
             500.0,
-            inflow_text="资金流入居前为半导体与创新药。",
+            inflow_text="资金份额流入居前为半导体与创新药。",
             allocation_state="concentrated_two_growth",
             allocation_tilt="growth",
         )
@@ -180,7 +180,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
     def test_current_regime_copy_preserves_finalized_order_and_relationships(self):
         share_led_outflow = v2._current_regime_copy(
             -30.0, -100.0, "small", "clear",
-            "资金流入居前为半导体与创新药。", "concentrated_two_growth", "growth",
+            "资金份额流入居前为半导体与创新药。", "concentrated_two_growth", "growth",
         )
         trade_led_outflow = v2._current_regime_copy(
             -150.0, -30.0, "large", "small",
@@ -188,7 +188,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         )
         share_led_inflow = v2._current_regime_copy(
             -30.0, 140.0, "small", "large",
-            "资金流入居前为价值。", "concentrated_one_defensive", "defensive",
+            "资金份额流入居前为价值。", "concentrated_one_defensive", "defensive",
         )
         divergent = v2._current_regime_copy(
             150.0, -30.0, "large", "small",
@@ -197,14 +197,14 @@ class UpdateDailyV2Tests(unittest.TestCase):
 
         self.assertTrue(share_led_outflow.startswith("份额净赎回偏多"))
         self.assertIn("盘中卖压同步但相对有限", share_led_outflow)
-        self.assertTrue(share_led_outflow.endswith("市场总体收缩，但未转向防御。"))
+        self.assertTrue(share_led_outflow.endswith("盘中卖压与份额赎回同步，市场交易与份额端均偏谨慎。"))
         self.assertTrue(trade_led_outflow.startswith("份额少量净赎回"))
         self.assertIn("盘中卖压同步且更强", trade_led_outflow)
-        self.assertTrue(trade_led_outflow.endswith("市场小幅收缩。"))
+        self.assertTrue(trade_led_outflow.endswith("盘中卖压与份额赎回同步，市场交易与份额端均偏谨慎。"))
         self.assertIn("盘中卖压背离但相对有限", share_led_inflow)
-        self.assertTrue(share_led_inflow.endswith("市场明显扩张，但配置仍偏防御。"))
+        self.assertTrue(share_led_inflow.endswith("市场总体流向分化，防御方向获得资金申购承接。"))
         self.assertIn("盘中买盘背离且更强", divergent)
-        self.assertTrue(divergent.endswith("市场小幅收缩，资金流向分化。"))
+        self.assertTrue(divergent.endswith("市场总体流向分化，盘中买盘尚未转化为整体份额申购。"))
 
     def test_merged_broad_and_sector_ranking_always_names_top_two_inflows(self):
         state, text, tilt = v2._inflow_focus_context({"groups": [
@@ -215,7 +215,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
             {"name": "中证500", "kind": "broad", "flow1d": 4.0},
         ]})
         self.assertEqual(state, "concentrated_two_mixed")
-        self.assertEqual(text, "资金流入居前为半导体与沪深300。")
+        self.assertEqual(text, "资金份额流入居前为半导体与沪深300。")
         self.assertEqual(tilt, "mixed")
 
         state, text, tilt = v2._inflow_focus_context({"groups": [
@@ -223,7 +223,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
             {"name": "创新药", "kind": "industry", "flow1d": 1.0},
             {"name": "半导体", "kind": "industry", "flow1d": 1.0},
         ]})
-        self.assertEqual(text, "资金流入居前为沪深300与创新药。")
+        self.assertEqual(text, "资金份额流入居前为沪深300与创新药。")
         self.assertNotEqual(state, "dispersed")
 
         self.assertEqual(
@@ -231,7 +231,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
                 {"name": "沪深300", "kind": "broad", "flow1d": 0.0},
                 {"name": "半导体", "kind": "industry", "flow1d": -1.0},
             ]}),
-            ("no_inflow", "未出现明确净流入方向。", "unknown"),
+            ("no_inflow", "未出现明确资金份额净流入方向。", "unknown"),
         )
 
     def test_divergent_growth_broad_flows_describe_targeted_primary_support(self):
@@ -240,14 +240,79 @@ class UpdateDailyV2Tests(unittest.TestCase):
             107.5,
             1552.51,
             26368.23,
-            inflow_text="资金流入居前为科创50与创业板指。",
+            inflow_text="资金份额流入居前为科创50与创业板指。",
             allocation_state="concentrated_two_growth",
             allocation_tilt="growth",
             allocation_scope="broad",
         )
-        self.assertTrue(headline.endswith("市场总体分化，成长宽基获得资金申购承接。"))
+        self.assertTrue(headline.endswith("市场总体流向分化，成长宽基获得资金申购承接。"))
 
-    def test_all_1716_structural_scenarios_are_composable(self):
+    def test_market_conclusion_explains_all_trade_share_combinations(self):
+        self.assertEqual(
+            v2._market_conclusion_copy(
+                100.0, "clear", "concentrated_two_growth", "growth",
+                trade_value=120.0, trade_strength="clear", allocation_scope="industry",
+            ),
+            "盘中买盘与份额申购共振，成长板块的增量配置意愿较强。",
+        )
+        self.assertEqual(
+            v2._market_conclusion_copy(
+                -100.0, "clear", "concentrated_two_growth", "growth",
+                trade_value=-120.0, trade_strength="clear", allocation_scope="broad",
+            ),
+            "盘中卖压与份额赎回同步，市场交易与份额端均偏谨慎。",
+        )
+        self.assertEqual(
+            v2._market_conclusion_copy(
+                -100.0, "clear", "concentrated_two_growth", "growth",
+                trade_value=120.0, trade_strength="clear", allocation_scope="mixed",
+            ),
+            "市场总体流向分化，盘中买盘尚未转化为整体份额申购。",
+        )
+        self.assertEqual(
+            v2._market_conclusion_copy(
+                100.0, "clear", "concentrated_two_growth", "growth",
+                trade_value=None, trade_strength=None, allocation_scope="broad",
+            ),
+            "成长宽基获得增量配置，盘中交易信号暂缺。",
+        )
+        self.assertEqual(
+            v2._market_conclusion_copy(
+                100.0, "clear", "concentrated_two_growth", "growth",
+                trade_value=0.0, trade_strength="balanced", allocation_scope="broad",
+            ),
+            "成长宽基获得增量配置，盘中买卖未形成单边方向。",
+        )
+        self.assertEqual(
+            v2._market_conclusion_copy(
+                -100.0, "clear", "limited", "unknown",
+                trade_value=0.0, trade_strength="balanced", allocation_scope="unknown",
+            ),
+            "份额端以净赎回为主，盘中买卖未形成单边方向。",
+        )
+        self.assertEqual(
+            v2._market_conclusion_copy(
+                0.0, "flat", "limited", "unknown",
+                trade_value=120.0, trade_strength="clear", allocation_scope="unknown",
+            ),
+            "盘中买盘占优，但尚未形成明确的份额申购。",
+        )
+        self.assertEqual(
+            v2._market_conclusion_copy(
+                0.0, "flat", "limited", "unknown",
+                trade_value=-120.0, trade_strength="clear", allocation_scope="unknown",
+            ),
+            "盘中卖压占优，但尚未形成明确的份额赎回。",
+        )
+        self.assertEqual(
+            v2._market_conclusion_copy(
+                0.0, "flat", "limited", "unknown",
+                trade_value=0.0, trade_strength="balanced", allocation_scope="unknown",
+            ),
+            "盘中与份额端均未形成明确方向，市场以存量博弈为主。",
+        )
+
+    def test_all_6864_structural_scenarios_are_composable(self):
         primary_cases = [
             (0.0, 20000.0),
             (20.0, 20000.0), (-20.0, 20000.0),
@@ -266,39 +331,44 @@ class UpdateDailyV2Tests(unittest.TestCase):
             (20.0, None), (-20.0, None),
         ]
         allocation_cases = [
-            ("unavailable", "资金流向暂不明确。", "unknown"),
+            ("unavailable", "资金份额流向暂不明确。", "unknown"),
             ("no_inflow", "资金未见明显集中流入。", "unknown"),
             ("limited", "资金流入有限。", "unknown"),
-            ("concentrated_one_growth", "资金流入居前为半导体。", "growth"),
-            ("concentrated_two_growth", "资金流入居前为半导体与创新药。", "growth"),
-            ("concentrated_one_defensive", "资金流入居前为红利低波。", "defensive"),
-            ("concentrated_two_defensive", "资金流入居前为红利低波与价值。", "defensive"),
-            ("concentrated_one_cyclical", "资金流入居前为有色金属。", "cyclical"),
-            ("concentrated_two_cyclical", "资金流入居前为有色金属与券商。", "cyclical"),
-            ("concentrated_one_neutral", "资金流入居前为综合。", "neutral"),
-            ("concentrated_two_neutral", "资金流入居前为综合与保险。", "neutral"),
-            ("concentrated_two_mixed", "资金流入居前为半导体与红利低波。", "mixed"),
+            ("concentrated_one_growth", "资金份额流入居前为半导体。", "growth"),
+            ("concentrated_two_growth", "资金份额流入居前为半导体与创新药。", "growth"),
+            ("concentrated_one_defensive", "资金份额流入居前为红利低波。", "defensive"),
+            ("concentrated_two_defensive", "资金份额流入居前为红利低波与价值。", "defensive"),
+            ("concentrated_one_cyclical", "资金份额流入居前为有色金属。", "cyclical"),
+            ("concentrated_two_cyclical", "资金份额流入居前为有色金属与券商。", "cyclical"),
+            ("concentrated_one_neutral", "资金份额流入居前为综合。", "neutral"),
+            ("concentrated_two_neutral", "资金份额流入居前为综合与保险。", "neutral"),
+            ("concentrated_two_mixed", "资金份额流入居前为半导体与红利低波。", "mixed"),
             ("dispersed", "资金流入较为分散。", "mixed"),
         ]
+        allocation_scopes = ("unknown", "broad", "industry", "mixed")
         generated = 0
         for primary_value, aum in primary_cases:
             for trade_value, turnover in trade_cases:
                 for allocation_state, inflow_text, allocation_tilt in allocation_cases:
-                    headline = v2._market_flow_headline(
-                        trade_value,
-                        primary_value,
-                        turnover,
-                        aum,
-                        inflow_text=inflow_text,
-                        allocation_state=allocation_state,
-                        allocation_tilt=allocation_tilt,
-                    )
-                    conclusion = headline.split("\n—— ", 1)[1]
-                    self.assertTrue(conclusion.startswith("份额"))
-                    self.assertEqual(conclusion.count("。"), 3)
-                    self.assertTrue(conclusion.endswith("。"))
-                    generated += 1
-        self.assertEqual(generated, 1716)
+                    for allocation_scope in allocation_scopes:
+                        headline = v2._market_flow_headline(
+                            trade_value,
+                            primary_value,
+                            turnover,
+                            aum,
+                            inflow_text=inflow_text,
+                            allocation_state=allocation_state,
+                            allocation_tilt=allocation_tilt,
+                            allocation_scope=allocation_scope,
+                        )
+                        conclusion = headline.split("\n—— ", 1)[1]
+                        self.assertTrue(conclusion.startswith("份额"))
+                        self.assertEqual(conclusion.count("。"), 3)
+                        self.assertNotIn("市场总体扩张", conclusion)
+                        self.assertNotIn("市场总体收缩", conclusion)
+                        self.assertTrue(conclusion.endswith("。"))
+                        generated += 1
+        self.assertEqual(generated, 6864)
         self.assertEqual(generated, v2.CONCLUSION_SCENARIO_COUNT)
 
     def test_prior_history_excludes_current_and_unstable_universe(self):
@@ -359,8 +429,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertTrue(headline.startswith("A股ETF盘中"))
         self.assertIn(
             "\n—— 份额大量净赎回，盘中买盘背离但相对有限。"
-            "资金流入居前为半导体与创新药。"
-            "市场明显收缩，但未转向防御。",
+            "资金份额流入居前为半导体与创新药。"
+            "市场总体流向分化，盘中买盘尚未转化为整体份额申购。",
             headline,
         )
         self.assertNotIn("红利低波与价值", headline)
@@ -412,8 +482,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn("A股ETF盘中主动买卖数据暂缺", headline)
         self.assertIn("ETF份额对应申赎资金大幅净流入12.6亿元", headline)
         self.assertIn("份额大量净申购，盘中数据暂缺", headline)
-        self.assertIn("资金流入居前为传媒与中证500。", headline)
-        self.assertIn("市场明显扩张，资金流向分化。", headline)
+        self.assertIn("资金份额流入居前为传媒与中证500。", headline)
+        self.assertIn("份额端出现净申购，盘中交易信号暂缺。", headline)
         self.assertNotIn("申万一级和主题行业", headline)
         self.assertIn("半导体", snapshot["conclusion"]["facts"][2])
 
