@@ -134,7 +134,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertEqual(
             conclusion,
             "份额净赎回偏多，盘中卖压同步但相对有限。"
-            "资金流入集中于半导体与创新药。"
+            "资金流入居前为半导体与创新药。"
             "市场总体收缩，但未转向防御。",
         )
 
@@ -168,7 +168,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
             26683.68,
             126.5,
             500.0,
-            inflow_text="资金流入集中于半导体与创新药。",
+            inflow_text="资金流入居前为半导体与创新药。",
             allocation_state="concentrated_two_growth",
             allocation_tilt="growth",
         )
@@ -180,7 +180,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
     def test_current_regime_copy_preserves_finalized_order_and_relationships(self):
         share_led_outflow = v2._current_regime_copy(
             -30.0, -100.0, "small", "clear",
-            "资金流入集中于半导体与创新药。", "concentrated_two_growth", "growth",
+            "资金流入居前为半导体与创新药。", "concentrated_two_growth", "growth",
         )
         trade_led_outflow = v2._current_regime_copy(
             -150.0, -30.0, "large", "small",
@@ -188,7 +188,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         )
         share_led_inflow = v2._current_regime_copy(
             -30.0, 140.0, "small", "large",
-            "资金流入集中于价值。", "concentrated_one_defensive", "defensive",
+            "资金流入居前为价值。", "concentrated_one_defensive", "defensive",
         )
         divergent = v2._current_regime_copy(
             150.0, -30.0, "large", "small",
@@ -256,15 +256,15 @@ class UpdateDailyV2Tests(unittest.TestCase):
             ("unavailable", "资金流向暂不明确。", "unknown"),
             ("no_inflow", "资金未见明显集中流入。", "unknown"),
             ("limited", "资金流入有限。", "unknown"),
-            ("concentrated_one_growth", "资金流入集中于半导体。", "growth"),
-            ("concentrated_two_growth", "资金流入集中于半导体与创新药。", "growth"),
-            ("concentrated_one_defensive", "资金流入集中于红利低波。", "defensive"),
-            ("concentrated_two_defensive", "资金流入集中于红利低波与价值。", "defensive"),
-            ("concentrated_one_cyclical", "资金流入集中于有色金属。", "cyclical"),
-            ("concentrated_two_cyclical", "资金流入集中于有色金属与券商。", "cyclical"),
-            ("concentrated_one_neutral", "资金流入集中于综合。", "neutral"),
-            ("concentrated_two_neutral", "资金流入集中于综合与保险。", "neutral"),
-            ("concentrated_two_mixed", "资金流入集中于半导体与红利低波。", "mixed"),
+            ("concentrated_one_growth", "资金流入居前为半导体。", "growth"),
+            ("concentrated_two_growth", "资金流入居前为半导体与创新药。", "growth"),
+            ("concentrated_one_defensive", "资金流入居前为红利低波。", "defensive"),
+            ("concentrated_two_defensive", "资金流入居前为红利低波与价值。", "defensive"),
+            ("concentrated_one_cyclical", "资金流入居前为有色金属。", "cyclical"),
+            ("concentrated_two_cyclical", "资金流入居前为有色金属与券商。", "cyclical"),
+            ("concentrated_one_neutral", "资金流入居前为综合。", "neutral"),
+            ("concentrated_two_neutral", "资金流入居前为综合与保险。", "neutral"),
+            ("concentrated_two_mixed", "资金流入居前为半导体与红利低波。", "mixed"),
             ("dispersed", "资金流入较为分散。", "mixed"),
         ]
         generated = 0
@@ -346,7 +346,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertTrue(headline.startswith("A股ETF盘中"))
         self.assertIn(
             "\n—— 份额大量净赎回，盘中买盘背离但相对有限。"
-            "资金流入集中于半导体与创新药。"
+            "资金流入居前为半导体与创新药。"
             "市场明显收缩，但未转向防御。",
             headline,
         )
@@ -400,7 +400,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn("ETF份额对应申赎资金大幅净流入12.6亿元", headline)
         self.assertIn("份额大量净申购，盘中数据暂缺", headline)
         self.assertIn("资金流入居前为传媒与中证500。", headline)
-        self.assertIn("市场明显扩张，风险偏好有所回升。", headline)
+        self.assertIn("市场明显扩张，资金流向分化。", headline)
         self.assertNotIn("申万一级和主题行业", headline)
         self.assertIn("半导体", snapshot["conclusion"]["facts"][2])
 
