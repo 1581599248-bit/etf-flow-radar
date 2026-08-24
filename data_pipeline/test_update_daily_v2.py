@@ -234,6 +234,19 @@ class UpdateDailyV2Tests(unittest.TestCase):
             ("no_inflow", "未出现明确净流入方向。", "unknown"),
         )
 
+    def test_divergent_growth_broad_flows_describe_targeted_primary_support(self):
+        headline = v2._market_flow_headline(
+            -114.5,
+            107.5,
+            1552.51,
+            26368.23,
+            inflow_text="资金流入居前为科创50与创业板指。",
+            allocation_state="concentrated_two_growth",
+            allocation_tilt="growth",
+            allocation_scope="broad",
+        )
+        self.assertTrue(headline.endswith("市场总体分化，成长宽基获得资金申购承接。"))
+
     def test_all_1716_structural_scenarios_are_composable(self):
         primary_cases = [
             (0.0, 20000.0),
