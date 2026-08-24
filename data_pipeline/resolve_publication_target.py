@@ -8,11 +8,12 @@ SSE/SZSE probe remains the final trading-day/availability authority.
 from __future__ import annotations
 
 import argparse
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
 
 BEIJING = ZoneInfo("Asia/Shanghai")
+MARKET_CLOSE = time(15, 0)
 
 
 def latest_weekday(day: date) -> date:
@@ -22,7 +23,7 @@ def latest_weekday(day: date) -> date:
 
 
 def resolve_target(requested: str | None = None, now: datetime | None = None) -> date:
-    """Return the requested day or the current/last weekday in Beijing time.
+    """Return the requested day or the latest completed weekday in Beijing time.
 
     A Chinese-market holiday is deliberately not guessed here.  The next stage
     probes both exchanges for the exact date and publishes only when both have
@@ -33,7 +34,15 @@ def resolve_target(requested: str | None = None, now: datetime | None = None) ->
     observed = now or datetime.now(BEIJING)
     if observed.tzinfo is None:
         observed = observed.replace(tzinfo=BEIJING)
-    return latest_weekday(observed.astimezone(BEIJING).date())
+    observed = observed.astimezone(BEIJING)
+
+    # The next calendar weekday is not a completed trading day before the
+    # close.  Overnight and morning retries must keep waiting for the prior
+    # trading day's exchange shares instead of jumping to an untraded date.
+    candidate = observed.date()
+    if observed.time() < MARKET_CLOSE:
+        candidate -= timedelta(days=1)
+    return latest_weekday(candidate)
 
 
 def main() -> int:

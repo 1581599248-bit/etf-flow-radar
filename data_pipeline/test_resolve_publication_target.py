@@ -6,8 +6,12 @@ from resolve_publication_target import resolve_target
 
 
 class ResolvePublicationTargetTests(unittest.TestCase):
-    def test_uses_current_beijing_trade_date_without_order_flow_input(self):
+    def test_uses_current_beijing_trade_date_after_close_without_order_flow_input(self):
         now = datetime(2026, 8, 24, 22, 30, tzinfo=ZoneInfo("Asia/Shanghai"))
+        self.assertEqual(resolve_target(now=now).isoformat(), "2026-08-24")
+
+    def test_overnight_retry_keeps_prior_completed_trade_date(self):
+        now = datetime(2026, 8, 25, 2, 10, tzinfo=ZoneInfo("Asia/Shanghai"))
         self.assertEqual(resolve_target(now=now).isoformat(), "2026-08-24")
 
     def test_weekend_retries_the_prior_weekday(self):
