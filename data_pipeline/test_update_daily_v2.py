@@ -126,7 +126,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
             -99.7,
             1320.8,
             26683.68,
-            inflow_text="资金流入集中于半导体与创新药。",
+            inflow_text="资金流入居前为半导体与创新药。",
             allocation_state="concentrated_two_growth",
             allocation_tilt="growth",
         )
@@ -214,9 +214,9 @@ class UpdateDailyV2Tests(unittest.TestCase):
             {"name": "创新药", "kind": "industry", "flow1d": 6.0},
             {"name": "中证500", "kind": "broad", "flow1d": 4.0},
         ]})
-        self.assertEqual(state, "concentrated_two_growth")
+        self.assertEqual(state, "concentrated_two_mixed")
         self.assertEqual(text, "资金流入居前为半导体与沪深300。")
-        self.assertEqual(tilt, "growth")
+        self.assertEqual(tilt, "mixed")
 
         state, text, tilt = v2._inflow_focus_context({"groups": [
             {"name": "沪深300", "kind": "broad", "flow1d": 2.0},
@@ -399,7 +399,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn("A股ETF盘中主动买卖数据暂缺", headline)
         self.assertIn("ETF份额对应申赎资金大幅净流入12.6亿元", headline)
         self.assertIn("份额大量净申购，盘中数据暂缺", headline)
-        self.assertIn("资金流入集中于传媒。", headline)
+        self.assertIn("资金流入居前为传媒与中证500。", headline)
         self.assertIn("市场明显扩张，风险偏好有所回升。", headline)
         self.assertNotIn("申万一级和主题行业", headline)
         self.assertIn("半导体", snapshot["conclusion"]["facts"][2])
