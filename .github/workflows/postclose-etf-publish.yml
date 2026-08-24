@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       trade_date:
-        description: "Optional trade date (YYYY-MM-DD); otherwise use the latest captured order-flow date"
+        description: "Optional trade date (YYYY-MM-DD); otherwise use the current/latest weekday in Beijing time and wait for complete official shares"
         required: false
         type: string
 

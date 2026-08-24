@@ -23,6 +23,8 @@ class PostCloseWorkflowTests(unittest.TestCase):
         self.assertIn("independent official-share probes disagree", text)
         self.assertIn("Build schema-v6 production snapshot once", text)
         self.assertIn("timeout 45m python data_pipeline/update_daily_v2.py", text)
+        self.assertIn("resolve_publication_target", text)
+        self.assertNotIn("order_flow/latest.json", text)
         self.assertNotIn("for attempt in 1 2 3 4", text)
         self.assertIn("cancel-in-progress: false", text)
 
@@ -39,6 +41,13 @@ class PostCloseWorkflowTests(unittest.TestCase):
         self.assertIn("Capture same-day secondary-market ETF order flow", text)
         self.assertIn("git add site/data/order_flow", text)
         self.assertIn("data: capture same-day ETF secondary order flow", text)
+
+    def test_public_render_is_checked_after_a_successful_publish_workflow(self):
+        text = (ROOT / ".github" / "workflows" / "verify-render-deploy.yml").read_text("utf-8")
+        self.assertIn("workflow_run", text)
+        self.assertIn("Official ETF share gate and publish", text)
+        self.assertIn("etf-flow-radar-cn.onrender.com/data/latest.json", text)
+        self.assertIn("EXPECTED_TRADE_DATE", text)
 
 
 if __name__ == "__main__":

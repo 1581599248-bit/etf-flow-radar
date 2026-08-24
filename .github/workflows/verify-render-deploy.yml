@@ -1,0 +1,81 @@
+name: Verify public Render deployment
+
+on:
+  workflow_run:
+    workflows:
+      - Official ETF share gate and publish
+    types:
+      - completed
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-public-render-deployment
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Read the verified snapshot expected by clients
+        id: expected
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          snapshot = json.loads(Path("site/data/latest.json").read_text("utf-8"))
+          if snapshot.get("status") != "verified" or snapshot.get("sourceMode") != "REAL":
+              raise SystemExit("main does not contain a verified REAL snapshot")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"trade_date={snapshot['tradeDate']}\n")
+              output.write("status=verified\nsource_mode=REAL\n")
+          PY
+      - name: Wait until Render serves the same verified trade date
+        shell: bash
+        env:
+          EXPECTED_TRADE_DATE: ${{ steps.expected.outputs.trade_date }}
+          EXPECTED_STATUS: ${{ steps.expected.outputs.status }}
+          EXPECTED_SOURCE_MODE: ${{ steps.expected.outputs.source_mode }}
+        run: |
+          set -u
+          endpoint="https://etf-flow-radar-cn.onrender.com/data/latest.json"
+          for attempt in $(seq 1 36); do
+            if curl --fail --silent --show-error --max-time 20 \
+              "${endpoint}?verify=${GITHUB_RUN_ID}-${attempt}" -o /tmp/render-latest.json; then
+              if python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          payload = json.loads(Path("/tmp/render-latest.json").read_text("utf-8"))
+          expected = {
+              "tradeDate": os.environ["EXPECTED_TRADE_DATE"],
+              "status": os.environ["EXPECTED_STATUS"],
+              "sourceMode": os.environ["EXPECTED_SOURCE_MODE"],
+          }
+          actual = {key: payload.get(key) for key in expected}
+          if actual != expected:
+              raise SystemExit(f"Render still stale: expected={expected}, actual={actual}")
+          print(f"Render serves verified snapshot {actual['tradeDate']}")
+          PY
+              then
+                exit 0
+              fi
+            fi
+            echo "Render has not served ${EXPECTED_TRADE_DATE} yet (attempt ${attempt}/36)."
+            sleep 20
+          done
+          echo "Render did not serve the expected verified snapshot within 12 minutes." >&2
+          exit 1

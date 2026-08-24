@@ -38,6 +38,7 @@ yarn-error.log*
 /.wrangler/
 /outputs/
 /work/
+.cache/
 __pycache__/
 *.py[cod]
 site/data/last-failure.json

@@ -1,163 +1,5 @@
-import test from "node:test";
-import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-
-// æ ¡éªŒåŸåˆ™ï¼šæ–‡æ¡ˆä¸­çš„æ•°å­—ä¸æ–¹å‘å¿…é¡»èƒ½å¯¹å›å¿«ç…§æ•°æ®ï¼›
-// å¼ºåº¦å½¢å®¹è¯ï¼ˆå°å¹…/æ˜æ˜¾/å¤§å¹…/åå¼º/æ˜æ˜¾å ä¼˜ï¼‰éšé˜ˆå€¼è°ƒä¼˜å¯èƒ½å˜åŒ–ï¼Œä¸å†™æ­»ã€‚
-const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-test("dashboard source retains the answer-first research modules", async () => {
-  const page = await readFile("site/index.html", "utf8");
-  const css = await readFile("site/styles.css", "utf8");
-  assert.match(page, /èµ„é‡‘ETFæµåŠ¨é€æ—¥è·Ÿè¸ª/);
-  assert.match(page, /ä¸»è¦å®½åŸºæ•°æ®æ‘˜è¦/);
-  assert.match(page, /å®½åŸºä¸é£æ ¼èµ„é‡‘åæ ‡/);
-  assert.match(page, /ç”³ä¸‡ä¸€çº§ä¸ä¸»æµè¡Œä¸šèµ„é‡‘åæ ‡/);
-  assert.match(page, /ç”³ä¸‡è¡Œä¸šåˆ†ç±»æ ‡å‡†2021ç‰ˆ/);
-  assert.match(page, /çƒ­é—¨ä¸»é¢˜/);
-  assert.match(page, /å½“æ—¥ETFæµå…¥æµå‡ºåˆ†å¸ƒ/);
-  assert.doesNotMatch(page, /æ•°æ®è§£è¯»/);
-  assert.match(page, /ETFè·Ÿè¸ªè§‚ç‚¹/);
-  assert.match(page, /å¯¼å‡ºå®Œæ•´ JPG/);
-  assert.match(page, /å¯¼å‡ºç»“è®º JPG/);
-  assert.match(page, /å…¨é‡ETFé€æ—¥å˜æ›´æ£€æŸ¥/);
-  assert.match(page, /ã€å®½åŸºä»½é¢ã€‘/);
-  assert.match(page, /ã€é£æ ¼ä»½é¢ã€‘/);
-  assert.match(page, /ã€ç”³ä¸‡ä¸€çº§ä¸ä¸»é¢˜è¡Œä¸šä»½é¢ã€‘/);
-  assert.match(page, /ã€å•åªETFä»½é¢å¤§é¢å˜åŒ–ã€‘/);
-  assert.doesNotMatch(page, /å›½å®¶é˜Ÿä»£ç†ETFå‡€æµå…¥|ä»£ç†æ± å½“æ—¥ä¼°ç®—å‡€æµå…¥/);
-  assert.match(css, /\.e-row\[hidden\]\{display:none!important\}/);
-});
-
-test("schema v6 separates primary subscription flow, secondary trading flow and reconciles every client layer", async () => {
-  const snapshot = JSON.parse(await readFile("site/data/latest.json", "utf8"));
-  assert.equal(snapshot.schemaVersion, 6);
-  assert.equal(snapshot.sourceMode, "REAL");
-  assert.ok(["verified", "warning"].includes(snapshot.status));
-  assert.ok(snapshot.quality.officialSessions >= 21);
-  assert.equal(snapshot.quality.flowModelVersion, 2);
-  assert.equal(snapshot.quality.canonicalFlowValuation, "sameDayUnitNAV");
-  assert.equal(snapshot.quality.metricSeparation, "primary_market_subscription_vs_secondary_market_order_flow");
-
-  const primary = snapshot.flowMetrics.primaryMarket;
-  assert.equal(primary.metric, "primaryMarketNetSubscriptionEstimate");
-  assert.equal(primary.valuation, "sameDayUnitNAV");
-  assert.deepEqual(Object.keys(primary.scopeTotals).sort(), ["aShareStockEtf", "allEtf", "stockEtfIncludingCrossBorder"].sort());
-  assert.equal(snapshot.market.metric, primary.metric);
-  assert.equal(snapshot.market.valuation, primary.valuation);
-  assert.equal(snapshot.market.scopeKey, "aShareStockEtf");
-  assert.equal(snapshot.market.flow1d, primary.scopeTotals.aShareStockEtf.flow1d);
-  assert.equal(snapshot.market.etfCount, primary.scopeTotals.aShareStockEtf.etfCount);
-  assert.equal(snapshot.market.increaseEtfCount1d + snapshot.market.decreaseEtfCount1d + snapshot.market.unchangedEtfCount1d, snapshot.market.etfCount);
-
-  const assetKeys = ["aShareStockEtf", "crossBorderStockEtf", "bondEtf", "moneyEtf", "commodityEtf", "otherEtf"];
-  assert.deepEqual(Object.keys(primary.assetClassTotals).sort(), assetKeys.sort());
-  const assetFlow = Object.values(primary.assetClassTotals).reduce((sum, row) => sum + row.flow1d, 0);
-  assert.ok(Math.abs(assetFlow - primary.scopeTotals.allEtf.flow1d) <= 0.12);
-  assert.equal(primary.assetClassReconciliation.difference, 0);
-  assert.ok(Math.abs(primary.assetClassTotals.aShareStockEtf.flow1d + primary.assetClassTotals.crossBorderStockEtf.flow1d - primary.scopeTotals.stockEtfIncludingCrossBorder.flow1d) <= 0.12);
-
-  const secondary = snapshot.flowMetrics.secondaryMarketOrderFlow;
-  assert.equal(secondary.metric, "secondaryMarketMainOrderFlow");
-  assert.match(secondary.definition, /ä¸æ˜¯ETFç”³è´­èµå›/);
-  assert.ok(["available", "unavailable"].includes(secondary.status));
-
-  assert.equal(snapshot.universe.length, snapshot.quality.marketEtfCount);
-  assert.equal(snapshot.quality.completeUniverseCount, snapshot.quality.marketEtfCount);
-  assert.ok(snapshot.universeAudit);
-  assert.ok(snapshot.universe.every((row) => "assetScope" in row));
-  assert.equal(new Set(snapshot.etfs.map((row) => row.code)).size, snapshot.quality.classifiedEtfCount);
-  assert.equal(snapshot.quality.classifiedAshareScopeEnforcement.afterCount, snapshot.etfs.length);
-  assert.ok(!Object.hasOwn(snapshot.quality.classifiedAshareScopeEnforcement.excludedByScope, "aShareStockEtf"));
-  for (const row of snapshot.etfs) {
-    assert.equal(row.assetScope, "aShareStockEtf");
-    assert.equal(row.flowMetric, "primaryMarketNetSubscriptionEstimate");
-    assert.equal(row.flowValuation, "sameDayUnitNAV");
-    assert.equal(typeof row.shareDelta1d, "number");
-    assert.equal(typeof row.nav, "number");
-  }
-
-  assert.ok(snapshot.groups.some((row) => row.kind === "broad"));
-  assert.ok(snapshot.groups.some((row) => row.kind === "style"));
-  assert.ok(snapshot.groups.some((row) => row.kind === "industry"));
-  const memberCodesByGroup = new Map();
-  for (const row of snapshot.etfs) {
-    if (!memberCodesByGroup.has(row.groupId)) memberCodesByGroup.set(row.groupId, new Set());
-    memberCodesByGroup.get(row.groupId).add(row.code);
-  }
-  for (const row of snapshot.groups) {
-    assert.equal(typeof row.flow1d, "number");
-    assert.equal(typeof row.flow5d, "number");
-    assert.equal(typeof row.flow20d, "number");
-    assert.equal(row.flow5dMetric, "endpointShareChangeTimesCurrentNAV");
-    assert.equal(row.flow20dMetric, "endpointShareChangeTimesCurrentNAV");
-    assert.ok(memberCodesByGroup.get(row.id)?.has(row.representative.code));
-  }
-
-  const marketRecon = snapshot.quality.marketScopeReconciliation;
-  const reconMarketFlow = marketRecon.aShareEquityShareFlow1d ?? marketRecon.aShareEquityPrimaryFlow1d;
-  const reconClassifiedFlow = marketRecon.classifiedGroupShareFlow1d ?? marketRecon.classifiedGroupPrimaryFlow1d;
-  assert.equal(reconMarketFlow, snapshot.market.flow1d);
-  assert.ok(Number.isFinite(reconClassifiedFlow));
-  assert.ok(Number.isFinite(marketRecon.ungroupedDifference));
-  assert.ok(snapshot.quality.classifiedCoverageOfMarketPct >= 95);
-
-  assert.ok(Array.isArray(snapshot.industryRollups));
-  assert.ok(snapshot.industryRollups.length > 0 && snapshot.industryRollups.length <= 31);
-  assert.ok(snapshot.industryRollups.every((row) => row.kind === "industryRollup"));
-  assert.ok(snapshot.industryRollups.some((row) => row.name === "ç”µå­"));
-  assert.ok(!snapshot.industryRollups.some((row) => row.name === "åŠå¯¼ä½“"));
-
-  const visibleSectors = snapshot.groups.filter((row) => row.kind === "industry");
-  const topSectorIn = [...visibleSectors].sort((a, b) => b.flow1d - a.flow1d)[0];
-  const topSectorOut = [...visibleSectors].sort((a, b) => a.flow1d - b.flow1d)[0];
-  const sectorRecon = snapshot.quality.clientSectorReconciliation;
-  assert.equal(sectorRecon.displayLayer, "mutually_exclusive_sw_level_and_theme_groups");
-  assert.equal(sectorRecon.topInflowGroup.name, topSectorIn.name);
-  assert.equal(sectorRecon.topOutflowGroup.name, topSectorOut.name);
-  assert.ok(Math.abs(sectorRecon.difference) <= 0.06);
-  assert.ok(Math.abs(sectorRecon.visibleGroupFlow1d - sectorRecon.industryRollupFlow1d) <= 0.06);
-
-  const primaryValue = snapshot.market.flow1d;
-  const primaryPattern = primaryValue === 0
-    ? /ETFä»½é¢å¯¹åº”ç”³èµèµ„é‡‘(?:åŸºæœ¬æŒå¹³|å‡€é¢0\.0äº¿å…ƒ)/
-    : new RegExp(`ETFä»½é¢å¯¹åº”ç”³èµèµ„é‡‘(?:å°å¹…|æ˜æ˜¾|å¤§å¹…)?å‡€${primaryValue > 0 ? "æµå…¥" : "æµå‡º"}${escapeRegExp(Math.abs(primaryValue).toFixed(1))}äº¿å…ƒ`);
-  assert.match(snapshot.conclusion.headline, primaryPattern);
-  assert.match(snapshot.conclusion.headline, /\nâ€”â€” /);
-  assert.doesNotMatch(snapshot.conclusion.headline, /Aè‚¡è‚¡ç¥¨ETFå½“æ—¥åˆè®¡/);
-  assert.doesNotMatch(snapshot.conclusion.headline, /å®½åŸº\d+ç»„ä¸­/);
-  assert.doesNotMatch(snapshot.conclusion.headline, /ç”³ä¸‡ä¸€çº§å’Œä¸»é¢˜è¡Œä¸š/);
-  assert.equal(snapshot.conclusion.facts.length, 4);
-  assert.ok(snapshot.conclusion.facts.every((fact) => !String(fact).includes("ä»½é¢")));
-  const sectorFact = String(snapshot.conclusion.facts[2] || "");
-  assert.ok(sectorFact.includes(topSectorIn.name), `facts[2] should name top inflow group ${topSectorIn.name}`);
-  assert.ok(sectorFact.includes(topSectorOut.name), `facts[2] should name top outflow group ${topSectorOut.name}`);
-  const broadFact = String(snapshot.conclusion.facts[0] || "");
-  const broadGroups = snapshot.groups.filter((g) => g.kind === "broad");
-  const broadIn = broadGroups.filter((g) => Number(g.flow1d || 0) > 0).length;
-  const broadOut = broadGroups.filter((g) => Number(g.flow1d || 0) < 0).length;
-  assert.ok(broadFact.includes(`å…±${broadGroups.length}ç»„ï¼Œ${broadOut}ä¸ªå‡€æµå‡ºã€${broadIn}ä¸ªå‡€æµå…¥`), `facts[0] broad counts mismatch: ${broadFact}`);
-  assert.doesNotMatch(snapshot.conclusion.headline, /ç”³ä¸‡ä¸€çº§è¡Œä¸šèµ„é‡‘æµå…¥å±…å‰/);
-
-  const trade = snapshot.flowMetrics.secondaryMarketTradeFlow;
-  if (trade.status === "available") {
-    assert.equal(trade.tradeDate, snapshot.tradeDate);
-    const tradeValue = trade.scopeTotals.aShareStockEtf.netFlow1d;
-    const tradePattern = new RegExp(
-      `^Aè‚¡ETFç›˜ä¸­(?:ä¹°å–åŠ›é‡åŸºæœ¬å‡è¡¡|(?:ä¹°|å–)ç›˜(?:å°å¹…åå¼º|åå¼º|æ˜æ˜¾å ä¼˜)ï¼Œä¸»åŠ¨${tradeValue > 0 ? "ä¹°å…¥" : "å–å‡º"}å‡€é¢${escapeRegExp(Math.abs(tradeValue).toFixed(1))}äº¿å…ƒ)ï¼›`
-    );
-    assert.match(snapshot.conclusion.headline, tradePattern);
-  } else {
-    assert.ok(snapshot.conclusion.headline.startsWith("Aè‚¡ETFç›˜ä¸­ä¸»åŠ¨ä¹°å–æ•°æ®æš‚ç¼ºï¼›"));
-  }
-
-  assert.match(snapshot.methodology.identity, /ç¦æ­¢æ®æ­¤æ¨æ–­/);
-  assert.match(snapshot.methodology.flow, /Tæ—¥å•ä½å‡€å€¼/);
-  assert.match(snapshot.methodology.metricSeparation, /ä¸»åŠ¨ä¹°å–å‡€é¢/);
-  assert.match(snapshot.methodology.metricSeparation, /ETFä»½é¢å¯¹åº”ç”³èµèµ„é‡‘/);
-  assert.match(snapshot.methodology.sectorDisplay, /ç”³ä¸‡ä¸€çº§è¡Œä¸š\+çƒ­é—¨ä¸»é¢˜/);
-  assert.match(snapshot.methodology.multiDay, /ä¸æ˜¯é€æ—¥å‡€(?:ç”³è´­|æµå…¥)é¢ä¹‹å’Œ/);
-  assert.match(snapshot.methodology.scope, /Aè‚¡è‚¡ç¥¨ETF/);
+YªçŠx-®éÜj×¢ëiºÚ+Š§j[h‘éÜ¢éíßÏ=N‹Z–‹­¦ëeŠw¬Õ¥µÁ½ÉĞÑ•ÍĞ™É½´€‰¹½‘”éÑ•ÍĞˆì)¥µÁ½ÉĞ…ÍÍ•ÉĞ™É½´€‰¹½‘”é…ÍÍ•ÉĞ½ÍÑÉ¥Ğˆì)¥µÁ½ÉĞìÉ•…‘¥±”ô™É½´€‰¹½‘”é™Ì½ÁÉ½µ¥Í•Ìˆì((¼¼ƒš‚‡¦ª3–:–"g¾òkšZš†#’â·jšVÃ–¶_’â;šZç–BG–ş¦†ï¢÷–¾ç–n{–ş¯ŸšVÃš6»¾òl(¼¼ƒ–òë–ê›–ö‹–ºç¢¾7¾ò#–Â?–æ¿šb;šbø¿–’Ÿ–æ¿–?–òè¿šb;šbû–6ƒ’òc¾ò'¦j?¦b#–ó¢Â’òc–>¿¢÷–>c–2[¾ò3’â7–gš¶ï)½¹ÍĞ•Í…Á•I•áÀ€ô€¡Ì¤€ôøÌ¹É•Á±…” ½l¸¨¬ıx‘íô ¥ñmquqqt½œ°€‰qp˜ˆ¤ì()Ñ•ÍĞ ‰‘…Í¡‰½…ÉÍ½ÕÉ”É•Ñ…¥¹ÌÑ¡”…¹Íİ•Èµ™¥ÉÍĞÉ•Í•…É µ½‘Õ±•Ìˆ°…Íå¹Œ€ ¤€ôøì(€½¹ÍĞÁ…”€ô…İ…¥ĞÉ•…‘¥±” ‰Í¥Ñ”½¥¹‘•à¹¡Ñµ°ˆ°€‰ÕÑ˜àˆ¤ì(€½¹ÍĞÍÌ€ô…İ…¥ĞÉ•…‘¥±” ‰Í¥Ñ”½ÍÑå±•Ì¹ÍÌˆ°€‰ÕÑ˜àˆ¤ì(€…ÍÍ•ÉĞ¹µ…Ñ ¡Á…”°€¿¢Ö¦EQšÖ–*£¦Cš^—¢Ş¢â¨¼¤ì(€…ÍÍ•ÉĞ¹µ…Ñ ¡Á…”°€¿’âï¢š–º÷–~ëšVÃš6»šFc¢š¼¤ì(€…ÍÍ•ÉĞ¹µ…Ñ ¡Á…”°€¿–º÷–~ë’â;¦;š‚ó¢Ö¦G–vCš‚¼¤ì(€…ÍÍ•ÉĞ¹µ…Ñ ¡Á…”°€¿RÏ’â’âêŸ’â;’âïšÖ¢†3’âk¢Ö¦G–vCš‚¼¤ì(€…ÍÍ•ÉĞ¹µ…Ñ ¡Á…”°€¿RÏ’â¢†3’âk–"Æïš‚–ÈÀÈÇ& ¼¤ì(€…ÍÍ•ÉĞ¹µ…Ñ ¡Á…”°€¿·¦^£’âï¦Š`¼¤ì(€…ÍÍ•ÉĞ¹µ…Ñ ¡Á…”°€¿–öOš^•QšÖ–—šÖ–ë–"–â¼¤ì(€…ÍÍ•ÉĞ¹‘½•Í9½Ñ5…Ñ ¡Á…”°€¿šVÃš6»¢¢¾ì¼¤ì(€…ÍÍ•ÉĞ¹µ…Ñ ¡Á…”°€½Q¢Ş¢â«¢
+ä¼¤ì(€…ÍÍ•ÉĞ¹µ…Ñ ¡Á…”°€¿–¾ó–ë–º3šVĞ)A¼¤ì(€…ÍÍ•ÉĞ¹µ…Ñ ¡Á…”°€¿–¾ó–ëîO¢ºè)A¼¤ì(€…ÍÍ•ÉĞ¹µ…Ñ ¡Á…”°€¿–£¦=Q¦Cš^—–>cšnÓšš~”¼¤ì(€…ÍÍ•ÉĞ¹µ…Ñ ¡Á…”°€¿C–º÷–~ë’î÷¦ŠwD¼¤ì(€…ÍÍ•ÉĞ¹µ…Ñ ¡Á…”°€¿C¦;š‚ó’î÷¦ŠwD¼¤ì(€…ÍÍ•ÉĞ¹µ…Ñ ¡Á…”°€¿CRÏ’â’âêŸ’â;’âï¦Šc¢†3’âk’î÷¦ŠwD¼¤ì(€…ÍÍ•ÉĞ¹µ…Ñ ¡Á…”°€¿C–6W–>©Q’î÷¦Šw–’Ÿ¦Šw–>c–2[D¼¤ì(€…ÍÍ•ÉĞ¹‘½•Í9½Ñ5…Ñ ¡Á…”°€¿–n÷–ºÛ¦b’îBQ–šÖ–•ó’îBšÆƒ–öOš^—’òÃº_–šÖ–”¼¤ì(€…ÍÍ•ÉĞ¹µ…Ñ ¡ÍÌ°€½p¹”µÉ½İqm¡¥‘‘•¹qwo<öÚ$z{-®éÜj×/);
   assert.match(snapshot.methodology.scope, /è‚¡ç¥¨ETFï¼ˆå«è·¨å¢ƒï¼‰/);
 
   const daily = JSON.parse(await readFile(`site/data/daily/${snapshot.tradeDate}.json`, "utf8"));

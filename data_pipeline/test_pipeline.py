@@ -1,113 +1,15 @@
-import json
-import tempfile
-import unittest
-from datetime import date
-from pathlib import Path
-from unittest.mock import patch
+YªçŠx-®éÜj×¢ëiºÚ+Š§j[h‘éÜ¢éíÛÍ¹N‹Z–‹­¦ëeŠw¬Õ¥µÁ½ÉĞ©Í½¸)¥µÁ½ÉĞÑ•µÁ™¥±”)¥µÁ½ÉĞÕ¹¥ÑÑ•ÍĞ)™É½´‘…Ñ•Ñ¥µ”¥µÁ½ÉĞ‘…Ñ”)™É½´Á…Ñ¡±¥ˆ¥µÁ½ÉĞA…Ñ )™É½´Õ¹¥ÑÑ•ÍĞ¹µ½¬¥µÁ½ÉĞÁ…Ñ ()¥µÁ½ÉĞÕÁ‘…Ñ•}‘…¥±ä)¥µÁ½ÉĞÁ…¹‘…Ì…ÌÁ(()±…ÍÌA¥Á•±¥¹•Q•ÍÑÌ¡Õ¹¥ÑÑ•ÍĞ¹Q•ÍÑ…Í”¤è(€€€‘•˜Ñ•ÍÑ}±…ÍÍ¥™¥…Ñ¥½¹}¥Í}µÕÑÕ…±±å}•á±ÕÍ¥Ù•}…¹‘}‰±½­Í}¹½¹}…}Í¡…É•}…ÍÍ•ÑÌ¡Í•±˜¤è(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡ÕÁ‘…Ñ•}‘…¥±ä¹±…ÍÍ¥™å}•Ñ˜ ‹šÊ«šŞÄÌÀÁQˆ¥l‰¥‰t°€‰¡ÌÌÀÀˆ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡ÕÁ‘…Ñ•}‘…¥±ä¹±…ÍÍ¥™å}•Ñ˜ ‹šÊ«šŞÄÌÀÃê‹–"¥Qˆ¥l‰¥‰t°€‰‘¥Ù¥‘•¹ˆ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡ÕÁ‘…Ñ•}‘…¥±ä¹±…ÍÍ¥™å}•Ñ˜ ‹–6+–¾ó’öMQˆ¥l‰­¥¹‰t°€‰¥¹‘ÕÍÑÉäˆ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡ÕÁ‘…Ñ•}‘…¥±ä¹±…ÍÍ¥™å}•Ñ˜ ‹¦NÛ¢†1Qˆ¥l‰¥‰t°€‰Íİ}‰…¹­Ìˆ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡ÕÁ‘…Ñ•}‘…¥±ä¹±…ÍÍ¥™å}•Ñ˜ ‹¢¾–"áQˆ¥l‰¥‰t°€‰™¥¹}‰É½­•Èˆ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡ÕÁ‘…Ñ•}‘…¥±ä¹±…ÍÍ¥™å}•Ñ˜ ‹’êë–Ş—šfë¢õQˆ¥l‰¥‰t°€‰½µÁ}…¤ˆ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%Í9½¹”¡ÕÁ‘…Ñ•}‘…¥±ä¹±…ÍÍ¥™å}•Ñ˜ ‹šâ¿¢
+‡¦hÔÁQˆ¤¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%Í9½¹”¡ÕÁ‘…Ñ•}‘…¥±ä¹±…ÍÍ¥™å}•Ñ˜ ˆÌÃ–æÓ–n÷–éQˆ¤¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%Í9½¹”¡ÕÁ‘…Ñ•}‘…¥±ä¹±…ÍÍ¥™å}•Ñ˜ ‹¦î¦EQ–6;–º$ˆ¤¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%Í9½¹”¡ÕÁ‘…Ñ•}‘…¥±ä¹±…ÍÍ¥™å}•Ñ˜ ‹š.o–V–ş¯êıQˆ¤¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡ÕÁ‘…Ñ•}‘…¥±ä¹±…ÍÍ¥™å}•Ñ˜ ‹¦î¦G¢
+…Qˆ¥l‰¥‰t°€‰µ•Ñ…±}½±ˆ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡ÕÁ‘…Ñ•}‘…¥±ä¹±…ÍÍ¥™å}•Ñ˜ ‹–6+–¾ó’öMQˆ¥l‰¥‰t°€‰•±•}Í•µ¥½¹‘ÕÑ½Èˆ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡ÕÁ‘…Ñ•}‘…¥±ä¹±…ÍÍ¥™å}•Ñ˜ ‹¢*¿&Qˆ¥l‰¥‰t°€‰•±•}¡¥Àˆ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡ÕÁ‘…Ñ•}‘…¥±ä¹±…ÍÍ¥™å}•Ñ˜ ‹G–"o¢*¿&Q–b'–ºxˆ¥l‰¥‰t°€‰•±•}¡¥Àˆ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡ÕÁ‘…Ñ•}‘‡_6æÚ$z{-®éÜj×      update_daily.atomic_publish({"status": "failed", "tradeDate": "2026-08-11"})
+            self.assertEqual(json.loads((public / "latest.json").read_text("utf-8")), {"safe": True})
 
-import update_daily
-import pandas as pd
-
-
-class PipelineTests(unittest.TestCase):
-    def test_classification_is_mutually_exclusive_and_blocks_non_a_share_assets(self):
-        self.assertEqual(update_daily.classify_etf("æ²ªæ·±300ETF")["id"], "hs300")
-        self.assertEqual(update_daily.classify_etf("æ²ªæ·±300çº¢åˆ©ETF")["id"], "dividend")
-        self.assertEqual(update_daily.classify_etf("åŠå¯¼ä½“ETF")["kind"], "industry")
-        self.assertEqual(update_daily.classify_etf("é“¶è¡ŒETF")["id"], "sw_banks")
-        self.assertEqual(update_daily.classify_etf("è¯åˆ¸ETF")["id"], "fin_broker")
-        self.assertEqual(update_daily.classify_etf("äººå·¥æ™ºèƒ½ETF")["id"], "comp_ai")
-        self.assertIsNone(update_daily.classify_etf("æ¸¯è‚¡é€š50ETF"))
-        self.assertIsNone(update_daily.classify_etf("30å¹´å›½å€ºETF"))
-        self.assertIsNone(update_daily.classify_etf("é»„é‡‘ETFåå®‰"))
-        self.assertIsNone(update_daily.classify_etf("æ‹›å•†å¿«çº¿ETF"))
-        self.assertEqual(update_daily.classify_etf("é»„é‡‘è‚¡ETF")["id"], "metal_gold")
-        self.assertEqual(update_daily.classify_etf("åŠå¯¼ä½“ETF")["id"], "elec_semiconductor")
-        self.assertEqual(update_daily.classify_etf("èŠ¯ç‰‡ETF")["id"], "elec_chip")
-        self.assertEqual(update_daily.classify_etf("ç§‘åˆ›èŠ¯ç‰‡ETFå˜‰å®")["id"], "elec_chip")
-        self.assertEqual(update_daily.classify_etf("åŠå¯¼ä½“è®¾å¤‡ETFå¹¿å‘")["id"], "elec_semiconductor")
-        self.assertEqual(update_daily.classify_etf("é›†æˆç”µè·¯ETFå˜‰å®")["id"], "elec_semiconductor")
-        self.assertEqual(update_daily.classify_etf("æ¶ˆè´¹ç”µå­ETF")["id"], "elec_consumer")
-        self.assertEqual(update_daily.classify_etf("å«æ˜ŸETF")["id"], "comm_satellite")
-        self.assertEqual(update_daily.classify_etf("å«æ˜Ÿé€šä¿¡ETF")["id"], "comm_satellite")
-        self.assertEqual(update_daily.classify_etf("é€šä¿¡ETF")["id"], "sw_communications")
-        self.assertEqual(update_daily.classify_etf("åˆ¸å•†ETF")["id"], "fin_broker")
-        self.assertEqual(update_daily.classify_etf("å…‰ä¼ETF")["id"], "power_pv")
-        self.assertEqual(update_daily.classify_etf("åˆ›ä¸šæ¿äººå·¥æ™ºèƒ½ETFå¤§æˆ")["id"], "comp_ai")
-        self.assertEqual(update_daily.classify_etf("ç¢³ä¸­å’ŒETFå—æ–¹")["id"], "carbon")
-        self.assertEqual(update_daily.classify_etf("å¤®ä¼ETF")["id"], "soe")
-        self.assertEqual(update_daily.classify_etf("A500å¯Œå›½")["id"], "csi_a500")
-        self.assertIsNone(update_daily.classify_etf("çº³æ–¯è¾¾å…‹100ETFå¤§æˆ"))
-        self.assertIsNone(update_daily.classify_etf("é‡‘ETFå¤©å¼˜"))
-        self.assertEqual(update_daily.classify_etf("è‡ªç”±ç°é‡‘æµETF")["id"], "free_cash_flow")
-        self.assertEqual(update_daily.classify_etf("300ç°é‡‘", "æ²ªæ·±300è‡ªç”±ç°é‡‘æµETFæ±‡æ·»å¯Œ")["id"], "free_cash_flow")
-
-    def test_compatibility_index_mapping_avoids_partial_false_matches(self):
-        self.assertEqual(update_daily.identify_index("æ²ªæ·±300ETF")[0], "000300")
-        self.assertEqual(update_daily.identify_index("ç§‘åˆ›50ETF")[0], "000688")
-        self.assertIsNone(update_daily.identify_index("æ¸¯è‚¡é€š50ETF"))
-
-    def test_percentile_requires_enough_history(self):
-        self.assertIsNone(update_daily.percentile([1.0] * 59, 1.0))
-        self.assertEqual(update_daily.percentile([1.0] * 60, 1.0), 100.0)
-
-    def test_style_variants_do_not_enter_headline_benchmark_pool(self):
-        self.assertTrue(update_daily.is_plain_benchmark("æ²ªæ·±300ETF"))
-        self.assertFalse(update_daily.is_plain_benchmark("æ²ªæ·±300å¢å¼ºETF"))
-        self.assertFalse(update_daily.is_plain_benchmark("A500çº¢åˆ©ä½æ³¢ETF"))
-
-    def test_broad_classification_uses_full_name_and_beats_manager_suffixes(self):
-        self.assertEqual(update_daily.classify_etf("åˆ›ä¸šæ¿ETFä¸­é“¶è¯åˆ¸")["id"], "chinext")
-        self.assertEqual(update_daily.classify_etf("A100", "A100ETFå—æ–¹")["id"], "csi_a100")
-        self.assertEqual(update_daily.classify_etf("æ·±100ETFæ˜“æ–¹è¾¾")["id"], "szse100")
-        self.assertEqual(update_daily.classify_etf("ç§‘åˆ›200E")["id"], "star200")
-
-    def test_universe_audit_detects_added_missing_and_renamed(self):
-        previous = pd.DataFrame([
-            {"code": "510300", "name": "300ETF", "exchange": "SSE"},
-            {"code": "159001", "name": "æ—§åç§°", "exchange": "SZSE"},
-            {"code": "159999", "name": "å·²æ¶ˆå¤±", "exchange": "SZSE"},
-        ])
-        current = pd.DataFrame([
-            {"code": "510300", "name": "300ETF", "exchange": "SSE"},
-            {"code": "159001", "name": "æ–°åç§°", "exchange": "SZSE"},
-            {"code": "159058", "name": "è¯åˆ¸ETFå¤§æˆ", "exchange": "SZSE"},
-        ])
-        audit = update_daily.audit_universe(current, previous)
-        self.assertEqual([row["code"] for row in audit["added"]], ["159058"])
-        self.assertEqual([row["code"] for row in audit["missing"]], ["159999"])
-        self.assertEqual(audit["renamed"][0]["previousName"], "æ—§åç§°")
-
-    def test_price_flow_state_covers_all_four_quadrants(self):
-        self.assertEqual(update_daily._flow_state(1, 1), "è·‘èµ¢ä¸”æµå…¥")
-        self.assertEqual(update_daily._flow_state(-1, 1), "è·‘è¾“ä½†æµå…¥")
-        self.assertEqual(update_daily._flow_state(1, -1), "è·‘èµ¢ä½†æµå‡º")
-        self.assertEqual(update_daily._flow_state(-1, -1), "è·‘è¾“ä¸”æµå‡º")
-
-    def test_sse_adapter_rejects_schema_drift(self):
-        response = unittest.mock.Mock()
-        response.raise_for_status.return_value = None
-        response.json.return_value = {"result": [{"SEC_CODE": "510300"}]}
-        with patch.object(update_daily.requests, "get", return_value=response):
-            with self.assertRaises(ValueError):
-                update_daily.fetch_sse_shares(date(2026, 8, 12))
-
-    def test_sse_adapter_treats_empty_day_as_not_yet_published(self):
-        response = unittest.mock.Mock()
-        response.raise_for_status.return_value = None
-        response.json.return_value = {"result": []}
-        with patch.object(update_daily.requests, "get", return_value=response):
-            frame = update_daily.fetch_sse_shares(date(2026, 8, 13))
-        self.assertTrue(frame.empty)
-        self.assertEqual(list(frame.columns), ["åºå·", "åŸºé‡‘ä»£ç ", "åŸºé‡‘ç®€ç§°", "ETFç±»å‹", "ç»Ÿè®¡æ—¥æœŸ", "åŸºé‡‘ä»½é¢"])
-
-    def test_failed_snapshot_never_replaces_latest(self):
+    def test_warning_snapshot_never_replaces_latest(self):
         with tempfile.TemporaryDirectory() as temp:
             public = Path(temp)
             (public / "latest.json").write_text('{"safe": true}', "utf-8")
             with patch.object(update_daily, "PUBLIC", public):
                 with self.assertRaises(RuntimeError):
-                    update_daily.atomic_publish({"status": "failed", "tradeDate": "2026-08-11"})
+                    update_daily.atomic_publish({"status": "warning", "tradeDate": "2026-08-11"})
             self.assertEqual(json.loads((public / "latest.json").read_text("utf-8")), {"safe": True})
 
     def test_default_refresh_checks_current_calendar_day_first(self):
