@@ -1,5 +1,129 @@
-YªçŠx-®éÜj×¢ëiºÚ+Š§j[h‘éÜ¢éíÛ½{N‹Z–‹­¦ëeŠw¬Õ¥µÁ½ÉĞÕ¹¥ÑÑ•ÍĞ)™É½´‘…Ñ•Ñ¥µ”¥µÁ½ÉĞ‘…Ñ”°Ñ¥µ•‘•±Ñ„()¥µÁ½ÉĞÁ…¹‘…Ì…ÌÁ()¥µÁ½ÉĞ™±½İ}µ½‘•±}ØÈ…Ìµ½‘•°(()±…ÍÌ±½İ5½‘•±XÉQ•ÍÑÌ¡Õ¹¥ÑÑ•ÍĞ¹Q•ÍÑ…Í”¤è(€€€‘•˜}Í¹…ÁÍ¡½Ğ¡Í•±˜¤è(€€€€€€€É•ÑÕÉ¸ì(€€€€€€€€€€€€‰Õ¹¥Ù•ÉÍ”ˆèl(€€€€€€€€€€€€€€€ì‰½‘”ˆè€ˆÔÄÀÌÀÀˆ°€‰¹…µ”ˆè€‹šÊ«šŞÄÌÀÁQ–6;šÎÃš~?Fxˆ°€‰Í¡…É•Ìˆè€Å|ÄÀÁ|ÀÀÁ|ÀÀÀ°(€€€€€€€€€€€€€€€€€‰É•™•É•¹•AÉ¥”ˆè€Ğ¸äÀ°€‰É•™•É•¹•AÉ¥•QåÁ”ˆè€‰Y‰ô°(€€€€€€€€€€€€€€€ì‰½‘”ˆè€ˆÔÄÌÄÀÀˆ°€‰¹…µ”ˆè€‹êÏš2Qˆ°€‰Í¡…É•Ìˆè€äÀÁ|ÀÀÁ|ÀÀÀ°(€€€€€€€€€€€€€€€€€‰É•™•É•¹•AÉ¥”ˆè€È¸ÄÀ°€‰É•™•É•¹•AÉ¥•QåÁ”ˆè€‰Y‰ô°(€€€€€€€€€€€t°(€€€€€€€€€€€€‰•Ñ™Ìˆèl(€€€€€€€€€€€€€€€ì‰½‘”ˆè€ˆÔÄÀÌÀÀˆ°€‰¹…µ”ˆè€‹šÊ«šŞÄÌÀÁQ–6;šÎÃš~?Fxˆ°€‰É½ÕÁ%ˆè€‰¡ÌÌÀÀˆ°(€€€€€€€€€€€€€€€€€‰É½ÕÁ9…µ”ˆè€‹šÊ«šŞÄÌÀÀˆ°€‰­¥¹ˆè€‰‰É½…ˆ°€‰É•™•É•¹•AÉ¥”ˆè€Ğ¸äÀ°(€€€€€€€€€€€€€€€€€‰É•™•É•¹•AÉ¥•QåÁ”ˆè€‰Yˆ°€‰™±½ÜÅˆè€À¸À°€‰™±½ÜÕˆè€À¸À°€‰™±½ÜÈÁˆè€À¸À°(€€€€€€€€€€€€€€€€€‰…Õ´ˆè€À¸Áô°(€€€€€€€€€€€t°(€€€€€€€€€€€€‰É½ÕÁÌˆèl(€€€€€€€€€€€€€€€ì‰¥ˆè€‰¡ÌÌÀÀˆ°€‰¹…µ”ˆè€‹šÊ«šŞÄÌÀÀˆ°€‰­¥¹ˆè€‰‰É½…ˆ°€‰™±½ÜÅˆè€À¸À°(€€€€€€€€€€€€€€€€€‰™±½ÜÕˆè€À¸À°€‰™±½ÜÈÁˆè€À¸À°€‰…Õ´ˆè€À¸À°(€€€€€€€€€€€€€€€€€‰É•±…Ñ¥Ù•I•ÑÕÉ¸ÈÁˆè€À¸Ô°€‰É•ÑÕÉ¸Åˆè€À¸À°€‰É•ÑÕÉ¸Õˆè€À¸À°(€€€€€€€€€€€€€€€€€‰É•ÑÕÉ¸ÈÁˆè€À¸À°€‰É•ÁÉ•Í•¹Ñ…Ñ¥Ù”ˆèì‰½‘”ˆè€ˆÔÄÀÌÀÀˆ°€‰¹…µ”ˆè€‹šÊ«šŞÄÌÀÁQ–6;šÎÃš~?Fx‰õô°(€€€€€€€€€€€t°(€€€€€€€€€€€€‰ÅÕ…±¥Ñäˆèíô°(€€€€€€€ô((€€€‘•˜}Ñ¡Ì¡Í•±˜¤è(€€€€€€€É•ÑÕÉ¸Á¹…Ñ…É…µ”¡l(€€€€€€€€€€€ì‰½‘”ˆè€ˆÔÄÀÌÀÀˆ°€‰™Õ¹‘}¹…µ”ˆè€‹–6;šÎÃš~?F{šÊ«šŞÄÌÀÁQˆ°€‰¹…Øˆè€Ô¸À°(€€€€€€€€€€€€€‰ÁÉ•Ù}¹…Øˆè€Ğ¸à°€‰™Õ¹‘}ÑåÁ”ˆè€‹¢
-‡–£–z,‰ô°(€€€€€€€€€€€ì‰¿^õîÚ$z{-®éÜj×å…¨æ–°ç­–ç•¥æŒ‡æ•°ETF", "shares": 220_000_000,
+import unittest
+from datetime import date, timedelta
+
+import pandas as pd
+
+import flow_model_v2 as model
+
+
+class FlowModelV2Tests(unittest.TestCase):
+    def _snapshot(self):
+        return {
+            "universe": [
+                {"code": "510300", "name": "æ²ªæ·±300ETFåæ³°æŸç‘", "shares": 1_100_000_000,
+                 "referencePrice": 4.90, "referencePriceType": "AVG"},
+                {"code": "513100", "name": "çº³æŒ‡ETF", "shares": 900_000_000,
+                 "referencePrice": 2.10, "referencePriceType": "AVG"},
+            ],
+            "etfs": [
+                {"code": "510300", "name": "æ²ªæ·±300ETFåæ³°æŸç‘", "groupId": "hs300",
+                 "groupName": "æ²ªæ·±300", "kind": "broad", "referencePrice": 4.90,
+                 "referencePriceType": "AVG", "flow1d": 0.0, "flow5d": 0.0, "flow20d": 0.0,
+                 "aum": 0.0},
+            ],
+            "groups": [
+                {"id": "hs300", "name": "æ²ªæ·±300", "kind": "broad", "flow1d": 0.0,
+                 "flow5d": 0.0, "flow20d": 0.0, "aum": 0.0,
+                 "relativeReturn20d": 0.5, "return1d": 0.0, "return5d": 0.0,
+                 "return20d": 0.0, "representative": {"code": "510300", "name": "æ²ªæ·±300ETFåæ³°æŸç‘"}},
+            ],
+            "quality": {},
+        }
+
+    def _ths(self):
+        return pd.DataFrame([
+            {"code": "510300", "fund_name": "åæ³°æŸç‘æ²ªæ·±300ETF", "nav": 5.0,
+             "prev_nav": 4.8, "fund_type": "è‚¡ç¥¨å‹"},
+            {"code": "513100", "fund_name": "å›½æ³°çº³æ–¯è¾¾å…‹100ETF", "nav": 2.0,
+             "prev_nav": 2.0, "fund_type": "è‚¡ç¥¨å‹"},
+        ])
+
+    def _window(self):
+        end = date(2026, 8, 14)
+        rows = []
+        for i in range(21):
+            d = end - timedelta(days=20 - i)
+            # Calendar spacing is irrelevant to the pure flow model: positions in
+            # the list represent trading sessions supplied by the transport layer.
+            rows.append((d, pd.DataFrame([
+                {"code": "510300", "shares": 1_000_000_000 + i * 5_000_000},
+                {"code": "513100", "shares": 950_000_000 - i * 2_500_000},
+            ])))
+        rows[-1] = (end, pd.DataFrame([
+            {"code": "510300", "shares": 1_100_000_000},
+            {"code": "513100", "shares": 900_000_000},
+        ]))
+        return rows
+
+    def test_primary_flow_uses_nav_and_keeps_average_price_as_comparison(self):
+        snapshot = self._snapshot()
+        model.apply_flow_model(snapshot, date(2026, 8, 14), self._window(), self._ths(), None)
+        etf = snapshot["etfs"][0]
+        self.assertEqual(etf["flow1d"], 0.25)
+        self.assertEqual(etf["primaryFlow1d"], 0.25)
+        self.assertEqual(etf["flow1dAvgPriceEstimate"], 0.24)
+        self.assertEqual(etf["flowValuation"], "sameDayUnitNAV")
+        self.assertEqual(snapshot["market"]["metric"], "primaryMarketNetSubscriptionEstimate")
+
+    def test_market_scopes_are_explicit_and_crossborder_does_not_enter_ashare_total(self):
+        snapshot = self._snapshot()
+        model.apply_flow_model(snapshot, date(2026, 8, 14), self._window(), self._ths(), None)
+        scopes = snapshot["flowMetrics"]["primaryMarket"]["scopeTotals"]
+        self.assertEqual(scopes["aShareStockEtf"]["etfCount"], 1)
+        self.assertEqual(scopes["stockEtfIncludingCrossBorder"]["etfCount"], 2)
+        self.assertEqual(snapshot["market"]["etfCount"], 1)
+
+    def test_asset_scope_keeps_money_separate_from_bond(self):
+        self.assertEqual(model._asset_scope("è´§å¸ETF", "åå®ç°é‡‘æ·»ç›ŠETF", "è´§å¸å‹"), "moneyEtf")
+        self.assertEqual(model._asset_scope("æ·»å¯Œå¿«çº¿ETF", "æ±‡æ·»å¯Œæ”¶ç›Šå¿«çº¿è´§å¸ETF", "å…¶ä»–"), "moneyEtf")
+        self.assertEqual(model._asset_scope("å›½å€ºETF", "å›½æ³°ä¸Šè¯5å¹´æœŸå›½å€ºETF", "å€ºåˆ¸å‹"), "bondEtf")
+        self.assertEqual(model._asset_scope("é»„é‡‘ETF", "åå®‰é»„é‡‘æ˜“ETF", "å…¶ä»–"), "commodityEtf")
+        self.assertEqual(model._asset_scope("çº³æŒ‡ETF", "å›½æ³°çº³æ–¯è¾¾å…‹100ETF", "è‚¡ç¥¨å‹"), "crossBorderStockEtf")
+        self.assertEqual(model._asset_scope("æ²ªæ·±300ETF", "åæ³°æŸç‘æ²ªæ·±300ETF", "è‚¡ç¥¨å‹"), "aShareStockEtf")
+
+    def test_secondary_order_flow_never_overwrites_primary_and_requires_exact_date(self):
+        snapshot = self._snapshot()
+        spot = pd.DataFrame({
+            "ä»£ç ": ["510300"],
+            "ä¸»åŠ›å‡€æµå…¥-å‡€é¢": [-900_000_000],
+            "æ•°æ®æ—¥æœŸ": ["2026-08-14"],
+        })
+        model.apply_flow_model(snapshot, date(2026, 8, 14), self._window(), self._ths(), spot)
+        etf = snapshot["etfs"][0]
+        self.assertEqual(etf["flow1d"], 0.25)
+        self.assertEqual(etf["secondaryMainOrderFlow1d"], -9.0)
+        self.assertEqual(snapshot["flowMetrics"]["secondaryMarketOrderFlow"]["status"], "available")
+
+        stale = self._snapshot()
+        stale_spot = spot.assign(æ•°æ®æ—¥æœŸ="2026-08-17")
+        model.apply_flow_model(stale, date(2026, 8, 14), self._window(), self._ths(), stale_spot)
+        self.assertIsNone(stale["etfs"][0]["secondaryMainOrderFlow1d"])
+        self.assertEqual(stale["flowMetrics"]["secondaryMarketOrderFlow"]["status"], "unavailable")
+
+    def test_split_adjusted_window_generates_real_redemption_not_fake_subscription(self):
+        snapshot = {
+            "universe": [{"code": "588710", "name": "ç§‘åˆ›åŠå¯¼ä½“è®¾å¤‡ETFåæ³°æŸç‘",
+                           "shares": 10_656_885_000, "referencePrice": 1.0532,
+                           "referencePriceType": "NAV"}],
+            "etfs": [{"code": "588710", "name": "ç§‘åˆ›åŠå¯¼ä½“è®¾å¤‡ETFåæ³°æŸç‘",
+                      "groupId": "elec_semiconductor", "groupName": "åŠå¯¼ä½“", "kind": "industry",
+                      "flow1d": 0.0, "flow5d": 0.0, "flow20d": 0.0, "aum": 0.0}],
+            "groups": [], "quality": {},
+        }
+        prev_comparable = 10_776_885_000
+        window = [
+            (date(2026, 8, 13), pd.DataFrame([{"code": "588710", "shares": prev_comparable}])),
+            (date(2026, 8, 14), pd.DataFrame([{"code": "588710", "shares": 10_656_885_000}])),
+        ]
+        ths = pd.DataFrame([{"code": "588710", "fund_name": "åæ³°æŸç‘ç§‘åˆ›åŠå¯¼ä½“è®¾å¤‡ETF",
+                             "nav": 1.0532, "prev_nav": 3.1344, "fund_type": "è‚¡ç¥¨å‹"}])
+        model.apply_flow_model(snapshot, date(2026, 8, 14), window, ths, None)
+        self.assertAlmostEqual(snapshot["etfs"][0]["flow1d"], -1.26, places=2)
+
+    def test_new_a_share_etf_enters_one_day_scope_without_waiting_for_20_day_history(self):
+        snapshot = self._snapshot()
+        snapshot["universe"].append({
+            "code": "159999", "name": "å…¨æ–°ç­–ç•¥æŒ‡æ•°ETF", "shares": 220_000_000,
             "groupId": "other_a_share_stock_etf", "groupName": "å…¶ä»–Aè‚¡è‚¡ç¥¨ETF", "kind": "other",
             "referencePrice": 1.0, "referencePriceType": "NAV",
         })

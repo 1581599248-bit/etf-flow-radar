@@ -1,4 +1,290 @@
-YªçŠx-®éÜj×¢ëiºÚ+Š§j[h‘éÜ¢éíçÎûN‹Z–‹­¦ëeŠw¬Ôˆˆ‰…¥°µ±½Í••áÑ•É¹…°µÍ•¹…Õ‘¥Ğ™½È…¸Q±½ÜI…‘…ÈÍ¡•µ„µØØÍ¹…ÁÍ¡½Ğ¸()Q¡¥ÌÍÉ¥ÁĞ¥Ì¥¹Ñ•¹Ñ¥½¹…±±ä¹•Ñİ½É¬µ™É•”¸%ĞÙ•É¥™¥•ÌÑ¡…Ğ•Ù•Éä±¥•¹Ğµ™…¥¹œ)¹Õµ‰•È…¸‰”É•½¹¥±•‰…¬Ñ¼Ñ¡”Í…µ”…¹½¹¥…°Í¹…ÁÍ¡½Ğ‰•™½É”¥Ñ!Õˆ)Ñ¥½¹Ì¥Ì…±±½İ•Ñ¼½µµ¥Ğ½È‘•Á±½ä¥Ğ¸(ˆˆˆ)™É½´}}™ÕÑÕÉ•}|¥µÁ½ÉĞ…¹¹½Ñ…Ñ¥½¹Ì()¥µÁ½ÉĞ…ÉÁ…ÉÍ”)¥µÁ½ÉĞ©Í½¸)¥µÁ½ÉĞµ…Ñ )¥µÁ½ÉĞÉ”)™É½´Á…Ñ¡±¥ˆ¥µÁ½ÉĞA…Ñ )™É½´ÑåÁ¥¹œ¥µÁ½ÉĞ¹ä()I==P€ôA…Ñ ¡}}™¥±•}|¤¹É•Í½±Ù” ¤¹Á…É•¹ÑÍlÅt)U1Q}M9AM!=P€ôI==P€¼€‰Í¥Ñ”ˆ€¼€‰‘…Ñ„ˆ€¼€‰±…Ñ•ÍĞ¹©Í½¸ˆ)Q=0€ô€À¸ÀØ((Œ!•…‘±¥¹”ÍÑÉ•¹Ñ Ñ¡É•Í¡½±‘Ì±¥Ù”¥¸Ñ¡”Á¥Á•±¥¹”ì¥µÁ½ÉÑ¥¹œ­••ÁÌÑ¡¥Ì…Õ‘¥Ğ(Œ…±¥¹•İ¥Ñ Ñ¡”±¥•¹Ğµ™…¥¹œ½Áä¥¹ÍÑ•…½˜‘ÕÁ±¥…Ñ¥¹œ½¹ÍÑ…¹ÑÌ¸)™É½´ÕÁ‘…Ñ•}‘…¥±å}ØÈ¥µÁ½ÉĞ}ÑÉ…‘•}ÍÑÉ•¹Ñ €€Œ¹½Å„èĞÀÈ(()‘•˜}¹Õ´¡Ù…±Õ”è¹ä°±…‰•°èÍÑÈ¤€´ø™±½…Ğè(€€€¥˜¹½Ğ¥Í¥¹ÍÑ…¹”¡Ù…±Õ”°€¡¥¹Ğ°™±½…Ğ¤¤½È¹½Ğµ…Ñ ¹¥Í™¥¹¥Ñ”¡™±½…Ğ¡Ù…±Õ”¤¤è(€€€€€€€É…¥Í”ÍÍ•ÉÑ¥½¹ÉÉ½È¡˜‰í±…‰•±ô¥Ì¹½Ğ„™¥¹¥Ñ”¹Õµ‰•ÈèíÙ…±Õ”…Éôˆ¤(€€€É•ÑÕÉ¸™±½…Ğ¡Ù…±Õ”¤(()‘•˜}±½Í”¡±•™Ğè¹ä°É¥¡Ğè¹ä°±…‰•°èÍÑÈ°Ñ½°è™±½…Ğ€ôQ=0¤€´ø9½¹”è(€€€„°ˆ€ô}¹Õ´¡±•™Ğ°˜‰í±…‰•±ô¹±•™Ğˆ¤°}¹Õ´¡É¥¡Ğ°˜‰í±…‰•±ô¹É¥¡Ğˆ¤(€€€¥˜…‰Ì¡„€´ˆ¤€øÑ½°è(€€€€€€€É…¥Í”ÍÍ•ÉÑ¥½¹ÉÉ½È¡˜‰í±…‰•±ôµ¥Íµ…Ñ èí…ôÙÌí‰ô€¡Ñ½°õíÑ½±ô¤ˆ¤(()‘•˜…Õ‘¥Ğ¡Í¹…ÁÍ¡½Ñ}Á…Ñ èA…Ñ ¤€´ø±¥ÍÑmÍÑÉtè(€€€Í¹…ÁÍ¡½Ğ€ô©Í½¸¹±½…‘Ì¡Í¹…ÁÍ¡½Ñ}Á…Ñ ¹É•…‘}Ñ•áĞ ‰ÕÑ˜´àˆ¤¤(€€€¡•­Ìè±¥ÍÑmÍÑÉt€ômt((€€€¥˜Í¹…ÁÍ¡½Ğ¹•Ğ ‰Í¡•µ…Y•ÉÍ¥½¸ˆ¤€„ô€Øè(€€€€€€€É…¥Í”ÍÍ•ÉÑ¥½¹ÉÉ½È ‰Í¡•µ…Y•ÉÍ¥½¸µÕÍĞ‰”€Øˆ¤(€€€¥˜Í¹…ÁÍ¡½Ğ¹•Ğ ‰Í½ÕÉ•5½‘”ˆ¤€„ô€‰I0ˆè(€€€€€€€É…¥Í”Ï;îÚ$z{-®éÜj×ot in str(snapshot.get("methodology", {}).get("multiDay") or ""):
+"""Fail-closed external-send audit for an ETF Flow Radar schema-v6 snapshot.
+
+This script is intentionally network-free. It verifies that every client-facing
+number can be reconciled back to the same canonical snapshot before GitHub
+Actions is allowed to commit or deploy it.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import re
+from pathlib import Path
+from typing import Any
+
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_SNAPSHOT = ROOT / "site" / "data" / "latest.json"
+TOL = 0.06
+
+# Headline strength thresholds live in the pipeline; importing keeps this audit
+# aligned with the client-facing copy instead of duplicating constants.
+from update_daily_v2 import _trade_strength  # noqa: E402
+
+
+def _num(value: Any, label: str) -> float:
+    if not isinstance(value, (int, float)) or not math.isfinite(float(value)):
+        raise AssertionError(f"{label} is not a finite number: {value!r}")
+    return float(value)
+
+
+def _close(left: Any, right: Any, label: str, tol: float = TOL) -> None:
+    a, b = _num(left, f"{label}.left"), _num(right, f"{label}.right")
+    if abs(a - b) > tol:
+        raise AssertionError(f"{label} mismatch: {a} vs {b} (tol={tol})")
+
+
+def audit(snapshot_path: Path) -> list[str]:
+    snapshot = json.loads(snapshot_path.read_text("utf-8"))
+    checks: list[str] = []
+
+    if snapshot.get("schemaVersion") != 6:
+        raise AssertionError("schemaVersion must be 6")
+    if snapshot.get("sourceMode") != "REAL":
+        raise AssertionError("sourceMode must be REAL")
+    if snapshot.get("status") != "verified":
+        raise AssertionError(f"snapshot status must be verified: {snapshot.get('status')}")
+    trade_date = str(snapshot.get("tradeDate") or "")
+    if not trade_date:
+        raise AssertionError("tradeDate is missing")
+    checks.append("schema/source/status")
+
+    quality = snapshot.get("quality", {})
+    if int(quality.get("officialSessions") or 0) < 21:
+        raise AssertionError("fewer than 21 official share sessions")
+    coverage = _num(quality.get("classifiedCoverageOfMarketPct"), "classifiedCoverageOfMarketPct")
+    if coverage != 100:
+        raise AssertionError(f"classified market coverage must be 100%: {coverage}%")
+    checks.append("official history and classification coverage")
+
+    primary = snapshot.get("flowMetrics", {}).get("primaryMarket", {})
+    if primary.get("metric") != "primaryMarketNetSubscriptionEstimate":
+        raise AssertionError("canonical primary metric changed")
+    if primary.get("valuation") != "sameDayUnitNAV":
+        raise AssertionError("canonical primary valuation must be sameDayUnitNAV")
+    scopes = primary.get("scopeTotals", {})
+    market = snapshot.get("market", {})
+    ashare = scopes.get("aShareStockEtf", {})
+    _close(market.get("flow1d"), ashare.get("flow1d"), "market vs primary A-share flow")
+    if int(market.get("etfCount") or 0) != int(ashare.get("etfCount") or -1):
+        raise AssertionError("market ETF count differs from primary A-share scope")
+    if int(quality.get("classifiedEtfCount") or 0) != int(market.get("etfCount") or -1):
+        raise AssertionError("classified ETF count differs from complete A-share market scope")
+    breadth_count = sum(int(market.get(key) or 0) for key in (
+        "increaseEtfCount1d", "decreaseEtfCount1d", "unchangedEtfCount1d"
+    ))
+    if breadth_count != int(market.get("etfCount") or -1):
+        raise AssertionError(f"A-share breadth counts do not sum to ETF count: {breadth_count}")
+    checks.append("A-share market scope and breadth")
+
+    assets = primary.get("assetClassTotals", {})
+    expected_assets = {
+        "aShareStockEtf", "crossBorderStockEtf", "bondEtf", "moneyEtf", "commodityEtf", "otherEtf"
+    }
+    if set(assets) != expected_assets:
+        raise AssertionError(f"asset classes changed: {sorted(assets)}")
+    asset_count = sum(int(row.get("etfCount") or 0) for row in assets.values())
+    if asset_count != int(scopes.get("allEtf", {}).get("etfCount") or -1):
+        raise AssertionError("mutually-exclusive asset-class counts do not reconcile to all ETFs")
+    _close(
+        sum(_num(row.get("flow1d"), f"asset {key} flow") for key, row in assets.items()),
+        scopes.get("allEtf", {}).get("flow1d"),
+        "asset classes vs all-ETF flow",
+        tol=0.12,
+    )
+    recon = primary.get("assetClassReconciliation", {})
+    _close(recon.get("difference"), 0.0, "stored asset-class reconciliation")
+    _close(
+        _num(assets["aShareStockEtf"].get("flow1d"), "A-share asset flow")
+        + _num(assets["crossBorderStockEtf"].get("flow1d"), "cross-border asset flow"),
+        scopes.get("stockEtfIncludingCrossBorder", {}).get("flow1d"),
+        "stock incl cross-border flow",
+        tol=0.12,
+    )
+    checks.append("mutually-exclusive asset-class reconciliation")
+
+    etfs = snapshot.get("etfs", [])
+    groups = snapshot.get("groups", [])
+    non_a_share = [
+        row for row in etfs if str(row.get("assetScope") or "") != "aShareStockEtf"
+    ]
+    if non_a_share:
+        sample = [(row.get("code"), row.get("name"), row.get("assetScope")) for row in non_a_share[:5]]
+        raise AssertionError(f"non-A-share ETFs leaked into client groups: {sample}")
+    scope_guard = quality.get("classifiedAshareScopeEnforcement", {})
+    if int(scope_guard.get("afterCount") or -1) != len(etfs):
+        raise AssertionError("classified A-share scope guard count does not match snapshot.etfs")
+    excluded_by_scope = scope_guard.get("excludedByScope", {}) or {}
+    if "aShareStockEtf" in excluded_by_scope:
+        raise AssertionError("A-share ETF was incorrectly excluded by the group-scope guard")
+    checks.append("client groups contain domestic A-share stock ETFs only")
+
+    by_group: dict[str, list[dict[str, Any]]] = {}
+    for row in etfs:
+        gid = str(row.get("groupId") or "")
+        if gid:
+            by_group.setdefault(gid, []).append(row)
+    for group in groups:
+        gid = str(group.get("id") or "")
+        members = by_group.get(gid, [])
+        if not members:
+            raise AssertionError(f"visible group has no ETF members: {gid}")
+        member_flow = round(sum(_num(row.get("flow1d"), f"ETF {row.get('code')} flow1d") for row in members), 2)
+        _close(group.get("flow1d"), member_flow, f"group {gid} vs member ETFs")
+        if int(group.get("etfCount") or 0) != len(members):
+            raise AssertionError(f"group {gid} ETF count mismatch")
+        member_codes = {str(row.get("code", "")).zfill(6) for row in members}
+        representative = str((group.get("representative") or {}).get("code") or "").zfill(6)
+        if representative not in member_codes:
+            raise AssertionError(
+                f"group {gid} return representative is outside its A-share member set: {representative}"
+            )
+    classified_flow = round(sum(_num(g.get("flow1d"), f"group {g.get('id')} flow") for g in groups), 2)
+    market_recon = quality.get("marketScopeReconciliation", {})
+    stored_classified = market_recon.get("classifiedGroupShareFlow1d", market_recon.get("classifiedGroupPrimaryFlow1d"))
+    _close(stored_classified, classified_flow, "classified group reconciliation")
+    _close(
+        _num(market.get("flow1d"), "market flow") - classified_flow,
+        market_recon.get("ungroupedDifference"),
+        "unclassified market difference",
+    )
+    checks.append("visible groups, representatives and member ETFs reconcile")
+
+    visible_sectors = [g for g in groups if g.get("kind") == "industry"]
+    if not visible_sectors:
+        raise AssertionError("no visible SW/theme industry groups")
+    group_by_id = {str(g.get("id")): g for g in visible_sectors}
+    rollups = snapshot.get("industryRollups", [])
+    for rollup in rollups:
+        leaves = [group_by_id[str(gid)] for gid in rollup.get("leafGroups", []) if str(gid) in group_by_id]
+        if not leaves:
+            raise AssertionError(f"industry rollup has no visible leaf groups: {rollup.get('id')}")
+        _close(
+            rollup.get("flow1d"),
+            round(sum(_num(g.get("flow1d"), f"leaf {g.get('id')} flow") for g in leaves), 2),
+            f"industry rollup {rollup.get('id')}",
+            tol=0.12,
+        )
+    visible_sector_flow = round(sum(_num(g.get("flow1d"), f"sector {g.get('id')} flow") for g in visible_sectors), 2)
+    rollup_flow = round(sum(_num(g.get("flow1d"), f"rollup {g.get('id')} flow") for g in rollups), 2)
+    _close(visible_sector_flow, rollup_flow, "visible sector layer vs SW rollups", tol=0.12)
+    sector_recon = quality.get("clientSectorReconciliation", {})
+    _close(sector_recon.get("visibleGroupFlow1d"), visible_sector_flow, "stored visible sector flow")
+    _close(sector_recon.get("industryRollupFlow1d"), rollup_flow, "stored rollup sector flow")
+    _close(sector_recon.get("difference"), 0.0, "stored sector-layer difference")
+    checks.append("SW-level/theme display layer vs hidden SW rollups")
+
+    headline = str(snapshot.get("conclusion", {}).get("headline") or "")
+    primary_value = _num(market.get("flow1d"), "market flow for headline")
+    # æªè¾å½¢å®¹è¯ï¼ˆå°å¹…/æ˜æ˜¾/å¤§å¹…ï¼‰éšå¼ºåº¦é˜ˆå€¼è°ƒä¼˜å¯èƒ½å˜åŒ–ï¼Œå®¡è®¡åªå¯¹è´¦æ•°å­—ä¸æ–¹å‘ï¼Œ
+    # æªè¾æœ¬èº«ä»¥ update_daily_v2 çš„ç”Ÿæˆä¸ºå‡†ã€‚
+    if primary_value == 0:
+        primary_pattern = r"ETFä»½é¢å¯¹åº”ç”³èµèµ„é‡‘(?:åŸºæœ¬æŒå¹³|å‡€é¢0\.0äº¿å…ƒ)"
+    else:
+        primary_direction = "æµå…¥" if primary_value > 0 else "æµå‡º"
+        primary_pattern = (
+            rf"ETFä»½é¢å¯¹åº”ç”³èµèµ„é‡‘(?:å°å¹…|æ˜æ˜¾|å¤§å¹…)?å‡€{primary_direction}{abs(primary_value):.1f}äº¿å…ƒ"
+        )
+    if not re.search(primary_pattern, headline):
+        raise AssertionError(f"headline primary phrase mismatch; expected /{primary_pattern}/")
+    if "Aè‚¡è‚¡ç¥¨ETFå½“æ—¥åˆè®¡" in headline:
+        raise AssertionError("legacy primary headline wording leaked into client output")
+    top_in = max(visible_sectors, key=lambda g: _num(g.get("flow1d"), "sector inflow rank"))
+    top_out = min(visible_sectors, key=lambda g: _num(g.get("flow1d"), "sector outflow rank"))
+    facts = snapshot.get("conclusion", {}).get("facts") or []
+    if len(facts) != 4:
+        raise AssertionError(f"conclusion must expose exactly four fixed fact bodies; got {len(facts)}")
+    broad_fact, style_fact, sector_fact, single_fact = map(str, facts)
+    if any("ä»½é¢" in fact for fact in facts):
+        raise AssertionError("share wording belongs in the four card labels, not the fact bodies")
+
+    if top_in["name"] not in sector_fact or top_out["name"] not in sector_fact:
+        raise AssertionError(
+            f"facts[2] sector ranking is not from visible groups; expected {top_in['name']!r}/{top_out['name']!r} in {sector_fact!r}"
+        )
+    if f"{_num(top_in.get('flow1d'), 'top sector inflow'):+.1f}äº¿" not in sector_fact and _num(top_in.get("flow1d"), "top sector inflow") > 0:
+        raise AssertionError("facts[2] top inflow amount mismatch")
+    if f"{_num(top_out.get('flow1d'), 'top sector outflow'):+.1f}äº¿" not in sector_fact:
+        raise AssertionError("facts[2] top outflow amount mismatch")
+    if re.search(r"å®½åŸº\d+ç»„ä¸­|ç”³ä¸‡ä¸€çº§å’Œä¸»é¢˜è¡Œä¸šèµ„é‡‘æµå…¥å±…å‰çš„æ˜¯", headline):
+        raise AssertionError("group/sector tail leaked back into headline; it belongs in facts")
+
+    broad_groups = [g for g in groups if g.get("kind") == "broad"]
+    broad_in = sum(_num(g.get("flow1d"), "broad flow") > 0 for g in broad_groups)
+    broad_out = sum(_num(g.get("flow1d"), "broad flow") < 0 for g in broad_groups)
+    expected_broad = f"å…±{len(broad_groups)}ç»„ï¼Œ{broad_out}ä¸ªå‡€æµå‡ºã€{broad_in}ä¸ªå‡€æµå…¥"
+    if expected_broad not in broad_fact:
+        raise AssertionError(f"facts[0] broad-group counts mismatch; expected {expected_broad!r}, got {broad_fact!r}")
+
+    style_groups = [g for g in groups if g.get("kind") == "style"]
+    if style_groups:
+        style_in = max(style_groups, key=lambda g: _num(g.get("flow1d"), "style inflow rank"))
+        style_out = min(style_groups, key=lambda g: _num(g.get("flow1d"), "style outflow rank"))
+        if _num(style_in.get("flow1d"), "top style inflow") > 0:
+            expected = f"{style_in['name']}{_num(style_in.get('flow1d'), 'top style inflow'):+.1f}äº¿"
+            if expected not in style_fact:
+                raise AssertionError(f"facts[1] top style inflow mismatch; expected {expected!r}")
+        if _num(style_out.get("flow1d"), "top style outflow") < 0:
+            expected = f"{style_out['name']}{_num(style_out.get('flow1d'), 'top style outflow'):+.1f}äº¿"
+            if expected not in style_fact:
+                raise AssertionError(f"facts[1] top style outflow mismatch; expected {expected!r}")
+    elif style_fact != "æš‚æ— å¯åˆ†æé£æ ¼ETFã€‚":
+        raise AssertionError("facts[1] must explicitly mark an unavailable style module")
+
+    ranked_etfs = [
+        row for row in etfs
+        if isinstance(row.get("flow1d"), (int, float)) and math.isfinite(float(row.get("flow1d")))
+    ]
+    positive_etfs = [row for row in ranked_etfs if _num(row.get("flow1d"), "ETF inflow rank") > 0]
+    negative_etfs = [row for row in ranked_etfs if _num(row.get("flow1d"), "ETF outflow rank") < 0]
+    if positive_etfs:
+        single_in = max(positive_etfs, key=lambda row: _num(row.get("flow1d"), "ETF inflow rank"))
+        expected = f"{single_in['name']}{_num(single_in.get('flow1d'), 'top ETF inflow'):+.1f}äº¿"
+        if expected not in single_fact:
+            raise AssertionError(f"facts[3] top ETF inflow mismatch; expected {expected!r}")
+    if negative_etfs:
+        single_out = min(negative_etfs, key=lambda row: _num(row.get("flow1d"), "ETF outflow rank"))
+        expected = f"{single_out['name']}{_num(single_out.get('flow1d'), 'top ETF outflow'):+.1f}äº¿"
+        if expected not in single_fact:
+            raise AssertionError(f"facts[3] top ETF outflow mismatch; expected {expected!r}")
+
+
+    trade_metric = snapshot.get("flowMetrics", {}).get("secondaryMarketTradeFlow", {})
+    if trade_metric.get("status") == "available":
+        if trade_metric.get("tradeDate") != trade_date:
+            raise AssertionError("secondary trading-flow date differs from snapshot trade date")
+        trade_scope = trade_metric.get("scopeTotals", {}).get("aShareStockEtf", {})
+        trade_value = _num(trade_scope.get("netFlow1d"), "A-share secondary trade flow")
+        raw_inflow = trade_scope.get("inflow1d")
+        raw_outflow = trade_scope.get("outflow1d")
+        trade_turnover = None
+        if (
+            isinstance(raw_inflow, (int, float))
+            and isinstance(raw_outflow, (int, float))
+            and math.isfinite(float(raw_inflow))
+            and math.isfinite(float(raw_outflow))
+        ):
+            trade_turnover = float(raw_inflow) + float(raw_outflow)
+        if _trade_strength(trade_value, trade_turnover) == "balanced":
+            trade_pattern = r"^Aè‚¡ETFç›˜ä¸­ä¹°å–åŠ›é‡åŸºæœ¬å‡è¡¡ï¼›"
+        else:
+            trade_direction = "ä¹°å…¥" if trade_value > 0 else "å–å‡º"
+            trade_pattern = (
+                rf"^Aè‚¡ETFç›˜ä¸­(?:ä¹°|å–)ç›˜(?:å°å¹…åå¼º|åå¼º|æ˜æ˜¾å ä¼˜)ï¼Œ"
+                rf"ä¸»åŠ¨{trade_direction}å‡€é¢{abs(trade_value):.1f}äº¿å…ƒï¼›"
+            )
+        if not re.search(trade_pattern, headline):
+            raise AssertionError(f"headline secondary flow mismatch; expected /{trade_pattern}/")
+    elif not headline.startswith("Aè‚¡ETFç›˜ä¸­ä¸»åŠ¨ä¹°å–æ•°æ®æš‚ç¼ºï¼›"):
+        raise AssertionError("unavailable secondary flow is not labelled as unavailable")
+    checks.append("client headline uses the same displayed data layer")
+
+    if market.get("multiDayMethod") != "endpoint_share_change_times_current_nav":
+        raise AssertionError("5d/20d market fields are no longer explicitly endpoint metrics")
+    for group in groups:
+        if group.get("flow5dMetric") != "endpointShareChangeTimesCurrentNAV" or group.get("flow20dMetric") != "endpointShareChangeTimesCurrentNAV":
+            raise AssertionError(f"group {group.get('id')} lost endpoint metric labels")
+    if "ä¸æ˜¯é€æ—¥å‡€" not in str(snapshot.get("methodology", {}).get("multiDay") or ""):
         raise AssertionError("methodology no longer warns that 5d/20d are endpoint metrics")
     checks.append("5d/20d endpoint semantics")
 

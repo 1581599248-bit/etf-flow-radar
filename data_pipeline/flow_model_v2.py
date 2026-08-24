@@ -1,4 +1,483 @@
-YªçŠx-®éÜj×¢ëiºÚ+Š§j[h‘éÜ¢éíï¾õN‹Z–‹­¦ëeŠw¬Ôˆˆ‰…¹½¹¥…°Q™±½Üµ½‘•°™½ÈÍ¡•µ„ØØ¸()=¹”•½¹½µ¥Œ™…ĞÍ¥ÑÌ…ĞÑ¡”•¹ÑÉ”½˜Ñ¡¥Ìµ½‘Õ±”èÑ¡”¡…¹”¥¸•á¡…¹”)•¹µ½˜µ‘…äQÍ¡…É•Ì…™Ñ•È½ÉÁ½É…Ñ”…Ñ¥½¹Ì¡…Ù”‰••¸É•ÍÑ…Ñ•Ñ¼½µÁ…É…‰±”)Õ¹¥ÑÌ¸€Ù•ÉåÑ¡¥¹œ•±Í”¥Ì…¸•áÁ±¥¥Ğ‘¥µ•¹Í¥½¸…É½Õ¹Ñ¡…Ğ™…Ğè((¨ÁÉ¥µ…Éäµµ…É­•ĞÙ…±Õ…Ñ¥½¸èÍ…µ”µ‘…ä9X€¡…¹½¹¥…°¤½È…Ù•É…”ÑÉ…‘•ÁÉ¥”(€€¡½µÁ…É¥Í½¸½¹±ä¤ì(¨µ…É­•ĞÍ½Á”è…±°QÌ°ÍÑ½¬QÌ¥¹±Õ‘¥¹œÉ½ÍÌµ‰½É‘•È°½È‘½µ•ÍÑ¥ŒµÍ¡…É”(€ÍÑ½¬QÌì(¨Í•½¹‘…Éäµµ…É­•Ğ½É‘•È™±½Üè„Í•Á…É…Ñ”ÑÉ…‘¥¹œÍÑ…Ñ¥ÍÑ¥ŒÑ¡…Ğ¹•Ù•È(€½Ù•ÉİÉ¥Ñ•ÌÁÉ¥µ…ÉäÉ•…Ñ¥½¸½É•‘•µÁÑ¥½¸¸()…¹½¹¥…°½¹”µ‘…äÁÉ¥µ…Éäµ•ÑÉ¥Œè(€€€€¡P•á¡…¹”Í¡…É•Ì€´½µÁ…É…‰±”P´ÄÍ¡…É•Ì¤€¨PÕ¹¥Ğ9X()±°ÁÕ‰±¥Œµ½¹•Ñ…Éä™¥•±‘Ì…É”•áÁÉ•ÍÍ•¥¸ƒ’êÿ–¸(ˆˆˆ)™É½´}}™ÕÑÕÉ•}|¥µÁ½ÉĞ…¹¹½Ñ…Ñ¥½¹Ì()¥µÁ½ÉĞµ…Ñ )¥µÁ½ÉĞÉ”)™É½´‘…Ñ•Ñ¥µ”¥µÁ½ÉĞ‘…Ñ”)™É½´ÑåÁ¥¹œ¥µÁ½ÉĞ¹ä()¥µÁ½ÉĞÁ…¹‘…Ì…ÌÁ()¥µÁ½ÉĞÕÁ‘…Ñ•}‘…¥±ä…Ì‰…Í”()}I=MM}	=IH€ôÉ”¹½µÁ¥±”¡‰…Í”¹=9%l‰±½‰…±á±Õ‘•A…ÑÑ•É¹Ì‰ulÁt°É”¹%9=IM¤(ŒQ¡”±•…ä±½‰…°•á±ÕÍ¥½¸É••à½µ‰¥¹•Ì‰½¹‘Ì…¹Í½µ”…Í µµ…¹…•µ•¹ĞQ(Œ¹…µ•Ì¸€ÍÍ•Ğ±…ÍÍ¥™¥…Ñ¥½¸µÕÍĞ‰”µÕÑÕ…±±ä•á±ÕÍ¥Ù”°Í¼µ½¹•ä¥ÌÑ•ÍÑ•(Œ™¥ÉÍĞ…¹É•µ½Ù•™É½´Ñ¡”‰½¹‘•¥Í¥½¸•áÁ±¥¥Ñ±ä¸)}5=9d€ôÉ”¹½µÁ¥±” (€€€È‹¢ÒŸ–â üéQó–~ë¦D¤ıó–ş¯êıó’şw¢¾¦EóšRÛn+–ş¯êıóšŞï–¾3–ş¯êıóš^—¦F­óB¢Ò‹¦Eó–ş¯¦JÄˆ°(€€€É”¹%9=IM°(¤)}	=9€ôÉ”¹½µÁ¥±” (€€€È‹–n÷–éóšRÿ¦G–éó’ş‡R£–éó–³–>ã–éó–~;š*W–éó–rÃšZç–éó~·¢z5ó–>¿¢ö³–éó¢ö³–éóG–"o–éó–ë–"áó–éQğˆ(€€€È‹–B3’âk–¶c–6Uó–n÷–ò–éó–rÃ–éóG–éó–~;š+®ûÖÚ$z{-®éÜj×     reverse=True,
+"""Canonical ETF flow model for schema v6.
+
+One economic fact sits at the centre of this module: the change in exchange
+end-of-day ETF shares after corporate actions have been restated to comparable
+units.  Everything else is an explicit dimension around that fact:
+
+* primary-market valuation: same-day NAV (canonical) or average traded price
+  (comparison only);
+* market scope: all ETFs, stock ETFs including cross-border, or domestic A-share
+  stock ETFs;
+* secondary-market order flow: a separate trading statistic that never
+  overwrites primary creation/redemption.
+
+Canonical one-day primary metric:
+    (T exchange shares - comparable T-1 shares) * T unit NAV
+
+All public monetary fields are expressed in äº¿å…ƒ.
+"""
+from __future__ import annotations
+
+import math
+import re
+from datetime import date
+from typing import Any
+
+import pandas as pd
+
+import update_daily as base
+
+_CROSS_BORDER = re.compile(base.CONFIG["globalExcludePatterns"][0], re.IGNORECASE)
+# The legacy global exclusion regex combines bonds and some cash-management ETF
+# names.  Asset classification must be mutually exclusive, so money is tested
+# first and removed from the bond decision explicitly.
+_MONEY = re.compile(
+    r"è´§å¸(?:ETF|åŸºé‡‘)?|å¿«çº¿|ä¿è¯é‡‘|æ”¶ç›Šå¿«çº¿|æ·»å¯Œå¿«çº¿|æ—¥é‘«|ç†è´¢é‡‘|å¿«é’±",
+    re.IGNORECASE,
+)
+_BOND = re.compile(
+    r"å›½å€º|æ”¿é‡‘å€º|ä¿¡ç”¨å€º|å…¬å¸å€º|åŸæŠ•å€º|åœ°æ–¹å€º|çŸ­è|å¯è½¬å€º|è½¬å€º|ç§‘åˆ›å€º|å€ºåˆ¸|å€ºETF|"
+    r"åŒä¸šå­˜å•|å›½å¼€å€º|åœ°å€º|ç§‘å€º|åŸæŠ•",
+    re.IGNORECASE,
+)
+_COMMODITY = re.compile(base.CONFIG["globalExcludePatterns"][2], re.IGNORECASE)
+
+
+def _finite(value: Any) -> bool:
+    try:
+        return math.isfinite(float(value))
+    except (TypeError, ValueError):
+        return False
+
+
+def _asset_scope(name: str, fund_name: str, fund_type: str) -> str:
+    """Return one and only one mutually exclusive ETF asset scope."""
+    text = f"{name} {fund_name}".strip()
+    kind = str(fund_type).strip()
+    if kind == "è‚¡ç¥¨å‹":
+        return "crossBorderStockEtf" if _CROSS_BORDER.search(text) else "aShareStockEtf"
+    if kind == "è´§å¸å‹" or _MONEY.search(text):
+        return "moneyEtf"
+    if kind == "å€ºåˆ¸å‹" or _BOND.search(text):
+        return "bondEtf"
+    if _COMMODITY.search(text):
+        return "commodityEtf"
+    return "otherEtf"
+
+
+def _direction_counts(frame: pd.DataFrame, delta_col: str) -> dict[str, int]:
+    values = pd.to_numeric(frame[delta_col], errors="coerce")
+    return {
+        "increase": int((values > 0).sum()),
+        "decrease": int((values < 0).sum()),
+        "unchanged": int((values == 0).sum()),
+    }
+
+
+def _aggregate_scope(frame: pd.DataFrame, name: str) -> dict[str, Any]:
+    valid = frame.dropna(subset=["share_delta_1d", "nav", "primary_flow_1d"]).copy()
+    if valid.empty:
+        return {
+            "name": name,
+            "etfCount": 0,
+            "etfCount5d": 0,
+            "etfCount20d": 0,
+            "flow1d": None,
+            "flow5dEndpoint": None,
+            "flow20dEndpoint": None,
+            "aum": None,
+            "increaseEtfCount1d": 0,
+            "decreaseEtfCount1d": 0,
+            "unchangedEtfCount1d": 0,
+        }
+    counts = _direction_counts(valid, "share_delta_1d")
+    five = valid.dropna(subset=["primary_flow_5d_endpoint"])
+    twenty = valid.dropna(subset=["primary_flow_20d_endpoint"])
+    top_in = valid.loc[valid["primary_flow_1d"].idxmax()]
+    top_out = valid.loc[valid["primary_flow_1d"].idxmin()]
+    return {
+        "name": name,
+        "etfCount": int(len(valid)),
+        "etfCount5d": int(len(five)),
+        "etfCount20d": int(len(twenty)),
+        "flow1d": round(float(valid["primary_flow_1d"].sum()), 2),
+        "flow5dEndpoint": round(float(five["primary_flow_5d_endpoint"].sum()), 2) if not five.empty else None,
+        "flow20dEndpoint": round(float(twenty["primary_flow_20d_endpoint"].sum()), 2) if not twenty.empty else None,
+        "aum": round(float((valid["shares"] * valid["nav"] / 1e8).sum()), 2),
+        "breadth1d": round((counts["increase"] - counts["decrease"]) / len(valid) * 100, 1),
+        "increaseEtfCount1d": counts["increase"],
+        "decreaseEtfCount1d": counts["decrease"],
+        "unchangedEtfCount1d": counts["unchanged"],
+        "unchangedEtfPct1d": round(counts["unchanged"] / len(valid) * 100, 2),
+        "topInflowEtf": {
+            "code": str(top_in["code"]),
+            "name": str(top_in["name"]),
+            "flow1d": round(float(top_in["primary_flow_1d"]), 2),
+        },
+        "topOutflowEtf": {
+            "code": str(top_out["code"]),
+            "name": str(top_out["name"]),
+            "flow1d": round(float(top_out["primary_flow_1d"]), 2),
+        },
+    }
+
+
+def _secondary_order_flow(
+    frame: pd.DataFrame,
+    spot: pd.DataFrame | None,
+    day: date,
+) -> tuple[dict[str, Any], dict[str, float]]:
+    """Build secondary trading flow only when the provider date exactly matches."""
+    empty: dict[str, Any] = {
+        "metric": "secondaryMarketMainOrderFlow",
+        "definition": "äº¤æ˜“æ‰€äºŒçº§å¸‚åœºæˆäº¤ä¸­çš„ä¸»åŠ›å‡€æµå…¥/å‡€æµå‡ºç»Ÿè®¡ï¼›ä¸æ˜¯ETFç”³è´­èµå›ã€‚",
+        "source": "ä¸œæ–¹è´¢å¯ŒETFè¡Œæƒ… ä¸»åŠ›å‡€æµå…¥-å‡€é¢",
+        "status": "unavailable",
+        "tradeDate": day.isoformat(),
+        "scopeTotals": {},
+    }
+    if spot is None or spot.empty:
+        empty["reason"] = "no same-day order-flow snapshot"
+        return empty, {}
+
+    source = spot.copy()
+    source.columns = [str(c).strip() for c in source.columns]
+    required = {"ä»£ç ", "ä¸»åŠ›å‡€æµå…¥-å‡€é¢", "æ•°æ®æ—¥æœŸ"}
+    if not required.issubset(source.columns):
+        empty["reason"] = f"missing columns: {sorted(required - set(source.columns))}"
+        return empty, {}
+
+    source["code"] = source["ä»£ç "].astype(str).str.zfill(6)
+    source["data_date"] = pd.to_datetime(source["æ•°æ®æ—¥æœŸ"], errors="coerce").dt.date
+    source["secondary_order_flow"] = pd.to_numeric(source["ä¸»åŠ›å‡€æµå…¥-å‡€é¢"], errors="coerce") / 1e8
+    exact = source[source["data_date"] == day].dropna(subset=["secondary_order_flow"])
+    exact = exact.drop_duplicates("code", keep="last")
+    if exact.empty:
+        dates = sorted({x.isoformat() for x in source["data_date"].dropna().tolist()})
+        empty["reason"] = "provider snapshot date does not match requested trade date"
+        empty["providerDate"] = dates[-1] if dates else None
+        return empty, {}
+
+    joined = frame[["code", "scope"]].merge(
+        exact[["code", "secondary_order_flow"]], on="code", how="inner"
+    )
+    per_etf = dict(zip(joined["code"], joined["secondary_order_flow"]))
+
+    def total(mask: pd.Series) -> dict[str, Any]:
+        part = joined[mask]
+        return {
+            "etfCount": int(len(part)),
+            "flow1d": round(float(part["secondary_order_flow"].sum()), 2),
+        }
+
+    all_mask = pd.Series(True, index=joined.index)
+    stock_mask = joined["scope"].isin(["aShareStockEtf", "crossBorderStockEtf"])
+    ashare_mask = joined["scope"].eq("aShareStockEtf")
+    return {
+        **empty,
+        "status": "available",
+        "scopeTotals": {
+            "allEtf": total(all_mask),
+            "stockEtfIncludingCrossBorder": total(stock_mask),
+            "aShareStockEtf": total(ashare_mask),
+        },
+    }, per_etf
+
+
+def _recalculate_groups(snapshot: dict[str, Any]) -> None:
+    by_group: dict[str, list[dict[str, Any]]] = {}
+    for record in snapshot.get("etfs", []):
+        if isinstance(record.get("flow1d"), (int, float)):
+            by_group.setdefault(str(record.get("groupId")), []).append(record)
+
+    for group in snapshot.get("groups", []):
+        members = by_group.get(str(group.get("id")), [])
+        if not members:
+            continue
+        five_members = [x for x in members if _finite(x.get("flow5dEndpoint"))]
+        twenty_members = [x for x in members if _finite(x.get("flow20dEndpoint"))]
+        f1 = sum(float(x.get("flow1d") or 0) for x in members)
+        f5 = sum(float(x.get("flow5dEndpoint") or 0) for x in five_members)
+        f20 = sum(float(x.get("flow20dEndpoint") or 0) for x in twenty_members)
+        aum = sum(float(x.get("aum") or 0) for x in members)
+        prior1 = sum(
+            float(x.get("previousComparableShares") or 0) * float(x.get("nav") or 0) / 1e8
+            for x in members
+        )
+        prior5 = sum(
+            float(x.get("shares5dAgoComparable") or 0) * float(x.get("nav") or 0) / 1e8
+            for x in members
+        )
+        prior20 = sum(
+            float(x.get("shares20dAgoComparable") or 0) * float(x.get("nav") or 0) / 1e8
+            for x in members
+        )
+        delta1 = pd.Series([float(x.get("shareDelta1d") or 0) for x in members])
+        delta5 = pd.Series([float(x.get("shareDelta5dEndpoint") or 0) for x in five_members])
+        gross = sum(abs(float(x.get("flow1d") or 0)) for x in members)
+        dominant = max(members, key=lambda x: abs(float(x.get("flow1d") or 0)))
+        intensity1 = f1 / max(prior1, 0.01) * 100
+        intensity5 = f5 / max(prior5, 0.01) * 100 if prior5 else None
+        intensity20 = f20 / max(prior20, 0.01) * 100 if prior20 else None
+        group.update({
+            "flow1d": round(f1, 2),
+            "flow5d": round(f5, 2) if five_members else None,
+            "flow20d": round(f20, 2) if twenty_members else None,
+            "flow5dMetric": "endpointShareChangeTimesCurrentNAV",
+            "flow20dMetric": "endpointShareChangeTimesCurrentNAV",
+            "aum": round(aum, 2),
+            "etfCount": len(members),
+            "etfCount5d": len(five_members),
+            "etfCount20d": len(twenty_members),
+            "flowIntensity1dPct": round(intensity1, 2),
+            "flowIntensity5dPct": round(intensity5, 2) if intensity5 is not None else None,
+            "flowIntensity20dPct": round(intensity20, 2) if intensity20 is not None else None,
+            "flowIntensity1dBps": round(intensity1 * 100, 1),
+            "flowIntensity5dBps": round(intensity5 * 100, 1) if intensity5 is not None else None,
+            "flowIntensity20dBps": round(intensity20 * 100, 1) if intensity20 is not None else None,
+            "breadth1d": round(((delta1 > 0).sum() - (delta1 < 0).sum()) / len(members) * 100, 1),
+            "breadth5d": round(((delta5 > 0).sum() - (delta5 < 0).sum()) / len(five_members) * 100, 1) if five_members else None,
+            "increaseEtfCount1d": int((delta1 > 0).sum()),
+            "decreaseEtfCount1d": int((delta1 < 0).sum()),
+            "unchangedEtfCount1d": int((delta1 == 0).sum()),
+            "increaseEtfCount5d": int((delta5 > 0).sum()),
+            "decreaseEtfCount5d": int((delta5 < 0).sum()),
+            "unchangedEtfCount5d": int((delta5 == 0).sum()),
+            "concentration1d": round(abs(float(dominant.get("flow1d") or 0)) / gross * 100, 1) if gross else 0.0,
+            "dominantEtf": {
+                "code": str(dominant.get("code")),
+                "name": str(dominant.get("name")),
+                "flow1d": round(float(dominant.get("flow1d") or 0), 2),
+            },
+        })
+        relative = group.get("relativeReturn20d")
+        if isinstance(relative, (int, float)):
+            group["priceFlowState"] = base._flow_state(float(relative), intensity5)
+
+
+def _classification_rule(group_id: str) -> dict[str, Any]:
+    """Return stable metadata for a classified group, including the fallback."""
+    for rules in base.RULES.values():
+        for rule in rules:
+            if str(rule.get("id")) == group_id:
+                return rule
+    raise ValueError(f"classification rule is missing for group {group_id}")
+
+
+def _ensure_group_shells(snapshot: dict[str, Any]) -> None:
+    """Create metadata for groups whose first ETF has not yet reached 20 days.
+
+    The legacy snapshot starts from a 21-session sample so a just-listed ETF
+    used to have no parent group at all.  Schema-v6 treats one-day availability
+    as the coverage criterion and gives the new group a valid representative;
+    5/20-day fields remain explicitly unavailable until their own samples exist.
+    """
+    existing = {str(group.get("id")) for group in snapshot.get("groups", [])}
+    by_group: dict[str, list[dict[str, Any]]] = {}
+    for row in snapshot.get("etfs", []):
+        group_id = str(row.get("groupId") or "")
+        if group_id:
+            by_group.setdefault(group_id, []).append(row)
+    for group_id, members in by_group.items():
+        if group_id in existing:
+            continue
+        rule = _classification_rule(group_id)
+        proxy = max(members, key=lambda row: float(row.get("aum") or 0))
+        snapshot.setdefault("groups", []).append({
+            "id": group_id,
+            "code": rule.get("code"),
+            "name": str(rule["name"]),
+            "kind": str(proxy.get("kind") or "other"),
+            "parent": rule.get("parent"),
+            "flow1d": 0.0,
+            "flow5d": None,
+            "flow20d": None,
+            "aum": 0.0,
+            "return1d": None,
+            "return5d": None,
+            "return20d": None,
+            "relativeReturn20d": None,
+            "priceFlowState": "å¾…è¡¥å……",
+            "representative": {
+                "code": str(proxy.get("code", "")).zfill(6),
+                "name": str(proxy.get("name", "")),
+            },
+        })
+
+
+def apply_flow_model(
+    snapshot: dict[str, Any],
+    day: date,
+    share_window: list[tuple[date, pd.DataFrame]],
+    ths: pd.DataFrame,
+    spot: pd.DataFrame | None = None,
+) -> None:
+    if len(share_window) < 2:
+        raise ValueError("flow model v2 requires at least T and T-1 share observations")
+    universe = pd.DataFrame(snapshot.get("universe", []))
+    required = {"code", "name", "shares"}
+    if universe.empty or not required.issubset(universe.columns):
+        raise ValueError("snapshot universe does not contain code/name/shares")
+
+    columns = [
+        c for c in ["code", "name", "shares", "referencePrice", "referencePriceType"]
+        if c in universe.columns
+    ]
+    frame = universe[columns].copy()
+    frame["code"] = frame["code"].astype(str).str.zfill(6)
+    frame["shares"] = pd.to_numeric(frame["shares"], errors="coerce")
+    frame = frame.merge(
+        ths[["code", "fund_name", "fund_type", "nav", "prev_nav"]],
+        on="code",
+        how="left",
+    )
+    for column in ("nav", "prev_nav"):
+        frame[column] = pd.to_numeric(frame[column], errors="coerce")
+
+    dates = [d for d, _ in share_window]
+    maps = {d: f.set_index("code")["shares"] for d, f in share_window}
+    frame["previous_comparable_shares"] = frame["code"].map(maps[dates[-2]])
+    frame["share_delta_1d"] = frame["shares"] - frame["previous_comparable_shares"]
+    frame["primary_flow_1d"] = frame["share_delta_1d"] * frame["nav"] / 1e8
+    frame["scope"] = frame.apply(
+        lambda row: _asset_scope(
+            str(row["name"]), str(row.get("fund_name", "")), str(row.get("fund_type", ""))
+        ),
+        axis=1,
+    )
+
+    if len(dates) >= 6:
+        frame["shares_5d_ago"] = frame["code"].map(maps[dates[-6]])
+        frame["share_delta_5d_endpoint"] = frame["shares"] - frame["shares_5d_ago"]
+        frame["primary_flow_5d_endpoint"] = frame["share_delta_5d_endpoint"] * frame["nav"] / 1e8
+    else:
+        frame["shares_5d_ago"] = math.nan
+        frame["share_delta_5d_endpoint"] = math.nan
+        frame["primary_flow_5d_endpoint"] = math.nan
+    if len(dates) >= 21:
+        frame["shares_20d_ago"] = frame["code"].map(maps[dates[-21]])
+        frame["share_delta_20d_endpoint"] = frame["shares"] - frame["shares_20d_ago"]
+        frame["primary_flow_20d_endpoint"] = frame["share_delta_20d_endpoint"] * frame["nav"] / 1e8
+    else:
+        frame["shares_20d_ago"] = math.nan
+        frame["share_delta_20d_endpoint"] = math.nan
+        frame["primary_flow_20d_endpoint"] = math.nan
+
+    if "referencePrice" in frame.columns:
+        frame["referencePrice"] = pd.to_numeric(frame["referencePrice"], errors="coerce")
+        frame["flow_avg_price_estimate_1d"] = frame["share_delta_1d"] * frame["referencePrice"] / 1e8
+    else:
+        frame["flow_avg_price_estimate_1d"] = math.nan
+
+    scope_frames = {
+        "allEtf": frame,
+        "stockEtfIncludingCrossBorder": frame[
+            frame["scope"].isin(["aShareStockEtf", "crossBorderStockEtf"])
+        ],
+        "aShareStockEtf": frame[frame["scope"].eq("aShareStockEtf")],
+    }
+    scope_totals = {
+        "allEtf": _aggregate_scope(scope_frames["allEtf"], "å…¨éƒ¨åœºå†…ETF"),
+        "stockEtfIncludingCrossBorder": _aggregate_scope(
+            scope_frames["stockEtfIncludingCrossBorder"], "è‚¡ç¥¨ETFï¼ˆå«è·¨å¢ƒï¼‰"
+        ),
+        "aShareStockEtf": _aggregate_scope(scope_frames["aShareStockEtf"], "Aè‚¡è‚¡ç¥¨ETF"),
+    }
+    fund_type_totals: list[dict[str, Any]] = []
+    for fund_type, part in frame.groupby(frame["fund_type"].fillna("æœªçŸ¥").astype(str).str.strip()):
+        fund_type_totals.append({"fundType": str(fund_type), **_aggregate_scope(part, str(fund_type))})
+
+    secondary, secondary_per_etf = _secondary_order_flow(frame, spot, day)
+    snapshot["flowMetrics"] = {
+        "primaryMarket": {
+            "metric": "primaryMarketNetSubscriptionEstimate",
+            "displayName": "ä¸€çº§å¸‚åœºå‡€ç”³è´­/èµå›ä¼°ç®—",
+            "valuation": "sameDayUnitNAV",
+            "definition": "ï¼ˆTæ—¥äº¤æ˜“æ‰€æ—¥ç»ˆä»½é¢ï¼T-1æ—¥å…¬å¸è¡ŒåŠ¨è°ƒæ•´åçš„å¯æ¯”ä»½é¢ï¼‰Ã—Tæ—¥å•ä½å‡€å€¼ã€‚",
+            "tradeDate": day.isoformat(),
+            "scopeTotals": scope_totals,
+            "fundTypeTotals": fund_type_totals,
+            "multiDay": {
+                "fiveDayField": "flow5dEndpoint",
+                "twentyDayField": "flow20dEndpoint",
+                "definition": "å½“å‰5æ—¥/20æ—¥ä¸ºç«¯ç‚¹ä»½é¢å˜åŒ–Ã—æœŸæœ«NAVï¼Œä¸æ˜¯é€æ—¥å‡€ç”³è´­é¢ä¹‹å’Œï¼›å¾…æ¯æ—¥v2è®°å½•ç§¯ç´¯åå†å‘å¸ƒçœŸæ­£ç´¯è®¡å€¼ã€‚",
+            },
+        },
+        "secondaryMarketOrderFlow": secondary,
+    }
+
+    market = scope_totals["aShareStockEtf"]
+    snapshot["market"] = {
+        **market,
+        "flow5d": market.get("flow5dEndpoint"),
+        "flow20d": market.get("flow20dEndpoint"),
+        "metric": "primaryMarketNetSubscriptionEstimate",
+        "valuation": "sameDayUnitNAV",
+        "scopeKey": "aShareStockEtf",
+        "scope": "domestic_a_share_stock_etf",
+        "multiDayMethod": "endpoint_share_change_times_current_nav",
+    }
+
+    by_code = frame.set_index("code", drop=False)
+    existing_records = {
+        str(record.get("code", "")).zfill(6): dict(record)
+        for record in snapshot.get("etfs", [])
+    }
+    universe_records = {
+        str(record.get("code", "")).zfill(6): record
+        for record in snapshot.get("universe", [])
+    }
+    updated_records: list[dict[str, Any]] = []
+    for code, row in by_code.iterrows():
+        if not _finite(row.get("primary_flow_1d")):
+            continue
+        source = existing_records.get(str(code)) or universe_records.get(str(code))
+        # A client-facing group must have an explicit mutually-exclusive
+        # classification.  Non-stock products may not have one and are removed
+        # later by the asset-scope gate; a domestic stock ETF without one is a
+        # hard data-quality error rather than an invisible residual.
+        if not source or not source.get("groupId"):
+            if row.get("scope") == "aShareStockEtf":
+                raise ValueError(f"A-share ETF {code} lacks a classification group")
+            continue
+        record = dict(source)
+        record.update({
+            "shares": round(float(row["shares"]), 2),
+            "previousComparableShares": round(float(row["previous_comparable_shares"]), 2),
+            "shareDelta1d": round(float(row["share_delta_1d"]), 2),
+            "nav": round(float(row["nav"]), 4),
+            "previousNav": round(float(row["prev_nav"]), 4) if _finite(row.get("prev_nav")) else None,
+            "flow1d": round(float(row["primary_flow_1d"]), 2),
+            "primaryFlow1d": round(float(row["primary_flow_1d"]), 2),
+            "flow1dAvgPriceEstimate": round(float(row["flow_avg_price_estimate_1d"]), 2)
+            if _finite(row.get("flow_avg_price_estimate_1d")) else None,
+            "shares5dAgoComparable": round(float(row["shares_5d_ago"]), 2)
+            if _finite(row.get("shares_5d_ago")) else None,
+            "shareDelta5dEndpoint": round(float(row["share_delta_5d_endpoint"]), 2)
+            if _finite(row.get("share_delta_5d_endpoint")) else None,
+            "flow5dEndpoint": round(float(row["primary_flow_5d_endpoint"]), 2)
+            if _finite(row.get("primary_flow_5d_endpoint")) else None,
+            "shares20dAgoComparable": round(float(row["shares_20d_ago"]), 2)
+            if _finite(row.get("shares_20d_ago")) else None,
+            "shareDelta20dEndpoint": round(float(row["share_delta_20d_endpoint"]), 2)
+            if _finite(row.get("share_delta_20d_endpoint")) else None,
+            "flow20dEndpoint": round(float(row["primary_flow_20d_endpoint"]), 2)
+            if _finite(row.get("primary_flow_20d_endpoint")) else None,
+            "flow5d": round(float(row["primary_flow_5d_endpoint"]), 2)
+            if _finite(row.get("primary_flow_5d_endpoint")) else None,
+            "flow20d": round(float(row["primary_flow_20d_endpoint"]), 2)
+            if _finite(row.get("primary_flow_20d_endpoint")) else None,
+            "aum": round(float(row["shares"] * row["nav"] / 1e8), 2),
+            "flowMetric": "primaryMarketNetSubscriptionEstimate",
+            "flowValuation": "sameDayUnitNAV",
+            "secondaryMainOrderFlow1d": round(float(secondary_per_etf[code]), 2)
+            if code in secondary_per_etf else None,
+        })
+        updated_records.append(record)
+    snapshot["etfs"] = sorted(
+        updated_records,
+        key=lambda x: abs(float(x.get("flow1d") or 0)),
+        reverse=True,
     )
 
     _ensure_group_shells(snapshot)
