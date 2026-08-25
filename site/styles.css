@@ -359,7 +359,7 @@
 .exporting.export-summary .conclusion{
   position:relative;
   margin-top:11px;
-  padding:19px 20px 22px;
+  padding:19px 20px 40px;
   overflow:hidden;
   border:1px solid #d1d6da;
   border-top:3px solid #a62a3c;
@@ -448,6 +448,15 @@
   padding:15px 0 17px;
   border-top:1px solid #d9dee2;
   background:#fbfbfa;
+}
+.exporting.export-summary .conclusion::before{
+  content:"欢迎联系上海销售团队获取完整系统～";
+  position:absolute;
+  left:20px;
+  bottom:13px;
+  color:#7e8791;
+  font:500 10px/1.2 "PingFang SC","Microsoft YaHei",Arial,sans-serif;
+  letter-spacing:.03em;
 }
 .exporting.export-summary .conclusion-qr-code{
   padding:3px;
