@@ -194,21 +194,14 @@
 .exporting.export-summary .disclaimer{display:none!important}
 
 
-/* QR callout is intentionally visible only in the conclusion-only client JPG. */
+/* Conclusion-only JPG: the research sheet ends after the four evidence cards. */
 .conclusion-qr{display:none}
 .exporting.export-summary .conclusion{
-  padding-bottom:0;
+  padding-bottom:22px;
   overflow:hidden;
 }
 .exporting.export-summary .conclusion-qr{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  margin:18px 4px 0;
-  padding:13px 0 15px;
-  border-top:1px solid #e4e7eb;
-  background:#fff;
+  display:none!important;
 }
 .exporting.export-summary .conclusion-qr-code{
   flex:0 0 auto;
@@ -301,7 +294,7 @@
 
 /* Conclusion JPG: dark cover, white research sheet; preserve the established four-card body. */
 .exporting.export-summary{
-  padding:20px!important;
+  padding:16px 16px 18px!important;
   background:#ebe9e4!important;
   background-image:none!important;
 }
@@ -366,7 +359,7 @@
 .exporting.export-summary .conclusion{
   position:relative;
   margin-top:11px;
-  padding:19px 20px 0;
+  padding:19px 20px 22px;
   overflow:hidden;
   border:1px solid #d1d6da;
   border-top:3px solid #a62a3c;
