@@ -208,7 +208,13 @@ CONCLUSION_SCENARIO_COUNT = (
 
 def _trade_copy(trade_value: float, strength: str) -> str:
     if strength == "balanced":
-        return "A股ETF盘中买卖力量基本均衡"
+        if trade_value > 0:
+            amount = f"主动买入净额{trade_value:.1f}亿元"
+        elif trade_value < 0:
+            amount = f"主动卖出净额{abs(trade_value):.1f}亿元"
+        else:
+            amount = "主动买卖净额0.0亿元"
+        return f"A股ETF盘中买卖力量基本均衡，{amount}"
     if strength == "generic":
         if trade_value > 0:
             return f"A股ETF盘中主动买入净额{trade_value:.1f}亿元"
