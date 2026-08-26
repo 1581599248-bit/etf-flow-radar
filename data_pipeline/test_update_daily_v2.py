@@ -138,6 +138,20 @@ class UpdateDailyV2Tests(unittest.TestCase):
             "盘中卖压与份额赎回同步，市场交易与份额端均偏谨慎。",
         )
 
+    def test_balanced_intraday_copy_always_keeps_the_net_amount(self):
+        self.assertEqual(
+            v2._trade_copy(1.72, "balanced"),
+            "A股ETF盘中买卖力量基本均衡，主动买入净额1.7亿元",
+        )
+        self.assertEqual(
+            v2._trade_copy(-1.72, "balanced"),
+            "A股ETF盘中买卖力量基本均衡，主动卖出净额1.7亿元",
+        )
+        self.assertEqual(
+            v2._trade_copy(0.0, "balanced"),
+            "A股ETF盘中买卖力量基本均衡，主动买卖净额0.0亿元",
+        )
+
     def test_market_flow_headline_covers_direction_strength_and_stays_concise(self):
         prohibited = (
             "资金离场", "持续撤离", "股灾", "连续赎回", "资金出逃",
@@ -159,6 +173,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
                 self.assertIn("\n—— ", headline)
                 self.assertFalse(any(text in headline for text in prohibited))
                 self.assertTrue(headline.endswith("。"))
+                if trade is not None:
+                    self.assertRegex(headline.split("；", 1)[0], r"净额\d+\.\d亿元")
 
     def test_historical_values_do_not_reenter_the_daily_conclusion(self):
         headline = v2._market_flow_headline(
