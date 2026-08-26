@@ -297,14 +297,14 @@ class UpdateDailyV2Tests(unittest.TestCase):
                 100.0, "clear", "concentrated_two_growth", "growth",
                 trade_value=0.0, trade_strength="balanced", allocation_scope="broad",
             ),
-            "成长宽基获得增量配置，盘中买卖未形成单边方向。",
+            "份额端净申购占主导，盘中未形成对应买盘。",
         )
         self.assertEqual(
             v2._market_conclusion_copy(
                 -100.0, "clear", "limited", "unknown",
                 trade_value=0.0, trade_strength="balanced", allocation_scope="unknown",
             ),
-            "份额端以净赎回为主，盘中买卖未形成单边方向。",
+            "份额端净赎回占主导，盘中未形成对应卖压。",
         )
         self.assertEqual(
             v2._market_conclusion_copy(
