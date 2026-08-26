@@ -27,7 +27,11 @@
       if (primary>0) adjusted=adjusted.replace("份额端出现净申购，盘中买卖未形成单边方向。","份额端净申购占主导，盘中未形成对应买盘。");
       if (primary<0) {
         const matched=adjusted.match(/资金份额流入居前为([^。]+)。/);
-        const conclusion=matched?`整体净赎回下，盘中未形成对应卖压，资金仍选择性配置${matched[1]}。`:"整体净赎回下，盘中未形成对应卖压。";
+        const leaders=matched?.[1]??"";
+        const large=/沪深300|中证A500|中证A50|上证50/.test(leaders);
+        const small=/中证2000|中证1000|中证500/.test(leaders);
+        const direction=large&&small?"大小盘宽基两端":large?"大盘核心宽基":small?"中小盘宽基":"";
+        const conclusion=direction?`整体净赎回下，盘中未形成对应卖压，资金仍选择性配置${direction}。`:"整体净赎回下，盘中未形成对应卖压。";
         adjusted=adjusted.replace("份额端以净赎回为主，盘中买卖未形成单边方向。",conclusion);
       }
     }
