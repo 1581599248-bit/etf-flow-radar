@@ -554,10 +554,8 @@ def _market_conclusion_copy(
 
     if trade_side == 0:
         if primary_side > 0:
-            if focus_label:
-                return f"{focus_label}获得增量配置，盘中买卖未形成单边方向。"
-            return "份额端出现净申购，盘中买卖未形成单边方向。"
-        return "份额端以净赎回为主，盘中买卖未形成单边方向。"
+            return "份额端净申购占主导，盘中未形成对应买盘。"
+        return "份额端净赎回占主导，盘中未形成对应卖压。"
 
     if primary_side != trade_side:
         if primary_side > 0:
