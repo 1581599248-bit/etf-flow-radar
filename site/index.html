@@ -21,7 +21,13 @@
     const net=data?.flowMetrics?.secondaryMarketTradeFlow?.scopeTotals?.aShareStockEtf?.netFlow1d;
     if (typeof net!=="number" || !Number.isFinite(net)) return headline;
     const amount=net>0?`主动买入净额${net.toFixed(1)}亿元`:net<0?`主动卖出净额${Math.abs(net).toFixed(1)}亿元`:"主动买卖净额0.0亿元";
-    return headline.replace("A股ETF盘中买卖力量基本均衡",`A股ETF盘中买卖力量基本均衡，${amount}`);
+    let adjusted=headline.replace("A股ETF盘中买卖力量基本均衡",`A股ETF盘中买卖力量基本均衡，${amount}`);
+    const primary=data?.market?.flow1d;
+    if (typeof primary==="number" && Number.isFinite(primary)) {
+      if (primary>0) adjusted=adjusted.replace("份额端出现净申购，盘中买卖未形成单边方向。","份额端净申购占主导，盘中未形成对应买盘。");
+      if (primary<0) adjusted=adjusted.replace("份额端以净赎回为主，盘中买卖未形成单边方向。","份额端净赎回占主导，盘中未形成对应卖压。");
+    }
+    return adjusted;
   };
   const money=n=>n==null?"—":Math.abs(n)<0.05?"0.0亿":`${n>0?"+":"−"}${Math.abs(n).toFixed(1)}亿`;
   const pct=n=>n==null?"—":`${n>0?"+":""}${n.toFixed(2)}%`;
