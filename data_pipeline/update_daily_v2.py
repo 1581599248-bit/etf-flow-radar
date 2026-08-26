@@ -522,6 +522,21 @@ def _inflow_focus_label(
     return labels.get(allocation_scope, labels["unknown"])[allocation_tilt]
 
 
+def _inflow_target_copy(
+    inflow_text: str | None,
+    allocation_state: str,
+    allocation_tilt: str,
+    allocation_scope: str,
+) -> str | None:
+    """Prefer the visible ranked recipients; otherwise use the classified direction."""
+    prefix = "资金份额流入居前为"
+    if allocation_state.startswith("concentrated_") and isinstance(inflow_text, str) and inflow_text.startswith(prefix):
+        target = inflow_text[len(prefix):].strip().rstrip("。")
+        if target:
+            return target
+    return _inflow_focus_label(allocation_state, allocation_tilt, allocation_scope)
+
+
 def _market_conclusion_copy(
     primary_value: float,
     primary_strength: str,
@@ -530,11 +545,12 @@ def _market_conclusion_copy(
     trade_value: float | None = None,
     trade_strength: str | None = None,
     allocation_scope: str = "unknown",
+    inflow_text: str | None = None,
 ) -> str:
     """Explain the observed trade/share relationship without claiming market expansion or contraction."""
     primary_side = 0 if primary_strength == "flat" else (1 if primary_value > 0 else -1)
     trade_side = 0 if trade_value is None or trade_strength == "balanced" else (1 if trade_value > 0 else -1)
-    focus_label = _inflow_focus_label(allocation_state, allocation_tilt, allocation_scope)
+    focus_label = _inflow_target_copy(inflow_text, allocation_state, allocation_tilt, allocation_scope)
 
     if trade_value is None:
         if primary_side > 0:
@@ -542,32 +558,46 @@ def _market_conclusion_copy(
                 return f"{focus_label}获得增量配置，盘中交易信号暂缺。"
             return "份额端出现净申购，盘中交易信号暂缺。"
         if primary_side < 0:
+            if focus_label:
+                return f"整体净赎回下，{focus_label}仍获选择性申购，盘中交易信号暂缺。"
             return "份额端以净赎回为主，盘中交易信号暂缺。"
         return "份额端未形成明确方向，盘中交易信号暂缺。"
 
     if primary_side == 0:
         if trade_side > 0:
+            if focus_label:
+                return f"盘中买盘占优，但未形成整体份额申购，{focus_label}仍有选择性承接。"
             return "盘中买盘占优，但尚未形成明确的份额申购。"
         if trade_side < 0:
+            if focus_label:
+                return f"盘中卖压占优，但未形成整体份额赎回，{focus_label}仍有选择性承接。"
             return "盘中卖压占优，但尚未形成明确的份额赎回。"
         return "盘中与份额端均未形成明确方向，市场以存量博弈为主。"
 
     if trade_side == 0:
         if primary_side > 0:
+            if focus_label:
+                return f"盘中未形成对应买盘，资金已选择性配置{focus_label}。"
             return "份额端净申购占主导，盘中未形成对应买盘。"
+        if focus_label:
+            return f"整体净赎回下，盘中未形成对应卖压，资金仍选择性配置{focus_label}。"
         return "份额端净赎回占主导，盘中未形成对应卖压。"
 
     if primary_side != trade_side:
         if primary_side > 0:
             if focus_label:
-                return f"市场总体流向分化，{focus_label}获得资金申购承接。"
+                return f"盘中卖压下，资金仍选择性申购{focus_label}，交易与份额端流向分化。"
             return "市场总体流向分化，盘中卖压下仍有份额申购承接。"
+        if focus_label:
+            return f"盘中买盘未转化为整体份额申购，资金仅选择性配置{focus_label}。"
         return "市场总体流向分化，盘中买盘尚未转化为整体份额申购。"
 
     if primary_side > 0:
         if focus_label:
-            return f"盘中买盘与份额申购共振，{focus_label}的增量配置意愿较强。"
+            return f"盘中买盘与份额申购共振，资金重点配置{focus_label}。"
         return "盘中买盘与份额申购共振，增量配置未集中于明确方向。"
+    if focus_label:
+        return f"盘中卖压与份额赎回同步，{focus_label}仍有选择性申购，但未改变整体谨慎。"
     return "盘中卖压与份额赎回同步，市场交易与份额端均偏谨慎。"
 
 
@@ -592,6 +622,7 @@ def _current_regime_copy(
         trade_value=trade_value,
         trade_strength=trade_strength,
         allocation_scope=allocation_scope,
+        inflow_text=inflow_text,
     )
     return f"{relation}。{focus}{market}"
 
