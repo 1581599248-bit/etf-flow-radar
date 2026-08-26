@@ -522,18 +522,33 @@ def _inflow_focus_label(
     return labels.get(allocation_scope, labels["unknown"])[allocation_tilt]
 
 
-def _inflow_target_copy(
+def _inflow_direction_copy(
     inflow_text: str | None,
     allocation_state: str,
     allocation_tilt: str,
     allocation_scope: str,
 ) -> str | None:
-    """Prefer the visible ranked recipients; otherwise use the classified direction."""
+    """Translate ranked recipients into a configuration direction, not a repeated list."""
     prefix = "资金份额流入居前为"
     if allocation_state.startswith("concentrated_") and isinstance(inflow_text, str) and inflow_text.startswith(prefix):
         target = inflow_text[len(prefix):].strip().rstrip("。")
+        if allocation_scope == "broad":
+            large = any(key in target for key in ("沪深300", "中证A500", "中证A50", "上证50"))
+            small = any(key in target for key in ("中证2000", "中证1000", "中证500"))
+            if large and small:
+                return "大小盘宽基两端"
+            if large:
+                return "大盘核心宽基"
+            if small:
+                return "中小盘宽基"
+        if allocation_tilt == "growth":
+            return "成长方向"
+        if allocation_tilt == "defensive":
+            return "防御方向"
+        if allocation_tilt == "cyclical":
+            return "顺周期方向"
         if target:
-            return target
+            return _inflow_focus_label(allocation_state, allocation_tilt, allocation_scope)
     return _inflow_focus_label(allocation_state, allocation_tilt, allocation_scope)
 
 
@@ -550,7 +565,7 @@ def _market_conclusion_copy(
     """Explain the observed trade/share relationship without claiming market expansion or contraction."""
     primary_side = 0 if primary_strength == "flat" else (1 if primary_value > 0 else -1)
     trade_side = 0 if trade_value is None or trade_strength == "balanced" else (1 if trade_value > 0 else -1)
-    focus_label = _inflow_target_copy(inflow_text, allocation_state, allocation_tilt, allocation_scope)
+    focus_label = _inflow_direction_copy(inflow_text, allocation_state, allocation_tilt, allocation_scope)
 
     if trade_value is None:
         if primary_side > 0:
