@@ -266,7 +266,13 @@ def audit(snapshot_path: Path) -> list[str]:
         ):
             trade_turnover = float(raw_inflow) + float(raw_outflow)
         if _trade_strength(trade_value, trade_turnover) == "balanced":
-            trade_pattern = r"^A股ETF盘中买卖力量基本均衡；"
+            if trade_value > 0:
+                amount = f"主动买入净额{trade_value:.1f}亿元"
+            elif trade_value < 0:
+                amount = f"主动卖出净额{abs(trade_value):.1f}亿元"
+            else:
+                amount = "主动买卖净额0.0亿元"
+            trade_pattern = rf"^A股ETF盘中买卖力量基本均衡，{re.escape(amount)}；"
         else:
             trade_direction = "买入" if trade_value > 0 else "卖出"
             trade_pattern = (
