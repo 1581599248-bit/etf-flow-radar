@@ -355,7 +355,7 @@ def audit_universe(current: pd.DataFrame, previous: pd.DataFrame) -> dict[str, A
         "added": [product(current_rows.loc[code]) for code in added_codes],
         "missing": [product(previous_rows.loc[code]) for code in missing_codes],
         "renamed": [{
-            "code": code, "exchange": str(row["code"]), "exchange": str(row["exchange"]),
+            "code": code, "exchange": str(current_rows.loc[code, "exchange"]),
             "previousName": str(previous_rows.loc[code, "display_name"]),
             "currentName": str(current_rows.loc[code, "display_name"]),
         } for code in renamed_codes],
