@@ -31,7 +31,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: official-etf-share-gate-v3
+  group: official-etf-share-gate-v4
   # A newer run always has the more current target/cache.  Keeping an older
   # long-running price-proxy build alive can otherwise block daily publication.
   cancel-in-progress: true
