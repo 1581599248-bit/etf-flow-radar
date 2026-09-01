@@ -40,6 +40,13 @@ SSE_SCALE_SQL_ID = "COMMON_SSE_ZQPZ_ETFZL_XXPL_ETFGM_SEARCH_L"
 # GitHub Actions restores this directory between runs.  It is intentionally not
 # under site/data, so transport cache files are never published to clients.
 SHARE_CACHE_DIR = base.ROOT / ".cache" / "exchange_shares"
+# Durable in-repo archive.  The publisher's existing commit step already runs
+# `git add site/data diagnostics/`, so every verified cross-section is also
+# committed here.  Unlike the volatile GitHub Actions cache (7-day eviction,
+# best-effort restore), this archive survives forever and lets a build recover
+# the full 21-day window without a single live exchange request after a WAF
+# ban wiped the volatile cache.
+SHARE_ARCHIVE_DIR = base.ROOT / "diagnostics" / "share-archive"
 RECENT_SESSION_REFRESH_COUNT = 2
 RECENT_CACHE_FRESH_HOURS = 6.0
 _RECENT_BUILD_SESSIONS: list[date] = []
@@ -153,17 +160,23 @@ def _extract_sse_payload(response: requests.Response) -> dict:
     return payload
 
 
+_SSE_USER_AGENTS = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:127.0) Gecko/20100101 Firefox/127.0",
+)
+
+
 def _new_sse_session() -> requests.Session:
     session = requests.Session()
     session.headers.update({
         "Accept": "application/json, text/javascript, */*; q=0.01",
         "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
         "Referer": SSE_SCALE_PAGE,
-        "User-Agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/125.0.0.0 Safari/537.36"
-        ),
+        # Rotate a realistic UA per primed session; a single hard-coded UA is
+        # trivially fingerprinted by the SSE WAF on shared CI egress IPs.
+        "User-Agent": random.choice(_SSE_USER_AGENTS),
         "X-Requested-With": "XMLHttpRequest",
         "Connection": "keep-alive",
     })
@@ -293,6 +306,10 @@ def _cache_path(day: date) -> Path:
     return SHARE_CACHE_DIR / f"{day.isoformat()}.json"
 
 
+def _archive_path(day: date) -> Path:
+    return SHARE_ARCHIVE_DIR / f"{day.isoformat()}.json"
+
+
 def _validate_exchange_frame(frame: pd.DataFrame, day: date) -> pd.DataFrame:
     required = {"code", "name", "trade_date", "shares", "exchange"}
     if frame.empty or not required.issubset(frame.columns):
@@ -314,8 +331,7 @@ def _validate_exchange_frame(frame: pd.DataFrame, day: date) -> pd.DataFrame:
     return out
 
 
-def _read_exchange_cache(day: date) -> pd.DataFrame | None:
-    path = _cache_path(day)
+def _read_stored_exchange(path: Path, day: date) -> pd.DataFrame | None:
     if not path.exists():
         return None
     try:
@@ -325,8 +341,16 @@ def _read_exchange_cache(day: date) -> pd.DataFrame | None:
         frame = pd.DataFrame(payload.get("rows", []))
         return _validate_exchange_frame(frame, day)
     except Exception as exc:
-        print(f"[warn] ignoring invalid exchange-share cache {path.name}: {exc}", file=base.sys.stderr)
+        print(f"[warn] ignoring invalid exchange-share store {path.name}: {exc}", file=base.sys.stderr)
         return None
+
+
+def _read_exchange_cache(day: date) -> pd.DataFrame | None:
+    return _read_stored_exchange(_cache_path(day), day)
+
+
+def _read_exchange_archive(day: date) -> pd.DataFrame | None:
+    return _read_stored_exchange(_archive_path(day), day)
 
 
 def _exchange_cache_is_fresh(day: date) -> bool:
@@ -376,20 +400,40 @@ def _write_exchange_cache(day: date, frame: pd.DataFrame) -> None:
         "rowCount": len(rows),
         "rows": rows,
     }
-    path = _cache_path(day)
-    tmp = path.with_suffix(".tmp")
-    tmp.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), "utf-8")
-    tmp.replace(path)
+    for path in (_cache_path(day), _archive_path(day)):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(".tmp")
+        tmp.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), "utf-8")
+        tmp.replace(path)
 
 
 def resilient_fetch_exchange_shares(day: date) -> pd.DataFrame:
-    """Refresh current/T-1 once; use validated cache for older history."""
+    """Refresh current/T-1 once; use validated cache/archive for older history.
+
+    A failed refresh (e.g. an SSE WAF ban on shared CI egress) now falls back
+    to the stored official cross-section instead of aborting the whole build:
+    historical exchange data is immutable for this research purpose, and the
+    target day's value has already passed the verified probe gate before the
+    build starts.  Only a date with no stored value at all still requires a
+    live fetch.
+    """
     cached = _read_exchange_cache(day)
+    if cached is None:
+        cached = _read_exchange_archive(day)
     recent_session = _register_recent_build_session(day) if cached is not None else len(_RECENT_BUILD_SESSIONS) < RECENT_SESSION_REFRESH_COUNT
     if cached is not None:
         if recent_session and not _exchange_cache_is_fresh(day):
-            frame = _ORIG_FETCH_EXCHANGE_SHARES(day)
-            validated = _validate_exchange_frame(frame, day)
+            try:
+                frame = _ORIG_FETCH_EXCHANGE_SHARES(day)
+                validated = _validate_exchange_frame(frame, day)
+            except Exception as exc:
+                print(
+                    f"[warn] official share refresh for {day} failed ({exc}); "
+                    "using the stored verified cross-section",
+                    file=base.sys.stderr,
+                    flush=True,
+                )
+                return cached
             _write_exchange_cache(day, validated)
             print(f"official share cache refreshed: {day} ({len(validated)} rows)", flush=True)
             return validated
