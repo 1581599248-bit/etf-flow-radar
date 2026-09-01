@@ -70,7 +70,9 @@ class ResilientSseSourceTests(unittest.TestCase):
 
     def test_recent_stale_exchange_cache_is_refreshed_before_build(self):
         day = date(2026, 8, 14)
-        with tempfile.TemporaryDirectory() as tmp, patch.object(resilient, "SHARE_CACHE_DIR", Path(tmp)), patch.object(
+        with tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as arch_tmp, patch.object(
+            resilient, "SHARE_CACHE_DIR", Path(tmp)
+        ), patch.object(resilient, "SHARE_ARCHIVE_DIR", Path(arch_tmp)), patch.object(
             resilient.base, "MIN_MARKET_ETFS", 1
         ):
             resilient._RECENT_BUILD_SESSIONS.clear()
@@ -90,7 +92,9 @@ class ResilientSseSourceTests(unittest.TestCase):
 
     def test_recent_fresh_exchange_cache_avoids_duplicate_live_request(self):
         day = date(2026, 8, 14)
-        with tempfile.TemporaryDirectory() as tmp, patch.object(resilient, "SHARE_CACHE_DIR", Path(tmp)), patch.object(
+        with tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as arch_tmp, patch.object(
+            resilient, "SHARE_CACHE_DIR", Path(tmp)
+        ), patch.object(resilient, "SHARE_ARCHIVE_DIR", Path(arch_tmp)), patch.object(
             resilient.base, "MIN_MARKET_ETFS", 1
         ):
             resilient._RECENT_BUILD_SESSIONS.clear()
@@ -102,7 +106,9 @@ class ResilientSseSourceTests(unittest.TestCase):
 
     def test_refresh_failure_falls_back_to_stored_cross_section(self):
         day = date(2026, 8, 14)
-        with tempfile.TemporaryDirectory() as tmp, patch.object(resilient, "SHARE_CACHE_DIR", Path(tmp)), patch.object(
+        with tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as arch_tmp, patch.object(
+            resilient, "SHARE_CACHE_DIR", Path(tmp)
+        ), patch.object(resilient, "SHARE_ARCHIVE_DIR", Path(arch_tmp)), patch.object(
             resilient.base, "MIN_MARKET_ETFS", 1
         ):
             resilient._RECENT_BUILD_SESSIONS.clear()
@@ -159,6 +165,23 @@ class ResilientSseSourceTests(unittest.TestCase):
             self.assertEqual(payload["tradeDate"], day.isoformat())
             self.assertEqual(payload["source"], "official_sse_szse_eod_shares")
             self.assertEqual(float(payload["rows"][0]["shares"]), 100.0)
+
+    def test_cache_hit_backfills_durable_archive(self):
+        day = date(2026, 8, 14)
+        with tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as arch_tmp, patch.object(
+            resilient, "SHARE_CACHE_DIR", Path(tmp)
+        ), patch.object(resilient, "SHARE_ARCHIVE_DIR", Path(arch_tmp)), patch.object(
+            resilient.base, "MIN_MARKET_ETFS", 1
+        ):
+            resilient._RECENT_BUILD_SESSIONS.clear()
+            resilient._write_exchange_cache(day, self._exchange_frame(day, 100.0))
+            # Simulate the archive having been wiped while the volatile cache survives.
+            resilient._archive_path(day).unlink()
+            with patch.object(resilient, "_ORIG_FETCH_EXCHANGE_SHARES") as live:
+                out = resilient.resilient_fetch_exchange_shares(day)
+            live.assert_not_called()
+            self.assertEqual(float(out.iloc[0]["shares"]), 100.0)
+            self.assertTrue(resilient._archive_path(day).exists())
 
 
 if __name__ == "__main__":
