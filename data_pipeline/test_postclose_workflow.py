@@ -27,7 +27,7 @@ class PostCloseWorkflowTests(unittest.TestCase):
         self.assertIn('attempts=36', text)
         self.assertIn('sleep 300', text)
         self.assertIn("cancel-in-progress: true", text)
-        self.assertIn('ETF_SKIP_RETURN_PROXIES: "0"', text)
+        self.assertIn('ETF_SKIP_RETURN_PROXIES: "1"', text)
 
     def test_old_postclose_workflow_is_manual_dispatch_only(self):
         text = (ROOT / ".github" / "workflows" / "postclose-etf-publish.yml").read_text("utf-8")
