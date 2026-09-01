@@ -100,6 +100,66 @@ class ResilientSseSourceTests(unittest.TestCase):
             live.assert_not_called()
             self.assertEqual(float(out.iloc[0]["shares"]), 100.0)
 
+    def test_refresh_failure_falls_back_to_stored_cross_section(self):
+        day = date(2026, 8, 14)
+        with tempfile.TemporaryDirectory() as tmp, patch.object(resilient, "SHARE_CACHE_DIR", Path(tmp)), patch.object(
+            resilient.base, "MIN_MARKET_ETFS", 1
+        ):
+            resilient._RECENT_BUILD_SESSIONS.clear()
+            resilient._write_exchange_cache(day, self._exchange_frame(day, 100.0))
+            path = resilient._cache_path(day)
+            payload = json.loads(path.read_text("utf-8"))
+            payload.pop("fetchedAt")
+            path.write_text(json.dumps(payload), "utf-8")
+            with patch.object(
+                resilient, "_ORIG_FETCH_EXCHANGE_SHARES", side_effect=RuntimeError("SSE WAF ban 403")
+            ):
+                out = resilient.resilient_fetch_exchange_shares(day)
+            self.assertEqual(float(out.iloc[0]["shares"]), 100.0)
+
+    def test_durable_archive_covers_missing_volatile_cache(self):
+        day = date(2026, 8, 14)
+        with tempfile.TemporaryDirectory() as cache_tmp, tempfile.TemporaryDirectory() as arch_tmp, patch.object(
+            resilient, "SHARE_CACHE_DIR", Path(cache_tmp)
+        ), patch.object(resilient, "SHARE_ARCHIVE_DIR", Path(arch_tmp)), patch.object(
+            resilient.base, "MIN_MARKET_ETFS", 1
+        ):
+            resilient._RECENT_BUILD_SESSIONS.clear()
+            # Volatile cache file is absent; only the durable archive has this day.
+            frame = self._exchange_frame(day, 100.0)
+            path = resilient._archive_path(day)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            payload = {
+                "schemaVersion": 1,
+                "tradeDate": day.isoformat(),
+                "fetchedAt": "2026-08-14T10:00:00+00:00",
+                "source": "official_sse_szse_eod_shares",
+                "rowCount": 1,
+                "rows": frame.to_dict("records"),
+            }
+            path.write_text(json.dumps(payload, ensure_ascii=False), "utf-8")
+            with patch.object(
+                resilient, "_ORIG_FETCH_EXCHANGE_SHARES", side_effect=RuntimeError("SSE WAF ban 403")
+            ):
+                out = resilient.resilient_fetch_exchange_shares(day)
+            self.assertEqual(float(out.iloc[0]["shares"]), 100.0)
+
+    def test_write_mirrors_into_durable_archive(self):
+        day = date(2026, 8, 14)
+        with tempfile.TemporaryDirectory() as cache_tmp, tempfile.TemporaryDirectory() as arch_tmp, patch.object(
+            resilient, "SHARE_CACHE_DIR", Path(cache_tmp)
+        ), patch.object(resilient, "SHARE_ARCHIVE_DIR", Path(arch_tmp)), patch.object(
+            resilient.base, "MIN_MARKET_ETFS", 1
+        ):
+            resilient._RECENT_BUILD_SESSIONS.clear()
+            resilient._write_exchange_cache(day, self._exchange_frame(day, 100.0))
+            self.assertTrue(resilient._cache_path(day).exists())
+            self.assertTrue(resilient._archive_path(day).exists())
+            payload = json.loads(resilient._archive_path(day).read_text("utf-8"))
+            self.assertEqual(payload["tradeDate"], day.isoformat())
+            self.assertEqual(payload["source"], "official_sse_szse_eod_shares")
+            self.assertEqual(float(payload["rows"][0]["shares"]), 100.0)
+
 
 if __name__ == "__main__":
     unittest.main()
