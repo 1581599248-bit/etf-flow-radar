@@ -30,6 +30,12 @@ def build_snapshot(day: date) -> dict:
     if not _is_exchange_session(day):
         raise ValueError(f"{day.isoformat()} is not an exchange trading session")
     spot = base.retry("Eastmoney ETF same-day trading flow", ak.fund_etf_spot_em, attempts=3)
+    return build_snapshot_from_frame(day, spot)
+
+
+def build_snapshot_from_frame(day: date, spot: pd.DataFrame) -> dict:
+    """Validate and freeze an already-fetched exact-date provider frame."""
+    spot = spot.copy()
     spot.columns = [str(c).strip() for c in spot.columns]
     required = {
         "代码", "名称", "主力净流入-净额", "成交额", "外盘", "内盘", "数据日期",

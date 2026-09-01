@@ -2,9 +2,11 @@ name: Capture ETF order flow
 
 on:
   schedule:
-    - cron: "35 7 * * 1-5"  # 15:35 Asia/Shanghai
-    - cron: "5 8 * * 1-5"   # 16:05 Asia/Shanghai retry
-    - cron: "35 8 * * 1-5"  # 16:35 Asia/Shanghai final retry
+    # Use off-peak minutes; each run also retries internally so one delayed cron
+    # is sufficient to freeze the same-day trading fact.
+    - cron: "37 7 * * 1-5"  # 15:37 Asia/Shanghai
+    - cron: "17 8 * * 1-5"  # 16:17 Asia/Shanghai backup
+    - cron: "7 9 * * 1-5"   # 17:07 Asia/Shanghai final backup
   workflow_dispatch:
     inputs:
       trade_date:
@@ -22,7 +24,7 @@ concurrency:
 jobs:
   capture:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 75
     env:
       TZ: Asia/Shanghai
     steps:
@@ -34,12 +36,26 @@ jobs:
           cache-dependency-path: data_pipeline/requirements.txt
       - run: pip install -r data_pipeline/requirements.txt
       - name: Capture same-day secondary-market ETF order flow
+        shell: bash
         run: |
-          if [ -n "${{ inputs.trade_date }}" ]; then
-            python data_pipeline/capture_order_flow_v2.py --date "${{ inputs.trade_date }}"
-          else
-            python data_pipeline/capture_order_flow_v2.py
-          fi
+          attempts=1
+          if [ "${GITHUB_EVENT_NAME}" = "schedule" ]; then attempts=7; fi
+          for attempt in $(seq 1 "$attempts"); do
+            set +e
+            if [ -n "${{ inputs.trade_date }}" ]; then
+              python data_pipeline/capture_order_flow_v2.py --date "${{ inputs.trade_date }}"
+            else
+              python data_pipeline/capture_order_flow_v2.py
+            fi
+            code=$?
+            set -e
+            if [ "$code" -eq 0 ]; then exit 0; fi
+            if [ "$attempt" -lt "$attempts" ]; then
+              echo "capture attempt ${attempt}/${attempts} failed; retrying in 5 minutes"
+              sleep 300
+            fi
+          done
+          exit "$code"
       - name: Commit immutable order-flow fact file
         run: |
           git config user.name "etf-flow-radar-bot"

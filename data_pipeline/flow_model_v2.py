@@ -28,6 +28,10 @@ import pandas as pd
 import update_daily as base
 
 _CROSS_BORDER = re.compile(base.CONFIG["globalExcludePatterns"][0], re.IGNORECASE)
+# Some domestic index families contain words that also appear in the legacy
+# cross-border exclusion regex.  These exact A-share index names must win over
+# the broad keyword match (for example, 恒生A股 is not 恒生港股).
+_DOMESTIC_A_SHARE_INDEX = re.compile(r"恒生A股|标普(?:中国)?A股", re.IGNORECASE)
 # The legacy global exclusion regex combines bonds and some cash-management ETF
 # names.  Asset classification must be mutually exclusive, so money is tested
 # first and removed from the bond decision explicitly.
@@ -55,6 +59,8 @@ def _asset_scope(name: str, fund_name: str, fund_type: str) -> str:
     text = f"{name} {fund_name}".strip()
     kind = str(fund_type).strip()
     if kind == "股票型":
+        if _DOMESTIC_A_SHARE_INDEX.search(text):
+            return "aShareStockEtf"
         return "crossBorderStockEtf" if _CROSS_BORDER.search(text) else "aShareStockEtf"
     if kind == "货币型" or _MONEY.search(text):
         return "moneyEtf"
@@ -436,10 +442,28 @@ def apply_flow_model(
         # classification.  Non-stock products may not have one and are removed
         # later by the asset-scope gate; a domestic stock ETF without one is a
         # hard data-quality error rather than an invisible residual.
-        if not source or not source.get("groupId"):
+        if not source:
             if row.get("scope") == "aShareStockEtf":
-                raise ValueError(f"A-share ETF {code} lacks a classification group")
+                raise ValueError(f"A-share ETF {code} is missing from the official universe ledger")
             continue
+        if not source.get("groupId"):
+            if row.get("scope") != "aShareStockEtf":
+                continue
+            # Scope recognition is independent of thematic classification.  A
+            # confirmed domestic stock ETF that was excluded by an older broad
+            # keyword rule must remain in the complete market total, while the
+            # fallback group keeps it out of broad/sector leader rankings.
+            fallback = {
+                "groupId": base.FALLBACK_A_SHARE_RULE["id"],
+                "groupName": base.FALLBACK_A_SHARE_RULE["name"],
+                "kind": "other",
+                "classificationStatus": "fallback",
+                "analysisStatus": "ready",
+            }
+            source = {**source, **fallback}
+            universe_source = universe_records.get(str(code))
+            if universe_source is not None:
+                universe_source.update(fallback)
         record = dict(source)
         record.update({
             "shares": round(float(row["shares"]), 2),

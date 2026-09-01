@@ -19,6 +19,7 @@ import pandas as pd
 import update_daily as base
 import update_daily_guarded as guarded
 import update_daily_production as production
+import capture_order_flow_v2
 import flow_model_v2
 import flow_comparison_v2
 import flow_scope_breakdown_v2
@@ -27,7 +28,35 @@ _ORIG_POSTPROCESS = production._postprocess_snapshot
 _ORIG_ATOMIC_PUBLISH = base.atomic_publish
 
 
+def _order_flow_payload_to_frame(payload: dict[str, Any], day: date) -> pd.DataFrame:
+    rows = payload.get("etfs", [])
+    if not rows:
+        return pd.DataFrame()
+    frame = pd.DataFrame(rows)
+    frame["代码"] = frame["code"].astype(str).str.zfill(6)
+    frame["名称"] = frame["name"].astype(str)
+    frame["数据日期"] = day.isoformat()
+    if "mainOrderFlow1d" in frame.columns:
+        frame["主力净流入-净额"] = pd.to_numeric(frame["mainOrderFlow1d"], errors="coerce") * 1e8
+    if "tradeNetFlow1d" in frame.columns:
+        frame["当日交易净额"] = pd.to_numeric(frame["tradeNetFlow1d"], errors="coerce") * 1e8
+    if "tradeInflow1d" in frame.columns:
+        frame["当日交易流入"] = pd.to_numeric(frame["tradeInflow1d"], errors="coerce") * 1e8
+    if "tradeOutflow1d" in frame.columns:
+        frame["当日交易流出"] = pd.to_numeric(frame["tradeOutflow1d"], errors="coerce") * 1e8
+    if "amount" in frame.columns:
+        frame["成交额"] = pd.to_numeric(frame["amount"], errors="coerce") * 1e8
+    keep = [
+        c for c in [
+            "代码", "名称", "主力净流入-净额", "当日交易净额",
+            "当日交易流入", "当日交易流出", "成交额", "数据日期",
+        ] if c in frame.columns
+    ]
+    return frame[keep]
+
+
 def _load_secondary_spot(day: date) -> pd.DataFrame:
+    """Load the immutable daily fact, or freeze an exact-date live recovery."""
     path = base.PUBLIC / "order_flow" / f"{day.isoformat()}.json"
     if path.exists():
         payload = json.loads(path.read_text("utf-8"))
@@ -35,30 +64,24 @@ def _load_secondary_spot(day: date) -> pd.DataFrame:
             payload.get("tradeDate") == day.isoformat()
             and payload.get("metric") in {"secondaryMarketMainOrderFlow", "secondaryMarketETFTradingFlow"}
         ):
-            rows = payload.get("etfs", [])
-            if rows:
-                frame = pd.DataFrame(rows)
-                frame["代码"] = frame["code"].astype(str).str.zfill(6)
-                frame["名称"] = frame["name"].astype(str)
-                frame["数据日期"] = day.isoformat()
-                if "mainOrderFlow1d" in frame.columns:
-                    frame["主力净流入-净额"] = pd.to_numeric(frame["mainOrderFlow1d"], errors="coerce") * 1e8
-                if "tradeNetFlow1d" in frame.columns:
-                    frame["当日交易净额"] = pd.to_numeric(frame["tradeNetFlow1d"], errors="coerce") * 1e8
-                if "tradeInflow1d" in frame.columns:
-                    frame["当日交易流入"] = pd.to_numeric(frame["tradeInflow1d"], errors="coerce") * 1e8
-                if "tradeOutflow1d" in frame.columns:
-                    frame["当日交易流出"] = pd.to_numeric(frame["tradeOutflow1d"], errors="coerce") * 1e8
-                if "amount" in frame.columns:
-                    frame["成交额"] = pd.to_numeric(frame["amount"], errors="coerce") * 1e8
-                keep = [
-                    c for c in [
-                        "代码", "名称", "主力净流入-净额", "当日交易净额",
-                        "当日交易流入", "当日交易流出", "成交额", "数据日期",
-                    ] if c in frame.columns
-                ]
-                return frame[keep]
-    return guarded._get_spot()
+            frame = _order_flow_payload_to_frame(payload, day)
+            if not frame.empty:
+                return frame
+
+    live = guarded._get_spot()
+    if live is None or live.empty or "数据日期" not in live.columns:
+        return live
+    observed_dates = set(pd.to_datetime(live["数据日期"], errors="coerce").dt.date.dropna())
+    if day not in observed_dates:
+        return live
+
+    # The scheduled intraday capture can be skipped by the upstream scheduler.
+    # If the exact trading date is still exposed when the official-share build
+    # runs, freeze it here so the headline never depends on an uncommitted live
+    # response that cannot be audited later.
+    payload = capture_order_flow_v2.build_snapshot_from_frame(day, live)
+    capture_order_flow_v2.publish(payload)
+    return _order_flow_payload_to_frame(payload, day)
 
 
 def _same_day_trade_rows(spot: pd.DataFrame | None, day: date) -> pd.DataFrame:
@@ -133,10 +156,27 @@ def _add_trade_net_flow(snapshot: dict[str, Any], day: date, ths: pd.DataFrame, 
             "inflow1d": round(float(inflow.sum()) / 1e8, 2) if inflow.notna().any() else None,
             "outflow1d": round(float(outflow.sum()) / 1e8, 2) if outflow.notna().any() else None,
         }
-    target.update({"status": "available", "scopeTotals": {
+    comparable_codes = {
+        str(item.get("code", "")).zfill(6) for item in snapshot.get("etfs", [])
+    }
+    comparable_a_share = joined[joined["code"].isin(comparable_codes)]
+    covered_comparable_codes = set(comparable_a_share["code"])
+    missing_comparable_codes = sorted(comparable_codes - covered_comparable_codes)
+    target.update({
+        "status": "available",
+        "comparisonScope": "与一级市场主指标相同的、具备T/T-1可比份额及T日NAV的A股股票ETF；仅统计盘中数据源实际返回的证券",
+        "coverage": {
+            "primaryComparableEtfCount": len(comparable_codes),
+            "coveredPrimaryComparableEtfCount": len(covered_comparable_codes),
+            "missingPrimaryComparableEtfCount": len(missing_comparable_codes),
+            "missingPrimaryComparableEtfCodes": missing_comparable_codes,
+            "coveragePct": round(len(covered_comparable_codes) / len(comparable_codes) * 100, 2) if comparable_codes else 0.0,
+            "missingReason": "same-day trading source did not return a usable ETF row; missing rows are not imputed as zero",
+        },
+        "scopeTotals": {
         "allEtf": total(joined),
         "stockEtfIncludingCrossBorder": total(joined[joined["scope"].isin(["aShareStockEtf", "crossBorderStockEtf"])]),
-        "aShareStockEtf": total(joined[joined["scope"].eq("aShareStockEtf")]),
+        "aShareStockEtf": total(comparable_a_share),
     }})
     snapshot.setdefault("flowMetrics", {})["secondaryMarketTradeFlow"] = target
     trade_map = dict(zip(joined["code"], joined["trade_net_yuan"] / 1e8))
@@ -238,7 +278,12 @@ def _trade_copy(trade_value: float, strength: str) -> str:
 
 def _primary_copy(primary_value: float, strength: str) -> str:
     if strength == "flat":
-        return "ETF份额对应申赎资金基本持平"
+        # “基本平衡”是强度判断，不应覆盖已经计算出的资金净额。
+        # 标题始终保留数值，才能与主指标和发布审计逐项对账。
+        if primary_value == 0:
+            return "ETF份额对应申赎资金净额0.0亿元"
+        direction = "流入" if primary_value > 0 else "流出"
+        return f"ETF份额对应申赎资金小幅净{direction}{abs(primary_value):.1f}亿元"
     qualifier = {
         "small": "小幅",
         "clear": "明显",
@@ -604,8 +649,8 @@ def _market_conclusion_copy(
                 return f"盘中卖压下，资金仍选择性申购{focus_label}，交易与份额端流向分化。"
             return "市场总体流向分化，盘中卖压下仍有份额申购承接。"
         if focus_label:
-            return f"盘中买盘未转化为整体份额申购，资金仅选择性配置{focus_label}。"
-        return "市场总体流向分化，盘中买盘尚未转化为整体份额申购。"
+            return f"交易端买盘增强，但未获份额申购确认，配置资金仅选择性承接{focus_label}。"
+        return "交易端买盘增强，但未获份额申购确认，市场资金流向仍分化。"
 
     if primary_side > 0:
         if focus_label:
@@ -903,13 +948,10 @@ def apply_v2_semantics(snapshot: dict[str, Any], day: date, share_window: list[t
         raise ValueError(
             f"A-share classification coverage is incomplete: groups={classified_count}, market={market_count}"
         )
-    # Client-level ETF and group facts are rounded to 0.01亿元.  Publish the
-    # market total as the sum of those displayed constituents so every number
-    # on the page reconciles exactly; retain the pre-rounding aggregate in the
-    # quality ledger for audit.  This is a rounding alignment, never a missing
-    # classification residual.
-    market["flow1d"] = classified_flow
-    primary["scopeTotals"]["aShareStockEtf"]["flow1d"] = classified_flow
+    # The canonical aggregate is calculated once from unrounded per-ETF facts.
+    # Groups remain the sum of displayed 0.01亿元 constituents, so their total
+    # can differ slightly through rounding.  Record that display-only residual;
+    # never overwrite the canonical headline total with a sum of rounded rows.
     reconciliation_difference = 0.0
     visible_sectors = _visible_sector_groups(snapshot)
     visible_sector_flow = round(sum(float(g.get("flow1d", 0) or 0) for g in visible_sectors), 2)
@@ -931,7 +973,19 @@ def apply_v2_semantics(snapshot: dict[str, Any], day: date, share_window: list[t
             "classifiedGroupShareFlow1d": classified_flow,
             "rawAshareEquityShareFlow1d": round(raw_market_flow, 2),
             "roundingAlignment": rounding_adjustment,
+            "displayRoundingDifference": rounding_adjustment,
             "ungroupedDifference": reconciliation_difference,
+        },
+        "reconciliation": {
+            "directionCountTotal": sum(int(market.get(key) or 0) for key in (
+                "increaseEtfCount1d", "decreaseEtfCount1d", "unchangedEtfCount1d"
+            )),
+            "groupEtfCountTotal": sum(int(group.get("etfCount") or 0) for group in snapshot.get("groups", [])),
+            "uniqueAnalyzedEtfCount": classified_count,
+            "groupFlow1d": classified_flow,
+            "marketFlow1d": round(raw_market_flow, 2),
+            "flowDifference": rounding_adjustment,
+            "differenceType": "display_rounding_only",
         },
         "clientSectorReconciliation": {
             "visibleGroupCount": len(visible_sectors), "visibleGroupFlow1d": visible_sector_flow,
@@ -944,13 +998,20 @@ def apply_v2_semantics(snapshot: dict[str, Any], day: date, share_window: list[t
     snapshot["schemaVersion"] = 6
     snapshot.setdefault("methodology", {}).update({
         "flow": "ETF当日净流入/净流出估算 =（T日交易所日终份额 − T-1日公司行动调整后的可比份额）× T日单位净值。T-1只作为T日份额变化的基准；该结果就是T日净申购/赎回的资金估算，不是再与上一日资金流做一次比较。",
-        "metricSeparation": "首页结论把两类数据翻译成易懂话术：盘中买盘/卖盘强弱来自同日成交额与外盘/内盘估算的主动买卖净额；ETF份额对应申赎资金来自交易所T日与T-1可比份额变化×T日NAV。盘中强弱按主动买卖净额占总成交额比例分为基本均衡、小幅偏强、偏强、明显占优；ETF份额资金按当日资金变化占A股股票ETF总规模比例分为基本持平、小幅、明显、大幅。结论固定按“份额主判断—盘中同步或背离—风格与行业主题合并流入排名—市场扩张或收缩及配置倾向”生成；市场总量由份额端决定，局部方向不替代市场总量判断。",
+        "metricSeparation": "首页结论把两类数据翻译成易懂话术：盘中买盘/卖盘强弱来自同日成交额与外盘/内盘估算的主动买卖净额；ETF份额对应申赎资金来自交易所T日与T-1可比份额变化×T日NAV。盘中强弱按主动买卖净额占总成交额比例分为基本均衡、小幅偏强、偏强、明显占优；ETF份额资金按当日资金变化占A股股票ETF总规模比例分为基本持平、小幅、明显、大幅。结论固定按“份额主判断—盘中同步或背离—宽基与行业主题合并流入排名—市场行为解释”生成；两端同向才称共振，反向才称背离，盘中均衡则明确为未确认份额方向。",
         "multiDay": "坐标轴的5日/20日字段为端点份额变化×期末单位净值，字段明确标记 Endpoint；它们不是逐日净申购额之和。首页结论的历史比较仅使用T-1及以前已落盘的逐日flow1d，且要求ETF池数量与当前日相差不超过2%，不把当天放入比较基准。",
         "scope": "首页主指标固定使用A股股票ETF范围，不含跨境股票ETF、债券ETF、货币ETF和商品ETF；凡具备T与T-1可比份额及T日NAV的A股股票ETF均进入唯一观察组。暂不能可靠映射到既有宽基、风格或行业的产品单列为“其他A股股票ETF”，不混入对应排名；同时保留全部ETF、股票ETF（含跨境）和六类资产范围用于审计与对照。",
         "valuation": "ETF当日净流入/净流出主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。",
         "sectorDisplay": "客户端行业结论、排名与行业资金坐标统一使用互斥的“申万一级行业+热门主题”展示层；industryRollups仅用于把热门主题回卷到申万一级行业做审计，不参与客户端最大流入/流出排名。",
         "coordinates": "横轴 = 20日相对沪深300收益率；纵轴 = 5日端点份额变化×期末NAV ÷ 5日前参考规模（%）。",
     })
+    snapshot["sources"] = [
+        {"name": "上海证券交易所", "field": "沪市ETF日终总份额", "role": "官方份额主源"},
+        {"name": "深圳证券交易所", "field": "深市ETF日终总份额", "role": "官方份额主源"},
+        {"name": "同花顺基金数据/AKShare", "field": f"{day.isoformat()} 基金类型与单位净值", "role": "A股范围识别与主口径NAV估值"},
+        {"name": "东方财富行情/AKShare", "field": f"{day.isoformat()} 成交额、外盘与内盘", "role": "盘中主动买卖估算；不替代官方份额"},
+        {"name": "东方财富/新浪行情/AKShare", "field": "成交均价及组内代表ETF收盘价", "role": "估值对照与收益代理"},
+    ]
     _regenerate_v2_conclusion(snapshot)
 
 

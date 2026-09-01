@@ -79,7 +79,32 @@ class FlowModelV2Tests(unittest.TestCase):
         self.assertEqual(model._asset_scope("国债ETF", "国泰上证5年期国债ETF", "债券型"), "bondEtf")
         self.assertEqual(model._asset_scope("黄金ETF", "华安黄金易ETF", "其他"), "commodityEtf")
         self.assertEqual(model._asset_scope("纳指ETF", "国泰纳斯达克100ETF", "股票型"), "crossBorderStockEtf")
+        self.assertEqual(model._asset_scope("恒生电网设备ETF", "国泰恒生A股电网设备ETF", "股票型"), "aShareStockEtf")
+        self.assertEqual(model._asset_scope("红利低波ETF", "南方标普中国A股大盘红利低波50ETF", "股票型"), "aShareStockEtf")
+        self.assertEqual(model._asset_scope("标普A股红利ETF", "华宝标普A股红利机会ETF", "股票型"), "aShareStockEtf")
         self.assertEqual(model._asset_scope("沪深300ETF", "华泰柏瑞沪深300ETF", "股票型"), "aShareStockEtf")
+
+    def test_domestic_stock_etf_excluded_by_legacy_keyword_enters_fallback_group(self):
+        snapshot = {
+            "universe": [{
+                "code": "562060", "name": "标普A股红利ETF华宝", "shares": 500_000_000,
+                "classificationStatus": "excluded", "referencePrice": 1.0,
+                "referencePriceType": "AVG",
+            }],
+            "etfs": [], "groups": [], "quality": {},
+        }
+        window = [
+            (date(2026, 8, 13), pd.DataFrame([{"code": "562060", "shares": 490_000_000}])),
+            (date(2026, 8, 14), pd.DataFrame([{"code": "562060", "shares": 500_000_000}])),
+        ]
+        ths = pd.DataFrame([{
+            "code": "562060", "fund_name": "华宝标普A股红利机会ETF",
+            "nav": 1.0, "prev_nav": 1.0, "fund_type": "股票型",
+        }])
+        model.apply_flow_model(snapshot, date(2026, 8, 14), window, ths, None)
+        self.assertEqual(snapshot["market"]["etfCount"], 1)
+        self.assertEqual(snapshot["etfs"][0]["groupId"], "other_a_share_stock_etf")
+        self.assertEqual(snapshot["universe"][0]["classificationStatus"], "fallback")
 
     def test_secondary_order_flow_never_overwrites_primary_and_requires_exact_date(self):
         snapshot = self._snapshot()

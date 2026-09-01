@@ -64,6 +64,30 @@ class UpdateDailyV2Tests(unittest.TestCase):
         live.assert_called_once()
         self.assertEqual(frame.iloc[0]["数据日期"], "2026-08-17")
 
+    def test_exact_date_live_recovery_is_frozen_before_use(self):
+        day = date(2026, 8, 14)
+        live_frame = pd.DataFrame({"代码": ["510300"], "数据日期": [day.isoformat()]})
+        payload = {
+            "tradeDate": day.isoformat(),
+            "metric": "secondaryMarketETFTradingFlow",
+            "etfs": [{
+                "code": "510300", "name": "沪深300ETF华泰柏瑞",
+                "tradeNetFlow1d": 2.0, "tradeInflow1d": 6.0,
+                "tradeOutflow1d": 4.0, "mainOrderFlow1d": 1.0,
+            }],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            with (
+                patch.object(v2.base, "PUBLIC", Path(tmp)),
+                patch.object(v2.guarded, "_get_spot", return_value=live_frame),
+                patch.object(v2.capture_order_flow_v2, "build_snapshot_from_frame", return_value=payload) as build,
+                patch.object(v2.capture_order_flow_v2, "publish") as publish,
+            ):
+                frame = v2._load_secondary_spot(day)
+        build.assert_called_once_with(day, live_frame)
+        publish.assert_called_once_with(payload)
+        self.assertEqual(float(frame.loc[0, "当日交易净额"]), 200_000_000.0)
+
     def test_trade_net_scope_uses_only_a_share_stock_etfs_for_headline(self):
         day = date(2026, 8, 14)
         snapshot = {
@@ -90,6 +114,17 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertEqual(totals["aShareStockEtf"]["netFlow1d"], 2.0)
         self.assertEqual(totals["stockEtfIncludingCrossBorder"]["netFlow1d"], 1.0)
         self.assertEqual(snapshot["etfs"][0]["secondaryTradeNetFlow1d"], 2.0)
+        self.assertEqual(
+            snapshot["flowMetrics"]["secondaryMarketTradeFlow"]["coverage"],
+            {
+                "primaryComparableEtfCount": 1,
+                "coveredPrimaryComparableEtfCount": 1,
+                "missingPrimaryComparableEtfCount": 0,
+                "missingPrimaryComparableEtfCodes": [],
+                "coveragePct": 100.0,
+                "missingReason": "same-day trading source did not return a usable ETF row; missing rows are not imputed as zero",
+            },
+        )
 
     @staticmethod
     def _groups():
@@ -220,7 +255,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn("盘中卖压背离但相对有限", share_led_inflow)
         self.assertTrue(share_led_inflow.endswith("盘中卖压下，资金仍选择性申购防御方向，交易与份额端流向分化。"))
         self.assertIn("盘中买盘背离且更强", divergent)
-        self.assertTrue(divergent.endswith("市场总体流向分化，盘中买盘尚未转化为整体份额申购。"))
+        self.assertTrue(divergent.endswith("交易端买盘增强，但未获份额申购确认，市场资金流向仍分化。"))
 
     def test_merged_broad_and_sector_ranking_always_names_top_two_inflows(self):
         state, text, tilt = v2._inflow_focus_context({"groups": [
@@ -283,7 +318,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
                 -100.0, "clear", "concentrated_two_growth", "growth",
                 trade_value=120.0, trade_strength="clear", allocation_scope="mixed",
             ),
-            "盘中买盘未转化为整体份额申购，资金仅选择性配置成长方向。",
+            "交易端买盘增强，但未获份额申购确认，配置资金仅选择性承接成长方向。",
         )
         self.assertEqual(
             v2._market_conclusion_copy(
@@ -454,7 +489,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn(
             "\n—— 份额大量净赎回，盘中买盘背离但相对有限。"
             "资金份额流入居前为半导体与创新药。"
-            "盘中买盘未转化为整体份额申购，资金仅选择性配置成长方向。",
+            "交易端买盘增强，但未获份额申购确认，配置资金仅选择性承接成长方向。",
             headline,
         )
         self.assertNotIn("红利低波与价值", headline)
@@ -510,6 +545,16 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn("份额端出现净申购，盘中交易信号暂缺。", headline)
         self.assertNotIn("申万一级和主题行业", headline)
         self.assertIn("半导体", snapshot["conclusion"]["facts"][2])
+
+    def test_primary_headline_keeps_amount_when_share_signal_is_flat(self):
+        self.assertEqual(
+            v2._primary_copy(-4.39, "flat"),
+            "ETF份额对应申赎资金小幅净流出4.4亿元",
+        )
+        self.assertEqual(
+            v2._primary_copy(0.0, "flat"),
+            "ETF份额对应申赎资金净额0.0亿元",
+        )
 
     def test_visible_sector_groups_are_exactly_the_client_industry_layer(self):
         snapshot = {"groups": self._groups() + [{"id": "growth", "name": "成长", "kind": "style", "flow1d": 2.0}]}

@@ -1,5 +1,8 @@
+import json
+import tempfile
 import unittest
 from datetime import date
+from pathlib import Path
 from unittest.mock import patch
 
 import pandas as pd
@@ -8,6 +11,13 @@ import update_daily_resilient as resilient
 
 
 class ResilientSseSourceTests(unittest.TestCase):
+    @staticmethod
+    def _exchange_frame(day: date, shares: float) -> pd.DataFrame:
+        return pd.DataFrame([{
+            "code": "510300", "name": "沪深300ETF", "trade_date": day.isoformat(),
+            "shares": shares, "exchange": "SSE",
+        }])
+
     def test_normalize_maintained_sse_schema_preserves_individual_share_units(self):
         day = date(2026, 8, 14)
         raw = pd.DataFrame({
@@ -57,6 +67,38 @@ class ResilientSseSourceTests(unittest.TestCase):
             out = resilient.resilient_fetch_sse_shares(day)
         self.assertEqual(len(out), 10)
         legacy.assert_not_called()
+
+    def test_recent_stale_exchange_cache_is_refreshed_before_build(self):
+        day = date(2026, 8, 14)
+        with tempfile.TemporaryDirectory() as tmp, patch.object(resilient, "SHARE_CACHE_DIR", Path(tmp)), patch.object(
+            resilient.base, "MIN_MARKET_ETFS", 1
+        ):
+            resilient._RECENT_BUILD_SESSIONS.clear()
+            resilient._write_exchange_cache(day, self._exchange_frame(day, 100.0))
+            path = resilient._cache_path(day)
+            payload = json.loads(path.read_text("utf-8"))
+            payload.pop("fetchedAt")
+            path.write_text(json.dumps(payload), "utf-8")
+            with patch.object(
+                resilient, "_ORIG_FETCH_EXCHANGE_SHARES",
+                return_value=self._exchange_frame(day, 120.0),
+            ) as live:
+                out = resilient.resilient_fetch_exchange_shares(day)
+            live.assert_called_once_with(day)
+            self.assertEqual(float(out.iloc[0]["shares"]), 120.0)
+            self.assertIn("fetchedAt", json.loads(path.read_text("utf-8")))
+
+    def test_recent_fresh_exchange_cache_avoids_duplicate_live_request(self):
+        day = date(2026, 8, 14)
+        with tempfile.TemporaryDirectory() as tmp, patch.object(resilient, "SHARE_CACHE_DIR", Path(tmp)), patch.object(
+            resilient.base, "MIN_MARKET_ETFS", 1
+        ):
+            resilient._RECENT_BUILD_SESSIONS.clear()
+            resilient._write_exchange_cache(day, self._exchange_frame(day, 100.0))
+            with patch.object(resilient, "_ORIG_FETCH_EXCHANGE_SHARES") as live:
+                out = resilient.resilient_fetch_exchange_shares(day)
+            live.assert_not_called()
+            self.assertEqual(float(out.iloc[0]["shares"]), 100.0)
 
 
 if __name__ == "__main__":

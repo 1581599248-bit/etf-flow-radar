@@ -9,11 +9,9 @@ class PostCloseWorkflowTests(unittest.TestCase):
     def test_single_automatic_workflow_probes_before_full_build(self):
         text = (ROOT / ".github" / "workflows" / "daily-etf-data.yml").read_text("utf-8")
         for cron in (
-            '"30,45 14 * * 1-5"',
-            '"*/5 15,16 * * 1-5"',
-            '"*/15 17,18 * * 1-5"',
-            '"0,30 19-23 * * 1-5"',
-            '"0 0-6 * * 2-6"',
+            '"37 14 * * 1-5"',
+            '"17 18 * * 1-5"',
+            '"23 0,4 * * 2-6"',
         ):
             self.assertIn(cron, text)
         self.assertIn("probe_official_shares.py", text)
@@ -26,6 +24,8 @@ class PostCloseWorkflowTests(unittest.TestCase):
         self.assertIn("resolve_publication_target", text)
         self.assertNotIn("order_flow/latest.json", text)
         self.assertNotIn("for attempt in 1 2 3 4", text)
+        self.assertIn('attempts=36', text)
+        self.assertIn('sleep 300', text)
         self.assertIn("cancel-in-progress: false", text)
 
     def test_old_postclose_workflow_is_manual_dispatch_only(self):
@@ -39,6 +39,7 @@ class PostCloseWorkflowTests(unittest.TestCase):
     def test_capture_workflow_still_persists_order_flow_independently(self):
         text = (ROOT / ".github" / "workflows" / "capture-etf-order-flow.yml").read_text("utf-8")
         self.assertIn("Capture same-day secondary-market ETF order flow", text)
+        self.assertIn('attempts=7', text)
         self.assertIn("git add site/data/order_flow", text)
         self.assertIn("data: capture same-day ETF secondary order flow", text)
 

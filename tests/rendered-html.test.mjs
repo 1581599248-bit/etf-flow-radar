@@ -144,8 +144,13 @@ test("schema v6 separates primary subscription flow, secondary trading flow and 
   if (trade.status === "available") {
     assert.equal(trade.tradeDate, snapshot.tradeDate);
     const tradeValue = trade.scopeTotals.aShareStockEtf.netFlow1d;
+    const balancedAmount = tradeValue > 0
+      ? `主动买入净额${Math.abs(tradeValue).toFixed(1)}亿元`
+      : tradeValue < 0
+        ? `主动卖出净额${Math.abs(tradeValue).toFixed(1)}亿元`
+        : "主动买卖净额0.0亿元";
     const tradePattern = new RegExp(
-      `^A股ETF盘中(?:买卖力量基本均衡|(?:买|卖)盘(?:小幅偏强|偏强|明显占优)，主动${tradeValue > 0 ? "买入" : "卖出"}净额${escapeRegExp(Math.abs(tradeValue).toFixed(1))}亿元)；`
+      `^A股ETF盘中(?:买卖力量基本均衡，${escapeRegExp(balancedAmount)}|(?:买|卖)盘(?:小幅偏强|偏强|明显占优)，主动${tradeValue > 0 ? "买入" : "卖出"}净额${escapeRegExp(Math.abs(tradeValue).toFixed(1))}亿元)；`
     );
     assert.match(snapshot.conclusion.headline, tradePattern);
   } else {

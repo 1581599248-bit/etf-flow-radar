@@ -2,18 +2,14 @@ name: Official ETF share gate and publish
 
 on:
   schedule:
-    # Beijing time 22:30 and 22:45 on the trade date.
-    - cron: "30,45 14 * * 1-5"
-    # Beijing time 23:00-00:55: dense five-minute detection before 01:00.
-    - cron: "*/5 15,16 * * 1-5"
-    # Beijing time 01:00-02:45: continue every fifteen minutes.
-    - cron: "*/15 17,18 * * 1-5"
-    # Beijing time 03:00-07:30: continue every thirty minutes.
-    - cron: "0,30 19-23 * * 1-5"
-    # Beijing time 08:00-14:00 Tuesday-Saturday: hourly fallback.
-    - cron: "0 0-6 * * 2-6"
+    # A few off-peak start points are more reliable than dozens of GitHub cron
+    # events.  Each scheduled probe keeps retrying internally until both
+    # exchanges publish the exact official date.
+    - cron: "37 14 * * 1-5"  # 22:37 Asia/Shanghai; primary start
+    - cron: "17 18 * * 1-5"  # 02:17 Asia/Shanghai; overnight backup
+    - cron: "23 0,4 * * 2-6" # 08:23 and 12:23 Asia/Shanghai fallback
     # Friday data keeps retrying through the weekend until it is published.
-    - cron: "0 1,5,9 * * 0,6"
+    - cron: "23 1,5,9 * * 0,6"
   push:
     branches:
       - main
@@ -96,7 +92,7 @@ jobs:
           - primary
           - secondary
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 220
     env:
       TZ: Asia/Shanghai
     steps:
@@ -121,12 +117,24 @@ jobs:
         id: official
         shell: bash
         run: |
-          set +e
-          timeout 4m python data_pipeline/probe_official_shares.py \
-            --date "${{ needs.resolve.outputs.trade_date }}" \
-            --status-file "/tmp/official-share-probe-${{ matrix.lane }}.json"
-          code=$?
-          set -e
+          attempts=1
+          if [ "${GITHUB_EVENT_NAME}" = "schedule" ]; then attempts=36; fi
+          code=75
+          for attempt in $(seq 1 "$attempts"); do
+            set +e
+            timeout 4m python data_pipeline/probe_official_shares.py \
+              --date "${{ needs.resolve.outputs.trade_date }}" \
+              --status-file "/tmp/official-share-probe-${{ matrix.lane }}.json"
+            code=$?
+            set -e
+            if [ "$code" -eq 0 ]; then break; fi
+            if { [ "$code" -eq 75 ] || [ "$code" -eq 124 ]; } && [ "$attempt" -lt "$attempts" ]; then
+              echo "official shares not ready on ${{ matrix.lane }} attempt ${attempt}/${attempts}; retrying in 5 minutes"
+              sleep 300
+              continue
+            fi
+            break
+          done
           cat "/tmp/official-share-probe-${{ matrix.lane }}.json" >> "$GITHUB_STEP_SUMMARY" || true
           if [ "$code" -eq 0 ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
@@ -134,7 +142,7 @@ jobs:
             cp ".cache/exchange_shares/${{ needs.resolve.outputs.trade_date }}.json" .probe-output/
           elif [ "$code" -eq 75 ] || [ "$code" -eq 124 ]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "Official shares are not ready on lane ${{ matrix.lane }}; the next scheduled run will retry." >> "$GITHUB_STEP_SUMMARY"
+            echo "Official shares are not ready on lane ${{ matrix.lane }} after the internal retry window; a backup run will retry." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"

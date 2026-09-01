@@ -111,6 +111,16 @@ def audit(snapshot_path: Path) -> list[str]:
     if non_a_share:
         sample = [(row.get("code"), row.get("name"), row.get("assetScope")) for row in non_a_share[:5]]
         raise AssertionError(f"non-A-share ETFs leaked into client groups: {sample}")
+    formula_flow = round(sum(
+        (
+            _num(row.get("shares"), f"ETF {row.get('code')} shares")
+            - _num(row.get("previousComparableShares"), f"ETF {row.get('code')} previous shares")
+        )
+        * _num(row.get("nav"), f"ETF {row.get('code')} NAV")
+        / 1e8
+        for row in etfs
+    ), 2)
+    _close(market.get("flow1d"), formula_flow, "canonical market flow vs unrounded ETF formula", tol=0.011)
     scope_guard = quality.get("classifiedAshareScopeEnforcement", {})
     if int(scope_guard.get("afterCount") or -1) != len(etfs):
         raise AssertionError("classified A-share scope guard count does not match snapshot.etfs")
@@ -144,10 +154,18 @@ def audit(snapshot_path: Path) -> list[str]:
     stored_classified = market_recon.get("classifiedGroupShareFlow1d", market_recon.get("classifiedGroupPrimaryFlow1d"))
     _close(stored_classified, classified_flow, "classified group reconciliation")
     _close(
-        _num(market.get("flow1d"), "market flow") - classified_flow,
-        market_recon.get("ungroupedDifference"),
-        "unclassified market difference",
+        classified_flow - _num(market.get("flow1d"), "market flow"),
+        market_recon.get("displayRoundingDifference", market_recon.get("roundingAlignment")),
+        "display rounding difference",
     )
+    _close(market_recon.get("ungroupedDifference"), 0.0, "unclassified market difference")
+    legacy_recon = quality.get("reconciliation", {})
+    if int(legacy_recon.get("directionCountTotal") or -1) != int(market.get("etfCount") or 0):
+        raise AssertionError("stored direction reconciliation is stale")
+    if int(legacy_recon.get("uniqueAnalyzedEtfCount") or -1) != len(etfs):
+        raise AssertionError("stored analyzed ETF reconciliation is stale")
+    _close(legacy_recon.get("marketFlow1d"), market.get("flow1d"), "stored legacy market flow")
+    _close(legacy_recon.get("groupFlow1d"), classified_flow, "stored legacy group flow")
     checks.append("visible groups, representatives and member ETFs reconcile")
 
     visible_sectors = [g for g in groups if g.get("kind") == "industry"]
@@ -281,9 +299,76 @@ def audit(snapshot_path: Path) -> list[str]:
             )
         if not re.search(trade_pattern, headline):
             raise AssertionError(f"headline secondary flow mismatch; expected /{trade_pattern}/")
+
+        order_path = snapshot_path.parent / "order_flow" / f"{trade_date}.json"
+        if not order_path.exists():
+            raise AssertionError(f"immutable same-day secondary fact is missing: {order_path}")
+        order_fact = json.loads(order_path.read_text("utf-8"))
+        if order_fact.get("tradeDate") != trade_date:
+            raise AssertionError("immutable secondary fact date mismatch")
+        if order_fact.get("metric") != "secondaryMarketETFTradingFlow":
+            raise AssertionError("immutable secondary fact is not the complete trading-flow metric")
+        fact_rows = {
+            str(row.get("code", "")).zfill(6): row for row in order_fact.get("etfs", [])
+        }
+        client_codes = {str(row.get("code", "")).zfill(6) for row in etfs}
+        missing_trade_rows = sorted(client_codes - set(fact_rows))
+        coverage = trade_metric.get("coverage", {})
+        declared_missing = sorted(str(code).zfill(6) for code in coverage.get("missingPrimaryComparableEtfCodes", []))
+        if missing_trade_rows != declared_missing:
+            raise AssertionError(
+                "secondary fact coverage declaration disagrees with primary-comparable ETF scope: "
+                f"actual={missing_trade_rows[:5]}, declared={declared_missing[:5]}"
+            )
+        if int(coverage.get("primaryComparableEtfCount") or -1) != len(client_codes):
+            raise AssertionError("secondary coverage primary count differs from primary-comparable ETF scope")
+        if int(coverage.get("coveredPrimaryComparableEtfCount") or -1) != len(client_codes) - len(missing_trade_rows):
+            raise AssertionError("secondary coverage matched count is inconsistent")
+        primary_by_code = {str(row.get("code", "")).zfill(6): row for row in etfs}
+        nonzero_missing = [
+            code for code in missing_trade_rows
+            if abs(_num(primary_by_code[code].get("flow1d"), f"missing secondary ETF {code} primary flow")) > 0.01
+        ]
+        if nonzero_missing:
+            raise AssertionError(
+                "secondary coverage cannot omit ETFs with a non-zero primary flow: "
+                f"{nonzero_missing[:5]}"
+            )
+        client_fact_rows = [fact_rows[code] for code in client_codes if code in fact_rows]
+        if int(trade_scope.get("etfCount") or -1) != len(client_fact_rows):
+            raise AssertionError("secondary headline count differs from primary-comparable ETF scope")
+        _close(
+            sum(_num(row.get("tradeNetFlow1d"), f"order-flow ETF {row.get('code')} net") for row in client_fact_rows),
+            trade_scope.get("netFlow1d"),
+            "immutable secondary fact vs headline net flow",
+            tol=0.08,
+        )
+        _close(
+            sum(_num(row.get("tradeInflow1d"), f"order-flow ETF {row.get('code')} inflow") for row in client_fact_rows),
+            trade_scope.get("inflow1d"),
+            "immutable secondary fact vs headline inflow",
+            tol=0.08,
+        )
+        _close(
+            sum(_num(row.get("tradeOutflow1d"), f"order-flow ETF {row.get('code')} outflow") for row in client_fact_rows),
+            trade_scope.get("outflow1d"),
+            "immutable secondary fact vs headline outflow",
+            tol=0.08,
+        )
     elif not headline.startswith("A股ETF盘中主动买卖数据暂缺；"):
         raise AssertionError("unavailable secondary flow is not labelled as unavailable")
-    checks.append("client headline uses the same displayed data layer")
+    checks.append("client headline uses an immutable same-date comparable data layer")
+
+    sources = snapshot.get("sources", [])
+    roles = " ".join(str(row.get("role") or "") for row in sources)
+    names = {str(row.get("name") or "") for row in sources}
+    if not {"上海证券交易所", "深圳证券交易所"}.issubset(names):
+        raise AssertionError("official exchange source lineage is incomplete")
+    if "A股范围识别与主口径NAV估值" not in roles:
+        raise AssertionError("canonical NAV/source-scope lineage is missing")
+    if any("份额主源" in str(row.get("role") or "") and "交易所" not in str(row.get("name") or "") for row in sources):
+        raise AssertionError("a third-party source is labelled as the primary share source")
+    checks.append("source lineage and metric roles")
 
     if market.get("multiDayMethod") != "endpoint_share_change_times_current_nav":
         raise AssertionError("5d/20d market fields are no longer explicitly endpoint metrics")

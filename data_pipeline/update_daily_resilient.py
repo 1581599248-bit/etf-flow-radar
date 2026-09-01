@@ -20,7 +20,7 @@ import json
 import random
 import socket
 import time
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -40,6 +40,9 @@ SSE_SCALE_SQL_ID = "COMMON_SSE_ZQPZ_ETFZL_XXPL_ETFGM_SEARCH_L"
 # GitHub Actions restores this directory between runs.  It is intentionally not
 # under site/data, so transport cache files are never published to clients.
 SHARE_CACHE_DIR = base.ROOT / ".cache" / "exchange_shares"
+RECENT_SESSION_REFRESH_COUNT = 2
+RECENT_CACHE_FRESH_HOURS = 6.0
+_RECENT_BUILD_SESSIONS: list[date] = []
 
 # Current individual-share cross sections have very large upper quantiles; old
 # SSE/AKShare examples in 万份 are four orders of magnitude smaller. Use the
@@ -326,6 +329,32 @@ def _read_exchange_cache(day: date) -> pd.DataFrame | None:
         return None
 
 
+def _exchange_cache_is_fresh(day: date) -> bool:
+    """Recent T/T-1 caches are transport hints, not permanent facts."""
+    path = _cache_path(day)
+    if not path.exists():
+        return False
+    try:
+        payload = json.loads(path.read_text("utf-8"))
+        fetched_at = datetime.fromisoformat(str(payload.get("fetchedAt") or ""))
+        if fetched_at.tzinfo is None:
+            fetched_at = fetched_at.replace(tzinfo=timezone.utc)
+        age_hours = (datetime.now(timezone.utc) - fetched_at.astimezone(timezone.utc)).total_seconds() / 3600
+        return 0 <= age_hours <= RECENT_CACHE_FRESH_HOURS
+    except Exception:
+        return False
+
+
+def _register_recent_build_session(day: date) -> bool:
+    """Return whether this day is one of the build's current/T-1 sessions."""
+    if day in _RECENT_BUILD_SESSIONS:
+        return True
+    if len(_RECENT_BUILD_SESSIONS) >= RECENT_SESSION_REFRESH_COUNT:
+        return False
+    _RECENT_BUILD_SESSIONS.append(day)
+    return True
+
+
 def _write_exchange_cache(day: date, frame: pd.DataFrame) -> None:
     validated = _validate_exchange_frame(frame, day)
     SHARE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
@@ -342,6 +371,7 @@ def _write_exchange_cache(day: date, frame: pd.DataFrame) -> None:
     payload = {
         "schemaVersion": 1,
         "tradeDate": day.isoformat(),
+        "fetchedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "source": "official_sse_szse_eod_shares",
         "rowCount": len(rows),
         "rows": rows,
@@ -353,13 +383,21 @@ def _write_exchange_cache(day: date, frame: pd.DataFrame) -> None:
 
 
 def resilient_fetch_exchange_shares(day: date) -> pd.DataFrame:
-    """Read immutable verified history from cache; fetch only a missing date."""
+    """Refresh current/T-1 once; use validated cache for older history."""
     cached = _read_exchange_cache(day)
+    recent_session = _register_recent_build_session(day) if cached is not None else len(_RECENT_BUILD_SESSIONS) < RECENT_SESSION_REFRESH_COUNT
     if cached is not None:
+        if recent_session and not _exchange_cache_is_fresh(day):
+            frame = _ORIG_FETCH_EXCHANGE_SHARES(day)
+            validated = _validate_exchange_frame(frame, day)
+            _write_exchange_cache(day, validated)
+            print(f"official share cache refreshed: {day} ({len(validated)} rows)", flush=True)
+            return validated
         print(f"official share cache hit: {day}", flush=True)
         return cached
     frame = _ORIG_FETCH_EXCHANGE_SHARES(day)
     validated = _validate_exchange_frame(frame, day)
+    _register_recent_build_session(day)
     _write_exchange_cache(day, validated)
     print(f"official share cache stored: {day} ({len(validated)} rows)", flush=True)
     return validated
@@ -382,4 +420,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
