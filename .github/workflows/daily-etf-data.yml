@@ -6,7 +6,7 @@ on:
     # events.  Each scheduled probe keeps retrying internally until both
     # exchanges publish the exact official date.
     # 22:30-01:30 Asia/Shanghai: probe every 20 minutes.
-    - cron: "30,50 14 * * 1-5"    # 22:30 / 22:50 Asia/Shanghai
+    - cron: "30,50 14 * * 1-5"    # 22:30 / 22:50 Asia/Shanghai; primary start
     - cron: "10,30,50 15 * * 1-5" # 23:10 / 23:30 / 23:50 Asia/Shanghai
     - cron: "10,30,50 16 * * 1-5" # 00:10 / 00:30 / 00:50 Asia/Shanghai
     - cron: "10,30 17 * * 1-5"    # 01:10 / 01:30 Asia/Shanghai
@@ -164,7 +164,7 @@ jobs:
       - probe
     if: always() && needs.resolve.outputs.needed == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 100
     env:
       TZ: Asia/Shanghai
       # Official share and same-day secondary facts are the daily publication
@@ -247,29 +247,59 @@ jobs:
       - name: Run deterministic pipeline tests
         if: steps.gate.outputs.ready == 'true'
         run: python -m unittest discover -s data_pipeline -p "test_*.py"
-      - name: Build schema-v6 production snapshot once
+      - name: Build and audit schema-v6 production snapshot with retry
         if: steps.gate.outputs.ready == 'true'
         id: build
         shell: bash
         run: |
-          set +e
-          timeout 45m python data_pipeline/update_daily_v2.py \
-            --date "${{ needs.resolve.outputs.trade_date }}" > /tmp/etf-build.log 2>&1
-          code=$?
-          set -e
-          echo "exit_code=${code}" >> "$GITHUB_OUTPUT"
-          if [ "$code" -ne 0 ]; then
+          # Build -> audit -> rebuild if the audit rejects the snapshot.
+          # Up to 3 attempts in one run so a transient mismatch is repaired
+          # inside the same scheduled window instead of waiting an hour.
+          final_code=1
+          : > /tmp/etf-audit.log
+          for attempt in 1 2 3; do
+            echo "=== build attempt ${attempt}/3 ==="
+            set +e
+            timeout 25m python data_pipeline/update_daily_v2.py \
+              --date "${{ needs.resolve.outputs.trade_date }}" > "/tmp/etf-build-${attempt}.log" 2>&1
+            code=$?
+            set -e
+            if [ "$code" -ne 0 ]; then
+              echo "build attempt ${attempt} failed with exit ${code}"
+              final_code=$code
+            else
+              cat "/tmp/etf-build-${attempt}.log"
+              set +e
+              python data_pipeline/audit_snapshot_v6.py > /tmp/etf-audit-attempt.log 2>&1
+              acode=$?
+              set -e
+              cat /tmp/etf-audit-attempt.log
+              cat /tmp/etf-audit-attempt.log >> /tmp/etf-audit.log
+              if [ "$acode" -eq 0 ]; then
+                final_code=0
+                break
+              fi
+              echo "audit rejected attempt ${attempt}; rebuilding"
+              final_code=1
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              sleep 90
+            fi
+          done
+          echo "exit_code=${final_code}" >> "$GITHUB_OUTPUT"
+          if [ "$final_code" -ne 0 ]; then
             mkdir -p diagnostics
             {
               echo "trade_date=${{ needs.resolve.outputs.trade_date }}"
               echo "generated_at=$(date -Iseconds)"
-              echo "exit_code=${code}"
+              echo "exit_code=${final_code}"
               echo "official_probe=verified"
-              echo "--- build log ---"
-              cat /tmp/etf-build.log
+              echo "attempts=3"
+              echo "--- audit log ---"
+              cat /tmp/etf-audit.log
+              echo "--- last build log ---"
+              cat "/tmp/etf-build-3.log" 2>/dev/null || true
             } > diagnostics/latest-etf-publish-failure.txt
-          else
-            cat /tmp/etf-build.log
           fi
       - name: Save verified official-share cache
         if: always() && steps.gate.outputs.ready == 'true'
@@ -277,9 +307,6 @@ jobs:
         with:
           path: .cache/exchange_shares
           key: etf-exchange-shares-v2-${{ github.run_id }}-publisher
-      - name: Run external-send reconciliation audit
-        if: steps.gate.outputs.ready == 'true' && steps.build.outputs.exit_code == '0'
-        run: python data_pipeline/audit_snapshot_v6.py
       - name: Validate published schema and client bundle
         if: steps.gate.outputs.ready == 'true' && steps.build.outputs.exit_code == '0'
         run: npm ci && npm test

@@ -9,9 +9,13 @@ class PostCloseWorkflowTests(unittest.TestCase):
     def test_single_automatic_workflow_probes_before_full_build(self):
         text = (ROOT / ".github" / "workflows" / "daily-etf-data.yml").read_text("utf-8")
         for cron in (
-            '"37 14 * * 1-5"',
-            '"17 18 * * 1-5"',
+            '"30,50 14 * * 1-5"',
+            '"10,30,50 15 * * 1-5"',
+            '"10,30,50 16 * * 1-5"',
+            '"10,30 17 * * 1-5"',
+            '"30 18-23 * * 1-5"',
             '"23 0,4 * * 2-6"',
+            '"23 1,5,9 * * 0,6"',
         ):
             self.assertIn(cron, text)
         self.assertIn("probe_official_shares.py", text)
@@ -19,8 +23,10 @@ class PostCloseWorkflowTests(unittest.TestCase):
         self.assertIn("secondary", text)
         self.assertIn("actions/upload-artifact@v4", text)
         self.assertIn("independent official-share probes disagree", text)
-        self.assertIn("Build schema-v6 production snapshot once", text)
-        self.assertIn("timeout 45m python data_pipeline/update_daily_v2.py", text)
+        self.assertIn("Build and audit schema-v6 production snapshot with retry", text)
+        self.assertIn("for attempt in 1 2 3", text)
+        self.assertIn("python data_pipeline/audit_snapshot_v6.py", text)
+        self.assertIn("timeout 25m python data_pipeline/update_daily_v2.py", text)
         self.assertIn("resolve_publication_target", text)
         self.assertNotIn("order_flow/latest.json", text)
         self.assertNotIn("for attempt in 1 2 3 4", text)
