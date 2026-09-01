@@ -31,9 +31,9 @@ permissions:
   contents: write
 
 concurrency:
-  group: official-etf-share-gate-v4
-  # A newer run always has the more current target/cache.  Keeping an older
-  # long-running price-proxy build alive can otherwise block daily publication.
+  # Scheduled retries share one slot, while a code-fix publish gets its own
+  # slot and must never be trapped behind an earlier scheduled build.
+  group: official-etf-share-gate-v5-${{ github.event_name == 'push' && github.sha || 'scheduled' }}
   cancel-in-progress: true
 
 jobs:
