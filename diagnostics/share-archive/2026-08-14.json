@@ -1,1 +1,1 @@
-{"schemaVersion":1,"tradeDate":"2026-08-14","fetchedAt":"2026-09-01T04:12:03+00:00","source":"official_sse_szse_eod_shares","rowCount":1,"rows":[{"code":"510300","name":"沪深300ETF","trade_date":"2026-08-14","shares":120.0,"exchange":"SSE"}]}
+{"schemaVersion":1,"tradeDate":"2026-08-14","fetchedAt":"2026-09-01T04:15:33+00:00","source":"official_sse_szse_eod_shares","rowCount":1,"rows":[{"code":"510300","name":"沪深300ETF","trade_date":"2026-08-14","shares":100.0,"exchange":"SSE"}]}
