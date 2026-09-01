@@ -5,9 +5,14 @@ on:
     # A few off-peak start points are more reliable than dozens of GitHub cron
     # events.  Each scheduled probe keeps retrying internally until both
     # exchanges publish the exact official date.
-    - cron: "37 14 * * 1-5"  # 22:37 Asia/Shanghai; primary start
-    - cron: "17 18 * * 1-5"  # 02:17 Asia/Shanghai; overnight backup
-    - cron: "23 0,4 * * 2-6" # 08:23 and 12:23 Asia/Shanghai fallback
+    # 22:30-01:30 Asia/Shanghai: probe every 20 minutes.
+    - cron: "30,50 14 * * 1-5"    # 22:30 / 22:50 Asia/Shanghai
+    - cron: "10,30,50 15 * * 1-5" # 23:10 / 23:30 / 23:50 Asia/Shanghai
+    - cron: "10,30,50 16 * * 1-5" # 00:10 / 00:30 / 00:50 Asia/Shanghai
+    - cron: "10,30 17 * * 1-5"    # 01:10 / 01:30 Asia/Shanghai
+    # If official shares are still not out, retry hourly until morning.
+    - cron: "30 18-23 * * 1-5"    # 02:30-07:30 Asia/Shanghai, hourly
+    - cron: "23 0,4 * * 2-6"      # 08:23 and 12:23 Asia/Shanghai fallback
     # Friday data keeps retrying through the weekend until it is published.
     - cron: "23 1,5,9 * * 0,6"
   push:
