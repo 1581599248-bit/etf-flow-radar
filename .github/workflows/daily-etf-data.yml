@@ -87,12 +87,6 @@ jobs:
   probe:
     needs: resolve
     if: needs.resolve.outputs.needed == 'true'
-    strategy:
-      fail-fast: false
-      matrix:
-        lane:
-          - primary
-          - secondary
     runs-on: ubuntu-latest
     timeout-minutes: 220
     env:
@@ -110,7 +104,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .cache/exchange_shares
-          key: etf-exchange-shares-v2-${{ github.run_id }}-${{ matrix.lane }}
+          key: etf-exchange-shares-v2-${{ github.run_id }}-probe
           restore-keys: |
             etf-exchange-shares-v2-
             etf-exchange-shares-v1-
@@ -126,25 +120,25 @@ jobs:
             set +e
             timeout 4m python data_pipeline/probe_official_shares.py \
               --date "${{ needs.resolve.outputs.trade_date }}" \
-              --status-file "/tmp/official-share-probe-${{ matrix.lane }}.json"
+              --status-file "/tmp/official-share-probe.json"
             code=$?
             set -e
             if [ "$code" -eq 0 ]; then break; fi
             if { [ "$code" -eq 75 ] || [ "$code" -eq 124 ]; } && [ "$attempt" -lt "$attempts" ]; then
-              echo "official shares not ready on ${{ matrix.lane }} attempt ${attempt}/${attempts}; retrying in 5 minutes"
+              echo "official shares not ready on attempt ${attempt}/${attempts}; retrying in 5 minutes"
               sleep 300
               continue
             fi
             break
           done
-          cat "/tmp/official-share-probe-${{ matrix.lane }}.json" >> "$GITHUB_STEP_SUMMARY" || true
+          cat "/tmp/official-share-probe.json" >> "$GITHUB_STEP_SUMMARY" || true
           if [ "$code" -eq 0 ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
             mkdir -p .probe-output
             cp ".cache/exchange_shares/${{ needs.resolve.outputs.trade_date }}.json" .probe-output/
           elif [ "$code" -eq 75 ] || [ "$code" -eq 124 ]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "Official shares are not ready on lane ${{ matrix.lane }} after the internal retry window; a backup run will retry." >> "$GITHUB_STEP_SUMMARY"
+            echo "Official shares are not ready after the internal retry window; a backup run will retry." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
@@ -154,7 +148,7 @@ jobs:
         if: steps.official.outputs.ready == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: official-share-${{ matrix.lane }}
+          name: official-share-verified
           path: .probe-output/${{ needs.resolve.outputs.trade_date }}.json
           if-no-files-found: error
           retention-days: 1
@@ -184,7 +178,7 @@ jobs:
           restore-keys: |
             etf-exchange-shares-v2-
             etf-exchange-shares-v1-
-      - name: Download successful probe lanes
+      - name: Download verified official-share probe
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
@@ -208,7 +202,7 @@ jobs:
           if not candidates:
               with output.open("a", encoding="utf-8") as handle:
                   handle.write("ready=false\n")
-              print("No probe lane obtained both official exchanges; wait for the next schedule.")
+              print("The official-share probe did not obtain both exchanges; wait for the next schedule.")
               raise SystemExit(0)
 
           payloads = [json.loads(path.read_text("utf-8")) for path in candidates]
@@ -228,7 +222,7 @@ jobs:
           target_path.write_text(json.dumps(payloads[0], ensure_ascii=False, separators=(",", ":")), "utf-8")
           with output.open("a", encoding="utf-8") as handle:
               handle.write("ready=true\n")
-          print(f"verified probe lanes={len(payloads)}; cache={target_path}")
+          print(f"verified official-share probe artifacts={len(payloads)}; cache={target_path}")
           PY
       - uses: actions/setup-python@v5
         if: steps.gate.outputs.ready == 'true'
