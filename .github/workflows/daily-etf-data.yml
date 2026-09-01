@@ -119,7 +119,7 @@ jobs:
         shell: bash
         run: |
           attempts=1
-          if [ "${GITHUB_EVENT_NAME}" = "schedule" ]; then attempts=36; fi
+          if [ "${GITHUB_EVENT_NAME}" = "schedule" ]; then attempts=20; fi
           code=75
           for attempt in $(seq 1 "$attempts"); do
             set +e
@@ -330,3 +330,60 @@ jobs:
       - name: Fail only after a verified-source build error is persisted
         if: steps.gate.outputs.ready == 'true' && steps.build.outputs.exit_code != '0'
         run: exit 1
+
+  notify:
+    name: WeChat alert on failure
+    needs:
+      - resolve
+      - probe
+      - publish
+    if: >-
+      always() && (needs.resolve.result == 'failure' ||
+      needs.probe.result == 'failure' || needs.publish.result == 'failure')
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Send PushPlus WeChat alert
+        env:
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          RESOLVE_RESULT: ${{ needs.resolve.result }}
+          PROBE_RESULT: ${{ needs.probe.result }}
+          PUBLISH_RESULT: ${{ needs.publish.result }}
+          TRADE_DATE: ${{ needs.resolve.outputs.trade_date }}
+        run: |
+          if [ -z "$PUSHPLUS_TOKEN" ]; then
+            echo "PUSHPLUS_TOKEN secret not configured; skipping WeChat alert"
+            exit 0
+          fi
+          RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          export RUN_URL RESOLVE_RESULT PROBE_RESULT PUBLISH_RESULT TRADE_DATE PUSHPLUS_TOKEN
+          python3 - <<'PY' || true
+          import json
+          import os
+          import urllib.request
+
+          stage = "publish"
+          if os.environ.get("RESOLVE_RESULT") == "failure":
+              stage = "resolve"
+          elif os.environ.get("PROBE_RESULT") == "failure":
+              stage = "probe"
+          import datetime
+          now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime("%m-%d %H:%M")
+          payload = {
+              "token": os.environ["PUSHPLUS_TOKEN"],
+              "title": "ETF日报发布失败提醒",
+              "content": (
+                  f"交易日: {os.environ.get('TRADE_DATE') or '未知'}\n"
+                  f"时间: {now} 北京\n"
+                  f"失败环节: {stage}（已自动重试仍未通过）\n"
+                  f"详情: {os.environ['RUN_URL']}"
+              ),
+              "template": "txt",
+          }
+          req = urllib.request.Request(
+              "http://www.pushplus.plus/send",
+              data=json.dumps(payload).encode("utf-8"),
+              headers={"Content-Type": "application/json"},
+          )
+          print(urllib.request.urlopen(req, timeout=30).read().decode("utf-8"))
+          PY
