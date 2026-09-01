@@ -433,10 +433,16 @@ def resilient_fetch_exchange_shares(day: date) -> pd.DataFrame:
                     file=base.sys.stderr,
                     flush=True,
                 )
+                if not _archive_path(day).exists():
+                    _write_exchange_cache(day, cached)
                 return cached
             _write_exchange_cache(day, validated)
             print(f"official share cache refreshed: {day} ({len(validated)} rows)", flush=True)
             return validated
+        # Mirror verified days into the durable archive even when the volatile
+        # cache already held them, so the archive backfills over time.
+        if not _archive_path(day).exists():
+            _write_exchange_cache(day, cached)
         print(f"official share cache hit: {day}", flush=True)
         return cached
     frame = _ORIG_FETCH_EXCHANGE_SHARES(day)
