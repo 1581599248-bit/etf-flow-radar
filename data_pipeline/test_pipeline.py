@@ -55,8 +55,10 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(update_daily.percentile([1.0] * 60, 1.0), 100.0)
 
     def test_fast_publication_skips_nonessential_return_proxy_requests(self):
+        # Fast mode is now a hard time budget, not a blanket skip: with a zero
+        # budget no proxy request may be attempted at all.
         representatives = [{"group_id": "hs300", "code": "510300", "name": "沪深300ETF", "exchange": "SSE"}]
-        with patch.dict("os.environ", {"ETF_SKIP_RETURN_PROXIES": "1"}):
+        with patch.dict("os.environ", {"ETF_SKIP_RETURN_PROXIES": "1", "ETF_RETURN_PROXY_BUDGET_SECONDS": "0"}):
             self.assertEqual(
                 update_daily.fetch_return_series(representatives, date(2026, 8, 1), date(2026, 8, 31)),
                 {},
