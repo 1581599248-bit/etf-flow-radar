@@ -345,6 +345,26 @@ class UpdateDailyV2Tests(unittest.TestCase):
         )
         self.assertEqual(mixed, "流出方向较为分散，成长方向仍有选择性申购，但未改变整体谨慎。")
 
+    def test_same_direction_inflow_outflow_reads_as_rotation(self):
+        conclusion = v2._market_conclusion_copy(
+            162.2, "extreme", "concentrated_two_growth", "growth",
+            trade_value=20.2, trade_strength="small", allocation_scope="mixed",
+            inflow_text="资金份额流入居前为创业板指与半导体。",
+            outflow_state="concentrated_two_growth", outflow_tilt="growth",
+            outflow_scope="industry", outflow_text="资金份额流出居前为机器人与创新药。",
+        )
+        self.assertEqual(conclusion, "资金重点配置成长方向，成长方向内部高低切换明显，交易与份额端同向确认。")
+        self.assertNotIn("流出以成长方向为主", conclusion)
+
+        outflow_day = v2._market_conclusion_copy(
+            -31.8, "small", "concentrated_two_defensive", "defensive",
+            trade_value=-46.4, trade_strength="clear", allocation_scope="industry",
+            inflow_text="资金份额流入居前为红利与价值。",
+            outflow_state="concentrated_two_defensive", outflow_tilt="defensive",
+            outflow_scope="industry", outflow_text="资金份额流出居前为银行与公用事业。",
+        )
+        self.assertEqual(outflow_day, "防御方向内部高低切换明显，但未改变整体谨慎。")
+
     def test_divergent_growth_broad_flows_describe_targeted_primary_support(self):
         headline = v2._market_flow_headline(
             -114.5,

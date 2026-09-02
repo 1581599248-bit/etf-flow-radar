@@ -734,6 +734,34 @@ def _market_conclusion_copy(
     elif outflow_state.startswith("concentrated_"):
         out_desc = "流出方向较为分散"
 
+    if in_label and out_label and in_label == out_label:
+        # Inflow and outflow leaders share one direction: the honest reading is
+        # intra-direction rotation, not "allocate to X while X leads outflows".
+        rotation = f"{in_label}内部高低切换明显"
+        if trade_value is None:
+            if primary_side > 0:
+                return f"{in_label}获得增量配置，{rotation}。"
+            if primary_side < 0:
+                return f"整体净赎回下，{rotation}。"
+            return "份额端未形成明确方向。"
+        if primary_side == 0:
+            if trade_side > 0:
+                return f"盘中买盘占优，但未形成整体份额申购，{rotation}。"
+            if trade_side < 0:
+                return f"盘中卖压占优，但未形成整体份额赎回，{rotation}。"
+            return "盘中与份额端均未形成明确方向，市场以存量博弈为主。"
+        if trade_side == 0:
+            if primary_side > 0:
+                return f"盘中未形成对应买盘，资金在{in_label}内部高低切换。"
+            return f"整体净赎回下，盘中未形成对应卖压，{rotation}。"
+        if primary_side != trade_side:
+            if primary_side > 0:
+                return f"盘中卖压下资金仍选择性申购{in_label}，同方向内部高低切换，交易与份额端流向分化。"
+            return f"交易端买盘增强，但份额端净赎回仍在，{rotation}。"
+        if primary_side > 0:
+            return f"资金重点配置{in_label}，{rotation}，交易与份额端同向确认。"
+        return f"{rotation}，但未改变整体谨慎。"
+
     if trade_value is None:
         if primary_side > 0:
             if in_label and out_desc:
