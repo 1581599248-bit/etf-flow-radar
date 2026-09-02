@@ -4,7 +4,7 @@
   "tradeDate": "2026-09-02",
   "previousTradeDate": "2026-09-01",
   "windowStartDate": "2026-08-05",
-  "generatedAt": "2026-09-03T02:18:09+08:00",
+  "generatedAt": "2026-09-03T02:27:45+08:00",
   "publicationDate": "2026-09-03",
   "sourceMode": "REAL",
   "market": {
@@ -76495,7 +76495,7 @@
     "shareCrossCheck": {
       "status": "usable",
       "scale": 1.0,
-      "medianRelativeError": 0.003572,
+      "medianRelativeError": 0.003532,
       "commonCount": 1573,
       "repaired": [],
       "disagreements": [
@@ -76503,7 +76503,7 @@
           "code": "159009",
           "name": "创业板新能源ETF易方达",
           "officialShares": 145392703.0,
-          "secondaryShares": 59392703.0,
+          "secondaryShares": 61392703.0,
           "previousOfficialShares": 61392703.0,
           "officialJumpPct": 136.82,
           "action": "official_retained_event_check_required"
