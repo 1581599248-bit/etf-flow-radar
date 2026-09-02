@@ -28,8 +28,8 @@ jobs:
           TRADE_DATE: ${{ inputs.trade_date }}
         run: |
           if [ -n "$TRADE_DATE" ]; then
-            gh workflow run daily-etf-data.yml --ref main -f "trade_date=${TRADE_DATE}"
+            gh workflow run daily-etf-data.yml -R "${GITHUB_REPOSITORY}" --ref main -f "trade_date=${TRADE_DATE}"
           else
-            gh workflow run daily-etf-data.yml --ref main
+            gh workflow run daily-etf-data.yml -R "${GITHUB_REPOSITORY}" --ref main
           fi
           echo "Recovery request was handed to the official ETF share gate workflow." >> "$GITHUB_STEP_SUMMARY"
