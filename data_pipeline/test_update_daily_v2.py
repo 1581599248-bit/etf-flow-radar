@@ -170,7 +170,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
             conclusion,
             "份额净赎回偏多，盘中卖压同步但相对有限。"
             "资金份额流入居前为半导体与创新药。"
-            "盘中卖压与份额赎回同步，成长方向仍有选择性申购，但未改变整体谨慎。",
+            "成长方向仍有选择性申购，但未改变整体谨慎。",
         )
 
     def test_balanced_intraday_copy_always_keeps_the_net_amount(self):
@@ -248,10 +248,10 @@ class UpdateDailyV2Tests(unittest.TestCase):
 
         self.assertTrue(share_led_outflow.startswith("份额净赎回偏多"))
         self.assertIn("盘中卖压同步但相对有限", share_led_outflow)
-        self.assertTrue(share_led_outflow.endswith("盘中卖压与份额赎回同步，成长方向仍有选择性申购，但未改变整体谨慎。"))
+        self.assertTrue(share_led_outflow.endswith("成长方向仍有选择性申购，但未改变整体谨慎。"))
         self.assertTrue(trade_led_outflow.startswith("份额少量净赎回"))
         self.assertIn("盘中卖压同步且更强", trade_led_outflow)
-        self.assertTrue(trade_led_outflow.endswith("盘中卖压与份额赎回同步，市场交易与份额端均偏谨慎。"))
+        self.assertTrue(trade_led_outflow.endswith("市场交易与份额端均偏谨慎。"))
         self.assertIn("盘中卖压背离但相对有限", share_led_inflow)
         self.assertTrue(share_led_inflow.endswith("盘中卖压下，资金仍选择性申购防御方向，交易与份额端流向分化。"))
         self.assertIn("盘中买盘背离且更强", divergent)
@@ -285,6 +285,66 @@ class UpdateDailyV2Tests(unittest.TestCase):
             ("no_inflow", "未出现明确资金份额净流入方向。", "unknown"),
         )
 
+    def test_merged_broad_and_sector_ranking_always_names_top_two_outflows(self):
+        state, text, tilt = v2._outflow_focus_context({"groups": [
+            {"name": "红利低波", "kind": "style", "flow1d": -100.0},
+            {"name": "沪深300", "kind": "broad", "flow1d": -8.0},
+            {"name": "半导体", "kind": "industry", "flow1d": -12.0},
+            {"name": "创新药", "kind": "industry", "flow1d": -6.0},
+            {"name": "中证500", "kind": "broad", "flow1d": 4.0},
+        ]})
+        self.assertEqual(text, "资金份额流出居前为半导体与沪深300。")
+        self.assertEqual(tilt, "mixed")
+        self.assertEqual(state, "concentrated_two_mixed")
+
+        self.assertEqual(
+            v2._outflow_focus_context({"groups": [
+                {"name": "沪深300", "kind": "broad", "flow1d": 1.0},
+                {"name": "半导体", "kind": "industry", "flow1d": 2.0},
+            ]}),
+            ("no_outflow", "未出现明确资金份额净流出方向。", "unknown"),
+        )
+
+    def test_flow_focus_sentence_merges_inflow_and_outflow_rankings(self):
+        merged = v2._merge_flow_focus_copy(
+            "资金份额流入居前为创业板指与科创50。", "concentrated_two_growth",
+            "资金份额流出居前为半导体与中证500。", "concentrated_two_mixed",
+        )
+        self.assertEqual(merged, "资金份额流入居前为创业板指与科创50，流出居前为半导体与中证500。")
+        self.assertEqual(merged.count("。"), 1)
+        self.assertEqual(
+            v2._merge_flow_focus_copy("资金份额流入居前为价值。", "concentrated_one_defensive", None, "no_outflow"),
+            "资金份额流入居前为价值。",
+        )
+        self.assertEqual(
+            v2._merge_flow_focus_copy(None, "no_inflow", "资金份额流出居前为沪深300。", "concentrated_one_neutral"),
+            "资金份额流出居前为沪深300。",
+        )
+        self.assertEqual(
+            v2._merge_flow_focus_copy(None, "no_inflow", None, "no_outflow"),
+            "资金份额流向暂不明确。",
+        )
+
+    def test_sync_outflow_conclusion_analyses_outflow_without_repeating_relation(self):
+        conclusion = v2._market_conclusion_copy(
+            -27.9, "small", "concentrated_two_growth", "growth",
+            trade_value=-69.6, trade_strength="clear", allocation_scope="broad",
+            inflow_text="资金份额流入居前为创业板指与科创50。",
+            outflow_state="concentrated_two_neutral", outflow_tilt="neutral",
+            outflow_scope="broad", outflow_text="资金份额流出居前为沪深300与中证500。",
+        )
+        self.assertEqual(conclusion, "流出以大小盘宽基两端为主，成长方向仍有选择性申购，但未改变整体谨慎。")
+        self.assertNotIn("同步", conclusion)
+
+        mixed = v2._market_conclusion_copy(
+            -27.9, "small", "concentrated_two_growth", "growth",
+            trade_value=-69.6, trade_strength="clear", allocation_scope="broad",
+            inflow_text="资金份额流入居前为创业板指与科创50。",
+            outflow_state="concentrated_two_mixed", outflow_tilt="mixed",
+            outflow_scope="mixed", outflow_text="资金份额流出居前为半导体与中证500。",
+        )
+        self.assertEqual(mixed, "流出方向较为分散，成长方向仍有选择性申购，但未改变整体谨慎。")
+
     def test_divergent_growth_broad_flows_describe_targeted_primary_support(self):
         headline = v2._market_flow_headline(
             -114.5,
@@ -304,14 +364,14 @@ class UpdateDailyV2Tests(unittest.TestCase):
                 100.0, "clear", "concentrated_two_growth", "growth",
                 trade_value=120.0, trade_strength="clear", allocation_scope="industry",
             ),
-            "盘中买盘与份额申购共振，资金重点配置成长板块。",
+            "资金重点配置成长板块，交易与份额端同向确认。",
         )
         self.assertEqual(
             v2._market_conclusion_copy(
                 -100.0, "clear", "concentrated_two_growth", "growth",
                 trade_value=-120.0, trade_strength="clear", allocation_scope="broad",
             ),
-            "盘中卖压与份额赎回同步，成长宽基仍有选择性申购，但未改变整体谨慎。",
+            "成长宽基仍有选择性申购，但未改变整体谨慎。",
         )
         self.assertEqual(
             v2._market_conclusion_copy(
@@ -325,7 +385,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
                 100.0, "clear", "concentrated_two_growth", "growth",
                 trade_value=None, trade_strength=None, allocation_scope="broad",
             ),
-            "成长宽基获得增量配置，盘中交易信号暂缺。",
+            "成长宽基获得增量配置。",
         )
         self.assertEqual(
             v2._market_conclusion_copy(
@@ -488,8 +548,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertTrue(headline.startswith("A股ETF盘中"))
         self.assertIn(
             "\n—— 份额大量净赎回，盘中买盘背离但相对有限。"
-            "资金份额流入居前为半导体与创新药。"
-            "交易端买盘增强，但未获份额申购确认，配置资金仅选择性承接成长方向。",
+            "资金份额流入居前为半导体与创新药，流出居前为沪深300。"
+            "交易端买盘增强，但份额端流出以大盘核心宽基为主，配置资金仅选择性承接成长方向。",
             headline,
         )
         self.assertNotIn("红利低波与价值", headline)
@@ -541,8 +601,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn("A股ETF盘中主动买卖数据暂缺", headline)
         self.assertIn("ETF份额对应申赎资金大幅净流入12.6亿元", headline)
         self.assertIn("份额大量净申购，盘中数据暂缺", headline)
-        self.assertIn("资金份额流入居前为传媒与中证500。", headline)
-        self.assertIn("份额端出现净申购，盘中交易信号暂缺。", headline)
+        self.assertIn("资金份额流入居前为传媒与中证500，流出居前为半导体与芯片。", headline)
+        self.assertIn("份额端出现净申购，流出以成长方向为主。", headline)
         self.assertNotIn("申万一级和主题行业", headline)
         self.assertIn("半导体", snapshot["conclusion"]["facts"][2])
 
