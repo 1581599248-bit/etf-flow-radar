@@ -11,6 +11,7 @@ class PostCloseWorkflowTests(unittest.TestCase):
         for cron in (
             '"35 14 * * 1-5"',
             '"15 16 * * 1-5"',
+            '"35 17 * * 1-5"',
             '"20 0,4 * * 2-6"',
             '"23 1,5,9 * * 0,6"',
         ):

@@ -2,10 +2,11 @@ name: Official ETF share gate and publish
 
 on:
   schedule:
-    # Two overnight starts plus two daytime fallbacks.  Each start probes
+    # Three overnight starts plus two daytime fallbacks.  Each start probes
     # repeatedly inside one bounded run, avoiding a queue of duplicate runs.
     - cron: "35 14 * * 1-5"       # 22:35 Asia/Shanghai
     - cron: "15 16 * * 1-5"       # 00:15 Asia/Shanghai
+    - cron: "35 17 * * 1-5"       # 01:35 Asia/Shanghai
     - cron: "20 0,4 * * 2-6"      # 08:20 / 12:20 Asia/Shanghai
     # Friday data keeps retrying through the weekend until it is published.
     - cron: "23 1,5,9 * * 0,6"
