@@ -692,6 +692,7 @@ def _flow_direction_copy(
                 return "大盘核心宽基"
             if small:
                 return "中小盘宽基"
+            return _inflow_focus_label(allocation_state, allocation_tilt, allocation_scope)
         if allocation_tilt == "growth":
             return "成长方向"
         if allocation_tilt == "defensive":
@@ -703,7 +704,12 @@ def _flow_direction_copy(
     return _inflow_focus_label(allocation_state, allocation_tilt, allocation_scope)
 
 
-def _outflow_structure_copy(outflow_state: str, outflow_tilt: str, outflow_scope: str) -> str | None:
+def _outflow_structure_copy(
+    outflow_text: str | None,
+    outflow_state: str,
+    outflow_tilt: str,
+    outflow_scope: str,
+) -> str | None:
     """Explain the type of redemption without repeating the ranked names."""
     if not outflow_state.startswith("concentrated_"):
         return None
@@ -715,7 +721,7 @@ def _outflow_structure_copy(outflow_state: str, outflow_tilt: str, outflow_scope
         return "宽基与行业方向出现赎回"
     if outflow_scope == "broad_industry_style":
         return "多类方向出现赎回"
-    label = _inflow_focus_label(outflow_state, outflow_tilt, outflow_scope)
+    label = _outflow_direction_copy(outflow_text, outflow_state, outflow_tilt, outflow_scope)
     return f"流出以{label}为主" if label else "流出方向出现分化"
 
 
@@ -763,7 +769,7 @@ def _market_conclusion_copy(
     trade_side = 0 if trade_value is None or trade_strength == "balanced" else (1 if trade_value > 0 else -1)
     in_label = _inflow_direction_copy(inflow_text, allocation_state, allocation_tilt, allocation_scope)
     out_label = _outflow_direction_copy(outflow_text, outflow_state, outflow_tilt, outflow_scope)
-    out_desc = _outflow_structure_copy(outflow_state, outflow_tilt, outflow_scope)
+    out_desc = _outflow_structure_copy(outflow_text, outflow_state, outflow_tilt, outflow_scope)
 
     if in_label and out_label and in_label == out_label:
         # Inflow and outflow leaders share one direction: the honest reading is
