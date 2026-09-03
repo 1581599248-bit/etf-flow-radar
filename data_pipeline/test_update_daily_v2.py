@@ -257,7 +257,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn("盘中买盘背离且更强", divergent)
         self.assertTrue(divergent.endswith("交易端买盘增强，但未获份额申购确认，市场资金流向仍分化。"))
 
-    def test_merged_broad_and_sector_ranking_always_names_top_two_inflows(self):
+    def test_merged_broad_style_and_sector_ranking_always_names_top_two_inflows(self):
         state, text, tilt = v2._inflow_focus_context({"groups": [
             {"name": "红利低波", "kind": "style", "flow1d": 100.0},
             {"name": "沪深300", "kind": "broad", "flow1d": 8.0},
@@ -266,8 +266,12 @@ class UpdateDailyV2Tests(unittest.TestCase):
             {"name": "中证500", "kind": "broad", "flow1d": 4.0},
         ]})
         self.assertEqual(state, "concentrated_two_mixed")
-        self.assertEqual(text, "资金份额流入居前为半导体与沪深300。")
+        self.assertEqual(text, "资金份额流入居前为红利低波与半导体。")
         self.assertEqual(tilt, "mixed")
+        self.assertEqual(v2._inflow_leader_scope({"groups": [
+            {"name": "红利低波", "kind": "style", "flow1d": 100.0},
+            {"name": "半导体", "kind": "industry", "flow1d": 12.0},
+        ]}), "industry_style")
 
         state, text, tilt = v2._inflow_focus_context({"groups": [
             {"name": "沪深300", "kind": "broad", "flow1d": 2.0},
@@ -285,7 +289,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
             ("no_inflow", "未出现明确资金份额净流入方向。", "unknown"),
         )
 
-    def test_merged_broad_and_sector_ranking_always_names_top_two_outflows(self):
+    def test_merged_broad_style_and_sector_ranking_always_names_top_two_outflows(self):
         state, text, tilt = v2._outflow_focus_context({"groups": [
             {"name": "红利低波", "kind": "style", "flow1d": -100.0},
             {"name": "沪深300", "kind": "broad", "flow1d": -8.0},
@@ -293,9 +297,13 @@ class UpdateDailyV2Tests(unittest.TestCase):
             {"name": "创新药", "kind": "industry", "flow1d": -6.0},
             {"name": "中证500", "kind": "broad", "flow1d": 4.0},
         ]})
-        self.assertEqual(text, "资金份额流出居前为半导体与沪深300。")
+        self.assertEqual(text, "资金份额流出居前为红利低波与半导体。")
         self.assertEqual(tilt, "mixed")
         self.assertEqual(state, "concentrated_two_mixed")
+        self.assertEqual(v2._outflow_leader_scope({"groups": [
+            {"name": "红利低波", "kind": "style", "flow1d": -100.0},
+            {"name": "半导体", "kind": "industry", "flow1d": -12.0},
+        ]}), "industry_style")
 
         self.assertEqual(
             v2._outflow_focus_context({"groups": [
@@ -343,7 +351,20 @@ class UpdateDailyV2Tests(unittest.TestCase):
             outflow_state="concentrated_two_mixed", outflow_tilt="mixed",
             outflow_scope="mixed", outflow_text="资金份额流出居前为半导体与中证500。",
         )
-        self.assertEqual(mixed, "流出方向较为分散，成长方向仍有选择性申购，但未改变整体谨慎。")
+        self.assertEqual(mixed, "流出方向出现分化，成长方向仍有选择性申购，但未改变整体谨慎。")
+
+    def test_style_leader_changes_rank_and_market_reading(self):
+        conclusion = v2._market_conclusion_copy(
+            57.5, "clear", "concentrated_two_growth", "growth",
+            trade_value=-22.8, trade_strength="small", allocation_scope="broad",
+            inflow_text="资金份额流入居前为科创50与创业板指。",
+            outflow_state="concentrated_two_mixed", outflow_tilt="mixed",
+            outflow_scope="industry_style", outflow_text="资金份额流出居前为红利低波与券商。",
+        )
+        self.assertEqual(
+            conclusion,
+            "盘中卖压下资金仍选择性申购成长宽基，防御风格与部分行业方向出现赎回，交易与份额端流向分化。",
+        )
 
     def test_same_direction_inflow_outflow_reads_as_rotation(self):
         conclusion = v2._market_conclusion_copy(

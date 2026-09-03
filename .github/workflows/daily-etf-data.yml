@@ -67,9 +67,11 @@ jobs:
           if published_path.exists():
               published = str(json.loads(published_path.read_text("utf-8")).get("tradeDate") or "")
 
-          # Only an explicit recovery request may rebuild an already-published
-          # date.  Routine code changes must not launch a second live publisher.
-          force_rebuild = bool(requested)
+          # A workflow-definition push is an explicit controlled recovery run;
+          # it may rebuild the current official snapshot once.  Routine source
+          # changes do not trigger this workflow, so they cannot duplicate a
+          # live publisher.
+          force_rebuild = bool(requested) or os.environ.get("GITHUB_EVENT_NAME") == "push"
           needed = force_rebuild or target != published
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
               output.write(f"trade_date={target}\n")

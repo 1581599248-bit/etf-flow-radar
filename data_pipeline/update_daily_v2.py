@@ -471,15 +471,33 @@ def _allocation_tilt(name: str) -> str:
     return "neutral"
 
 
-def _inflow_focus_context(snapshot: dict[str, Any]) -> tuple[str, str, str]:
-    """Rank broad-index and sector/theme net inflows together; always name the leaders."""
+_HEADLINE_RANK_KINDS = {"broad", "style", "industry"}
+
+
+def _headline_rank_candidates(snapshot: dict[str, Any], direction: str | None = None) -> list[dict[str, Any]]:
+    """Return valid comparable observation groups for the headline ranking.
+
+    Broad indices, style baskets and industry/theme baskets are three views of
+    the same ETF universe.  They are intentionally ranked side by side to
+    identify the strongest observed directions, never summed as market totals.
+    """
     candidates = [
         g for g in snapshot.get("groups", [])
-        if g.get("kind") in {"broad", "industry"}
+        if g.get("kind") in _HEADLINE_RANK_KINDS
         and isinstance(g.get("flow1d"), (int, float))
         and math.isfinite(float(g["flow1d"]))
         and str(g.get("name", "")).strip()
     ]
+    if direction == "in":
+        return [g for g in candidates if float(g["flow1d"]) > 0]
+    if direction == "out":
+        return [g for g in candidates if float(g["flow1d"]) < 0]
+    return candidates
+
+
+def _inflow_focus_context(snapshot: dict[str, Any]) -> tuple[str, str, str]:
+    """Rank broad, style and industry/theme net inflows together."""
+    candidates = _headline_rank_candidates(snapshot)
     if not candidates:
         return "unavailable", "资金份额流向暂不明确。", "unknown"
 
@@ -495,9 +513,8 @@ def _inflow_focus_context(snapshot: dict[str, Any]) -> tuple[str, str, str]:
     if not positive:
         return "no_inflow", "未出现明确资金份额净流入方向。", "unknown"
 
-    # The conclusion must report the actual combined ranking, not suppress it
-    # with a concentration judgement.  Style groups are intentionally excluded:
-    # the client-facing leaders are broad indices and sector/theme groups only.
+    # The conclusion reports the actual combined ranking, rather than
+    # suppressing it with a concentration judgement.
     selected = positive[:2]
     tilts = {_allocation_tilt(item["name"]) for item in selected}
     tilt = next(iter(tilts)) if len(tilts) == 1 else "mixed"
@@ -506,36 +523,25 @@ def _inflow_focus_context(snapshot: dict[str, Any]) -> tuple[str, str, str]:
     names = selected[0]["name"] if len(selected) == 1 else f"{selected[0]['name']}与{selected[1]['name']}"
     return state, f"资金份额流入居前为{names}。", tilt
 
-def _inflow_leader_scope(snapshot: dict[str, Any]) -> str:
-    """Describe whether the two displayed inflow leaders are broad, sector, or mixed."""
-    candidates = [
-        g for g in snapshot.get("groups", [])
-        if g.get("kind") in {"broad", "industry"}
-        and isinstance(g.get("flow1d"), (int, float))
-        and math.isfinite(float(g["flow1d"]))
-        and str(g.get("name", "")).strip()
-        and float(g["flow1d"]) > 0
-    ]
+def _leader_scope(snapshot: dict[str, Any], direction: str) -> str:
+    """Describe the observation layers represented by the displayed leaders."""
+    candidates = _headline_rank_candidates(snapshot, direction)
     selected = sorted(candidates, key=lambda group: float(group["flow1d"]), reverse=True)[:2]
+    if direction == "out":
+        selected = sorted(candidates, key=lambda group: float(group["flow1d"]))[:2]
     if not selected:
         return "unknown"
     kinds = {str(group.get("kind")) for group in selected}
-    if kinds == {"broad"}:
-        return "broad"
-    if kinds == {"industry"}:
-        return "industry"
-    return "mixed"
+    return "_".join(sorted(kinds))
+
+
+def _inflow_leader_scope(snapshot: dict[str, Any]) -> str:
+    return _leader_scope(snapshot, "in")
 
 
 def _outflow_focus_context(snapshot: dict[str, Any]) -> tuple[str, str, str]:
-    """Rank broad-index and sector/theme net outflows together; always name the leaders."""
-    candidates = [
-        g for g in snapshot.get("groups", [])
-        if g.get("kind") in {"broad", "industry"}
-        and isinstance(g.get("flow1d"), (int, float))
-        and math.isfinite(float(g["flow1d"]))
-        and str(g.get("name", "")).strip()
-    ]
+    """Rank broad, style and industry/theme net outflows together."""
+    candidates = _headline_rank_candidates(snapshot)
     if not candidates:
         return "unavailable", "资金份额流向暂不明确。", "unknown"
 
@@ -560,24 +566,7 @@ def _outflow_focus_context(snapshot: dict[str, Any]) -> tuple[str, str, str]:
 
 
 def _outflow_leader_scope(snapshot: dict[str, Any]) -> str:
-    """Describe whether the two displayed outflow leaders are broad, sector, or mixed."""
-    candidates = [
-        g for g in snapshot.get("groups", [])
-        if g.get("kind") in {"broad", "industry"}
-        and isinstance(g.get("flow1d"), (int, float))
-        and math.isfinite(float(g["flow1d"]))
-        and str(g.get("name", "")).strip()
-        and float(g["flow1d"]) < 0
-    ]
-    selected = sorted(candidates, key=lambda group: float(group["flow1d"]))[:2]
-    if not selected:
-        return "unknown"
-    kinds = {str(group.get("kind")) for group in selected}
-    if kinds == {"broad"}:
-        return "broad"
-    if kinds == {"industry"}:
-        return "industry"
-    return "mixed"
+    return _leader_scope(snapshot, "out")
 
 
 def _merge_flow_focus_copy(
@@ -638,6 +627,36 @@ def _inflow_focus_label(
             "cyclical": "顺周期板块",
             "neutral": "行业板块",
         },
+        "style": {
+            "growth": "成长风格",
+            "defensive": "防御风格",
+            "cyclical": "顺周期风格",
+            "neutral": "风格方向",
+        },
+        "broad_industry": {
+            "growth": "成长方向",
+            "defensive": "防御方向",
+            "cyclical": "顺周期方向",
+            "neutral": "相关方向",
+        },
+        "broad_style": {
+            "growth": "成长方向",
+            "defensive": "防御方向",
+            "cyclical": "顺周期方向",
+            "neutral": "相关方向",
+        },
+        "industry_style": {
+            "growth": "成长方向",
+            "defensive": "防御方向",
+            "cyclical": "顺周期方向",
+            "neutral": "相关方向",
+        },
+        "broad_industry_style": {
+            "growth": "成长方向",
+            "defensive": "防御方向",
+            "cyclical": "顺周期方向",
+            "neutral": "相关方向",
+        },
         "mixed": {
             "growth": "成长方向",
             "defensive": "防御方向",
@@ -684,6 +703,22 @@ def _flow_direction_copy(
     return _inflow_focus_label(allocation_state, allocation_tilt, allocation_scope)
 
 
+def _outflow_structure_copy(outflow_state: str, outflow_tilt: str, outflow_scope: str) -> str | None:
+    """Explain the type of redemption without repeating the ranked names."""
+    if not outflow_state.startswith("concentrated_"):
+        return None
+    if outflow_scope == "industry_style":
+        return "防御风格与部分行业方向出现赎回"
+    if outflow_scope == "broad_style":
+        return "宽基与风格方向出现赎回"
+    if outflow_scope == "broad_industry":
+        return "宽基与行业方向出现赎回"
+    if outflow_scope == "broad_industry_style":
+        return "多类方向出现赎回"
+    label = _inflow_focus_label(outflow_state, outflow_tilt, outflow_scope)
+    return f"流出以{label}为主" if label else "流出方向出现分化"
+
+
 def _inflow_direction_copy(
     inflow_text: str | None,
     allocation_state: str,
@@ -728,11 +763,7 @@ def _market_conclusion_copy(
     trade_side = 0 if trade_value is None or trade_strength == "balanced" else (1 if trade_value > 0 else -1)
     in_label = _inflow_direction_copy(inflow_text, allocation_state, allocation_tilt, allocation_scope)
     out_label = _outflow_direction_copy(outflow_text, outflow_state, outflow_tilt, outflow_scope)
-    out_desc = None
-    if out_label:
-        out_desc = f"流出以{out_label}为主"
-    elif outflow_state.startswith("concentrated_"):
-        out_desc = "流出方向较为分散"
+    out_desc = _outflow_structure_copy(outflow_state, outflow_tilt, outflow_scope)
 
     if in_label and out_label and in_label == out_label:
         # Inflow and outflow leaders share one direction: the honest reading is
@@ -1210,7 +1241,7 @@ def apply_v2_semantics(snapshot: dict[str, Any], day: date, share_window: list[t
     snapshot["schemaVersion"] = 6
     snapshot.setdefault("methodology", {}).update({
         "flow": "ETF当日净流入/净流出估算 =（T日交易所日终份额 − T-1日公司行动调整后的可比份额）× T日单位净值。T-1只作为T日份额变化的基准；该结果就是T日净申购/赎回的资金估算，不是再与上一日资金流做一次比较。",
-        "metricSeparation": "首页结论把两类数据翻译成易懂话术：盘中买盘/卖盘强弱来自同日成交额与外盘/内盘估算的主动买卖净额；ETF份额对应申赎资金来自交易所T日与T-1可比份额变化×T日NAV。盘中强弱按主动买卖净额占总成交额比例分为基本均衡、小幅偏强、偏强、明显占优；ETF份额资金按当日资金变化占A股股票ETF总规模比例分为基本持平、小幅、明显、大幅。结论固定按“份额主判断—盘中同步或背离—宽基与行业主题合并流入与流出排名—流出方向与选择性申购方向的结构解释”生成，末句不再重复同步/背离判断；两端同向才称共振，反向才称背离，盘中均衡则明确为未确认份额方向。",
+        "metricSeparation": "首页结论把两类数据翻译成易懂话术：盘中买盘/卖盘强弱来自同日成交额与外盘/内盘估算的主动买卖净额；ETF份额对应申赎资金来自交易所T日与T-1可比份额变化×T日NAV。盘中强弱按主动买卖净额占总成交额比例分为基本均衡、小幅偏强、偏强、明显占优；ETF份额资金按当日资金变化占A股股票ETF总规模比例分为基本持平、小幅、明显、大幅。结论固定按“份额主判断—盘中同步或背离—宽基、风格与行业主题合并流入与流出排名—流出方向与选择性申购方向的结构解释”生成；三类观察组只比较方向强弱，不相加为市场总量。末句不再重复同步/背离判断；两端同向才称共振，反向才称背离，盘中均衡则明确为未确认份额方向。",
         "multiDay": "坐标轴的5日/20日字段为端点份额变化×期末单位净值，字段明确标记 Endpoint；它们不是逐日净申购额之和。首页结论的历史比较仅使用T-1及以前已落盘的逐日flow1d，且要求ETF池数量与当前日相差不超过2%，不把当天放入比较基准。",
         "scope": "首页主指标固定使用A股股票ETF范围，不含跨境股票ETF、债券ETF、货币ETF和商品ETF；凡具备T与T-1可比份额及T日NAV的A股股票ETF均进入唯一观察组。暂不能可靠映射到既有宽基、风格或行业的产品单列为“其他A股股票ETF”，不混入对应排名；同时保留全部ETF、股票ETF（含跨境）和六类资产范围用于审计与对照。",
         "valuation": "ETF当日净流入/净流出主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。",
