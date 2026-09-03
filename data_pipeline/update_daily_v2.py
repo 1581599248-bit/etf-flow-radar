@@ -692,7 +692,6 @@ def _flow_direction_copy(
                 return "大盘核心宽基"
             if small:
                 return "中小盘宽基"
-            return _inflow_focus_label(allocation_state, allocation_tilt, allocation_scope)
         if allocation_tilt == "growth":
             return "成长方向"
         if allocation_tilt == "defensive":
