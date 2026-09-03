@@ -237,7 +237,8 @@ def _primary_strength(primary_value: float, aum: float | None) -> str:
 PRIMARY_SCENARIO_COUNT = 11
 TRADE_SCENARIO_COUNT = 12
 ALLOCATION_SCENARIO_COUNT = 13
-ALLOCATION_SCOPE_SCENARIO_COUNT = 4
+# unknown plus all non-empty combinations of broad, style and industry layers.
+ALLOCATION_SCOPE_SCENARIO_COUNT = 8
 CONCLUSION_SCENARIO_COUNT = (
     PRIMARY_SCENARIO_COUNT
     * TRADE_SCENARIO_COUNT

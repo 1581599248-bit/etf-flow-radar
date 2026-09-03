@@ -505,7 +505,16 @@ class UpdateDailyV2Tests(unittest.TestCase):
             ("concentrated_two_mixed", "资金份额流入居前为半导体与红利低波。", "mixed"),
             ("dispersed", "资金流入较为分散。", "mixed"),
         ]
-        allocation_scopes = ("unknown", "broad", "industry", "mixed")
+        allocation_scopes = (
+            "unknown",
+            "broad",
+            "style",
+            "industry",
+            "broad_style",
+            "broad_industry",
+            "industry_style",
+            "broad_industry_style",
+        )
         generated = 0
         for primary_value, aum in primary_cases:
             for trade_value, turnover in trade_cases:
