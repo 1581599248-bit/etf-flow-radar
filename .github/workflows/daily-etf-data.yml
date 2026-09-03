@@ -2,11 +2,12 @@ name: Official ETF share gate and publish
 
 on:
   schedule:
-    # Three overnight starts plus two daytime fallbacks.  Each start probes
-    # repeatedly inside one bounded run, avoiding a queue of duplicate runs.
-    - cron: "35 14 * * 1-5"       # 22:35 Asia/Shanghai
-    - cron: "15 16 * * 1-5"       # 00:15 Asia/Shanghai
-    - cron: "35 17 * * 1-5"       # 01:35 Asia/Shanghai
+    # Beijing 22:30 to 01:30: probe every 30 minutes.  Each run makes one
+    # bounded exact-date check; the next clock slot is the retry mechanism.
+    - cron: "30 14 * * 1-5"       # 22:30 Asia/Shanghai
+    - cron: "0,30 15 * * 1-5"     # 23:00 / 23:30 Asia/Shanghai
+    - cron: "0,30 16 * * 1-5"     # 00:00 / 00:30 Asia/Shanghai
+    - cron: "0,30 17 * * 1-5"     # 01:00 / 01:30 Asia/Shanghai
     - cron: "20 0,4 * * 2-6"      # 08:20 / 12:20 Asia/Shanghai
     # Friday data keeps retrying through the weekend until it is published.
     - cron: "23 1,5,9 * * 0,6"
@@ -103,7 +104,6 @@ jobs:
         shell: bash
         run: |
           attempts=1
-          if [ "${GITHUB_EVENT_NAME}" = "schedule" ]; then attempts=8; fi
           code=75
           for attempt in $(seq 1 "$attempts"); do
             set +e
@@ -113,11 +113,6 @@ jobs:
             code=$?
             set -e
             if [ "$code" -eq 0 ]; then break; fi
-            if { [ "$code" -eq 75 ] || [ "$code" -eq 124 ]; } && [ "$attempt" -lt "$attempts" ]; then
-              echo "official shares not ready on attempt ${attempt}/${attempts}; retrying in 5 minutes"
-              sleep 300
-              continue
-            fi
             break
           done
           cat "/tmp/official-share-probe.json" >> "$GITHUB_STEP_SUMMARY" || true

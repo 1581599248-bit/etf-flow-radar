@@ -9,9 +9,10 @@ class PostCloseWorkflowTests(unittest.TestCase):
     def test_single_automatic_workflow_probes_before_full_build(self):
         text = (ROOT / ".github" / "workflows" / "daily-etf-data.yml").read_text("utf-8")
         for cron in (
-            '"35 14 * * 1-5"',
-            '"15 16 * * 1-5"',
-            '"35 17 * * 1-5"',
+            '"30 14 * * 1-5"',
+            '"0,30 15 * * 1-5"',
+            '"0,30 16 * * 1-5"',
+            '"0,30 17 * * 1-5"',
             '"20 0,4 * * 2-6"',
             '"23 1,5,9 * * 0,6"',
         ):
@@ -27,10 +28,10 @@ class PostCloseWorkflowTests(unittest.TestCase):
         self.assertIn("resolve_publication_target", text)
         self.assertNotIn("order_flow/latest.json", text)
         self.assertNotIn("for attempt in 1 2 3 4", text)
-        self.assertIn('attempts=8', text)
+        self.assertIn('attempts=1', text)
         self.assertIn('WeChat alert on failure', text)
         self.assertIn('PUSHPLUS_TOKEN', text)
-        self.assertIn('sleep 300', text)
+        self.assertNotIn('sleep 300', text)
         self.assertIn("cancel-in-progress: false", text)
         self.assertIn('ETF_SKIP_RETURN_PROXIES: "1"', text)
 
