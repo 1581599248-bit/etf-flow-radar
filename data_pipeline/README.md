@@ -48,3 +48,5 @@ npm test
 `benchmark_known_public_20260731.py` 用公开的 Wind/iFinD 已知日期作外部基准诊断，专门用于发现“交易日错位、份额时点错位、范围错位”这类仅靠内部自洽测试发现不了的问题。若上交所历史接口在 GitHub Runner 被限流，脚本只报告 `UNAVAILABLE`，不会把失败当成正确结果。
 
 AKShare 固定版本只作为公开数据采集适配层；任何接口字段变化都必须经过结构校验，不允许静默吞掉异常后缩小 ETF 样本。
+
+<!-- manual trigger 2026-09-04: scheduled probes missed overnight; no-op commit to fire the publish gate via push event -->
