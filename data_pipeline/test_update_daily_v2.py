@@ -472,7 +472,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
             "盘中与份额端均未形成明确方向，市场以存量博弈为主。",
         )
 
-    def test_all_6864_structural_scenarios_are_composable(self):
+    def test_all_headline_structural_scenarios_are_composable(self):
         primary_cases = [
             (0.0, 20000.0),
             (20.0, 20000.0), (-20.0, 20000.0),
@@ -537,7 +537,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
                         self.assertNotIn("市场总体收缩", conclusion)
                         self.assertTrue(conclusion.endswith("。"))
                         generated += 1
-        self.assertEqual(generated, 6864)
+        self.assertEqual(generated, 13728)
         self.assertEqual(generated, v2.CONCLUSION_SCENARIO_COUNT)
 
     def test_prior_history_excludes_current_and_unstable_universe(self):

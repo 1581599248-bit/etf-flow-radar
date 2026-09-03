@@ -2,7 +2,7 @@ name: Official ETF share gate and publish
 
 on:
   # A workflow-definition change is also a controlled recovery trigger: it
-  # validates and republishes the current official snapshot once with all active guardrails.
+  # validates and republishes the current official snapshot once with every active guardrail.
   push:
     branches: [main]
     paths:
