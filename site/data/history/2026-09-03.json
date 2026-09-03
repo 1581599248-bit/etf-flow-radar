@@ -4,7 +4,7 @@
   "tradeDate": "2026-09-03",
   "previousTradeDate": "2026-09-02",
   "windowStartDate": "2026-08-06",
-  "generatedAt": "2026-09-04T03:08:08+08:00",
+  "generatedAt": "2026-09-04T03:15:24+08:00",
   "publicationDate": "2026-09-04",
   "sourceMode": "REAL",
   "market": {
@@ -76542,7 +76542,7 @@
     "shareCrossCheck": {
       "status": "usable",
       "scale": 1.0,
-      "medianRelativeError": 0.000479,
+      "medianRelativeError": 0.00217,
       "commonCount": 1574,
       "repaired": [],
       "disagreements": [],
