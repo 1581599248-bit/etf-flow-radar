@@ -19,12 +19,12 @@ permissions:
 
 concurrency:
   group: capture-etf-order-flow
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   capture:
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 15
     env:
       TZ: Asia/Shanghai
     steps:
@@ -38,24 +38,11 @@ jobs:
       - name: Capture same-day secondary-market ETF order flow
         shell: bash
         run: |
-          attempts=1
-          if [ "${GITHUB_EVENT_NAME}" = "schedule" ]; then attempts=7; fi
-          for attempt in $(seq 1 "$attempts"); do
-            set +e
-            if [ -n "${{ inputs.trade_date }}" ]; then
-              python data_pipeline/capture_order_flow_v2.py --date "${{ inputs.trade_date }}"
-            else
-              python data_pipeline/capture_order_flow_v2.py
-            fi
-            code=$?
-            set -e
-            if [ "$code" -eq 0 ]; then exit 0; fi
-            if [ "$attempt" -lt "$attempts" ]; then
-              echo "capture attempt ${attempt}/${attempts} failed; retrying in 5 minutes"
-              sleep 300
-            fi
-          done
-          exit "$code"
+          if [ -n "${{ inputs.trade_date }}" ]; then
+            python data_pipeline/capture_order_flow_v2.py --date "${{ inputs.trade_date }}"
+          else
+            python data_pipeline/capture_order_flow_v2.py
+          fi
       - name: Commit immutable order-flow fact file
         run: |
           git config user.name "etf-flow-radar-bot"

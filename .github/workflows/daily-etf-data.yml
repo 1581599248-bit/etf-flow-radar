@@ -2,29 +2,13 @@ name: Official ETF share gate and publish
 
 on:
   schedule:
-    # A few off-peak start points are more reliable than dozens of GitHub cron
-    # events.  Each scheduled probe keeps retrying internally until both
-    # exchanges publish the exact official date.
-    # 22:30-01:30 Asia/Shanghai: probe every 20 minutes.
-    - cron: "30,50 14 * * 1-5"    # 22:30 / 22:50 Asia/Shanghai; primary start
-    - cron: "10,30,50 15 * * 1-5" # 23:10 / 23:30 / 23:50 Asia/Shanghai
-    - cron: "10,30,50 16 * * 1-5" # 00:10 / 00:30 / 00:50 Asia/Shanghai
-    - cron: "10,30 17 * * 1-5"    # 01:10 / 01:30 Asia/Shanghai
-    # If official shares are still not out, retry hourly until morning.
-    - cron: "30 18-23 * * 1-5"    # 02:30-07:30 Asia/Shanghai, hourly
-    - cron: "23 0,4 * * 2-6"      # 08:23 and 12:23 Asia/Shanghai fallback
+    # Two overnight starts plus two daytime fallbacks.  Each start probes
+    # repeatedly inside one bounded run, avoiding a queue of duplicate runs.
+    - cron: "35 14 * * 1-5"       # 22:35 Asia/Shanghai
+    - cron: "15 16 * * 1-5"       # 00:15 Asia/Shanghai
+    - cron: "20 0,4 * * 2-6"      # 08:20 / 12:20 Asia/Shanghai
     # Friday data keeps retrying through the weekend until it is published.
     - cron: "23 1,5,9 * * 0,6"
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/daily-etf-data.yml"
-      - "data_pipeline/**"
-      - "tests/**"
-      - "package.json"
-      - "package-lock.json"
-      - "scripts/build-site.mjs"
   workflow_dispatch:
     inputs:
       trade_date:
@@ -36,10 +20,10 @@ permissions:
   contents: write
 
 concurrency:
-  # Scheduled retries share one slot, while a code-fix publish gets its own
-  # slot and must never be trapped behind an earlier scheduled build.
-  group: official-etf-share-gate-v5-${{ github.event_name == 'push' && github.sha || 'scheduled' }}
-  cancel-in-progress: true
+  # All entry points publish the same latest.json, so never run two publishers
+  # concurrently.  A waiting run rechecks the target date and exits if done.
+  group: official-etf-share-gate
+  cancel-in-progress: false
 
 jobs:
   resolve:
@@ -75,10 +59,9 @@ jobs:
           if published_path.exists():
               published = str(json.loads(published_path.read_text("utf-8")).get("tradeDate") or "")
 
-          # A code push or an explicit manual date must re-run validation and
-          # rebuild the latest snapshot even when that trade date is already
-          # published. Scheduled retries still skip an unchanged published date.
-          force_rebuild = bool(requested) or os.environ.get("GITHUB_EVENT_NAME") == "push"
+          # Only an explicit recovery request may rebuild an already-published
+          # date.  Routine code changes must not launch a second live publisher.
+          force_rebuild = bool(requested)
           needed = force_rebuild or target != published
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
               output.write(f"trade_date={target}\n")
@@ -93,7 +76,7 @@ jobs:
     needs: resolve
     if: needs.resolve.outputs.needed == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 220
+    timeout-minutes: 75
     env:
       TZ: Asia/Shanghai
     steps:
@@ -119,7 +102,7 @@ jobs:
         shell: bash
         run: |
           attempts=1
-          if [ "${GITHUB_EVENT_NAME}" = "schedule" ]; then attempts=20; fi
+          if [ "${GITHUB_EVENT_NAME}" = "schedule" ]; then attempts=8; fi
           code=75
           for attempt in $(seq 1 "$attempts"); do
             set +e
@@ -164,7 +147,7 @@ jobs:
       - probe
     if: always() && needs.resolve.outputs.needed == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 100
+    timeout-minutes: 55
     env:
       TZ: Asia/Shanghai
       # Official share and same-day secondary facts are the daily publication
@@ -247,58 +230,34 @@ jobs:
       - name: Run deterministic pipeline tests
         if: steps.gate.outputs.ready == 'true'
         run: python -m unittest discover -s data_pipeline -p "test_*.py"
-      - name: Build and audit schema-v6 production snapshot with retry
+      - name: Build and audit schema-v6 production snapshot
         if: steps.gate.outputs.ready == 'true'
         id: build
         shell: bash
         run: |
-          # Build -> audit -> rebuild if the audit rejects the snapshot.
-          # Up to 3 attempts in one run so a transient mismatch is repaired
-          # inside the same scheduled window instead of waiting an hour.
-          final_code=1
-          : > /tmp/etf-audit.log
-          for attempt in 1 2 3; do
-            echo "=== build attempt ${attempt}/3 ==="
-            set +e
-            timeout 25m python data_pipeline/update_daily_v2.py \
-              --date "${{ needs.resolve.outputs.trade_date }}" > "/tmp/etf-build-${attempt}.log" 2>&1
+          set +e
+          timeout 25m python data_pipeline/update_daily_v2.py \
+            --date "${{ needs.resolve.outputs.trade_date }}" > /tmp/etf-build.log 2>&1
+          code=$?
+          if [ "$code" -eq 0 ]; then
+            python data_pipeline/audit_snapshot_v6.py > /tmp/etf-audit.log 2>&1
             code=$?
-            set -e
-            if [ "$code" -ne 0 ]; then
-              echo "build attempt ${attempt} failed with exit ${code}"
-              final_code=$code
-            else
-              cat "/tmp/etf-build-${attempt}.log"
-              set +e
-              python data_pipeline/audit_snapshot_v6.py > /tmp/etf-audit-attempt.log 2>&1
-              acode=$?
-              set -e
-              cat /tmp/etf-audit-attempt.log
-              cat /tmp/etf-audit-attempt.log >> /tmp/etf-audit.log
-              if [ "$acode" -eq 0 ]; then
-                final_code=0
-                break
-              fi
-              echo "audit rejected attempt ${attempt}; rebuilding"
-              final_code=1
-            fi
-            if [ "$attempt" -lt 3 ]; then
-              sleep 90
-            fi
-          done
-          echo "exit_code=${final_code}" >> "$GITHUB_OUTPUT"
-          if [ "$final_code" -ne 0 ]; then
+          fi
+          set -e
+          cat /tmp/etf-build.log
+          cat /tmp/etf-audit.log 2>/dev/null || true
+          echo "exit_code=${code}" >> "$GITHUB_OUTPUT"
+          if [ "$code" -ne 0 ]; then
             mkdir -p diagnostics
             {
               echo "trade_date=${{ needs.resolve.outputs.trade_date }}"
               echo "generated_at=$(date -Iseconds)"
-              echo "exit_code=${final_code}"
+              echo "exit_code=${code}"
               echo "official_probe=verified"
-              echo "attempts=3"
               echo "--- audit log ---"
-              cat /tmp/etf-audit.log
-              echo "--- last build log ---"
-              cat "/tmp/etf-build-3.log" 2>/dev/null || true
+              cat /tmp/etf-audit.log 2>/dev/null || true
+              echo "--- build log ---"
+              cat /tmp/etf-build.log
             } > diagnostics/latest-etf-publish-failure.txt
           fi
       - name: Save verified official-share cache
