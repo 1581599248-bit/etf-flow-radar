@@ -1,6 +1,12 @@
 name: Official ETF share gate and publish
 
 on:
+  # A workflow-definition change is also a controlled recovery trigger: it
+  # validates the current official snapshot once with the new guardrails.
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/daily-etf-data.yml"
   schedule:
     # Beijing 22:30 to 01:30: probe every 30 minutes.  Each run makes one
     # bounded exact-date check; the next clock slot is the retry mechanism.
