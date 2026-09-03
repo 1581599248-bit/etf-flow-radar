@@ -341,7 +341,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
             outflow_state="concentrated_two_neutral", outflow_tilt="neutral",
             outflow_scope="broad", outflow_text="资金份额流出居前为沪深300与中证500。",
         )
-        self.assertEqual(conclusion, "流出以大小盘宽基两端为主，成长方向仍有选择性申购，但未改变整体谨慎。")
+        self.assertEqual(conclusion, "流出以大小盘宽基两端为主，成长宽基仍有选择性申购，但未改变整体谨慎。")
         self.assertNotIn("同步", conclusion)
 
         mixed = v2._market_conclusion_copy(
@@ -397,7 +397,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
             allocation_tilt="growth",
             allocation_scope="broad",
         )
-        self.assertTrue(headline.endswith("盘中卖压下，资金仍选择性申购成长方向，交易与份额端流向分化。"))
+        self.assertTrue(headline.endswith("盘中卖压下，资金仍选择性申购成长宽基，交易与份额端流向分化。"))
 
     def test_market_conclusion_explains_all_trade_share_combinations(self):
         self.assertEqual(
