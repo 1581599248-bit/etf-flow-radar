@@ -1,0 +1,30 @@
+trade_date=2026-09-04
+generated_at=2026-09-05T18:23:13+08:00
+exit_code=124
+official_probe=verified
+--- audit log ---
+--- build log ---
+official share cache hit: 2026-09-04
+[warn] SSE WAF ban (HTTP 403); backing off 31s before attempt 2
+[warn] SSE WAF ban (HTTP 403); backing off 90s before attempt 3
+[warn] SSE WAF ban (HTTP 403); backing off 181s before attempt 4
+[warn] browser-session SSE ETF share adapter failed: attempt 2: HTTP 403; attempt 3: HTTP 403; attempt 4: HTTP 403; attempt 4: 403 Client Error: Forbidden for url: https://query.sse.com.cn/commonQuery.do?isPagination=true&pageHelp.pageSize=1000&pageHelp.pageNo=1&pageHelp.beginPage=1&pageHelp.cacheSize=1&pageHelp.endPage=1&sqlId=COMMON_SSE_ZQPZ_ETFZL_XXPL_ETFGM_SEARCH_L&STAT_DATE=2026-09-03&_=1788602607705
+[warn] maintained SSE ETF share adapter failed: Expecting value: line 1 column 1 (char 0)
+[warn] SSE WAF ban (HTTP 403); backing off 31s before attempt 2
+[warn] SSE WAF ban (HTTP 403); backing off 93s before attempt 3
+[warn] SSE WAF ban (HTTP 403); backing off 181s before attempt 4
+[warn] browser-session SSE ETF share adapter failed: attempt 2: HTTP 403; attempt 3: HTTP 403; attempt 4: HTTP 403; attempt 4: 403 Client Error: Forbidden for url: https://query.sse.com.cn/commonQuery.do?isPagination=true&pageHelp.pageSize=1000&pageHelp.pageNo=1&pageHelp.beginPage=1&pageHelp.cacheSize=1&pageHelp.endPage=1&sqlId=COMMON_SSE_ZQPZ_ETFZL_XXPL_ETFGM_SEARCH_L&STAT_DATE=2026-09-03&_=1788602927483
+[warn] maintained SSE ETF share adapter failed: Expecting value: line 1 column 1 (char 0)
+[warn] SSE WAF ban (HTTP 403); backing off 31s before attempt 2
+[warn] SSE WAF ban (HTTP 403); backing off 93s before attempt 3
+[warn] SSE WAF ban (HTTP 403); backing off 184s before attempt 4
+[warn] browser-session SSE ETF share adapter failed: attempt 2: HTTP 403; attempt 3: HTTP 403; attempt 4: HTTP 403; attempt 4: 403 Client Error: Forbidden for url: https://query.sse.com.cn/commonQuery.do?isPagination=true&pageHelp.pageSize=1000&pageHelp.pageNo=1&pageHelp.beginPage=1&pageHelp.cacheSize=1&pageHelp.endPage=1&sqlId=COMMON_SSE_ZQPZ_ETFZL_XXPL_ETFGM_SEARCH_L&STAT_DATE=2026-09-03&_=1788603256026
+[warn] maintained SSE ETF share adapter failed: Expecting value: line 1 column 1 (char 0)
+[warn] SSE WAF ban (HTTP 403); backing off 31s before attempt 2
+[warn] SSE WAF ban (HTTP 403); backing off 93s before attempt 3
+[warn] SSE WAF ban (HTTP 403); backing off 181s before attempt 4
+[warn] browser-session SSE ETF share adapter failed: attempt 2: HTTP 403; attempt 3: HTTP 403; attempt 4: HTTP 403; attempt 4: 403 Client Error: Forbidden for url: https://query.sse.com.cn/commonQuery.do?isPagination=true&pageHelp.pageSize=1000&pageHelp.pageNo=1&pageHelp.beginPage=1&pageHelp.cacheSize=1&pageHelp.endPage=1&sqlId=COMMON_SSE_ZQPZ_ETFZL_XXPL_ETFGM_SEARCH_L&STAT_DATE=2026-09-03&_=1788603584147
+[warn] maintained SSE ETF share adapter failed: Expecting value: line 1 column 1 (char 0)
+[warn] SSE WAF ban (HTTP 403); backing off 33s before attempt 2
+[warn] SSE WAF ban (HTTP 403); backing off 94s before attempt 3
+[warn] SSE WAF ban (HTTP 403); backing off 185s before attempt 4
