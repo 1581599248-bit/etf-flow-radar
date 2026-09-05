@@ -23,6 +23,7 @@ import capture_order_flow_v2
 import flow_model_v2
 import flow_comparison_v2
 import flow_scope_breakdown_v2
+import conclusion_market
 
 _ORIG_POSTPROCESS = production._postprocess_snapshot
 _ORIG_ATOMIC_PUBLISH = base.atomic_publish
@@ -478,17 +479,10 @@ _HEADLINE_RANK_KINDS = {"broad", "style", "industry"}
 def _headline_rank_candidates(snapshot: dict[str, Any], direction: str | None = None) -> list[dict[str, Any]]:
     """Return valid comparable observation groups for the headline ranking.
 
-    Broad indices, style baskets and industry/theme baskets are three views of
-    the same ETF universe.  They are intentionally ranked side by side to
-    identify the strongest observed directions, never summed as market totals.
+    These are mutually exclusive leaf groups, not overlapping industryRollups.
+    Their displayed rounded values never replace the raw per-ETF market total.
     """
-    candidates = [
-        g for g in snapshot.get("groups", [])
-        if g.get("kind") in _HEADLINE_RANK_KINDS
-        and isinstance(g.get("flow1d"), (int, float))
-        and math.isfinite(float(g["flow1d"]))
-        and str(g.get("name", "")).strip()
-    ]
+    candidates = conclusion_market.eligible_groups(snapshot.get("groups", []))
     if direction == "in":
         return [g for g in candidates if float(g["flow1d"]) > 0]
     if direction == "out":
@@ -508,8 +502,7 @@ def _inflow_focus_context(snapshot: dict[str, Any]) -> tuple[str, str, str]:
             for g in candidates
             if float(g["flow1d"]) > 0
         ),
-        key=lambda item: item["flow"],
-        reverse=True,
+        key=lambda item: (-item["flow"], item["name"]),
     )
     if not positive:
         return "no_inflow", "未出现明确资金份额净流入方向。", "unknown"
@@ -527,9 +520,9 @@ def _inflow_focus_context(snapshot: dict[str, Any]) -> tuple[str, str, str]:
 def _leader_scope(snapshot: dict[str, Any], direction: str) -> str:
     """Describe the observation layers represented by the displayed leaders."""
     candidates = _headline_rank_candidates(snapshot, direction)
-    selected = sorted(candidates, key=lambda group: float(group["flow1d"]), reverse=True)[:2]
+    selected = sorted(candidates, key=lambda group: (-float(group["flow1d"]), group["name"]))[:2]
     if direction == "out":
-        selected = sorted(candidates, key=lambda group: float(group["flow1d"]))[:2]
+        selected = sorted(candidates, key=lambda group: (float(group["flow1d"]), group["name"]))[:2]
     if not selected:
         return "unknown"
     kinds = {str(group.get("kind")) for group in selected}
@@ -552,7 +545,7 @@ def _outflow_focus_context(snapshot: dict[str, Any]) -> tuple[str, str, str]:
             for g in candidates
             if float(g["flow1d"]) < 0
         ),
-        key=lambda item: item["flow"],
+        key=lambda item: (item["flow"], item["name"]),
     )
     if not negative:
         return "no_outflow", "未出现明确资金份额净流出方向。", "unknown"
@@ -604,145 +597,6 @@ def _merge_flow_focus_copy(
     return "资金份额流向暂不明确。"
 
 
-def _inflow_focus_label(
-    allocation_state: str,
-    allocation_tilt: str,
-    allocation_scope: str,
-) -> str | None:
-    """Name the observed subscription recipient without inferring a market-wide stance."""
-    if not allocation_state.startswith("concentrated_"):
-        return None
-    if allocation_tilt not in {"growth", "defensive", "cyclical", "neutral"}:
-        return None
-
-    labels = {
-        "broad": {
-            "growth": "成长宽基",
-            "defensive": "防御宽基",
-            "cyclical": "顺周期宽基",
-            "neutral": "宽基ETF",
-        },
-        "industry": {
-            "growth": "成长板块",
-            "defensive": "防御板块",
-            "cyclical": "顺周期板块",
-            "neutral": "行业板块",
-        },
-        "style": {
-            "growth": "成长风格",
-            "defensive": "防御风格",
-            "cyclical": "顺周期风格",
-            "neutral": "风格方向",
-        },
-        "broad_industry": {
-            "growth": "成长方向",
-            "defensive": "防御方向",
-            "cyclical": "顺周期方向",
-            "neutral": "相关方向",
-        },
-        "broad_style": {
-            "growth": "成长方向",
-            "defensive": "防御方向",
-            "cyclical": "顺周期方向",
-            "neutral": "相关方向",
-        },
-        "industry_style": {
-            "growth": "成长方向",
-            "defensive": "防御方向",
-            "cyclical": "顺周期方向",
-            "neutral": "相关方向",
-        },
-        "broad_industry_style": {
-            "growth": "成长方向",
-            "defensive": "防御方向",
-            "cyclical": "顺周期方向",
-            "neutral": "相关方向",
-        },
-        "mixed": {
-            "growth": "成长方向",
-            "defensive": "防御方向",
-            "cyclical": "顺周期方向",
-            "neutral": "相关方向",
-        },
-        "unknown": {
-            "growth": "成长方向",
-            "defensive": "防御方向",
-            "cyclical": "顺周期方向",
-            "neutral": "相关方向",
-        },
-    }
-    return labels.get(allocation_scope, labels["unknown"])[allocation_tilt]
-
-
-def _flow_direction_copy(
-    prefix: str,
-    flow_text: str | None,
-    allocation_state: str,
-    allocation_tilt: str,
-    allocation_scope: str,
-) -> str | None:
-    """Translate ranked recipients into a configuration direction, not a repeated list."""
-    if allocation_state.startswith("concentrated_") and isinstance(flow_text, str) and flow_text.startswith(prefix):
-        target = flow_text[len(prefix):].strip().rstrip("。")
-        if allocation_scope == "broad":
-            large = any(key in target for key in ("沪深300", "中证A500", "中证A50", "上证50"))
-            small = any(key in target for key in ("中证2000", "中证1000", "中证500"))
-            if large and small:
-                return "大小盘宽基两端"
-            if large:
-                return "大盘核心宽基"
-            if small:
-                return "中小盘宽基"
-        if allocation_tilt == "growth":
-            return "成长方向"
-        if allocation_tilt == "defensive":
-            return "防御方向"
-        if allocation_tilt == "cyclical":
-            return "顺周期方向"
-        if target:
-            return _inflow_focus_label(allocation_state, allocation_tilt, allocation_scope)
-    return _inflow_focus_label(allocation_state, allocation_tilt, allocation_scope)
-
-
-def _outflow_structure_copy(
-    outflow_text: str | None,
-    outflow_state: str,
-    outflow_tilt: str,
-    outflow_scope: str,
-) -> str | None:
-    """Explain the type of redemption without repeating the ranked names."""
-    if not outflow_state.startswith("concentrated_"):
-        return None
-    if outflow_scope == "industry_style":
-        return "防御风格与部分行业方向出现赎回"
-    if outflow_scope == "broad_style":
-        return "宽基与风格方向出现赎回"
-    if outflow_scope == "broad_industry":
-        return "宽基与行业方向出现赎回"
-    if outflow_scope == "broad_industry_style":
-        return "多类方向出现赎回"
-    label = _outflow_direction_copy(outflow_text, outflow_state, outflow_tilt, outflow_scope)
-    return f"流出以{label}为主" if label else "流出方向出现分化"
-
-
-def _inflow_direction_copy(
-    inflow_text: str | None,
-    allocation_state: str,
-    allocation_tilt: str,
-    allocation_scope: str,
-) -> str | None:
-    """Direction label for the ranked inflow leaders."""
-    return _flow_direction_copy("资金份额流入居前为", inflow_text, allocation_state, allocation_tilt, allocation_scope)
-
-
-def _outflow_direction_copy(
-    outflow_text: str | None,
-    allocation_state: str,
-    allocation_tilt: str,
-    allocation_scope: str,
-) -> str | None:
-    """Direction label for the ranked outflow leaders."""
-    return _flow_direction_copy("资金份额流出居前为", outflow_text, allocation_state, allocation_tilt, allocation_scope)
 
 
 def _market_conclusion_copy(
@@ -758,134 +612,14 @@ def _market_conclusion_copy(
     outflow_tilt: str = "unknown",
     outflow_scope: str = "unknown",
     outflow_text: str | None = None,
+    direction_groups: list[dict[str, Any]] | None = None,
+    market_aum: float | None = None,
 ) -> str:
-    """Explain the observed structure: name the outflow leaders and any selective inflow direction.
-
-    The trade/share relationship itself (sync/divergence/strength) is already
-    stated in the preceding relation sentence, so this sentence never repeats
-    it; it only analyses where the money left and where it still went in.
-    """
-    primary_side = 0 if primary_strength == "flat" else (1 if primary_value > 0 else -1)
-    trade_side = 0 if trade_value is None or trade_strength == "balanced" else (1 if trade_value > 0 else -1)
-    in_label = _inflow_direction_copy(inflow_text, allocation_state, allocation_tilt, allocation_scope)
-    out_label = _outflow_direction_copy(outflow_text, outflow_state, outflow_tilt, outflow_scope)
-    out_desc = _outflow_structure_copy(outflow_text, outflow_state, outflow_tilt, outflow_scope)
-
-    if in_label and out_label and in_label == out_label:
-        # Inflow and outflow leaders share one direction: the honest reading is
-        # intra-direction rotation, not "allocate to X while X leads outflows".
-        rotation = f"{in_label}内部高低切换明显"
-        if trade_value is None:
-            if primary_side > 0:
-                return f"{in_label}获得增量配置，{rotation}。"
-            if primary_side < 0:
-                return f"整体净赎回下，{rotation}。"
-            return "份额端未形成明确方向。"
-        if primary_side == 0:
-            if trade_side > 0:
-                return f"盘中买盘占优，但未形成整体份额申购，{rotation}。"
-            if trade_side < 0:
-                return f"盘中卖压占优，但未形成整体份额赎回，{rotation}。"
-            return "盘中与份额端均未形成明确方向，市场以存量博弈为主。"
-        if trade_side == 0:
-            if primary_side > 0:
-                return f"盘中未形成对应买盘，资金在{in_label}内部高低切换。"
-            return f"整体净赎回下，盘中未形成对应卖压，{rotation}。"
-        if primary_side != trade_side:
-            if primary_side > 0:
-                return f"盘中卖压下资金仍选择性申购{in_label}，同方向内部高低切换，交易与份额端流向分化。"
-            return f"交易端买盘增强，但份额端净赎回仍在，{rotation}。"
-        if primary_side > 0:
-            return f"资金重点配置{in_label}，{rotation}，交易与份额端同向确认。"
-        return f"{rotation}，但未改变整体谨慎。"
-
-    if trade_value is None:
-        if primary_side > 0:
-            if in_label and out_desc:
-                return f"{in_label}获得增量配置，{out_desc}。"
-            if in_label:
-                return f"{in_label}获得增量配置。"
-            if out_desc:
-                return f"份额端出现净申购，{out_desc}。"
-            return "份额端出现净申购，方向尚不明确。"
-        if primary_side < 0:
-            if in_label and out_desc:
-                return f"整体净赎回下，{out_desc}，{in_label}仍获选择性申购。"
-            if out_desc:
-                return f"整体净赎回下，{out_desc}。"
-            if in_label:
-                return f"整体净赎回下，{in_label}仍获选择性申购。"
-            return "份额端以净赎回为主。"
-        return "份额端未形成明确方向。"
-
-    if primary_side == 0:
-        if trade_side > 0:
-            if in_label and out_desc:
-                return f"盘中买盘占优，但未形成整体份额申购；{in_label}获选择性承接，{out_desc}。"
-            if in_label:
-                return f"盘中买盘占优，但未形成整体份额申购，{in_label}仍有选择性承接。"
-            if out_desc:
-                return f"盘中买盘占优，但未形成整体份额申购，{out_desc}。"
-            return "盘中买盘占优，但尚未形成明确的份额申购。"
-        if trade_side < 0:
-            if in_label and out_desc:
-                return f"盘中卖压占优，但未形成整体份额赎回；{out_desc}，{in_label}仍有选择性承接。"
-            if out_desc:
-                return f"盘中卖压占优，但未形成整体份额赎回，{out_desc}。"
-            if in_label:
-                return f"盘中卖压占优，但未形成整体份额赎回，{in_label}仍有选择性承接。"
-            return "盘中卖压占优，但尚未形成明确的份额赎回。"
-        return "盘中与份额端均未形成明确方向，市场以存量博弈为主。"
-
-    if trade_side == 0:
-        if primary_side > 0:
-            if in_label and out_desc:
-                return f"盘中未形成对应买盘，资金选择性配置{in_label}，{out_desc}。"
-            if in_label:
-                return f"盘中未形成对应买盘，资金已选择性配置{in_label}。"
-            if out_desc:
-                return f"盘中未形成对应买盘，{out_desc}。"
-            return "份额端净申购占主导，盘中未形成对应买盘。"
-        if in_label and out_desc:
-            return f"整体净赎回下，盘中未形成对应卖压；{out_desc}，资金仍选择性配置{in_label}。"
-        if out_desc:
-            return f"整体净赎回下，盘中未形成对应卖压，{out_desc}。"
-        if in_label:
-            return f"整体净赎回下，盘中未形成对应卖压，资金仍选择性配置{in_label}。"
-        return "份额端净赎回占主导，盘中未形成对应卖压。"
-
-    if primary_side != trade_side:
-        if primary_side > 0:
-            if in_label and out_desc:
-                return f"盘中卖压下资金仍选择性申购{in_label}，{out_desc}，交易与份额端流向分化。"
-            if in_label:
-                return f"盘中卖压下，资金仍选择性申购{in_label}，交易与份额端流向分化。"
-            if out_desc:
-                return f"盘中卖压下仍有份额申购承接，{out_desc}。"
-            return "市场总体流向分化，盘中卖压下仍有份额申购承接。"
-        if in_label and out_desc:
-            return f"交易端买盘增强，但份额端{out_desc}，配置资金仅选择性承接{in_label}。"
-        if out_desc:
-            return f"交易端买盘增强，但未获份额申购确认，{out_desc}。"
-        if in_label:
-            return f"交易端买盘增强，但未获份额申购确认，配置资金仅选择性承接{in_label}。"
-        return "交易端买盘增强，但未获份额申购确认，市场资金流向仍分化。"
-
-    if primary_side > 0:
-        if in_label and out_desc:
-            return f"资金重点配置{in_label}，{out_desc}，交易与份额端同向确认。"
-        if in_label:
-            return f"资金重点配置{in_label}，交易与份额端同向确认。"
-        if out_desc:
-            return f"{out_desc}，但增量申购占主导，交易与份额端同向确认。"
-        return "增量申购获盘中买盘确认，配置方向尚不集中。"
-    if in_label and out_desc:
-        return f"{out_desc}，{in_label}仍有选择性申购，但未改变整体谨慎。"
-    if out_desc:
-        return f"{out_desc}，整体偏谨慎。"
-    if in_label:
-        return f"{in_label}仍有选择性申购，但未改变整体谨慎。"
-    return "市场交易与份额端均偏谨慎。"
+    """Single final-sentence engine; legacy rank arguments never imply amounts."""
+    return conclusion_market.render_market(
+        primary_value, primary_strength, trade_value, trade_strength,
+        direction_groups, market_aum,
+    )
 
 
 def _current_regime_copy(
@@ -901,6 +635,8 @@ def _current_regime_copy(
     outflow_state: str = "unavailable",
     outflow_tilt: str = "unknown",
     outflow_scope: str = "unknown",
+    direction_groups: list[dict[str, Any]] | None = None,
+    market_aum: float | None = None,
 ) -> str:
     """Compose share -> intraday -> merged inflow/outflow ranking -> market state."""
     relation = _relation_copy(trade_value, primary_value, trade_strength, primary_strength)
@@ -918,6 +654,8 @@ def _current_regime_copy(
         outflow_tilt=outflow_tilt,
         outflow_scope=outflow_scope,
         outflow_text=outflow_text,
+        direction_groups=direction_groups,
+        market_aum=market_aum,
     )
     return f"{relation}。{focus}{market}"
 
@@ -976,6 +714,7 @@ def _market_flow_headline(
     outflow_state: str = "unavailable",
     outflow_tilt: str = "unknown",
     outflow_scope: str = "unknown",
+    direction_groups: list[dict[str, Any]] | None = None,
 ) -> str:
     primary_strength = _primary_strength(primary_value, market_aum)
     primary_text = _primary_copy(primary_value, primary_strength)
@@ -1003,6 +742,8 @@ def _market_flow_headline(
         outflow_state=outflow_state,
         outflow_tilt=outflow_tilt,
         outflow_scope=outflow_scope,
+        direction_groups=direction_groups,
+        market_aum=market_aum,
     )
     return f"{fact_line}\n—— {current}"
 
@@ -1084,7 +825,7 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
     production._regenerate_conclusion(snapshot)
     market = snapshot["market"]
     primary_value = market.get("flow1d")
-    if not isinstance(primary_value, (int, float)):
+    if isinstance(primary_value, bool) or not isinstance(primary_value, (int, float)) or not math.isfinite(primary_value):
         raise ValueError("A-share stock ETF market.flow1d is required for the homepage headline")
     trade_scope = snapshot.get("flowMetrics", {}).get("secondaryMarketTradeFlow", {}).get("scopeTotals", {}).get("aShareStockEtf", {})
     raw_trade_value = trade_scope.get("netFlow1d")
@@ -1117,6 +858,7 @@ def _regenerate_v2_conclusion(snapshot: dict[str, Any]) -> None:
         outflow_state=outflow_state,
         outflow_tilt=outflow_tilt,
         outflow_scope=outflow_scope,
+        direction_groups=groups,
     )
 
     if broad:
