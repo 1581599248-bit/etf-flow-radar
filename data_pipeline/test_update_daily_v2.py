@@ -170,7 +170,7 @@ class UpdateDailyV2Tests(unittest.TestCase):
             conclusion,
             "份额净赎回偏多，盘中卖压同步但相对有限。"
             "资金份额流入居前为半导体与创新药。"
-            "市场资金偏向减配，配置方向数据暂缺。",
+            "市场资金偏向收缩，配置方向数据暂缺。",
         )
 
     def test_balanced_intraday_copy_always_keeps_the_net_amount(self):
@@ -248,10 +248,10 @@ class UpdateDailyV2Tests(unittest.TestCase):
 
         self.assertTrue(share_led_outflow.startswith("份额净赎回偏多"))
         self.assertIn("盘中卖压同步但相对有限", share_led_outflow)
-        self.assertTrue(share_led_outflow.endswith("市场资金偏向减配，配置方向数据暂缺。"))
+        self.assertTrue(share_led_outflow.endswith("市场资金偏向收缩，配置方向数据暂缺。"))
         self.assertTrue(trade_led_outflow.startswith("份额少量净赎回"))
         self.assertIn("盘中卖压同步且更强", trade_led_outflow)
-        self.assertTrue(trade_led_outflow.endswith("市场资金偏向减配，配置方向数据暂缺。"))
+        self.assertTrue(trade_led_outflow.endswith("市场资金偏向收缩，配置方向数据暂缺。"))
         self.assertIn("盘中卖压背离但相对有限", share_led_inflow)
         self.assertTrue(share_led_inflow.endswith("市场资金流向分化，配置方向数据暂缺。"))
         self.assertIn("盘中买盘背离且更强", divergent)
@@ -353,7 +353,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
             -22.8, 46.0, 1500.0, 20000.0, direction_groups=groups,
         )
         self.assertTrue(text.endswith(
-            "市场资金流向分化，配置偏向科技成长，部分高股息与金融方向资金流出。"
+            "市场配置结构偏进攻，一级资金明显加码成长，"
+            "高股息与金融配置小幅降温；交易端仍偏谨慎，两端风险偏好明显分化。"
         ))
 
     def test_all_headline_structural_scenarios_are_composable(self):
@@ -483,7 +484,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn(
             "\n—— 份额大量净赎回，盘中买盘背离但相对有限。"
             "资金份额流入居前为半导体与创新药，流出居前为沪深300。"
-            "市场资金流向分化，局部申购偏向科技成长与医药医疗，部分大盘宽基方向资金流出。",
+            "市场配置整体偏谨慎，局部资金明显加码成长与医药医疗，"
+            "大盘宽基配置小幅降温；交易端虽有承接，但份额端仍偏谨慎。",
             headline,
         )
         self.assertNotIn("红利低波与价值", headline)
@@ -536,14 +538,18 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn("ETF份额对应申赎资金大幅净流入12.6亿元", headline)
         self.assertIn("份额大量净申购，盘中数据暂缺", headline)
         self.assertIn("资金份额流入居前为传媒与中证500，流出居前为半导体与芯片。", headline)
-        self.assertIn("市场风向暂缺交易端确认，配置偏向科技成长与中小盘，部分科技成长方向资金流出。", headline)
+        self.assertIn(
+            "市场配置结构偏进攻，一级资金小幅增配成长与中小盘，"
+            "成长出现集中大额流出；交易端数据暂缺，配置信号尚待确认。",
+            headline,
+        )
         self.assertNotIn("申万一级和主题行业", headline)
         self.assertIn("半导体", snapshot["conclusion"]["facts"][2])
 
     def test_primary_headline_keeps_amount_when_share_signal_is_flat(self):
         self.assertEqual(
             v2._primary_copy(-4.39, "flat"),
-            "ETF份额对应申赎资金小幅净流出4.4亿元",
+            "ETF份额对应申赎资金基本持平，净流出4.4亿元",
         )
         self.assertEqual(
             v2._primary_copy(0.0, "flat"),

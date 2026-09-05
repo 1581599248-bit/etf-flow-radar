@@ -201,7 +201,8 @@ def audit(snapshot_path: Path) -> list[str]:
     else:
         primary_direction = "流入" if primary_value > 0 else "流出"
         primary_pattern = (
-            rf"ETF份额对应申赎资金(?:小幅|明显|大幅)?净{primary_direction}{abs(primary_value):.1f}亿元"
+            rf"ETF份额对应申赎资金(?:(?:小幅|明显|大幅|巨量)净{primary_direction}|"
+            rf"基本持平，净{primary_direction}){abs(primary_value):.1f}亿元"
         )
     if not re.search(primary_pattern, headline):
         raise AssertionError(f"headline primary phrase mismatch; expected /{primary_pattern}/")

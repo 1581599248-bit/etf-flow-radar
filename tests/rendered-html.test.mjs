@@ -122,7 +122,7 @@ test("schema v6 separates primary subscription flow, secondary trading flow and 
   const primaryValue = snapshot.market.flow1d;
   const primaryPattern = primaryValue === 0
     ? /ETF份额对应申赎资金(?:基本持平|净额0\.0亿元)/
-    : new RegExp(`ETF份额对应申赎资金(?:小幅|明显|大幅)?净${primaryValue > 0 ? "流入" : "流出"}${escapeRegExp(Math.abs(primaryValue).toFixed(1))}亿元`);
+    : new RegExp(`ETF份额对应申赎资金(?:(?:小幅|明显|大幅|巨量)净${primaryValue > 0 ? "流入" : "流出"}|基本持平，净${primaryValue > 0 ? "流入" : "流出"})${escapeRegExp(Math.abs(primaryValue).toFixed(1))}亿元`);
   assert.match(snapshot.conclusion.headline, primaryPattern);
   assert.match(snapshot.conclusion.headline, /\n—— /);
   assert.doesNotMatch(snapshot.conclusion.headline, /A股股票ETF当日合计/);

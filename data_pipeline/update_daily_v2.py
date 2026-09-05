@@ -280,12 +280,10 @@ def _trade_copy(trade_value: float, strength: str) -> str:
 
 def _primary_copy(primary_value: float, strength: str) -> str:
     if strength == "flat":
-        # “基本平衡”是强度判断，不应覆盖已经计算出的资金净额。
-        # 标题始终保留数值，才能与主指标和发布审计逐项对账。
         if primary_value == 0:
             return "ETF份额对应申赎资金净额0.0亿元"
         direction = "流入" if primary_value > 0 else "流出"
-        return f"ETF份额对应申赎资金小幅净{direction}{abs(primary_value):.1f}亿元"
+        return f"ETF份额对应申赎资金基本持平，净{direction}{abs(primary_value):.1f}亿元"
     qualifier = {
         "small": "小幅",
         "clear": "明显",
@@ -989,7 +987,7 @@ def apply_v2_semantics(snapshot: dict[str, Any], day: date, share_window: list[t
     snapshot["schemaVersion"] = 6
     snapshot.setdefault("methodology", {}).update({
         "flow": "ETF当日净流入/净流出估算 =（T日交易所日终份额 − T-1日公司行动调整后的可比份额）× T日单位净值。T-1只作为T日份额变化的基准；该结果就是T日净申购/赎回的资金估算，不是再与上一日资金流做一次比较。",
-        "metricSeparation": "首页结论把两类数据翻译成易懂话术：盘中买盘/卖盘强弱来自同日成交额与外盘/内盘估算的主动买卖净额；ETF份额对应申赎资金来自交易所T日与T-1可比份额变化×T日NAV。盘中强弱按主动买卖净额占总成交额比例分为基本均衡、小幅偏强、偏强、明显占优；ETF份额资金按当日资金变化占A股股票ETF总规模比例分为基本持平、小幅、明显、大幅。结论固定按“份额主判断—盘中同步或背离—宽基、风格与行业主题合并流入与流出排名—流出方向与选择性申购方向的结构解释”生成；三类观察组只比较方向强弱，不相加为市场总量。末句不再重复同步/背离判断；两端同向才称共振，反向才称背离，盘中均衡则明确为未确认份额方向。",
+        "metricSeparation": "首页结论把两类数据翻译成易懂话术：盘中买盘/卖盘强弱来自同日成交额与外盘/内盘估算的主动买卖净额；ETF份额对应申赎资金来自交易所T日与T-1可比份额变化×T日NAV。盘中强弱按主动买卖净额占总成交额比例分档；ETF份额总量及重点流入、流出方向分别按其金额占A股股票ETF总规模的比例分为基本持平、少量、小幅、明显、大幅或集中大额，重点方向还须覆盖同侧至少50%的叶子组资金才判断为集中配置。结论固定按“份额主判断—盘中同步或背离—宽基、风格与行业主题合并流入与流出排名—配置风向、流入力度、流出力度与交易确认”生成；三类互斥观察组只用于方向比较，不与盘中交易资金相加。",
         "multiDay": "坐标轴的5日/20日字段为端点份额变化×期末单位净值，字段明确标记 Endpoint；它们不是逐日净申购额之和。首页结论的历史比较仅使用T-1及以前已落盘的逐日flow1d，且要求ETF池数量与当前日相差不超过2%，不把当天放入比较基准。",
         "scope": "首页主指标固定使用A股股票ETF范围，不含跨境股票ETF、债券ETF、货币ETF和商品ETF；凡具备T与T-1可比份额及T日NAV的A股股票ETF均进入唯一观察组。暂不能可靠映射到既有宽基、风格或行业的产品单列为“其他A股股票ETF”，不混入对应排名；同时保留全部ETF、股票ETF（含跨境）和六类资产范围用于审计与对照。",
         "valuation": "ETF当日净流入/净流出主口径使用同日单位净值；flowMetrics.primaryMarket.valuationComparisons 同时保存同一份额变化按成交均价估值的对照总额。",
