@@ -1,5 +1,7 @@
 name: Official ETF share gate and publish
 
+# Controlled V4 conclusion republish trigger; schedule and publish logic unchanged.
+
 on:
   # A workflow-definition change is also a controlled recovery trigger: it
   # validates and republishes the current official snapshot once with every active guardrail.
@@ -316,37 +318,3 @@ jobs:
         run: |
           if [ -z "$PUSHPLUS_TOKEN" ]; then
             echo "PUSHPLUS_TOKEN secret not configured; skipping WeChat alert"
-            exit 0
-          fi
-          RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          export RUN_URL RESOLVE_RESULT PROBE_RESULT PUBLISH_RESULT TRADE_DATE PUSHPLUS_TOKEN
-          python3 - <<'PY' || true
-          import json
-          import os
-          import urllib.request
-
-          stage = "publish"
-          if os.environ.get("RESOLVE_RESULT") == "failure":
-              stage = "resolve"
-          elif os.environ.get("PROBE_RESULT") == "failure":
-              stage = "probe"
-          import datetime
-          now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).strftime("%m-%d %H:%M")
-          payload = {
-              "token": os.environ["PUSHPLUS_TOKEN"],
-              "title": "ETF日报发布失败提醒",
-              "content": (
-                  f"交易日: {os.environ.get('TRADE_DATE') or '未知'}\n"
-                  f"时间: {now} 北京\n"
-                  f"失败环节: {stage}（已自动重试仍未通过）\n"
-                  f"详情: {os.environ['RUN_URL']}"
-              ),
-              "template": "txt",
-          }
-          req = urllib.request.Request(
-              "http://www.pushplus.plus/send",
-              data=json.dumps(payload).encode("utf-8"),
-              headers={"Content-Type": "application/json"},
-          )
-          print(urllib.request.urlopen(req, timeout=30).read().decode("utf-8"))
-          PY
