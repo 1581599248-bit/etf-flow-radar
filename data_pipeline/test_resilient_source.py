@@ -11,6 +11,20 @@ import update_daily_resilient as resilient
 
 
 class ResilientSseSourceTests(unittest.TestCase):
+    def test_verified_publisher_reuses_validated_store_without_refresh(self):
+        day = date(2026, 9, 3)
+        frame = self._exchange_frame(day, 100.0)
+        with patch.dict(resilient.os.environ, {'ETF_USE_VERIFIED_SHARE_CACHE': '1'}), patch.object(
+            resilient, '_read_exchange_cache', return_value=frame
+        ), patch.object(resilient, '_exchange_cache_is_fresh', return_value=False), patch.object(
+            resilient, '_register_recent_build_session', return_value=True
+        ), patch.object(resilient, '_write_exchange_cache'), patch.object(
+            resilient, '_ORIG_FETCH_EXCHANGE_SHARES'
+        ) as fetch:
+            result = resilient.resilient_fetch_exchange_shares(day)
+        fetch.assert_not_called()
+        pd.testing.assert_frame_equal(result, frame)
+
     @staticmethod
     def _exchange_frame(day: date, shares: float) -> pd.DataFrame:
         return pd.DataFrame([{

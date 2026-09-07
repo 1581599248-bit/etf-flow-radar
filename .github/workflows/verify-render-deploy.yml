@@ -6,6 +6,10 @@ on:
     paths:
       - "site/data/**"
   workflow_dispatch:
+  workflow_run:
+    workflows: [Official ETF share gate and publish]
+    types: [completed]
+    branches: [main]
 
 permissions:
   contents: read
@@ -16,6 +20,7 @@ concurrency:
 
 jobs:
   verify:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 16
     steps:
@@ -64,6 +69,9 @@ jobs:
           actual = {key: payload.get(key) for key in expected}
           if actual != expected:
               raise SystemExit(f"Render still stale: expected={expected}, actual={actual}")
+          committed = json.loads(Path("site/data/latest.json").read_text("utf-8"))
+          if payload != committed:
+              raise SystemExit("Render snapshot differs from main despite matching trade date")
           print(f"Render serves verified snapshot {actual['tradeDate']}")
           PY
               then

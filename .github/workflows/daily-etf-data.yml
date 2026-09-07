@@ -88,7 +88,9 @@ jobs:
     needs: resolve
     if: needs.resolve.outputs.needed == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 10
+    outputs:
+      ready: ${{ steps.official.outputs.ready }}
     env:
       TZ: Asia/Shanghai
     steps:
@@ -113,18 +115,12 @@ jobs:
         id: official
         shell: bash
         run: |
-          attempts=1
-          code=75
-          for attempt in $(seq 1 "$attempts"); do
-            set +e
-            timeout 4m python data_pipeline/probe_official_shares.py \
-              --date "${{ needs.resolve.outputs.trade_date }}" \
-              --status-file "/tmp/official-share-probe.json"
-            code=$?
-            set -e
-            if [ "$code" -eq 0 ]; then break; fi
-            break
-          done
+          set +e
+          timeout 4m python data_pipeline/probe_official_shares.py \
+            --date "${{ needs.resolve.outputs.trade_date }}" \
+            --status-file "/tmp/official-share-probe.json"
+          code=$?
+          set -e
           cat "/tmp/official-share-probe.json" >> "$GITHUB_STEP_SUMMARY" || true
           if [ "$code" -eq 0 ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
@@ -151,7 +147,7 @@ jobs:
     needs:
       - resolve
       - probe
-    if: always() && needs.resolve.outputs.needed == 'true'
+    if: needs.resolve.outputs.needed == 'true' && needs.probe.outputs.ready == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 55
     env:
@@ -159,6 +155,7 @@ jobs:
       # Official share and same-day secondary facts are the daily publication
       # gate.  Non-essential return proxies must not hold the report hostage.
       ETF_SKIP_RETURN_PROXIES: "1"
+      ETF_USE_VERIFIED_SHARE_CACHE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -318,3 +315,21 @@ jobs:
         run: |
           if [ -z "$PUSHPLUS_TOKEN" ]; then
             echo "PUSHPLUS_TOKEN secret not configured; skipping WeChat alert"
+            exit 0
+          fi
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+          payload = {
+              "token": os.environ["PUSHPLUS_TOKEN"],
+              "title": "ETF日报发布失败提醒",
+              "content": "交易日: " + os.environ.get("TRADE_DATE", "未知") + "；请检查 GitHub Actions 发布日志。",
+              "template": "txt",
+          }
+          request = urllib.request.Request("https://www.pushplus.plus/send", data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"})
+          with urllib.request.urlopen(request, timeout=30) as response:
+              result = json.load(response)
+          if result.get("code") != 200:
+              raise SystemExit("PushPlus notification rejected")
+          PY

@@ -24,6 +24,7 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 import pandas as pd
+import os
 import requests
 
 import update_daily as base
@@ -422,7 +423,7 @@ def resilient_fetch_exchange_shares(day: date) -> pd.DataFrame:
         cached = _read_exchange_archive(day)
     recent_session = _register_recent_build_session(day) if cached is not None else len(_RECENT_BUILD_SESSIONS) < RECENT_SESSION_REFRESH_COUNT
     if cached is not None:
-        if recent_session and not _exchange_cache_is_fresh(day):
+        if recent_session and not _exchange_cache_is_fresh(day) and os.environ.get("ETF_USE_VERIFIED_SHARE_CACHE") != "1":
             try:
                 frame = _ORIG_FETCH_EXCHANGE_SHARES(day)
                 validated = _validate_exchange_frame(frame, day)
