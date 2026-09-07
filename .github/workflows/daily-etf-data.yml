@@ -1,5 +1,6 @@
 name: Official ETF share gate and publish
 
+# Verified-cache publication reliability check; this update also triggers one controlled recovery run.
 # Controlled V4 conclusion republish trigger; schedule and publish logic unchanged.
 
 on:
