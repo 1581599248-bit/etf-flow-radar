@@ -11,6 +11,16 @@ import update_daily_resilient as resilient
 
 
 class ResilientSseSourceTests(unittest.TestCase):
+    def setUp(self):
+        # Production publication deliberately reuses an already verified
+        # official snapshot.  Each unit test starts in normal refresh mode so
+        # CI job environment does not alter the behaviour being asserted.
+        self._publisher_mode = patch.dict(
+            resilient.os.environ, {"ETF_USE_VERIFIED_SHARE_CACHE": "0"}
+        )
+        self._publisher_mode.start()
+        self.addCleanup(self._publisher_mode.stop)
+
     def test_verified_publisher_reuses_validated_store_without_refresh(self):
         day = date(2026, 9, 3)
         frame = self._exchange_frame(day, 100.0)
