@@ -171,8 +171,19 @@ class ConclusionMarketTests(unittest.TestCase):
 
     def test_shared_direction_is_not_evidence_of_high_low_rotation(self):
         text = cm.render_market(20, "small", 40, "small", STRUCTURES[12])
-        self.assertEqual(text, "市场配置结构偏进攻，成长内部申赎分化；配置与交易形成同向支撑。")
+        self.assertEqual(text, "市场配置结构偏进攻，成长内部申赎分化。")
         self.assertNotIn("高低", text)
+
+    def test_same_side_signals_do_not_append_a_redundant_relationship_close(self):
+        cases = (
+            (20, "small", 40, "small", "配置与交易形成同向支撑"),
+            (-20, "small", -40, "small", "配置与交易共同偏谨慎"),
+            (0, "flat", 0, "balanced", "配置与交易均缺乏明确方向"),
+        )
+        for primary, primary_strength, trade, trade_strength, redundant in cases:
+            text = cm.render_market(primary, primary_strength, trade, trade_strength, STRUCTURES[5])
+            self.assertNotIn(redundant, text)
+            self.assertTrue(text.endswith("。"))
 
     def test_invalid_or_duplicate_data_fails_closed(self):
         for bad in (None, float("nan"), float("inf"), True, "3"):

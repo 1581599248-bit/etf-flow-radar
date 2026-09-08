@@ -205,10 +205,10 @@ def relationship_close(primary_value, primary_strength, trade_value, trade_stren
         return "交易端仍偏谨慎，两端风险偏好明显分化"
     if (p, t) == (-1, 1):
         return "交易端虽有承接，但份额端仍偏谨慎"
-    if (p, t) == (1, 1):
-        return "配置与交易形成同向支撑"
-    if (p, t) == (-1, -1):
-        return "配置与交易共同偏谨慎"
+    # 同向（包括两端均衡）已由前两句和市场配置描述完整表达；
+    # 再追加“共同偏谨慎/同向支撑”只会重复，不提供新的市场判断。
+    if p == t:
+        return None
     if (p, t) == (1, 0):
         return "交易端尚未形成同向确认"
     if (p, t) == (-1, 0):
@@ -218,6 +218,11 @@ def relationship_close(primary_value, primary_strength, trade_value, trade_stren
     if (p, t) == (0, -1):
         return "短线卖压尚未转化为份额赎回"
     return "配置与交易均缺乏明确方向"
+
+
+def _with_relationship(body, close):
+    """Append a relationship interpretation only when it adds information."""
+    return f"{body}；{close}。" if close else f"{body}。"
 
 
 def render_market(primary_value, primary_strength, trade_value, trade_strength, groups, aum=None):
@@ -230,9 +235,9 @@ def render_market(primary_value, primary_strength, trade_value, trade_strength, 
     posture = market_posture(primary_value, primary_strength, incoming)
     close = relationship_close(primary_value, primary_strength, trade_value, trade_strength)
     if not incoming["total"] and not outgoing["total"]:
-        return f"{posture}，各方向份额净变动接近零；{close}。"
+        return _with_relationship(f"{posture}，各方向份额净变动接近零", close)
     if (incoming["labels"] and set(incoming["labels"]) == set(outgoing["labels"])
             and incoming["focused"] and outgoing["focused"]):
-        return f"{posture}，{_labels(incoming)}内部申赎分化；{close}。"
+        return _with_relationship(f"{posture}，{_labels(incoming)}内部申赎分化", close)
     flows = [x for x in (inflow_copy(incoming, primary_value, primary_strength), outflow_copy(outgoing)) if x]
-    return f"{posture}，{'，'.join(flows)}；{close}。"
+    return _with_relationship(f"{posture}，{'，'.join(flows)}", close)
