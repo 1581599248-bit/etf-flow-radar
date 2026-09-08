@@ -29,6 +29,9 @@ jobs:
       TZ: Asia/Shanghai
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -50,4 +53,5 @@ jobs:
           git add site/data/order_flow
           git diff --cached --quiet && exit 0
           git commit -m "data: capture same-day ETF secondary order flow"
-          git push
+          git pull --rebase origin main
+          git push origin HEAD:main

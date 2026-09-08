@@ -1,0 +1,83 @@
+name: Watch exact official SSE/SZSE shares
+description: Wait on an active runner and hand only verified official rows to the publisher.
+inputs:
+  trade-date:
+    required: true
+    description: Exact trading date, pinned before midnight.
+  until:
+    required: true
+    description: Beijing HH:MM cutoff.
+  day-offset:
+    required: true
+    description: Zero for the trading day, one for the following day.
+  interval-seconds:
+    required: true
+    description: Delay between completed upstream checks.
+  phase:
+    required: true
+    description: Unique cache and artifact suffix.
+outputs:
+  ready:
+    description: True only when both exchanges pass the official probe.
+    value: ${{ steps.official.outputs.ready }}
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+        cache: pip
+        cache-dependency-path: data_pipeline/requirements.txt
+    - uses: actions/cache/restore@v4
+      with:
+        path: .cache/exchange_shares
+        key: etf-exchange-shares-v2-${{ github.run_id }}-${{ inputs.phase }}
+        restore-keys: |
+          etf-exchange-shares-v2-
+          etf-exchange-shares-v1-
+    - run: pip install -r data_pipeline/requirements.txt
+      shell: bash
+    - name: Wait for the exact official SSE/SZSE date
+      id: official
+      shell: bash
+      env:
+        TARGET_TRADE_DATE: ${{ inputs.trade-date }}
+        WATCH_UNTIL: ${{ inputs.until }}
+        WATCH_DAY_OFFSET: ${{ inputs.day-offset }}
+        WATCH_INTERVAL: ${{ inputs.interval-seconds }}
+      run: |
+        set +e
+        python data_pipeline/wait_for_official_shares.py \
+          --date "$TARGET_TRADE_DATE" --until "$WATCH_UNTIL" \
+          --day-offset "$WATCH_DAY_OFFSET" --interval-seconds "$WATCH_INTERVAL" \
+          --status-file /tmp/official-share-probe.json
+        code=$?
+        set -e
+        cat /tmp/official-share-probe.json >> "$GITHUB_STEP_SUMMARY" || true
+        if [ "$code" -eq 0 ]; then
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+          mkdir -p .probe-output
+          cp ".cache/exchange_shares/${TARGET_TRADE_DATE}.json" .probe-output/
+        elif [ "$code" -eq 75 ]; then
+          echo "ready=false" >> "$GITHUB_OUTPUT"
+          echo "Official data is still unavailable at this phase's cutoff; no report was published." >> "$GITHUB_STEP_SUMMARY"
+        else
+          echo "ready=false" >> "$GITHUB_OUTPUT"
+          exit "$code"
+        fi
+    - name: Pass verified official shares to publisher
+      if: steps.official.outputs.ready == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: official-share-${{ inputs.phase }}-${{ github.run_attempt }}
+        path: .probe-output/${{ inputs.trade-date }}.json
+        if-no-files-found: error
+        retention-days: 1
+    - name: Retain upstream status for missed-publication diagnosis
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: probe-status-${{ inputs.phase }}-${{ github.run_attempt }}
+        path: /tmp/official-share-probe.json
+        if-no-files-found: warn
+        retention-days: 7

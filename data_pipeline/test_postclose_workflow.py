@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class PostCloseWorkflowTests(unittest.TestCase):
     def test_all_workflow_shell_blocks_are_syntactically_complete(self):
-        for path in (ROOT / '.github/workflows').glob('*.yml'):
+        for path in (ROOT / '.github').rglob('*.yml'):
             lines = path.read_text().splitlines()
             for index, line in enumerate(lines):
                 if line.strip() != 'run: |':
@@ -27,6 +27,7 @@ class PostCloseWorkflowTests(unittest.TestCase):
     def test_single_automatic_workflow_probes_before_full_build(self):
         text = (ROOT / ".github" / "workflows" / "daily-etf-data.yml").read_text("utf-8")
         for cron in (
+            '"13 10,12 * * 1-5"',
             '"30 14 * * 1-5"',
             '"0,30 15 * * 1-5"',
             '"0,30 16 * * 1-5"',
@@ -37,7 +38,18 @@ class PostCloseWorkflowTests(unittest.TestCase):
             self.assertIn(cron, text)
         self.assertIn("probe_official_shares.py", text)
         self.assertIn("official SSE/SZSE", text)
-        self.assertIn("actions/upload-artifact@v4", text)
+        watcher = (ROOT / ".github/actions/watch-official-shares/action.yml").read_text("utf-8")
+        self.assertIn("actions/upload-artifact@v4", watcher)
+        self.assertIn("workflow_run:", text)
+        self.assertIn("workflows: [Capture ETF order flow]", text)
+        self.assertIn('until: "20:00"', text)
+        self.assertIn('until: "01:30"', text)
+        self.assertIn('interval-seconds: "300"', text)
+        self.assertIn("needs.probe_late.outputs.ready == 'true'", text)
+        self.assertIn("wait_for_official_shares.py", watcher)
+        self.assertIn("name: official-share-${{ inputs.phase }}-${{ github.run_attempt }}", watcher)
+        self.assertIn("pattern: official-share-*-${{ github.run_attempt }}", text)
+        self.assertNotIn("continue-on-error: true", text)
         self.assertIn("independent official-share probes disagree", text)
         self.assertIn("Build and audit schema-v6 production snapshot", text)
         self.assertNotIn("for attempt in 1 2 3", text)

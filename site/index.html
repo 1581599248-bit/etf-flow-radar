@@ -49,14 +49,38 @@
   const fullDate=d=>new Intl.DateTimeFormat("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"short",timeZone:"Asia/Shanghai"}).format(new Date(`${d}T12:00:00+08:00`));
   const opinionDate=d=>new Intl.DateTimeFormat("zh-CN",{year:"numeric",month:"long",day:"numeric",timeZone:"Asia/Shanghai"}).format(new Date(`${d}T12:00:00+08:00`));
 
-  async function load(){
+  let snapshotLoadInFlight=false, snapshotEtag="";
+  async function load({checkOnly=false}={}){
+    if(snapshotLoadInFlight||document.hidden||$(".export-snapshot")||$(".drawer-bg"))return;
+    snapshotLoadInFlight=true;
+    const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),20000);
     try{
-      const response=await fetch(`data/latest.json?v=${Date.now()}`,{cache:"no-store"});
+      const url=`data/latest.json?v=${Date.now()}`,options={cache:"no-store",signal:controller.signal};
+      // Check a small response header first; unchanged 2MB snapshots need not
+      // be downloaded again on every foreground minute.
+      if(checkOnly&&window.snapshot&&snapshotEtag){
+        const head=await fetch(url,{...options,method:"HEAD"});
+        if(head.ok&&head.headers.get("etag")===snapshotEtag)return;
+      }
+      const response=await fetch(url,options);
       if(!response.ok)throw new Error(`HTTP ${response.status}`);
       const data=await response.json();
       if(data.schemaVersion<4||data.sourceMode!=="REAL"||data.status!=="verified")throw new Error("数据快照未通过发布检查");
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(data.tradeDate))throw new Error("数据交易日无效");
+      if(window.snapshot){
+        // A stale deployment response must never roll a visible report back.
+        if(data.tradeDate<window.snapshot.tradeDate)return;
+        if(data.tradeDate===window.snapshot.tradeDate&&Date.parse(data.generatedAt)<Date.parse(window.snapshot.generatedAt))return;
+      }
+      if(document.hidden||$(".export-snapshot")||$(".drawer-bg"))return;
+      const rankPeriod=$("[data-rank-tabs] .active")?.dataset.period,kind=$("[data-kind].active")?.dataset.kind;
+      snapshotEtag=response.headers.get("etag")||"";
+      if(window.snapshot&&JSON.stringify(data)===JSON.stringify(window.snapshot))return;
       render(data);
-    }catch(error){document.getElementById("app").innerHTML=`<main class="loading error"><b>DATA BLOCKED</b><h1>今日数据暂未发布</h1><p>${esc(error.message)}</p><small>系统会保留上一份验证快照，不使用模拟数据补位。</small></main>`}
+      if(rankPeriod)[...document.querySelectorAll("[data-rank-tabs] button")].find(el=>el.dataset.period===rankPeriod)?.click();
+      if(kind)[...document.querySelectorAll("[data-kind]")].find(el=>el.dataset.kind===kind)?.click();
+    }catch(error){if(!window.snapshot)document.getElementById("app").innerHTML=`<main class="loading error"><b>DATA BLOCKED</b><h1>今日数据暂未发布</h1><p>${esc(error.message)}</p><small>系统会保留上一份验证快照，不使用模拟数据补位。</small></main>`}
+    finally{clearTimeout(timeout);snapshotLoadInFlight=false}
   }
 
   function bubbleDiameter(aum,maxAum){return Math.max(11,Math.sqrt(Math.max(aum,0)/Math.max(maxAum,1))*42)}
@@ -204,6 +228,9 @@
   }
 
   addEventListener("resize",()=>requestAnimationFrame(layoutBubbleLabels));
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)load({checkOnly:true})});
+  addEventListener("pageshow",()=>load({checkOnly:true}));
+  setInterval(()=>load({checkOnly:true}),60000);
   load();
   </script>
 </body>

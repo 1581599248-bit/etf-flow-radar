@@ -1,6 +1,72 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import vm from "node:vm";
+
+async function refreshHarness() {
+  const page = await readFile("site/index.html", "utf8");
+  const source = page.slice(page.indexOf("  let snapshotLoadInFlight="), page.indexOf("  function bubbleDiameter"));
+  const pending = [], calls = [], rendered = [], app = {innerHTML: "existing report"};
+  const selectors = new Map();
+  const context = vm.createContext({
+    window: {}, document: {hidden: false, getElementById: () => app, querySelectorAll: () => []},
+    $: (selector) => selectors.get(selector), esc: String, AbortController, setTimeout, clearTimeout,
+    fetch: async (url, options) => {
+      calls.push(options.method || "GET");
+      const value = pending.shift();
+      if (value instanceof Error) throw value;
+      assert.ok(value, "unexpected network request");
+      return {ok: true, headers: {get: () => value.etag}, json: async () => value.data};
+    },
+    render: (data) => {context.window.snapshot = data; rendered.push(data);},
+  });
+  vm.runInContext(source, context);
+  const snapshot = (tradeDate, generatedAt = `${tradeDate}T23:50:00+08:00`) =>
+    ({schemaVersion: 6, sourceMode: "REAL", status: "verified", tradeDate, generatedAt});
+  return {context, pending, calls, rendered, app, selectors, snapshot};
+}
+
+test("foreground refresh switches to a new verified date and skips unchanged bodies", async () => {
+  const h = await refreshHarness();
+  h.pending.push({etag: "old", data: h.snapshot("2026-09-07")});
+  await h.context.load();
+  h.pending.push({etag: "old"});
+  await h.context.load({checkOnly: true});
+  assert.deepEqual(h.calls, ["GET", "HEAD"]);
+  assert.equal(h.rendered.length, 1);
+  h.pending.push({etag: "new"}, {etag: "new", data: h.snapshot("2026-09-08")});
+  await h.context.load({checkOnly: true});
+  assert.equal(h.rendered.at(-1).tradeDate, "2026-09-08");
+});
+
+test("refresh retains the verified report on network, quality and stale deployment responses", async () => {
+  const h = await refreshHarness();
+  h.pending.push({etag: "current", data: h.snapshot("2026-09-08")});
+  await h.context.load();
+  for (const candidate of [new Error("timeout"),
+    {etag: "bad", data: {...h.snapshot("2026-09-09"), status: "blocked"}},
+    {etag: "older", data: h.snapshot("2026-09-07")},
+    {etag: "revision", data: h.snapshot("2026-09-08", "2026-09-08T22:00:00+08:00")},
+  ]) {
+    h.pending.push(candidate);
+    await h.context.load();
+    assert.equal(h.rendered.length, 1);
+    assert.equal(h.app.innerHTML, "existing report");
+  }
+});
+
+test("refresh waits while hidden, inspecting a group, or exporting a JPG", async () => {
+  const h = await refreshHarness();
+  h.context.document.hidden = true;
+  await h.context.load();
+  h.context.document.hidden = false;
+  for (const selector of [".drawer-bg", ".export-snapshot"]) {
+    h.selectors.set(selector, {});
+    await h.context.load();
+    h.selectors.delete(selector);
+  }
+  assert.equal(h.calls.length, 0);
+});
 
 // 校验原则：文案中的数字与方向必须能对回快照数据；
 // 强度形容词（小幅/明显/大幅/偏强/明显占优）随阈值调优可能变化，不写死。
