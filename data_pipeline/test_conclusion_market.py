@@ -154,6 +154,18 @@ class ConclusionMarketTests(unittest.TestCase):
         self.assertEqual(cm.market_posture(100, "clear", dispersed), "市场配置增量较为分散")
         self.assertEqual(cm.market_posture(-100, "clear", aggressive), "市场配置整体偏谨慎")
 
+    def test_small_redemption_keeps_total_caution_while_showing_structural_inflows(self):
+        """Net share-flow posture must not be overwritten by the destination mix."""
+        groups = [
+            G("科创50", "broad", 10.9), G("券商", "industry", 3.0),
+            G("沪深300", "broad", -15.9), G("中证A500", "broad", -12.2),
+        ]
+        self.assertEqual(cm.total_allocation_posture(-25.99, "small"), "市场配置略偏谨慎")
+        self.assertEqual(
+            cm.render_market(-25.99, "small", -66.72, "clear", groups, 26655.42),
+            "市场配置略偏谨慎，局部资金小幅增配成长与金融，大盘宽基配置小幅降温。",
+        )
+
     def test_current_direction_amounts_use_all_matching_groups(self):
         path = Path(__file__).resolve().parents[1] / "site/data/history/2026-09-04.json"
         snapshot = json.loads(path.read_text())

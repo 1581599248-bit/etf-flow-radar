@@ -140,12 +140,27 @@ def market_state(primary_value, primary_strength, trade_value, trade_strength):
     }[p, t]
 
 
-def market_posture(primary_value, primary_strength, incoming):
+def total_allocation_posture(primary_value, primary_strength):
+    """Describe the aggregate primary-market allocation amount, not its destination.
+
+    A small net redemption remains "市场配置略偏谨慎" even when the
+    surviving positive flows favour 科创、券商 or other high-beta directions.
+    Those destinations are described separately by inflow_copy/outflow_copy.
+    """
     p = _primary_side(primary_value, primary_strength)
     if p < 0:
         return "市场配置略偏谨慎" if primary_strength == "small" else "市场配置整体偏谨慎"
     if p == 0:
         return "市场配置总体均衡"
+    return None
+
+
+def market_posture(primary_value, primary_strength, incoming):
+    # Total allocation and allocation structure are deliberately separate:
+    # do not let a local high-beta inflow overwrite a verified net redemption.
+    total_posture = total_allocation_posture(primary_value, primary_strength)
+    if total_posture:
+        return total_posture
     labels = set(incoming["labels"])
     if not incoming["focused"]:
         return "市场配置增量较为分散"
