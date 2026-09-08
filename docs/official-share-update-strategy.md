@@ -56,6 +56,21 @@ keeps one publisher active; redundant queued entries recheck whether work is
 still needed. A long-running watcher is waiting for upstream data, not repeatedly
 rebuilding the report.
 
+## Independent scheduled recovery
+
+The connected ChatGPT task **ETF 午夜发布保障** is enabled for weekdays at
+22:30 and 23:30 Asia/Shanghai. This is an additional clock outside GitHub cron,
+not an extra repository workflow. It checks the current publication and running
+jobs, leaves an active watcher alone, and wakes an idle pipeline by rerunning
+the resolver and dependent jobs of a recent run whose workflow definition still
+matches main. Each attempt uses separate verified-share artifacts. It does not
+make daily code commits or bypass a quality gate.
+
+This recovery depends on the ChatGPT task and GitHub connection remaining
+enabled. It reduces dependence on one scheduler but does not add an upstream
+data-availability or runner-start SLA. Keep this task in sync when handing off
+operations or changing the workflow; notify the owner if recovery is blocked.
+
 ## Diagnosis and data policy
 
 The resolver records the actual Beijing start time and trigger. The watcher logs
