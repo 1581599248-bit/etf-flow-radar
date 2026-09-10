@@ -3,9 +3,9 @@
 The model keeps four independent concepts separate:
 1. market primary flow strength: net share flow / A-share ETF AUM;
 2. trading strength: intraday net active flow / gross trading flow (upstream);
-3. direction strength: all same-side leaf-group flows matching the two ranked
-   leader directions / A-share ETF AUM;
-4. direction concentration: those matching flows / all same-side leaf flows.
+3. direction structure: the ranked inflow and outflow directions are compared
+   before a market-style statement is made;
+4. direction magnitude: each displayed direction is scaled by A-share ETF AUM.
 
 Leaf groups are mutually exclusive. Overlapping rollups are excluded. Displayed
 group flows are net estimates, not gross creations/redemptions. Primary and
@@ -23,8 +23,6 @@ DIRECTION_BANDS = (
     (0.50, "clear"),
     (1.00, "large"),
 )
-AGGRESSIVE = {"科技成长", "成长风格", "中小盘", "医药医疗", "新能源", "制造军工"}
-DEFENSIVE = {"高股息", "价值质量", "公用运输"}
 
 
 def direction(group):
@@ -145,7 +143,7 @@ def total_allocation_posture(primary_value, primary_strength):
 
     A small net redemption remains "市场配置略偏谨慎" even when the
     surviving positive flows favour 科创、券商 or other high-beta directions.
-    Those destinations are described separately by inflow_copy/outflow_copy.
+    Those destinations are described separately by ``structural_copy``.
     """
     p = _primary_side(primary_value, primary_strength)
     if p < 0:
@@ -155,61 +153,80 @@ def total_allocation_posture(primary_value, primary_strength):
     return None
 
 
-def market_posture(primary_value, primary_strength, incoming):
-    # Total allocation and allocation structure are deliberately separate:
-    # do not let a local high-beta inflow overwrite a verified net redemption.
+def market_posture(primary_value, primary_strength, incoming=None):
+    """Describe total primary-market allocation, never infer style from leaders.
+
+    The top two inflow groups are a ranking, not a proof that all money is
+    moving in that style.  In particular, a 科创50 subscription and a
+    semiconductor redemption can coexist.  The structural sentence below
+    handles that conflict explicitly; this sentence only states the verified
+    aggregate share-flow state.
+    """
     total_posture = total_allocation_posture(primary_value, primary_strength)
     if total_posture:
         return total_posture
-    labels = set(incoming["labels"])
-    if not incoming["focused"]:
-        return "市场配置增量较为分散"
-    if labels and labels <= AGGRESSIVE:
-        return "市场配置结构偏进攻"
-    if labels and labels <= DEFENSIVE:
-        return "市场配置结构偏防御"
-    if labels & AGGRESSIVE and labels & DEFENSIVE:
-        return "市场配置结构攻守并存"
-    return "市场配置结构较为均衡"
+    return {
+        "small": "市场配置小幅扩张",
+        "clear": "市场配置明显扩张",
+        "large": "市场配置大幅扩张",
+        "extreme": "市场配置显著扩张",
+    }.get(primary_strength, "市场配置略有扩张")
 
 
-def _labels(context):
-    labels = list(dict.fromkeys(display_direction(x) for x in context["labels"]))
-    return "与".join(labels)
+def _displayed_labels(context):
+    """Keep the order of the published top-two ranking, while merging aliases."""
+    return list(dict.fromkeys(display_direction(label) for label in context["labels"]))
 
 
-def inflow_copy(context, primary_value, primary_strength):
-    if not context["total"]:
-        return None
-    if not context["focused"]:
-        return "申购分布于多个方向"
-    label, band = _labels(context), context["magnitude"]
-    subject = "一级资金" if _primary_side(primary_value, primary_strength) > 0 else "局部资金"
-    action = {
-        "small": "小幅增配",
-        "clear": "明显加码",
-        "large": "大幅加码",
-        "extreme": "集中大额加码",
-        "generic": "增配",
-    }.get(band, "增配")
-    if band == "limited":
-        return f"{label}获得少量承接"
-    return f"{subject}{action}{label}"
+def _label_amount(rows, sign, label):
+    return sum(
+        abs(group["flow1d"])
+        for group in rows
+        if sign * group["flow1d"] > 0 and display_direction(direction(group)) == label
+    )
 
 
-def outflow_copy(context):
-    if not context["total"]:
-        return None
-    label, band = _labels(context), context["magnitude"]
-    action = {
-        "limited": "略有降温",
-        "small": "配置小幅降温",
-        "clear": "配置明显降温",
-        "large": "配置大幅降温",
-        "extreme": "出现集中大额流出",
-        "generic": "配置降温",
-    }.get(band, "配置降温")
-    return f"{label}{action}"
+def _direction_action(label, amount, aum, verb):
+    """Render a direction with a scale-aware qualifier and no causal language."""
+    band = magnitude(amount, aum)
+    qualifier = {
+        "limited": "略有",
+        "small": "小幅",
+        "clear": "明显",
+        "large": "大幅",
+        "extreme": "明显",
+    }.get(band, "")
+    if verb == "获得承接":
+        return f"资金{qualifier}承接{label}"
+    return f"{label}{qualifier}{verb}"
+
+
+def structural_copy(rows, incoming, outgoing, aum):
+    """Explain ranked directions without turning a local inflow into market beta.
+
+    The headline's second sentence retains the literal top-two inflow/outflow
+    rankings.  This function translates those leaders into a non-overlapping
+    market read: an overlap means the same broad direction has subscriptions
+    and redemptions at once, so it must be called internal divergence rather
+    than 'aggressive' or 'defensive'.
+    """
+    incoming_labels = _displayed_labels(incoming)
+    outgoing_labels = _displayed_labels(outgoing)
+    shared = [label for label in incoming_labels if label in outgoing_labels]
+    incoming_only = [label for label in incoming_labels if label not in outgoing_labels]
+    outgoing_only = [label for label in outgoing_labels if label not in incoming_labels]
+    parts = []
+    if shared:
+        parts.append(f"{'与'.join(shared)}内部申赎分化")
+    if incoming_only:
+        label = "与".join(incoming_only)
+        amount = sum(_label_amount(rows, 1, item) for item in incoming_only)
+        parts.append(_direction_action(label, amount, aum, "获得承接"))
+    if outgoing_only:
+        label = "与".join(outgoing_only)
+        amount = sum(_label_amount(rows, -1, item) for item in outgoing_only)
+        parts.append(_direction_action(label, amount, aum, "降温"))
+    return "，".join(parts)
 
 
 def relationship_close(primary_value, primary_strength, trade_value, trade_strength):
@@ -217,17 +234,17 @@ def relationship_close(primary_value, primary_strength, trade_value, trade_stren
     if t is None:
         return "交易端数据暂缺，配置信号尚待确认"
     if (p, t) == (1, -1):
-        return "交易端仍偏谨慎，两端风险偏好明显分化"
+        return "盘中卖压未转化为整体赎回"
     if (p, t) == (-1, 1):
-        return "交易端虽有承接，但份额端仍偏谨慎"
+        return "盘中买盘未转化为整体申购"
     # 同向（包括两端均衡）已由前两句和市场配置描述完整表达；
     # 再追加“共同偏谨慎/同向支撑”只会重复，不提供新的市场判断。
     if p == t:
         return None
     if (p, t) == (1, 0):
-        return "交易端尚未形成同向确认"
+        return "盘中尚未形成同向买盘"
     if (p, t) == (-1, 0):
-        return "交易端相对平稳，谨慎主要来自份额端"
+        return "盘中尚未形成同向卖压"
     if (p, t) == (0, 1):
         return "短线买盘尚未转化为份额增量"
     if (p, t) == (0, -1):
@@ -247,12 +264,11 @@ def render_market(primary_value, primary_strength, trade_value, trade_strength, 
     if not rows:
         return f"{market_state(primary_value, primary_strength, trade_value, trade_strength)}，配置方向数据暂缺。"
     incoming, outgoing = side_context(rows, 1, aum), side_context(rows, -1, aum)
-    posture = market_posture(primary_value, primary_strength, incoming)
+    posture = market_posture(primary_value, primary_strength)
     close = relationship_close(primary_value, primary_strength, trade_value, trade_strength)
     if not incoming["total"] and not outgoing["total"]:
         return _with_relationship(f"{posture}，各方向份额净变动接近零", close)
-    if (incoming["labels"] and set(incoming["labels"]) == set(outgoing["labels"])
-            and incoming["focused"] and outgoing["focused"]):
-        return _with_relationship(f"{posture}，{_labels(incoming)}内部申赎分化", close)
-    flows = [x for x in (inflow_copy(incoming, primary_value, primary_strength), outflow_copy(outgoing)) if x]
-    return _with_relationship(f"{posture}，{'，'.join(flows)}", close)
+    structure = structural_copy(rows, incoming, outgoing, aum)
+    if not structure:
+        structure = "各方向份额净变动接近零"
+    return _with_relationship(f"{posture}，{structure}", close)

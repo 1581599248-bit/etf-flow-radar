@@ -57,8 +57,8 @@ class ConclusionMarketTests(unittest.TestCase):
         updated = copy.deepcopy(original)
         v2._regenerate_v2_conclusion(updated)
         self.assertTrue(updated["conclusion"]["headline"].endswith(
-            "市场配置结构偏进攻，一级资金大幅加码成长与中小盘，"
-            "金融与高股息配置小幅降温；交易端仍偏谨慎，两端风险偏好明显分化。"
+            "市场配置大幅扩张，资金大幅承接成长与中小盘，"
+            "金融与高股息小幅降温；盘中卖压未转化为整体赎回。"
         ))
         self.assertEqual({k: v for k, v in original.items() if k != "conclusion"},
                          {k: v for k, v in updated.items() if k != "conclusion"})
@@ -113,7 +113,7 @@ class ConclusionMarketTests(unittest.TestCase):
             ("科创50", "broad"), ("中证1000", "broad"), ("沪深300", "broad"),
             ("红利", "style"), ("银行", "industry"), ("煤炭", "industry"),
         )]
-        self.assertIn("申购分布于多个方向", cm.render_market(60, "clear", 40, "small", dispersed))
+        self.assertIn("资金承接中小盘与大盘宽基", cm.render_market(60, "clear", 40, "small", dispersed))
         self.assertIn("资金份额流入居前为", v2._inflow_focus_context({"groups": dispersed})[1])
         # Small absolute flows are not called negligible when they are all activity.
         self.assertEqual(cm.side_context([G("红利", "style", -0.01)], -1, 20000)["magnitude"], "limited")
@@ -130,7 +130,7 @@ class ConclusionMarketTests(unittest.TestCase):
         self.assertEqual(cm.magnitude(200, 20000), "extreme")
         self.assertEqual(cm.magnitude(20, None), "generic")
 
-    def test_market_posture_uses_concentration_and_direction_type(self):
+    def test_market_posture_uses_total_share_flow_not_ranked_direction_type(self):
         aggressive = cm.side_context([
             G("半导体", "industry", 60), G("创新药", "industry", 40),
             G("沪深300", "broad", 10),
@@ -148,10 +148,10 @@ class ConclusionMarketTests(unittest.TestCase):
             G("沪深300", "broad", 10), G("红利", "style", 10),
             G("券商", "industry", 10), G("煤炭", "industry", 10),
         ], 1, 20000)
-        self.assertEqual(cm.market_posture(100, "clear", aggressive), "市场配置结构偏进攻")
-        self.assertEqual(cm.market_posture(100, "clear", defensive), "市场配置结构偏防御")
-        self.assertEqual(cm.market_posture(100, "clear", mixed), "市场配置结构攻守并存")
-        self.assertEqual(cm.market_posture(100, "clear", dispersed), "市场配置增量较为分散")
+        self.assertEqual(cm.market_posture(100, "clear", aggressive), "市场配置明显扩张")
+        self.assertEqual(cm.market_posture(100, "clear", defensive), "市场配置明显扩张")
+        self.assertEqual(cm.market_posture(100, "clear", mixed), "市场配置明显扩张")
+        self.assertEqual(cm.market_posture(100, "clear", dispersed), "市场配置明显扩张")
         self.assertEqual(cm.market_posture(-100, "clear", aggressive), "市场配置整体偏谨慎")
 
     def test_small_redemption_keeps_total_caution_while_showing_structural_inflows(self):
@@ -163,7 +163,7 @@ class ConclusionMarketTests(unittest.TestCase):
         self.assertEqual(cm.total_allocation_posture(-25.99, "small"), "市场配置略偏谨慎")
         self.assertEqual(
             cm.render_market(-25.99, "small", -66.72, "clear", groups, 26655.42),
-            "市场配置略偏谨慎，局部资金小幅增配成长与金融，大盘宽基配置小幅降温。",
+            "市场配置略偏谨慎，资金小幅承接成长与金融，大盘宽基小幅降温。",
         )
 
     def test_current_direction_amounts_use_all_matching_groups(self):
@@ -183,8 +183,23 @@ class ConclusionMarketTests(unittest.TestCase):
 
     def test_shared_direction_is_not_evidence_of_high_low_rotation(self):
         text = cm.render_market(20, "small", 40, "small", STRUCTURES[12])
-        self.assertEqual(text, "市场配置结构偏进攻，成长内部申赎分化。")
+        self.assertEqual(text, "市场配置小幅扩张，成长内部申赎分化。")
         self.assertNotIn("高低", text)
+
+    def test_growth_inflow_and_growth_outflow_are_never_called_one_way_aggressive(self):
+        """A 科创50 subscription cannot erase a simultaneous semiconductor redemption."""
+        groups = [
+            G("科创50", "broad", 13.59), G("成长", "style", 5.20),
+            G("半导体", "industry", -4.69), G("上证50", "broad", -3.88),
+        ]
+        text = cm.render_market(26.43, "small", -33.82, "small", groups, 26484.50)
+        self.assertEqual(
+            text,
+            "市场配置小幅扩张，成长内部申赎分化，大盘宽基略有降温；"
+            "盘中卖压未转化为整体赎回。",
+        )
+        self.assertNotIn("偏进攻", text)
+        self.assertNotIn("成长略有降温", text)
 
     def test_same_side_signals_do_not_append_a_redundant_relationship_close(self):
         cases = (

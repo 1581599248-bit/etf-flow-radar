@@ -353,8 +353,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
             -22.8, 46.0, 1500.0, 20000.0, direction_groups=groups,
         )
         self.assertTrue(text.endswith(
-            "市场配置结构偏进攻，一级资金明显加码成长，"
-            "高股息与金融配置小幅降温；交易端仍偏谨慎，两端风险偏好明显分化。"
+            "市场配置明显扩张，资金明显承接成长，"
+            "高股息与金融小幅降温；盘中卖压未转化为整体赎回。"
         ))
 
     def test_all_headline_structural_scenarios_are_composable(self):
@@ -484,8 +484,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn(
             "\n—— 份额大量净赎回，盘中买盘背离但相对有限。"
             "资金份额流入居前为半导体与创新药，流出居前为沪深300。"
-            "市场配置整体偏谨慎，局部资金明显加码成长与医药医疗，"
-            "大盘宽基配置小幅降温；交易端虽有承接，但份额端仍偏谨慎。",
+            "市场配置整体偏谨慎，资金明显承接成长与医药医疗，"
+            "大盘宽基小幅降温；盘中买盘未转化为整体申购。",
             headline,
         )
         self.assertNotIn("红利低波与价值", headline)
@@ -539,8 +539,8 @@ class UpdateDailyV2Tests(unittest.TestCase):
         self.assertIn("份额大量净申购，盘中数据暂缺", headline)
         self.assertIn("资金份额流入居前为传媒与中证500，流出居前为半导体与芯片。", headline)
         self.assertIn(
-            "市场配置结构偏进攻，一级资金小幅增配成长与中小盘，"
-            "成长出现集中大额流出；交易端数据暂缺，配置信号尚待确认。",
+            "市场配置大幅扩张，成长内部申赎分化，资金小幅承接中小盘；"
+            "交易端数据暂缺，配置信号尚待确认。",
             headline,
         )
         self.assertNotIn("申万一级和主题行业", headline)
