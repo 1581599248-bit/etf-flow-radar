@@ -56,11 +56,12 @@ def _reset_run_state() -> None:
 
 
 def _get_spot() -> pd.DataFrame:
+    from eastmoney_etf_spot import fetch_spot
     global _SPOT_CACHE, _SPOT_ERROR
     if _SPOT_CACHE is not None:
         return _SPOT_CACHE.copy()
     try:
-        spot = base.retry("Eastmoney ETF spot with share audit", base.ak.fund_etf_spot_em, attempts=3)
+        spot = base.retry("Eastmoney ETF spot with share audit", fetch_spot, attempts=2)
         spot.columns = [str(c).strip() for c in spot.columns]
         if "代码" not in spot.columns:
             raise ValueError("Eastmoney ETF spot omitted 代码")

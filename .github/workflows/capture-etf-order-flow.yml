@@ -1,12 +1,21 @@
 name: Capture ETF order flow
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/capture-etf-order-flow.yml"
+      - "data_pipeline/eastmoney_etf_spot.py"
+      - "data_pipeline/capture_order_flow_v2.py"
+      - "data_pipeline/supplement_order_flow.py"
   schedule:
     # Use off-peak minutes; each run also retries internally so one delayed cron
     # is sufficient to freeze the same-day trading fact.
     - cron: "37 7 * * 1-5"  # 15:37 Asia/Shanghai
     - cron: "17 8 * * 1-5"  # 16:17 Asia/Shanghai backup
     - cron: "7 9 * * 1-5"   # 17:07 Asia/Shanghai final backup
+    - cron: "27 10,12,14,15 * * 1-5"  # Evening recovery after provider outages
+    - cron: "27 16,17 * * 1-5"        # Overnight retries retain the completed trade date
   workflow_dispatch:
     inputs:
       trade_date:
@@ -46,11 +55,17 @@ jobs:
           else
             python data_pipeline/capture_order_flow_v2.py
           fi
+      - name: Supplement a published report when trading data arrives late
+        run: |
+          python -m unittest discover -s data_pipeline -p "test_*order_flow*.py"
+          python data_pipeline/supplement_order_flow.py
+          python data_pipeline/audit_snapshot_v6.py
+          npm ci && npm test
       - name: Commit immutable order-flow fact file
         run: |
           git config user.name "etf-flow-radar-bot"
           git config user.email "etf-flow-radar-bot@users.noreply.github.com"
-          git add site/data/order_flow
+          git add site/data/order_flow site/data/latest.json site/data/history site/data/universe
           git diff --cached --quiet && exit 0
           git commit -m "data: capture same-day ETF secondary order flow"
           git pull --rebase origin main

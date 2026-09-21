@@ -7,7 +7,7 @@ on:
       - "site/data/**"
   workflow_dispatch:
   workflow_run:
-    workflows: [Official ETF share gate and publish]
+    workflows: [Official ETF share gate and publish, Capture ETF order flow]
     types: [completed]
     branches: [main]
 

@@ -11,6 +11,8 @@ import akshare as ak
 import pandas as pd
 
 import update_daily as base
+from eastmoney_etf_spot import fetch_spot
+from resolve_publication_target import resolve_target
 
 CN = ZoneInfo("Asia/Shanghai")
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,7 +31,7 @@ def _is_exchange_session(day: date) -> bool:
 def build_snapshot(day: date) -> dict:
     if not _is_exchange_session(day):
         raise ValueError(f"{day.isoformat()} is not an exchange trading session")
-    spot = base.retry("Eastmoney ETF same-day trading flow", ak.fund_etf_spot_em, attempts=3)
+    spot = base.retry("Eastmoney ETF same-day trading flow", fetch_spot, attempts=2)
     return build_snapshot_from_frame(day, spot)
 
 
@@ -74,6 +76,8 @@ def build_snapshot_from_frame(day: date, spot: pd.DataFrame) -> dict:
     share_rows = int((frame["latest_shares"] > 0).sum())
     return {
         "schemaVersion": 2,
+        "sourceEndpoint": spot.attrs.get("endpoint"),
+        "providerTotal": spot.attrs.get("providerTotal"),
         "tradeDate": day.isoformat(),
         "generatedAt": datetime.now(CN).isoformat(timespec="seconds"),
         "metric": "secondaryMarketETFTradingFlow",
@@ -117,7 +121,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--date", help="trade date YYYY-MM-DD; defaults to China local date")
     args = parser.parse_args()
-    day = date.fromisoformat(args.date) if args.date else datetime.now(CN).date()
+    day = date.fromisoformat(args.date) if args.date else resolve_target()
     target = OUT / f"{day.isoformat()}.json"
     if target.exists():
         existing = json.loads(target.read_text("utf-8"))
