@@ -2,6 +2,8 @@ import copy
 import json
 from pathlib import Path
 import unittest
+import tempfile
+import supplement_order_flow as recovery
 from unittest.mock import patch
 import pandas as pd
 import eastmoney_etf_spot as transport
@@ -47,6 +49,23 @@ class SupplementTests(unittest.TestCase):
         self.assertEqual(updated['flowMetrics']['primaryMarket'], original['flowMetrics']['primaryMarket'])
         self.assertEqual(updated['flowMetrics']['secondaryMarketTradeFlow']['status'], 'available')
         self.assertEqual(supplement(updated, self.fact), updated)
+
+    def test_main_audits_with_fact_before_publishing(self):
+        snapshot = json.loads((ROOT/'site/data/history/2026-09-18.json').read_text())
+        snapshot['flowMetrics']['secondaryMarketTradeFlow'] = {'status': 'unavailable'}
+        fact = json.loads((ROOT/'site/data/order_flow/2026-09-18.json').read_text())
+        with tempfile.TemporaryDirectory() as directory:
+            public = Path(directory)
+            (public/'daily').mkdir()
+            (public/'daily/2026-09-18.json').write_text((ROOT/'site/data/daily/2026-09-18.json').read_text())
+            (public/'order_flow').mkdir()
+            (public/'order_flow/2026-09-18.json').write_text(json.dumps(fact))
+            (public/'latest.json').write_text(json.dumps(snapshot))
+            with patch.object(recovery.pipeline.base, 'PUBLIC', public):
+                recovery.main()
+            updated = json.loads((public/'latest.json').read_text())
+            self.assertEqual(updated['flowMetrics']['secondaryMarketTradeFlow']['status'], 'available')
+            self.assertEqual(updated['flowMetrics']['primaryMarket'], snapshot['flowMetrics']['primaryMarket'])
 
     def test_wrong_day_rejected(self):
         self.fact['tradeDate'] = '2026-09-18'

@@ -5,6 +5,7 @@ No shares, NAVs, classifications, primary flows or history calculations are rebu
 from __future__ import annotations
 import copy
 import json
+import shutil
 from datetime import date, datetime
 from pathlib import Path
 import tempfile
@@ -59,6 +60,12 @@ def main():
     with tempfile.TemporaryDirectory() as directory:
         candidate = Path(directory) / 'candidate.json'
         candidate.write_text(json.dumps(result, ensure_ascii=False, indent=2), 'utf-8')
+        evidence = Path(directory) / 'order_flow' / fact_path.name
+        evidence.parent.mkdir()
+        evidence.write_text(json.dumps(fact, ensure_ascii=False), 'utf-8')
+        daily = Path(directory) / 'daily'
+        daily.mkdir()
+        shutil.copy2(pipeline.base.PUBLIC / 'daily' / fact_path.name, daily / fact_path.name)
         checks = audit(candidate)
     pipeline.base.atomic_publish(result)
     print(f"Supplemented {result['tradeDate']}; audit checks={len(checks)}; "
