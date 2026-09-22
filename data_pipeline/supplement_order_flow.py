@@ -35,6 +35,9 @@ def supplement(snapshot, fact):
         value = per_etf.get(item['code'])
         item['secondaryMainOrderFlow1d'] = round(value, 2) if value is not None else None
     pipeline._add_trade_net_flow(result, day, ths, spot)
+    for source in result.get('sources', []):
+        if source.get('role') == '盘中主动买卖估算；不替代官方份额':
+            source['name'] = fact.get('source') or source['name']
     pipeline._regenerate_v2_conclusion(result)
     # Idempotent on repeated capture schedules.
     if result == snapshot:

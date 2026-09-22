@@ -31,8 +31,13 @@ def _is_exchange_session(day: date) -> bool:
 def build_snapshot(day: date) -> dict:
     if not _is_exchange_session(day):
         raise ValueError(f"{day.isoformat()} is not an exchange trading session")
-    spot = base.retry("Eastmoney ETF same-day trading flow", fetch_spot, attempts=2)
-    return build_snapshot_from_frame(day, spot)
+    try:
+        spot = base.retry("Eastmoney ETF same-day trading flow", fetch_spot, attempts=2)
+        return build_snapshot_from_frame(day, spot)
+    except Exception as exc:
+        print(f'Eastmoney capture unavailable: {exc}; trying whole-universe Tencent fallback', flush=True)
+        from tencent_etf_spot import fetch_spot as fetch_tencent
+        return build_snapshot_from_frame(day, fetch_tencent(day))
 
 
 def build_snapshot_from_frame(day: date, spot: pd.DataFrame) -> dict:
@@ -58,7 +63,7 @@ def build_snapshot_from_frame(day: date, spot: pd.DataFrame) -> dict:
     frame["data_date"] = pd.to_datetime(frame["data_date"], errors="coerce").dt.date
     for col in ("main_yuan", "amount_yuan", "outer", "inner", "latest_shares"):
         frame[col] = pd.to_numeric(frame[col], errors="coerce")
-    frame = frame[frame["data_date"] == day].dropna(subset=["main_yuan", "amount_yuan", "outer", "inner"])
+    frame = frame[frame["data_date"] == day].dropna(subset=["amount_yuan", "outer", "inner"])
     frame = frame.drop_duplicates("code", keep="last")
 
     directional = frame["outer"] + frame["inner"]
@@ -81,11 +86,11 @@ def build_snapshot_from_frame(day: date, spot: pd.DataFrame) -> dict:
         "tradeDate": day.isoformat(),
         "generatedAt": datetime.now(CN).isoformat(timespec="seconds"),
         "metric": "secondaryMarketETFTradingFlow",
-        "source": "Eastmoney fund_etf_spot_em 成交额 + 外盘/内盘",
+        "source": spot.attrs.get("source", "Eastmoney fund_etf_spot_em 成交额 + 外盘/内盘"),
         "definition": "当日交易资金净额按外盘/内盘主动成交量占比拆分成交额后，以主动买入金额减主动卖出金额计算；与ETF份额变化分开。",
         "shareObservation": {
-            "source": "Eastmoney fund_etf_spot_em 最新份额",
-            "status": "available" if share_rows >= MIN_ROWS else "partial",
+            "source": "Eastmoney fund_etf_spot_em 最新份额" if share_rows else None,
+            "status": "available" if share_rows >= MIN_ROWS else ("partial" if share_rows else "unavailable"),
             "rowCount": share_rows,
             "definition": "与盘中成交快照同时冻结的供应商最新份额原始观测，仅作为官方交易所日终份额不可达时的审计/备援证据；不自动替代官方主口径。",
         },
@@ -93,14 +98,16 @@ def build_snapshot_from_frame(day: date, spot: pd.DataFrame) -> dict:
         "totalTradeInflow1d": round(float(frame["trade_in_yuan"].sum()) / 1e8, 2),
         "totalTradeOutflow1d": round(float(frame["trade_out_yuan"].sum()) / 1e8, 2),
         "totalTradeNetFlow1d": round(float(frame["trade_net_yuan"].sum()) / 1e8, 2),
-        "totalMainOrderFlow1d": round(float(frame["main_yuan"].sum()) / 1e8, 2),
+        "totalMainOrderFlow1d": round(float(frame["main_yuan"].sum()) / 1e8, 2) if frame["main_yuan"].notna().any() else None,
         "etfs": [{
             "code": str(r.code), "name": str(r.name),
             "tradeInflow1d": round(float(r.trade_in_yuan) / 1e8, 4),
             "tradeOutflow1d": round(float(r.trade_out_yuan) / 1e8, 4),
             "tradeNetFlow1d": round(float(r.trade_net_yuan) / 1e8, 4),
-            "mainOrderFlow1d": round(float(r.main_yuan) / 1e8, 4),
+            "mainOrderFlow1d": round(float(r.main_yuan) / 1e8, 4) if pd.notna(r.main_yuan) else None,
             "amount": round(float(r.amount_yuan) / 1e8, 4),
+            "rawAmountYuan": float(r.amount_yuan),
+            "outerVolume": float(r.outer), "innerVolume": float(r.inner),
             "latestShares": round(float(r.latest_shares), 4) if pd.notna(r.latest_shares) else None,
             "shareDataDate": r.data_date.isoformat() if pd.notna(r.data_date) else None,
             "shareUpdatedAt": None if pd.isna(r.share_updated_at) else str(r.share_updated_at),
@@ -128,7 +135,7 @@ def main() -> int:
         if (
             existing.get("metric") == "secondaryMarketETFTradingFlow"
             and int(existing.get("etfCount", 0)) >= MIN_ROWS
-            and existing.get("shareObservation", {}).get("rowCount", 0) >= MIN_ROWS
+            and existing.get("tradeDate") == day.isoformat()
         ):
             print(f"trading-flow + share snapshot already exists: {target}")
             return 0

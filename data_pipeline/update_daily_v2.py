@@ -53,7 +53,9 @@ def _order_flow_payload_to_frame(payload: dict[str, Any], day: date) -> pd.DataF
             "当日交易流入", "当日交易流出", "成交额", "数据日期",
         ] if c in frame.columns
     ]
-    return frame[keep]
+    result = frame[keep].copy()
+    result.attrs["source"] = payload.get("source", "东方财富ETF同日行情 成交额 + 外盘/内盘")
+    return result
 
 
 def _load_secondary_spot(day: date) -> pd.DataFrame:
@@ -123,7 +125,7 @@ def _add_trade_net_flow(snapshot: dict[str, Any], day: date, ths: pd.DataFrame, 
         "metric": "secondaryMarketTradeNetFlowEstimate",
         "displayName": "当日成交资金净流入/净流出",
         "definition": "按同日ETF成交额与外盘/内盘主动成交方向估算交易资金净额；只显示主动买入金额减主动卖出金额的差额。",
-        "source": "东方财富ETF同日行情 成交额 + 外盘/内盘",
+        "source": spot.attrs.get("source", "东方财富ETF同日行情 成交额 + 外盘/内盘") if spot is not None else "东方财富ETF同日行情 成交额 + 外盘/内盘",
         "tradeDate": day.isoformat(),
         "status": "unavailable",
         "scopeTotals": {},
@@ -998,7 +1000,7 @@ def apply_v2_semantics(snapshot: dict[str, Any], day: date, share_window: list[t
         {"name": "上海证券交易所", "field": "沪市ETF日终总份额", "role": "官方份额主源"},
         {"name": "深圳证券交易所", "field": "深市ETF日终总份额", "role": "官方份额主源"},
         {"name": "同花顺基金数据/AKShare", "field": f"{day.isoformat()} 基金类型与单位净值", "role": "A股范围识别与主口径NAV估值"},
-        {"name": "东方财富行情/AKShare", "field": f"{day.isoformat()} 成交额、外盘与内盘", "role": "盘中主动买卖估算；不替代官方份额"},
+        {"name": snapshot.get("flowMetrics", {}).get("secondaryMarketTradeFlow", {}).get("source", "东方财富行情/AKShare"), "field": f"{day.isoformat()} 成交额、外盘与内盘", "role": "盘中主动买卖估算；不替代官方份额"},
         {"name": "东方财富/新浪行情/AKShare", "field": "成交均价及组内代表ETF收盘价", "role": "估值对照与收益代理"},
     ]
     _regenerate_v2_conclusion(snapshot)
