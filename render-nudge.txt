@@ -1,6 +1,0 @@
-# Render redeploy nudge
-
-Purpose: force a fresh commit on main so Render autoDeploy re-deploys the site.
-Context: the verified 2026-10-21 ETF share snapshot was published to main at
-2026-10-21 23:54 (Asia/Shanghai), but Render kept serving the 2026-10-20 build.
-This file is a harmless no-op trigger and can be deleted at any time.
